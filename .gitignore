@@ -1,1 +1,6 @@
 obj/
+Tiwaz.db
+Tiwaz.db-shm
+Tiwaz.db-wal
+.vs/
+bin/
