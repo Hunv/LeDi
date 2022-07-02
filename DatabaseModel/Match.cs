@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tiwaz.Server.Classes;
 
 namespace Tiwaz.Server.DatabaseModel
 {
-    public class Match
+    public class Match : MatchRuleSet
     {
         public Match(string team1Name, string team2Name) 
         {
@@ -21,6 +22,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// <summary>
         /// The List of the Players for Team 1
         /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
         public Player[]? Team1Players { get; set; }
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// <summary>
         /// The List of the Players for Team 2
         /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
         public Player[]? Team2Players { get; set; }
 
         /// <summary>
@@ -68,7 +71,13 @@ namespace Tiwaz.Server.DatabaseModel
         /// Time left
         /// </summary>
         [Required]
-        public int TimeLeftSeconds { get; set; }
+        public int CurrentTimeLeft { get; set; }
+
+        /// <summary>
+        /// The current halftime; 0 = match not started
+        /// </summary>
+        [Required]
+        public int CurrentHalftime { get; set; }
 
         /// <summary>
         /// The Status of the Match
@@ -84,5 +93,11 @@ namespace Tiwaz.Server.DatabaseModel
         /// The timestamps of matchevents
         /// </summary>
         public MatchEvent[]? MatchEvents { get; set; }
+
+        /// <summary>
+        /// The name of the game that this match is for (i.e. soccer, underwaterhockey, ...)
+        /// </summary>
+        [Required]
+        public string GameName { get; set; }        
     }
 }

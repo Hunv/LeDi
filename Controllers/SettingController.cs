@@ -24,9 +24,12 @@ namespace Tiwaz.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IEnumerable<Setting> Get()
         {
+            _logger.LogDebug("{0}: Get Settings", Request.HttpContext.Connection.RemoteIpAddress);
+
             using (var dbContext = new TwDbContext())
             {
                 var dto = dbContext.Settings;
+
                 return dto.ToArray();
             }
         }
@@ -50,6 +53,8 @@ namespace Tiwaz.Server.Controllers
             [FromQuery]string settingValue
             )
         {
+            _logger.LogDebug("{0}: Add Setting {1} with value {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, settingValue);
+
             using (var dbContext = new TwDbContext())
             {
                 var dto = dbContext.Settings;
@@ -84,6 +89,8 @@ namespace Tiwaz.Server.Controllers
             [FromQuery] string settingValue
             )
         {
+            _logger.LogDebug("{0}: Update Setting {1} with value {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, settingValue);
+
             using (var dbContext = new TwDbContext())
             {
                 var dto = dbContext.Settings;
@@ -116,6 +123,8 @@ namespace Tiwaz.Server.Controllers
             [FromQuery] string settingName
             )
         {
+            _logger.LogDebug("{0}: Delete Setting {1}", Request.HttpContext.Connection.RemoteIpAddress, settingName);
+
             using (var dbContext = new TwDbContext())
             {
                 var dto = dbContext.Settings;

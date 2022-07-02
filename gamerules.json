@@ -1,0 +1,67 @@
+{
+  "template": {
+    "gamename": "template",
+
+    "halftime_count": 2,
+    "halftime_lenght": 1800,
+    "halftime_overtime": true,
+    "halftime_last_pause_time_on_event": false,
+    "halftime_last_pause_time_on_event_seconds": 120,
+
+    "match_extension_on_draw": true,
+
+    "foul_penaltytime_1": false,
+    "foul_penaltytime_1_seconds": 60,
+    "foul_penaltytime_2": false,
+    "foul_penaltytime_2_seconds": 180,
+    "foul_penaltytime_3": false,
+    "foul_penaltytime_3_seconds": 300,
+    "foul_warning_1": true,
+    "foul_warning_1_alias": "yellow card",
+    "foul_warning_2": false,
+    "foul_warning_2_alias": "",
+    "foul_warning_3": false,
+    "foul_warning_3_alias": ""
+  },
+
+
+  "underwaterhockey": {
+    "gamename": "underwaterhockey",
+
+    "halftime_count": 2,
+    "halftime_lenght": 900,
+    "halftime_overtime": false,
+    "halftime_last_pause_time_on_event": true,
+    "halftime_last_pause_time_on_event_last_seconds": 120,
+
+    "match_extension_on_draw": false,
+
+    "foul_penaltytime_1": true,
+    "foul_penaltytime_1_seconds": 120,
+    "foul_penaltytime_2": true,
+    "foul_penaltytime_2_seconds": 300,
+    "foul_penaltytime_3": false,
+    "foul_warning_1": false,
+    "foul_warning_2": false,
+    "foul_warning_3": false
+  },
+
+
+  "soccer": {
+    "gamename": "soccer",
+
+    "halftime_count": 2,
+    "halftime_lenght": 2700,
+    "halftime_overtime": true,
+
+    "match_extension_on_draw": true,
+
+    "foul_penaltytime_1": false,
+    "foul_penaltytime_2": false,
+    "foul_penaltytime_3": false,
+    "foul_warning_1": true,
+    "foul_warning_1_alias": "yellow card",
+    "foul_warning_2": false,
+    "foul_warning_3": false
+  }
+}

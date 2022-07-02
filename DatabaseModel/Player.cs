@@ -32,6 +32,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// The List of match IDs that player participated at
         /// </summary>
         [NotMapped]
+        [System.Text.Json.Serialization.JsonIgnore]
         public int[]? MatchIdList { get; set; }
 
         /// <summary>
