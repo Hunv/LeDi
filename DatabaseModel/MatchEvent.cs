@@ -25,5 +25,10 @@ namespace Tiwaz.Server.DatabaseModel
         /// A Description of the Event
         /// </summary>
         public string? Text { get; set; }
+
+        /// <summary>
+        /// The match this event belongs to
+        /// </summary>
+        public Match Match { get; set; }
     }
 }

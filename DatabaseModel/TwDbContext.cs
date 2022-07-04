@@ -36,6 +36,15 @@ namespace Tiwaz.Server.DatabaseModel
                     .WithMany(e => e.MatchList);
             });
 
+
+            // Players to Matches            
+            modelBuilder.Entity<Match>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasMany(e => e.MatchEvents);
+            });
+
+
             //base.OnModelCreating(modelBuilder);
         }
 

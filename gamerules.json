@@ -3,7 +3,7 @@
     "gamename": "template",
 
     "halftime_count": 2,
-    "halftime_lenght": 1800,
+    "halftime_length": 1800,
     "halftime_overtime": true,
     "halftime_last_pause_time_on_event": false,
     "halftime_last_pause_time_on_event_seconds": 120,
@@ -29,7 +29,7 @@
     "gamename": "underwaterhockey",
 
     "halftime_count": 2,
-    "halftime_lenght": 900,
+    "halftime_length": 900,
     "halftime_overtime": false,
     "halftime_last_pause_time_on_event": true,
     "halftime_last_pause_time_on_event_last_seconds": 120,
@@ -51,7 +51,7 @@
     "gamename": "soccer",
 
     "halftime_count": 2,
-    "halftime_lenght": 2700,
+    "halftime_length": 2700,
     "halftime_overtime": true,
 
     "match_extension_on_draw": true,
@@ -63,5 +63,12 @@
     "foul_warning_1_alias": "yellow card",
     "foul_warning_2": false,
     "foul_warning_3": false
-  }
+  },
+
+  "handball": {},
+  "baseball": {},
+  "hockey": {},
+  "football": {},
+  "basketball": {},
+  "tennis": {}
 }

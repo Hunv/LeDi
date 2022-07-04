@@ -29,7 +29,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// The Ids of the Players for Team 1
         /// </summary>
         [NotMapped]
-        public int[]? Team1PlayerIds { get; set; }
+        public List<int> Team1PlayerIds { get; set; }
 
         /// <summary>
         /// The List of the Players for Team 2
@@ -41,7 +41,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// The Ids of the Players for Team 2
         /// </summary>
         [NotMapped]
-        public int[]? Team2PlayerIds { get; set; }
+        public List<int> Team2PlayerIds { get; set; }
 
         /// <summary>
         /// Score of Team1
@@ -92,7 +92,14 @@ namespace Tiwaz.Server.DatabaseModel
         /// <summary>
         /// The timestamps of matchevents
         /// </summary>
-        public MatchEvent[]? MatchEvents { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public List<MatchEvent> MatchEvents { get; set; }
+
+        /// <summary>
+        /// The event IDs for this Match
+        /// </summary>
+        [NotMapped]
+        public List<int> MatchEventIds { get; set; }
 
         /// <summary>
         /// The name of the game that this match is for (i.e. soccer, underwaterhockey, ...)

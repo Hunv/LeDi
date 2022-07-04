@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using Tiwaz.Server.Classes;
 using Tiwaz.Server.DatabaseModel;
 
 namespace Tiwaz.Server.Controllers
@@ -84,7 +85,7 @@ namespace Tiwaz.Server.Controllers
             {
                 var match = new Match(team1name, team2name);
                 match.CurrentHalftime = 0;
-                match.HalftimeLenght = halftimeLength;
+                match.HalftimeLength = halftimeLength;
                 match.HalftimeCount = halftimeCount;
                 match.GameName = gameName;
                 match.ScheduledTime = scheduledStartTime;
@@ -141,7 +142,7 @@ namespace Tiwaz.Server.Controllers
                     matchItem.Team2Name = team2name;
 
                 if (halftimeLength != null)
-                    matchItem.HalftimeLenght = halftimeLength.Value;
+                    matchItem.HalftimeLength = halftimeLength.Value;
 
                 if (halftimeCount != null)
                     matchItem.HalftimeCount = halftimeCount.Value;
@@ -182,6 +183,71 @@ namespace Tiwaz.Server.Controllers
                 }
 
                 dbContext.Matches.Remove(matchItem);
+                await dbContext.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
+
+
+        /// <summary>
+        /// Receives a new Match Event
+        /// </summary>
+        /// <param name="matchId">The ID of the match to assign the Event to</param>
+        /// <param name="eventId">The EventName for the match</param>
+        /// <param name="eventComment">A not for the Event</param>
+        /// <remarks>
+        /// </remarks>
+        /// <response code="200">Success</response>
+        /// <response code="404">Cannot find the match ID or Eventname</response>
+        [HttpPost("{matchId}/{eventId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RunEvent(
+            int matchId,
+            int eventId,
+            [FromQuery] string? eventComment
+            )
+        {
+
+            _logger.LogDebug("{0}: Run Event {1} on Match {2}", Request.HttpContext.Connection.RemoteIpAddress, eventId, matchId);
+
+            using (var dbContext = new TwDbContext())
+            {
+                var matchItem = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+
+
+                //for testing
+                MatchEngine.LoadMatch(matchItem);
+
+                if (matchItem == null)
+                {
+                    _logger.LogError("The match ID {0} does not exist.", matchId);
+                    return new NotFoundResult();
+                }
+                try
+                {
+                    var eventItem = (MatchEventEnum) eventId;
+                }
+                catch(Exception)
+                {
+                    _logger.LogError("Cannot assign eventId {0} to an event", eventId);
+                    return new NotFoundResult();
+                }
+
+                //Add the event to the MatchEngine. Also adds it to the matchItem variable. So just a save is required after this.
+                MatchEventItem evItem = new MatchEventItem();
+                evItem.TimeOfEvent = DateTime.Now;
+                evItem.EventName = (MatchEventEnum)eventId;
+                evItem.EventComment = eventComment;
+                MatchEngine.MatchEvent(evItem);
+
+                //MatchEvent mEvent = new MatchEvent();
+                //mEvent.Event = (MatchEventEnum)eventId;
+                //mEvent.Text = eventComment;
+                //mEvent.Timestamp = DateTime.Now;
+
+                //matchItem.MatchEvents.Add(mEvent);
+
                 await dbContext.SaveChangesAsync();
                 return new OkResult();
             }
