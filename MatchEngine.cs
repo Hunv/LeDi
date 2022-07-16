@@ -7,7 +7,7 @@ namespace Tiwaz.Server
     {
         private static System.Timers.Timer tmrTimeEngine = new System.Timers.Timer(1000);
         public static List<MatchEventItem> MatchEventDefinition = new List<MatchEventItem>();
-        private static Match? CurrentMatch = null;
+        public static Match CurrentMatch { get; private set; } = new Match();
 
         public static void Load()
         {

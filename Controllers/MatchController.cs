@@ -1,256 +1,173 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using Tiwaz.Server.Classes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Tiwaz.Server.DatabaseModel;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Tiwaz.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class MatchController : ControllerBase
     {
-        private readonly ILogger<SettingController> _logger;
+        private readonly ILogger<MatchController> _logger;
 
-        public MatchController(ILogger<SettingController> logger)
+        public MatchController(ILogger<MatchController> logger)
         {
             _logger = logger;
         }
 
         /// <summary>
-        /// Gets all matches
+        /// Gets all Matches
         /// </summary>
-        /// <returns>A list of all matches</returns>
-        /// <response code="200">Success</response>
-        [HttpGet(Name = "GetMatches")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public IEnumerable<Match> Get()
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetMatchList()
         {
-            _logger.LogDebug("{0}: Get Matches", Request.HttpContext.Connection.RemoteIpAddress);
+            _logger.LogDebug("{0}: Get Matchlist", Request.HttpContext.Connection.RemoteIpAddress);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var dto = dbContext.Matches;
+            var json = Api.ApiMatch.GetMatchList();
+            var result = new OkObjectResult(json);
 
-                return dto.ToArray();
-            }
+            _logger.LogDebug("{0}: Got Matchlist JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            return result;
         }
 
         /// <summary>
-        /// Gets match
+        /// Gets all Matches
         /// </summary>
-        /// <returns>A match</returns>
-        /// <response code="200">Success</response>
-        [HttpGet("{matchId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public Match? GetMatch(int matchId)
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public IActionResult GetMatch(int id)
         {
-            _logger.LogDebug("{0}: Get Match ID {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            _logger.LogDebug("{0}: Get Match {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+            var json = Api.ApiMatch.GetMatch(id);
+            var result = new OkObjectResult(json);
 
-                return dto;
-            }
+            _logger.LogDebug("{0}: Got Match ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, id, json);
+            return result;
         }
 
         /// <summary>
-        /// Creates a new match
+        /// Gets the remaining seconds only
         /// </summary>
-        /// <param name="team1name">The name of the first team</param>
-        /// <param name="team2name">The name of the second team</param>
-        /// <param name="halftimeDuration">Duration of a halftime in seconds</param>
-        /// <param name="halftimeCount">Number of halftimes</param>
-        /// <param name="scheduledStartTime">The expected time of match start</param>
-        /// <param name="gameName">The name of the game, that this match is (i.e. soccer, underwaterhockey, ... </param>
-        /// <returns>The newly created match including the match ID</returns>
-        /// <remarks>
-        /// </remarks>
-        /// <response code="200">Success</response>
-        [HttpPut(Name = "AddMatch")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Put(
-            [FromQuery] string team1name,
-            [FromQuery] string team2name,
-            [FromQuery] int halftimeLength,
-            [FromQuery] int halftimeCount,
-            [FromQuery] DateTime scheduledStartTime,
-            [FromQuery] string gameName
+        /// <returns></returns>
+        [HttpGet("{id}/time")]
+        public IActionResult GetMatchTime(int id)
+        {
+            _logger.LogDebug("{0}: Get MatchTime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+
+            var json = Api.ApiMatch.GetMatchTime(id);
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got MatchTime ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, id, json);
+            return result;
+        }
+
+        /// <summary>
+        /// Modify an existing Match
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> SetMatch(
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoMatch match
             )
         {
-            _logger.LogDebug("{0}: Add Match. Team1: {1}; Team2: {2}; halftimeDuration: {3}; halftimeCount: {4}; scheduledStartTime: {5}; gameName: {6}",
-                Request.HttpContext.Connection.RemoteIpAddress, team1name, team2name, halftimeLength, halftimeCount, scheduledStartTime, gameName);
+            _logger.LogDebug("{0}: Set Match {1}", Request.HttpContext.Connection.RemoteIpAddress, match.Id);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var match = new Match(team1name, team2name);
-                match.CurrentHalftime = 0;
-                match.HalftimeLength = halftimeLength;
-                match.HalftimeCount = halftimeCount;
-                match.GameName = gameName;
-                match.ScheduledTime = scheduledStartTime;
-                dbContext.Matches.Add(match);
-                await dbContext.SaveChangesAsync();
-
-                _logger.LogDebug("Added match {0}", match.Id);
-
-                return new OkObjectResult(match);
-            }
+            await Api.ApiMatch.SetMatch(match);
+            
+            _logger.LogDebug("{0}: Set Match ID {1}", Request.HttpContext.Connection.RemoteIpAddress, match.Id);
+            return new OkResult(); ;
         }
 
         /// <summary>
-        /// Updates an existing match
+        /// Start the counter of a Match
         /// </summary>
-        /// <param name="matchId">The Id of the Match</param>
-        /// <param name="team1name">The name of the first team</param>
-        /// <param name="team2name">The name of the second team</param>
-        /// <param name="halftimeDuration">Duration of a halftime in seconds</param>
-        /// <param name="halftimeCount">Number of halftimes</param>
-        /// <param name="scheduledStartTime">The expected time of match start</param>
-        /// <returns>The updated match</returns>
-        /// <remarks>
-        /// </remarks>
-        /// <response code="200">Success</response>
-        /// <response code="404">Cannot find the stated match ID</response>
-        [HttpPost(Name = "UpdateMatch")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Post(
-            [FromQuery] int matchId,
-            [FromQuery] string? team1name,
-            [FromQuery] string? team2name,
-            [FromQuery] int? halftimeLength,
-            [FromQuery] int? halftimeCount,
-            [FromQuery] DateTime? scheduledStartTime
-            )
+        /// <returns></returns>
+        [HttpPut("{id}/time/start")]
+        public IActionResult SetMatchtimeStart(int id)
         {
-            _logger.LogDebug("{0}: Update Match {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            _logger.LogDebug("{0}: Start Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var matchItem = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                if (matchItem == null)
-                {
-                    _logger.LogError("The match ID {0} does not exist.", matchId);
-                    return new NotFoundResult();
-                }
+            Api.ApiMatch.StartMatchtime(id);
 
-                if (team1name != null)
-                    matchItem.Team1Name = team1name;
-
-                if (team2name != null)
-                    matchItem.Team2Name = team2name;
-
-                if (halftimeLength != null)
-                    matchItem.HalftimeLength = halftimeLength.Value;
-
-                if (halftimeCount != null)
-                    matchItem.HalftimeCount = halftimeCount.Value;
-
-                if (scheduledStartTime != null)
-                    matchItem.ScheduledTime = scheduledStartTime;
-
-                await dbContext.SaveChangesAsync();
-                return new OkObjectResult(matchItem);
-            }
+            _logger.LogDebug("{0}: Started Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            return new OkResult(); ;
         }
 
 
         /// <summary>
-        /// Updates an existing Match
+        /// Stops the counter of a Match
         /// </summary>
-        /// <param name="matchId">The ID of the match to delete</param>
-        /// <remarks>
-        /// </remarks>
-        /// <response code="200">Success</response>
-        /// <response code="404">Cannot find the match ID</response>
-        [HttpDelete(Name = "DeleteMatch")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(
-            [FromQuery] int matchId
-            )
+        /// <returns></returns>
+        [HttpPut("{id}/time/stop")]
+        public IActionResult SetMatchtimeStop(int id)
         {
-            _logger.LogDebug("{0}: Delete Match {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            _logger.LogDebug("{0}: Stop Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var matchItem = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                if (matchItem == null)
-                {
-                    _logger.LogError("The match ID {0} does not exist.", matchId);
-                    return new NotFoundResult();
-                }
+            Api.ApiMatch.PauseMatchtime(id);
 
-                dbContext.Matches.Remove(matchItem);
-                await dbContext.SaveChangesAsync();
-                return new OkResult();
-            }
+            _logger.LogDebug("{0}: Stopped Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            return new OkResult(); ;
         }
+
+        /// <summary>
+        /// Stops the counter of a Match
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{matchid}/goal/{teamid}/{amount}")]
+        public async Task<IActionResult> SetMatchGoal(int matchid, int teamid, int amount)
+        {
+            _logger.LogDebug("{0}: Setting Goal in Match {1} for team {2} by {3}", Request.HttpContext.Connection.RemoteIpAddress, matchid, teamid, amount);
+
+            await Api.ApiMatch.SetMatchGoal(matchid, teamid, amount);
+
+            _logger.LogDebug("{0}: Set Goal in Match {1} for team {2} by {3}", Request.HttpContext.Connection.RemoteIpAddress, matchid, teamid, amount);
+            return new OkResult(); ;
+        }
+
 
 
         /// <summary>
-        /// Receives a new Match Event
+        /// Add a new Match
         /// </summary>
-        /// <param name="matchId">The ID of the match to assign the Event to</param>
-        /// <param name="eventId">The EventName for the match</param>
-        /// <param name="eventComment">A not for the Event</param>
-        /// <remarks>
-        /// </remarks>
-        /// <response code="200">Success</response>
-        /// <response code="404">Cannot find the match ID or Eventname</response>
-        [HttpPost("{matchId}/{eventId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> RunEvent(
-            int matchId,
-            int eventId,
-            [FromQuery] string? eventComment
+        /// <returns></returns>
+        [HttpPost()]
+        public async Task<IActionResult> NewMatch(
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoMatch match
             )
         {
+            _logger.LogDebug("{0}: New Match", Request.HttpContext.Connection.RemoteIpAddress);
 
-            _logger.LogDebug("{0}: Run Event {1} on Match {2}", Request.HttpContext.Connection.RemoteIpAddress, eventId, matchId);
+            await Api.ApiMatch.NewMatch(match);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var matchItem = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-
-
-                //for testing
-                MatchEngine.LoadMatch(matchItem);
-
-                if (matchItem == null)
-                {
-                    _logger.LogError("The match ID {0} does not exist.", matchId);
-                    return new NotFoundResult();
-                }
-                try
-                {
-                    var eventItem = (MatchEventEnum) eventId;
-                }
-                catch(Exception)
-                {
-                    _logger.LogError("Cannot assign eventId {0} to an event", eventId);
-                    return new NotFoundResult();
-                }
-
-                //Add the event to the MatchEngine. Also adds it to the matchItem variable. So just a save is required after this.
-                MatchEventItem evItem = new MatchEventItem();
-                evItem.TimeOfEvent = DateTime.Now;
-                evItem.EventName = (MatchEventEnum)eventId;
-                evItem.EventComment = eventComment;
-                MatchEngine.MatchEvent(evItem);
-
-                //MatchEvent mEvent = new MatchEvent();
-                //mEvent.Event = (MatchEventEnum)eventId;
-                //mEvent.Text = eventComment;
-                //mEvent.Timestamp = DateTime.Now;
-
-                //matchItem.MatchEvents.Add(mEvent);
-
-                await dbContext.SaveChangesAsync();
-                return new OkResult();
-            }
+            _logger.LogDebug("{0}: New Match", Request.HttpContext.Connection.RemoteIpAddress);
+            return new OkResult(); ;
         }
+
+        /// <summary>
+        /// Set the remaining seconds
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}/time")]
+        public async Task<IActionResult> SetMatchTime(
+            int id, 
+            [FromQuery]int timeleft
+            )
+        {
+            _logger.LogDebug("{0}: Set MatchTime {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, id, timeleft);
+
+            await Api.ApiMatch.SetMatchTime(id, timeleft);
+            
+            _logger.LogDebug("{0}: Set MatchTime ID {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, id, timeleft);
+            return new OkResult(); 
+        }
+
     }
 }

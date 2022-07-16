@@ -1,11 +1,18 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Tiwaz.Server.DatabaseModel;
+using Tiwaz.Server.Classes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Tiwaz.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SettingController : ControllerBase
     {
         private readonly ILogger<SettingController> _logger;
@@ -15,129 +22,38 @@ namespace Tiwaz.Server.Controllers
             _logger = logger;
         }
 
+
         /// <summary>
-        /// Gets all settings
+        /// Gets a Setting
         /// </summary>
-        /// <returns>A list of all settings</returns>
-        /// <response code="200">Success</response>
-        [HttpGet(Name = "GetSettings")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public IEnumerable<Setting> Get()
+        /// <returns></returns>
+        [HttpGet("{set}")]
+        public IActionResult GetSetting(string set)
         {
-            _logger.LogDebug("{0}: Get Settings", Request.HttpContext.Connection.RemoteIpAddress);
+            _logger.LogDebug("{0}: Get Setting {1}", Request.HttpContext.Connection.RemoteIpAddress, set);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var dto = dbContext.Settings;
+            var json = Api.ApiSetting.GetSetting(set);
+            var result = new OkObjectResult(json);
 
-                return dto.ToArray();
-            }
+            _logger.LogDebug("{0}: Got Setting {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, set, json);
+            return result;
         }
 
         /// <summary>
-        /// Creates a new setting
+        /// Modify a Setting
         /// </summary>
-        /// <param name="settingName">The name of the setting (case sensitive!)</param>
-        /// <param name="settingValue">The value of the setting</param>
-        /// <returns>The newly created setting including the setting ID</returns>
-        /// <remarks>
-        /// Settingname is case sensitive!
-        /// </remarks>
-        /// <response code="200">Success</response>
-        /// <response code="409">The setting already exists. Use HTTP Post to set an existing value</response>
-        [HttpPut(Name = "AddSetting")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Put(
-            [FromQuery]string settingName, 
-            [FromQuery]string settingValue
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> SetSetting(
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoSetting setting
             )
         {
-            _logger.LogDebug("{0}: Add Setting {1} with value {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, settingValue);
+            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
 
-            using (var dbContext = new TwDbContext())
-            {
-                var dto = dbContext.Settings;
-                if (dto.SingleOrDefault(x => x.SettingName == settingName) != null)
-                {
-                    _logger.LogError("The setting {0} already exists.", settingName);
-                    return new ConflictResult();
-                }
-
-                dto.Add(new Setting { SettingName = settingName, SettingValue = settingValue });
-                await dbContext.SaveChangesAsync();
-                return new OkObjectResult(dbContext.Settings.Single(x => x.SettingName == settingName));
-            }
-        }
-
-        /// <summary>
-        /// Updates an existing setting
-        /// </summary>
-        /// <param name="settingName">The name of the setting (case sensitive!)</param>
-        /// <param name="settingValue">The new value of the setting</param>
-        /// <returns>The updated setting including the setting ID</returns>
-        /// <remarks>
-        /// Settingname is case sensitive!
-        /// </remarks>
-        /// <response code="200">Success</response>
-        /// <response code="404">Cannot find the named setting</response>
-        [HttpPost(Name = "UpdateSetting")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Post(
-            [FromQuery] string settingName,
-            [FromQuery] string settingValue
-            )
-        {
-            _logger.LogDebug("{0}: Update Setting {1} with value {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, settingValue);
-
-            using (var dbContext = new TwDbContext())
-            {
-                var dto = dbContext.Settings;
-                var settingItem = dto.SingleOrDefault(x => x.SettingName == settingName);
-                if (settingItem == null)
-                {
-                    _logger.LogError("The setting {0} does not exist.", settingName);
-                    return new NotFoundResult();
-                }
-                settingItem.SettingValue = settingValue;
-                await dbContext.SaveChangesAsync();
-                return new OkObjectResult(dbContext.Settings.Single(x => x.SettingName == settingName));
-            }
-        }
-
-
-        /// <summary>
-        /// Updates an existing setting
-        /// </summary>
-        /// <param name="settingName">The name of the setting (case sensitive!)</param>
-        /// <remarks>
-        /// Settingname is case sensitive!
-        /// </remarks>
-        /// <response code="200">Success</response>
-        /// <response code="404">Cannot find the named setting</response>
-        [HttpDelete(Name = "DeleteSetting")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Delete(
-            [FromQuery] string settingName
-            )
-        {
-            _logger.LogDebug("{0}: Delete Setting {1}", Request.HttpContext.Connection.RemoteIpAddress, settingName);
-
-            using (var dbContext = new TwDbContext())
-            {
-                var dto = dbContext.Settings;
-                var settingItem = dto.SingleOrDefault(x => x.SettingName == settingName);
-                if (settingItem == null)
-                {
-                    _logger.LogError("The setting {0} does not exist.", settingName);
-                    return new NotFoundResult();
-                }
-                dbContext.Settings.Remove(settingItem);
-                await dbContext.SaveChangesAsync();
-                return new OkResult();
-            }
+            await Api.ApiSetting.SetSetting(setting.Name, setting.Value);
+            
+            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
+            return new OkResult(); ;
         }
     }
 }
