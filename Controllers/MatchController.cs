@@ -42,14 +42,14 @@ namespace Tiwaz.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public IActionResult GetMatch(int id)
+        public IActionResult GetMatch(int matchId)
         {
-            _logger.LogDebug("{0}: Get Match {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            _logger.LogDebug("{0}: Get Match {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            var json = Api.ApiMatch.GetMatch(id);
+            var json = Api.ApiMatch.GetMatch(matchId);
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Match ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, id, json);
+            _logger.LogDebug("{0}: Got Match ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, json);
             return result;
         }
 
@@ -58,14 +58,14 @@ namespace Tiwaz.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("{id}/time")]
-        public IActionResult GetMatchTime(int id)
+        public IActionResult GetMatchTime(int matchId)
         {
-            _logger.LogDebug("{0}: Get MatchTime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            _logger.LogDebug("{0}: Get MatchTime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            var json = Api.ApiMatch.GetMatchTime(id);
+            var json = Api.ApiMatch.GetMatchTime(matchId);
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got MatchTime ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, id, json);
+            _logger.LogDebug("{0}: Got MatchTime ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, json);
             return result;
         }
 
@@ -91,13 +91,13 @@ namespace Tiwaz.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{id}/time/start")]
-        public IActionResult SetMatchtimeStart(int id)
+        public IActionResult SetMatchtimeStart(int matchId)
         {
-            _logger.LogDebug("{0}: Start Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            _logger.LogDebug("{0}: Start Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            Api.ApiMatch.StartMatchtime(id);
+            Api.ApiMatch.StartMatchtime(matchId);
 
-            _logger.LogDebug("{0}: Started Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            _logger.LogDebug("{0}: Started Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkResult(); ;
         }
 
@@ -107,13 +107,13 @@ namespace Tiwaz.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{id}/time/stop")]
-        public IActionResult SetMatchtimeStop(int id)
+        public IActionResult SetMatchtimeStop(int matchId)
         {
-            _logger.LogDebug("{0}: Stop Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            _logger.LogDebug("{0}: Stop Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            Api.ApiMatch.PauseMatchtime(id);
+            Api.ApiMatch.PauseMatchtime(matchId);
 
-            _logger.LogDebug("{0}: Stopped Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, id);
+            _logger.LogDebug("{0}: Stopped Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkResult(); ;
         }
 
@@ -157,15 +157,15 @@ namespace Tiwaz.Server.Controllers
         /// <returns></returns>
         [HttpPut("{id}/time")]
         public async Task<IActionResult> SetMatchTime(
-            int id, 
+            int matchId, 
             [FromQuery]int timeleft
             )
         {
-            _logger.LogDebug("{0}: Set MatchTime {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, id, timeleft);
+            _logger.LogDebug("{0}: Set MatchTime {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, timeleft);
 
-            await Api.ApiMatch.SetMatchTime(id, timeleft);
+            await Api.ApiMatch.SetMatchTime(matchId, timeleft);
             
-            _logger.LogDebug("{0}: Set MatchTime ID {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, id, timeleft);
+            _logger.LogDebug("{0}: Set MatchTime ID {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, timeleft);
             return new OkResult(); 
         }
 

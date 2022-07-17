@@ -22,7 +22,6 @@ namespace Tiwaz.Server.Controllers
             _logger = logger;
         }
 
-
         /// <summary>
         /// Gets a Setting
         /// </summary>
@@ -54,6 +53,38 @@ namespace Tiwaz.Server.Controllers
             
             _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
             return new OkResult(); ;
+        }
+        
+        /// <summary>
+        /// Gets the fields available to define rules
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("rulefields")]
+        public IActionResult GetRuleFields()
+        {
+            _logger.LogDebug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
+
+            var json = Api.ApiSetting.GetRuleFields();
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the rules for all game types
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("rules")]
+        public async Task<IActionResult> GetRules()
+        {
+            _logger.LogDebug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
+
+            var json = await Api.ApiSetting.GetRules();
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            return result;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// The Ids of the Players for Team 1
         /// </summary>
         [NotMapped]
-        public List<int> Team1PlayerIds { get; set; }
+        public List<int> Team1PlayerIds { get; set; } = new List<int>();
 
         /// <summary>
         /// The List of the Players for Team 2
@@ -40,7 +40,7 @@ namespace Tiwaz.Server.DatabaseModel
         /// The Ids of the Players for Team 2
         /// </summary>
         [NotMapped]
-        public List<int> Team2PlayerIds { get; set; }
+        public List<int> Team2PlayerIds { get; set; } = new List<int>();
 
         /// <summary>
         /// Score of Team1
