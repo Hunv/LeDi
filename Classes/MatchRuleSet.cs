@@ -5,6 +5,7 @@
         /// <summary>
         /// The name of the game (i.e. soccer or underwaterhockey)
         /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("gamename")]
         public string? GameName { get; set; }
 
 

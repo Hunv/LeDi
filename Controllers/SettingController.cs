@@ -22,19 +22,36 @@ namespace Tiwaz.Server.Controllers
             _logger = logger;
         }
 
+
         /// <summary>
         /// Gets a Setting
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{set}")]
-        public IActionResult GetSetting(string set)
+        [HttpGet]
+        public IActionResult GetSetting()
         {
-            _logger.LogDebug("{0}: Get Setting {1}", Request.HttpContext.Connection.RemoteIpAddress, set);
+            _logger.LogDebug("{0}: Get Settinglist", Request.HttpContext.Connection.RemoteIpAddress);
 
-            var json = Api.ApiSetting.GetSetting(set);
+            var json = Api.ApiSetting.GetSetting();
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Setting {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, set, json);
+            _logger.LogDebug("{0}: Got Settinglist JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            return result;
+        }
+
+        /// <summary>
+        /// Gets a Setting
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{settingName}")]
+        public IActionResult GetSetting(string settingName)
+        {
+            _logger.LogDebug("{0}: Get Setting {1}", Request.HttpContext.Connection.RemoteIpAddress, settingName);
+
+            var json = Api.ApiSetting.GetSetting(settingName);
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got Setting {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, json);
             return result;
         }
 
@@ -44,14 +61,14 @@ namespace Tiwaz.Server.Controllers
         /// <returns></returns>
         [HttpPut]
         public async Task<IActionResult> SetSetting(
-            [FromBody] Tiwaz.Server.Api.DtoModel.DtoSetting setting
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoSetting settingName
             )
         {
-            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
+            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName.Name, settingName.Value);
 
-            await Api.ApiSetting.SetSetting(setting.Name, setting.Value);
+            await Api.ApiSetting.SetSetting(settingName.Name, settingName.Value);
             
-            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
+            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName.Name, settingName.Value);
             return new OkResult(); ;
         }
         

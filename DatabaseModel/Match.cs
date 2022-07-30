@@ -21,26 +21,24 @@ namespace Tiwaz.Server.DatabaseModel
         /// <summary>
         /// The List of the Players for Team 1
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        public Player[]? Team1Players { get; set; }
+        public List<Player>? Team1Players { get; set; }
 
         /// <summary>
         /// The Ids of the Players for Team 1
         /// </summary>
         [NotMapped]
-        public List<int> Team1PlayerIds { get; set; } = new List<int>();
+        public List<int> Team1PlayerIds { get { return Team1Players != null ? Team1Players.Select(x => x.Id).ToList() : new List<int>(); } }
 
         /// <summary>
         /// The List of the Players for Team 2
         /// </summary>
-        [System.Text.Json.Serialization.JsonIgnore]
-        public Player[]? Team2Players { get; set; }
+        public List<Player>? Team2Players { get; set; }
 
         /// <summary>
         /// The Ids of the Players for Team 2
         /// </summary>
         [NotMapped]
-        public List<int> Team2PlayerIds { get; set; } = new List<int>();
+        public List<int> Team2PlayerIds { get { return Team2Players != null ? Team2Players.Select(x => x.Id).ToList() : new List<int>(); } }
 
         /// <summary>
         /// Score of Team1
@@ -139,8 +137,37 @@ namespace Tiwaz.Server.DatabaseModel
             MatchStatus = dto.MatchStatus;
             ScheduledTime = dto.ScheduledTime;
             GameName = dto.GameName;
-            Team1PlayerIds = dto.Team1PlayerIds ?? new List<int>();
-            Team2PlayerIds = dto.Team2PlayerIds ?? new List<int>();
+
+            // Get team 1 players from database by ID
+            if (dto.Team1PlayerIds != null && dto.Team1PlayerIds.Count > 0)
+            {
+                using (var dbContext = new TwDbContext())
+                {
+                    foreach (var aPlayerId in dto.Team1PlayerIds)
+                    {
+                        var player = dbContext.Players.SingleOrDefault(x => x.Id == aPlayerId);
+                        if (player != null) {
+                            Team1Players.Add(player);
+                        }
+                    }
+                }
+            }
+
+            // Get Team 2 players from database by ID
+            if (dto.Team2PlayerIds != null && dto.Team2PlayerIds.Count > 0)
+            {
+                using (var dbContext = new TwDbContext())
+                {
+                    foreach (var aPlayerId in dto.Team2PlayerIds)
+                    {
+                        var player = dbContext.Players.SingleOrDefault(x => x.Id == aPlayerId);
+                        if (player != null)
+                        {
+                            Team2Players.Add(player);
+                        }
+                    }
+                }
+            }
         }
     }
 }

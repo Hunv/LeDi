@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
+using System.Text.Json;
+using Tiwaz.Server.Api.DtoModel;
 
 namespace Tiwaz.Server.Classes
 {
@@ -7,25 +9,19 @@ namespace Tiwaz.Server.Classes
     /// </summary>
     public static class MatchRules
     {
-        /// <summary>
-        /// Path the the game rule definition file
-        /// </summary>
-        private static readonly string ruleFilePath = "gamerules.json";
         
         /// <summary>
         /// The rules of the loaded game type
         /// </summary>
         public static MatchRuleSet? Rules { get; set; }
 
-        public static void LoadRules(string gameName)
+        public async static Task LoadRules(string gameName)
         {
-            // Load config:
-            List<MatchRuleSet> allRules = new();
+            System.IO.StreamReader sR = new StreamReader(SystemSettings.RuleFilePath);
+            var rulesJson = await sR.ReadToEndAsync();
+            var ruleList = JsonConvert.DeserializeObject<DtoRuleBody>(rulesJson, Helper.GetJsonSerializer());
 
-            var jsonString = File.ReadAllText(ruleFilePath);
-            allRules = JsonSerializer.Deserialize<List<MatchRuleSet>>(jsonString);
-
-            Rules = allRules.SingleOrDefault(x => x.GameName == gameName);
+            Rules = ruleList.Rules.SingleOrDefault(x => x.GameName == gameName);
         }
     }
 }

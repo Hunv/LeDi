@@ -47,11 +47,11 @@ namespace Tiwaz.Server.Api
         /// </summary>
         /// <param name="match"></param>
         /// <returns></returns>
-        public async static Task SetMatch(DtoMatch match)
+        public async static Task SetMatch(DtoMatch match, int matchId)
         {
             using (var dbContext = new TwDbContext())
             {
-                Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == match.Id);
+                Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
                 {
                     if (match.Team1Score.HasValue)
@@ -99,10 +99,32 @@ namespace Tiwaz.Server.Api
                     CurrentTimeLeft = match.TimeLeftSeconds ?? 0,
                     ScheduledTime = match.ScheduledTime,
                     GameName = match.GameName,
-                    Team1PlayerIds = match.Team1PlayerIds,
-                    Team2PlayerIds = match.Team2PlayerIds,
                     MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus //set to draft status if no Status is set
                 };
+
+                // Add Team1 players
+                if (match.Team1PlayerIds != null)
+                {
+                    newMatch.Team1Players = new List<Player>();
+                    foreach (var aPlayerId in match.Team1PlayerIds)
+                    {
+                        var player = await dbContext.Players.SingleOrDefaultAsync(x => x.Id == aPlayerId);
+                        if (player != null)                        
+                            newMatch.Team1Players.Add(player);
+                    }
+                }
+
+                // Add Team2 players
+                if (match.Team2PlayerIds != null)
+                {
+                    newMatch.Team2Players = new List<Player>();
+                    foreach (var aPlayerId in match.Team2PlayerIds)
+                    {
+                        var player = await dbContext.Players.SingleOrDefaultAsync(x => x.Id == aPlayerId);
+                        if (player != null)
+                            newMatch.Team2Players.Add(player);
+                    }
+                }
 
                 dbContext.Matches.Add(newMatch);
 
@@ -153,14 +175,14 @@ namespace Tiwaz.Server.Api
         /// <param name="matchId"></param>
         public static void StartMatchtime(int matchId)
         {
-            if (MatchEngine.CurrentMatch.Id != matchId)
+            //If match not already exist, create a new one
+            if (!MatchEngine.OngoingMatches.Any(x => x.MatchId == matchId))
             {
-                Console.WriteLine("MatchId {0} is not loaded currently.", matchId);
+                MatchEngine.AddOngoingMatch(new MatchHandler(matchId));
             }
-            else
-            {
-                MatchEngine.StartMatch();
-            }
+
+            //Start the match
+            MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId).Start();
         }
 
         /// <summary>
@@ -169,14 +191,9 @@ namespace Tiwaz.Server.Api
         /// <param name="id"></param>
         public static void PauseMatchtime(int matchId)
         {
-            if (MatchEngine.CurrentMatch.Id != matchId)
-            {
-                Console.WriteLine("MatchId {0} is not loaded currently.", matchId);
-            }
-            else
-            {
-                MatchEngine.PauseMatch();
-            }
+            var match = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
+            if (match != null)
+                match.Stop();
         }
 
         /// <summary>
@@ -185,15 +202,9 @@ namespace Tiwaz.Server.Api
         /// <param name="matchId"></param>
         public static void EndMatch(int matchId)
         {
-
-            if (MatchEngine.CurrentMatch.Id != matchId)
-            {
-                Console.WriteLine("MatchId {0} is not loaded currently.", matchId);
-            }
-            else
-            {
-                MatchEngine.EndMatch();
-            }
+            var match = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
+            if (match != null)
+                MatchEngine.OngoingMatches.Remove(match);
         }
 
         /// <summary>
@@ -219,6 +230,25 @@ namespace Tiwaz.Server.Api
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Gets a list of all ongoing matches
+        /// </summary>
+        /// <returns></returns>
+        public static string GetLiveMatchList()
+        {
+            using (var dbContext = new TwDbContext())
+            {
+                var ongoingMatchIds = MatchEngine.OngoingMatches.Select(x => x.MatchId);
+                var dto = new List<DtoMatch>();
+
+                foreach (var aMatch in dbContext.Matches.Where(x => ongoingMatchIds.Contains(x.Id)))
+                    dto.Add(aMatch.ToDto());
+
+                var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                return json;
+            }
         }
     }
 }

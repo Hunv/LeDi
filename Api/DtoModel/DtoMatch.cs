@@ -26,17 +26,15 @@ namespace Tiwaz.Server.Api.DtoModel
         /// Name of Team1
         /// </summary>
         [MaxLength(256, ErrorMessage = "Der Name kann höchstens aus 256 Zeichen bestehen.")]
-        [MinLength(2, ErrorMessage = "Der Name muss mindestens aus zwei Zeichen bestehen.")]
         [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen")]
-        public string Team1Name { get; set; }
+        public string? Team1Name { get; set; }
 
         /// <summary>
         /// Name of Team2
         /// </summary>
         [MaxLength(256, ErrorMessage = "Der Name kann höchstens aus 256 Zeichen bestehen.")]
-        [MinLength(2, ErrorMessage = "Der Name muss mindestens aus zwei Zeichen bestehen.")]
         [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen")]
-        public string Team2Name { get; set; }
+        public string? Team2Name { get; set; }
 
         /// <summary>
         /// Time left
@@ -67,6 +65,6 @@ namespace Tiwaz.Server.Api.DtoModel
         /// <summary>
         /// Type of game to apply the game rules.
         /// </summary>
-        public string GameName { get; set; }
+        public string? GameName { get; set; }
     }
 }

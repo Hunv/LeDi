@@ -41,7 +41,7 @@ namespace Tiwaz.Server.Controllers
         /// Gets all Matches
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{id}")]
+        [HttpGet("{matchId}")]
         public IActionResult GetMatch(int matchId)
         {
             _logger.LogDebug("{0}: Get Match {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
@@ -57,7 +57,7 @@ namespace Tiwaz.Server.Controllers
         /// Gets the remaining seconds only
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{id}/time")]
+        [HttpGet("{matchId}/time")]
         public IActionResult GetMatchTime(int matchId)
         {
             _logger.LogDebug("{0}: Get MatchTime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
@@ -73,14 +73,15 @@ namespace Tiwaz.Server.Controllers
         /// Modify an existing Match
         /// </summary>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPut("{matchId}")]
         public async Task<IActionResult> SetMatch(
-            [FromBody] Tiwaz.Server.Api.DtoModel.DtoMatch match
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoMatch match,
+            int matchId
             )
         {
             _logger.LogDebug("{0}: Set Match {1}", Request.HttpContext.Connection.RemoteIpAddress, match.Id);
 
-            await Api.ApiMatch.SetMatch(match);
+            await Api.ApiMatch.SetMatch(match, matchId);
             
             _logger.LogDebug("{0}: Set Match ID {1}", Request.HttpContext.Connection.RemoteIpAddress, match.Id);
             return new OkResult(); ;
@@ -90,7 +91,7 @@ namespace Tiwaz.Server.Controllers
         /// Start the counter of a Match
         /// </summary>
         /// <returns></returns>
-        [HttpPut("{id}/time/start")]
+        [HttpPut("{matchId}/time/start")]
         public IActionResult SetMatchtimeStart(int matchId)
         {
             _logger.LogDebug("{0}: Start Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
@@ -106,7 +107,7 @@ namespace Tiwaz.Server.Controllers
         /// Stops the counter of a Match
         /// </summary>
         /// <returns></returns>
-        [HttpPut("{id}/time/stop")]
+        [HttpPut("{matchId}/time/stop")]
         public IActionResult SetMatchtimeStop(int matchId)
         {
             _logger.LogDebug("{0}: Stop Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
@@ -155,7 +156,7 @@ namespace Tiwaz.Server.Controllers
         /// Set the remaining seconds
         /// </summary>
         /// <returns></returns>
-        [HttpPut("{id}/time")]
+        [HttpPut("{matchId}/time")]
         public async Task<IActionResult> SetMatchTime(
             int matchId, 
             [FromQuery]int timeleft
@@ -169,5 +170,21 @@ namespace Tiwaz.Server.Controllers
             return new OkResult(); 
         }
 
+
+        /// <summary>
+        /// Gets all live Matches
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("live")]
+        public IActionResult GetLiveMatchList()
+        {
+            _logger.LogDebug("{0}: Get Livematchlist", Request.HttpContext.Connection.RemoteIpAddress);
+
+            var json = Api.ApiMatch.GetLiveMatchList();
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got Livematchlist JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            return result;
+        }
     }
 }

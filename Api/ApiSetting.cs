@@ -11,13 +11,26 @@ namespace Tiwaz.Server.Api
     public static class ApiSetting
     {
         /// <summary>
+        /// Get all settings
+        /// </summary>
+        public static string GetSetting()
+        {
+            using (var dbContext = new TwDbContext())
+            {
+                List<DtoSetting>? dto = dbContext.Settings.Select(x => x.ToDto()).ToList();
+
+                return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+            }
+        }
+
+        /// <summary>
         /// Get a Setting
         /// </summary>
         public static string GetSetting(string setting)
         {
             using (var dbContext = new TwDbContext())
             {
-                var dto = dbContext.Settings.SingleOrDefault(x => x.SettingName == setting);
+                var dto = dbContext.Settings.SingleOrDefault(x => x.SettingName == setting).ToDto();
 
                 return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
             }
