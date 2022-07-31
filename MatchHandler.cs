@@ -20,7 +20,7 @@ namespace Tiwaz.Server
             MatchStatus = MatchStatusEnum.Planned;
         }
 
-        private void TmrMatchtimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void TmrMatchtimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             //If not initialized, cancel
             if (ReferenceSystemTime == null)
@@ -114,7 +114,7 @@ namespace Tiwaz.Server
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TmrDisposetimer_Elapsed(object sender, ElapsedEventArgs e)
+        private void TmrDisposetimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             MatchStatus = MatchStatusEnum.Ended;
             OnDisposeMatchhandler(new EventArgs());

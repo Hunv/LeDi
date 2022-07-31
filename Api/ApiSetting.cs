@@ -114,5 +114,28 @@ namespace Tiwaz.Server.Api
                 await dbContext.SaveChangesAsync();
             }
         }
+
+        /// <summary>
+        /// Creates a new device for device setting configuration
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public static async Task<DtoDevice?> NewDevice(DtoDevice device)
+        {
+            using var dbContext = new TwDbContext();
+            var dev = dbContext.Device;
+            if (dev != null)
+            {
+                //Create a new device ID
+                var devId = new Guid().ToString();
+                var newDevice = new Device(devId, device.DeviceModel, device.DeviceType);
+                dev.Add(newDevice);
+
+                await dbContext.SaveChangesAsync();
+
+                return new DtoDevice(newDevice.DeviceId, newDevice.DeviceModel, newDevice.DeviceType);
+            }
+            return null;
+        }
     }
 }

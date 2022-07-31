@@ -92,11 +92,11 @@ namespace Tiwaz.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{matchId}/time/start")]
-        public IActionResult SetMatchtimeStart(int matchId)
+        public async Task<IActionResult> SetMatchtimeStart(int matchId)
         {
             _logger.LogDebug("{0}: Start Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            Api.ApiMatch.StartMatchtime(matchId);
+            await Api.ApiMatch.StartMatchtime(matchId);
 
             _logger.LogDebug("{0}: Started Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkResult(); ;

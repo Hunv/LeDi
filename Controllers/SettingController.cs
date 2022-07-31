@@ -108,5 +108,22 @@ namespace Tiwaz.Server.Controllers
             _logger.LogDebug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
             return new OkResult(); ;
         }
+
+        /// <summary>
+        /// Creates a new device
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> NewDevice(
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoDevice device
+            )
+        {
+            _logger.LogDebug("{0}: Creating a new device... {1}, {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
+
+            await Api.ApiSetting.NewDevice(device);
+
+            _logger.LogDebug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceId, device.DeviceModel, device.DeviceType);
+            return new OkResult(); ;
+        }
     }
 }
