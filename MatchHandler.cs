@@ -6,8 +6,8 @@ namespace Tiwaz.Server
 {
     public class MatchHandler
     {
-        private System.Timers.Timer tmrMatchtimer = new System.Timers.Timer(SystemSettings.MatchHandlerRefreshTime);
-        private System.Timers.Timer tmrDisposeTimer = new System.Timers.Timer(SystemSettings.MatchHandlerDisposeTime); //To dispose this Handler 10 Minutes after game finished
+        private readonly System.Timers.Timer tmrMatchtimer = new(SystemSettings.MatchHandlerRefreshTime);
+        private readonly System.Timers.Timer tmrDisposeTimer = new(SystemSettings.MatchHandlerDisposeTime); //To dispose this Handler 10 Minutes after game finished
         private DateTime? ReferenceSystemTime;
         private int ReferenceSecond = 0;
         private bool IsInitialized = false;
@@ -18,18 +18,6 @@ namespace Tiwaz.Server
         {
             MatchId = matchId;
             MatchStatus = MatchStatusEnum.Planned;
-
-            using (var dbContext = new TwDbContext())
-            {
-                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                if (match != null)
-                {
-                    if (MatchRules.Rules == null || MatchRules.Rules.GameName != match.GameName)
-                    {
-                        MatchRules.LoadRules(match.GameName);
-                    }
-                }
-            }
         }
 
         private void TmrMatchtimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -50,7 +38,9 @@ namespace Tiwaz.Server
                 ReferenceSecond = DateTime.Now.Second;
 
                 //Decrease SecondsLeft
-                using (var dbContext = new TwDbContext())
+                using var dbContext = new TwDbContext();
+
+                if (dbContext.Matches != null)
                 {
                     //If time is over and there is no overtime, stop the time
                     //otherwise, reduce the time
@@ -70,13 +60,28 @@ namespace Tiwaz.Server
             }
         }
 
-        public void Start()
+        public async Task Start()
         {
             if (!IsInitialized)
             {
                 tmrMatchtimer.Elapsed += TmrMatchtimer_Elapsed;
                 tmrDisposeTimer.Elapsed += TmrDisposetimer_Elapsed;
                 IsInitialized = true;
+
+
+                using var dbContext = new TwDbContext();
+
+                if (dbContext.Matches != null)
+                {
+                    var match = dbContext.Matches.SingleOrDefault(x => x.Id == MatchId);
+                    if (match != null)
+                    {
+                        if ((MatchRules.Rules == null || MatchRules.Rules.GameName != match.GameName) && match.GameName != null)
+                        {
+                            await MatchRules.LoadRules(match.GameName);
+                        }
+                    }
+                }
             }
 
             ReferenceSystemTime = DateTime.Now;
@@ -118,11 +123,7 @@ namespace Tiwaz.Server
         public event EventHandler<EventArgs>? DisposeMatchHandler;
         protected virtual void OnDisposeMatchhandler(EventArgs e)
         {
-            EventHandler<EventArgs> handler = DisposeMatchHandler;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            DisposeMatchHandler?.Invoke(this, e);
         }
     }
 }

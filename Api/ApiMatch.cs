@@ -17,12 +17,15 @@ namespace Tiwaz.Server.Api
         /// <returns>List of all Matches as JSON</returns>
         public static string GetMatchList()
         {
-            using(var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
             {
                 List<DtoMatch>? dto = dbContext.Matches.Select(aMatch => aMatch.ToDto()).ToList();
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
                 return json;
             }
+            return "";
         }
 
         /// <summary>
@@ -32,14 +35,18 @@ namespace Tiwaz.Server.Api
         /// <returns>Specific match details as JSON</returns>
         public static string GetMatch(int id)
         {
-            using (var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
             {
                 Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == id);
                 if (dto != null)
-                    return JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());                
+                    return JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
                 else
                     return "";
             }
+
+            return "";
         }
 
         /// <summary>
@@ -49,7 +56,9 @@ namespace Tiwaz.Server.Api
         /// <returns></returns>
         public async static Task SetMatch(DtoMatch match, int matchId)
         {
-            using (var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
             {
                 Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
@@ -74,7 +83,7 @@ namespace Tiwaz.Server.Api
 
                     if (match.ScheduledTime.HasValue)
                         dto.ScheduledTime = match.ScheduledTime;
-                    
+
                     await dbContext.SaveChangesAsync();
                 }
             }
@@ -88,48 +97,56 @@ namespace Tiwaz.Server.Api
         /// <returns></returns>
         public async static Task NewMatch(DtoMatch match)
         {
-            using (var dbContext = new TwDbContext())
-            {
-                var newMatch = new Match()
-                {
-                    Team1Score = match.Team1Score ?? 0,
-                    Team2Score = match.Team2Score ?? 0,
-                    Team1Name = match.Team1Name,
-                    Team2Name = match.Team2Name,
-                    CurrentTimeLeft = match.TimeLeftSeconds ?? 0,
-                    ScheduledTime = match.ScheduledTime,
-                    GameName = match.GameName,
-                    MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus //set to draft status if no Status is set
-                };
+            using var dbContext = new TwDbContext();
 
-                // Add Team1 players
-                if (match.Team1PlayerIds != null)
+            var newMatch = new Match()
+            {
+                Team1Score = match.Team1Score ?? 0,
+                Team2Score = match.Team2Score ?? 0,
+                Team1Name = match.Team1Name,
+                Team2Name = match.Team2Name,
+                CurrentTimeLeft = match.TimeLeftSeconds ?? 0,
+                ScheduledTime = match.ScheduledTime,
+                GameName = match.GameName,
+                MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus //set to draft status if no Status is set
+            };
+
+            // Add Team1 players
+            if (match.Team1PlayerIds != null)
+            {
+                newMatch.Team1Players = new List<Player>();
+                foreach (var aPlayerId in match.Team1PlayerIds)
                 {
-                    newMatch.Team1Players = new List<Player>();
-                    foreach (var aPlayerId in match.Team1PlayerIds)
+                    if (dbContext.Players != null)
                     {
                         var player = await dbContext.Players.SingleOrDefaultAsync(x => x.Id == aPlayerId);
-                        if (player != null)                        
+                        if (player != null)
                             newMatch.Team1Players.Add(player);
                     }
                 }
+            }
 
-                // Add Team2 players
-                if (match.Team2PlayerIds != null)
+            // Add Team2 players
+            if (match.Team2PlayerIds != null)
+            {
+                newMatch.Team2Players = new List<Player>();
+                foreach (var aPlayerId in match.Team2PlayerIds)
                 {
-                    newMatch.Team2Players = new List<Player>();
-                    foreach (var aPlayerId in match.Team2PlayerIds)
+                    if (dbContext.Players != null)
                     {
                         var player = await dbContext.Players.SingleOrDefaultAsync(x => x.Id == aPlayerId);
                         if (player != null)
                             newMatch.Team2Players.Add(player);
                     }
                 }
-
-                dbContext.Matches.Add(newMatch);
-
-                await dbContext.SaveChangesAsync();
             }
+
+            if (dbContext.Matches == null)
+                return;
+
+            dbContext.Matches.Add(newMatch);
+
+            await dbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -139,7 +156,9 @@ namespace Tiwaz.Server.Api
         /// <returns></returns>
         public static string GetMatchTime(int id)
         {
-            using (var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
             {
                 var dto = dbContext.Matches.SingleOrDefault(x => x.Id == id);
                 if (dto != null)
@@ -147,6 +166,7 @@ namespace Tiwaz.Server.Api
                 else
                     return "";
             }
+            return "";
         }
 
         /// <summary>
@@ -157,7 +177,9 @@ namespace Tiwaz.Server.Api
         /// <returns></returns>
         public static async Task SetMatchTime(int id, int timeleft)
         {
-            using (var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
             {
                 var dto = dbContext.Matches.SingleOrDefault(x => x.Id == id);
                 if (dto != null)
@@ -173,7 +195,7 @@ namespace Tiwaz.Server.Api
         /// Start time for a specific match
         /// </summary>
         /// <param name="matchId"></param>
-        public static void StartMatchtime(int matchId)
+        public static async Task StartMatchtime(int matchId)
         {
             //If match not already exist, create a new one
             if (!MatchEngine.OngoingMatches.Any(x => x.MatchId == matchId))
@@ -182,7 +204,7 @@ namespace Tiwaz.Server.Api
             }
 
             //Start the match
-            MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId).Start();
+            await MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId).Start();
         }
 
         /// <summary>
@@ -216,7 +238,9 @@ namespace Tiwaz.Server.Api
         /// <returns></returns>
         public static async Task SetMatchGoal(int matchId, int teamId, int amount)
         {
-            using (var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
             {
                 var dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
@@ -238,16 +262,22 @@ namespace Tiwaz.Server.Api
         /// <returns></returns>
         public static string GetLiveMatchList()
         {
-            using (var dbContext = new TwDbContext())
-            {
-                var ongoingMatchIds = MatchEngine.OngoingMatches.Select(x => x.MatchId);
-                var dto = new List<DtoMatch>();
+            using var dbContext = new TwDbContext();
 
+            var ongoingMatchIds = MatchEngine.OngoingMatches.Select(x => x.MatchId);
+            var dto = new List<DtoMatch>();
+
+            if (dbContext.Matches != null)
+            {
                 foreach (var aMatch in dbContext.Matches.Where(x => ongoingMatchIds.Contains(x.Id)))
                     dto.Add(aMatch.ToDto());
 
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
                 return json;
+            }
+            else
+            {
+                return "{}";
             }
         }
     }

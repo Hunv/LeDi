@@ -3,18 +3,26 @@ using Tiwaz.Server.Api.DtoModel;
 
 namespace Tiwaz.Server.DatabaseModel
 {
-    public class Setting
+    public class DeviceSetting
     {
         /// <summary>
-        /// Creates a new instance of Setting
+        /// Create a new instance of DeviceSetting
         /// </summary>
+        /// <param name="deviceId"></param>
         /// <param name="settingName"></param>
         /// <param name="settingValue"></param>
-        public Setting(string settingName, string settingValue)
+        public DeviceSetting(string deviceId, string settingName, string settingValue)
         {
+            DeviceId = deviceId;
             SettingName = settingName;
             SettingValue = settingValue;
         }
+
+        /// <summary>
+        /// The Deivce ID this setting is for
+        /// </summary>
+        [Key]
+        public string DeviceId { get; set; }
 
         /// <summary>
         /// The Name of the Setting
@@ -32,9 +40,9 @@ namespace Tiwaz.Server.DatabaseModel
         /// Converts the object to a DTO object
         /// </summary>
         /// <returns></returns>
-        public DtoSetting ToDto()
+        public DtoDeviceSetting ToDto()
         {
-            var dto = new DtoSetting(SettingName, SettingValue);
+            var dto = new DtoDeviceSetting(DeviceId, SettingName, SettingValue);
 
             return dto;
         }
@@ -43,10 +51,11 @@ namespace Tiwaz.Server.DatabaseModel
         /// Converts the object from a DTO object
         /// </summary>
         /// <param name="dto"></param>
-        public void FromDto(DtoSetting dto)
+        public void FromDto(DtoDeviceSetting dto)
         {
             SettingName = dto.Name;
             SettingValue = dto.Value;
+            DeviceId = dto.DeviceId;
         }
     }
 }

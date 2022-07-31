@@ -5,6 +5,11 @@ namespace Tiwaz.Server.DatabaseModel
 {
     public class MatchEvent
     {
+        public MatchEvent (Match match)
+        {
+            Match = match;
+        }
+
         /// <summary>
         /// The ID of the match event
         /// </summary>

@@ -24,7 +24,7 @@ namespace Tiwaz.Server.Controllers
 
 
         /// <summary>
-        /// Gets a Setting
+        /// Gets all System Settings
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -40,7 +40,7 @@ namespace Tiwaz.Server.Controllers
         }
 
         /// <summary>
-        /// Gets a Setting
+        /// Gets a System Setting
         /// </summary>
         /// <returns></returns>
         [HttpGet("{settingName}")]
@@ -56,52 +56,57 @@ namespace Tiwaz.Server.Controllers
         }
 
         /// <summary>
-        /// Modify a Setting
+        /// Modify a System Setting
         /// </summary>
         /// <returns></returns>
         [HttpPut]
         public async Task<IActionResult> SetSetting(
-            [FromBody] Tiwaz.Server.Api.DtoModel.DtoSetting settingName
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoSetting setting
             )
         {
-            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName.Name, settingName.Value);
+            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
 
-            await Api.ApiSetting.SetSetting(settingName.Name, settingName.Value);
+            await Api.ApiSetting.SetSetting(setting.Name, setting.Value);
             
-            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName.Name, settingName.Value);
+            _logger.LogDebug("{0}: Set Setting {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, setting.Name, setting.Value);
             return new OkResult(); ;
         }
-        
+
+
         /// <summary>
-        /// Gets the fields available to define rules
+        /// Gets a Device Setting
         /// </summary>
         /// <returns></returns>
-        [HttpGet("rulefields")]
-        public IActionResult GetRuleFields()
+        [HttpGet("{deviceId}/{settingName}")]
+        public IActionResult GetDeviceSetting(
+            [FromQuery] string deviceId,
+            [FromQuery] string settingName
+            )
         {
-            _logger.LogDebug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
+            _logger.LogDebug("{0}: Get Device Setting {1} for {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, deviceId);
 
-            var json = Api.ApiSetting.GetRuleFields();
+            var json = Api.ApiSetting.GetDeviceSetting(deviceId, settingName);
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            _logger.LogDebug("{0}: Got Setting {1} for {2} JSON {3}", Request.HttpContext.Connection.RemoteIpAddress, settingName, deviceId, json);
             return result;
         }
 
         /// <summary>
-        /// Gets the rules for all game types
+        /// Modify or creates a Device Setting
         /// </summary>
         /// <returns></returns>
-        [HttpGet("rules")]
-        public async Task<IActionResult> GetRules()
+        [HttpPut]
+        public async Task<IActionResult> SetDeviceSetting(
+            [FromBody] Tiwaz.Server.Api.DtoModel.DtoDeviceSetting setting
+            )
         {
-            _logger.LogDebug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
+            _logger.LogDebug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
 
-            var json = await Api.ApiSetting.GetRules();
-            var result = new OkObjectResult(json);
+            await Api.ApiSetting.SetDeviceSetting(setting.DeviceId, setting.Name, setting.Value);
 
-            _logger.LogDebug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
-            return result;
+            _logger.LogDebug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
+            return new OkResult(); ;
         }
     }
 }

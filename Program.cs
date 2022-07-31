@@ -15,8 +15,11 @@ using (var dbContext = new TwDbContext())
     var created = dbContext.Database.EnsureCreated();
     if (created) //created is true, if the database was just created
     {
-        dbContext.Settings.Add(new Setting() { SettingName = "timezone", SettingValue = "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna" });
-        dbContext.SaveChanges();
+        if (dbContext.Settings != null)
+        {
+            dbContext.Settings.Add(new Setting( "timezone", "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"));
+            dbContext.SaveChanges();
+        }
     }
 }
 

@@ -15,13 +15,19 @@ namespace Tiwaz.Server.Classes
         /// </summary>
         public static MatchRuleSet? Rules { get; set; }
 
+        /// <summary>
+        /// Load the rules for a gametype from rule definition file
+        /// </summary>
+        /// <param name="gameName"></param>
+        /// <returns></returns>
         public async static Task LoadRules(string gameName)
         {
-            System.IO.StreamReader sR = new StreamReader(SystemSettings.RuleFilePath);
+            StreamReader sR = new(SystemSettings.RuleFilePath);
             var rulesJson = await sR.ReadToEndAsync();
             var ruleList = JsonConvert.DeserializeObject<DtoRuleBody>(rulesJson, Helper.GetJsonSerializer());
 
-            Rules = ruleList.Rules.SingleOrDefault(x => x.GameName == gameName);
+            if (ruleList != null && ruleList.Rules != null)
+                Rules = ruleList.Rules.SingleOrDefault(x => x.GameName == gameName);
         }
     }
 }

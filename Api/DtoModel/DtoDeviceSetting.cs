@@ -4,19 +4,20 @@ using System.Text;
 
 namespace Tiwaz.Server.Api.DtoModel
 {
-    public class DtoSetting
+    public class DtoDeviceSetting
     {
-        /// <summary>
-        /// Create a new instance of DtoSetting
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        public DtoSetting(string name, string value)
+        public DtoDeviceSetting(string deviceId, string name, string value)
         {
+            DeviceId = deviceId;
             Name = name;
             Value = value;
         }
 
+
+        /// <summary>
+        /// The DeivceId for the setting
+        /// </summary>
+        public string DeviceId { get; set; }
 
         /// <summary>
         /// The name of the setting

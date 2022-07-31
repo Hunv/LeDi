@@ -13,9 +13,10 @@ namespace Tiwaz.Server
             OngoingMatches.Add(matchHandler);
         }
 
-        private static void MatchHandler_DisposeMatchHandler(object sender, EventArgs e)
+        private static void MatchHandler_DisposeMatchHandler(object? sender, EventArgs e)
         {
-            OngoingMatches.Remove((MatchHandler)sender);
+            if (sender != null)
+                OngoingMatches.Remove((MatchHandler)sender);
         }
     }
 }

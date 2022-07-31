@@ -7,9 +7,6 @@ namespace Tiwaz.Server.DatabaseModel
 {
     public class Match : MatchRuleSet
     {
-        public Match() 
-        {
-        }
 
         /// <summary>
         /// The ID of the match
@@ -90,13 +87,13 @@ namespace Tiwaz.Server.DatabaseModel
         /// The timestamps of matchevents
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
-        public List<MatchEvent> MatchEvents { get; set; }
+        public List<MatchEvent>? MatchEvents { get; set; }
 
         /// <summary>
         /// The event IDs for this Match
         /// </summary>
         [NotMapped]
-        public List<int> MatchEventIds { get; set; }
+        public List<int>? MatchEventIds { get; set; }
 
 
         /// <summary>
@@ -141,12 +138,18 @@ namespace Tiwaz.Server.DatabaseModel
             // Get team 1 players from database by ID
             if (dto.Team1PlayerIds != null && dto.Team1PlayerIds.Count > 0)
             {
-                using (var dbContext = new TwDbContext())
+                using var dbContext = new TwDbContext();
+
+                foreach (var aPlayerId in dto.Team1PlayerIds)
                 {
-                    foreach (var aPlayerId in dto.Team1PlayerIds)
+                    if (dbContext.Players != null)
                     {
                         var player = dbContext.Players.SingleOrDefault(x => x.Id == aPlayerId);
-                        if (player != null) {
+                        if (player != null)
+                        {
+                            if (Team1Players == null)
+                                Team1Players = new List<Player>();
+
                             Team1Players.Add(player);
                         }
                     }
@@ -156,13 +159,18 @@ namespace Tiwaz.Server.DatabaseModel
             // Get Team 2 players from database by ID
             if (dto.Team2PlayerIds != null && dto.Team2PlayerIds.Count > 0)
             {
-                using (var dbContext = new TwDbContext())
+                using var dbContext = new TwDbContext();
+
+                foreach (var aPlayerId in dto.Team2PlayerIds)
                 {
-                    foreach (var aPlayerId in dto.Team2PlayerIds)
+                    if (dbContext.Players != null)
                     {
                         var player = dbContext.Players.SingleOrDefault(x => x.Id == aPlayerId);
                         if (player != null)
                         {
+                            if (Team2Players == null)
+                                Team2Players = new List<Player>();
+
                             Team2Players.Add(player);
                         }
                     }

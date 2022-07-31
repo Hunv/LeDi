@@ -13,27 +13,41 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Get all settings
         /// </summary>
-        public static string GetSetting()
+        public static string? GetSetting()
         {
             using (var dbContext = new TwDbContext())
             {
-                List<DtoSetting>? dto = dbContext.Settings.Select(x => x.ToDto()).ToList();
+                var sets = dbContext.Settings;
+                if (sets != null)
+                {
+                    List<DtoSetting>? dto = sets.Select(x => x.ToDto()).ToList();
 
-                return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                    return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                }
             }
+            return null;
         }
 
         /// <summary>
         /// Get a Setting
         /// </summary>
-        public static string GetSetting(string setting)
+        public static string? GetSetting(string setting)
         {
             using (var dbContext = new TwDbContext())
             {
-                var dto = dbContext.Settings.SingleOrDefault(x => x.SettingName == setting).ToDto();
+                var sets = dbContext.Settings;
+                if (sets != null)
+                {
+                    var set = sets.SingleOrDefault(x => x.SettingName == setting);
+                    if (set != null)
+                    {
+                        var dto = set.ToDto();
 
-                return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                        return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                    }
+                }
             }
+            return null;
         }
 
         /// <summary>
@@ -41,9 +55,11 @@ namespace Tiwaz.Server.Api
         /// </summary>
         public static async Task SetSetting(string setting, string value)
         {
-            using (var dbContext = new TwDbContext())
+            using var dbContext = new TwDbContext();
+            var set = dbContext.Settings;
+            if (set != null)
             {
-                var tm = dbContext.Settings.SingleOrDefault(x => x.SettingName == setting);
+                var tm = set.SingleOrDefault(x => x.SettingName == setting);
                 if (tm != null)
                 {
                     tm.SettingValue = value;
@@ -53,50 +69,50 @@ namespace Tiwaz.Server.Api
             }
         }
 
+
+
         /// <summary>
-        /// Gets the possbile fields and fieldtypes for the rules
+        /// Get a Device Setting
         /// </summary>
-        /// <returns></returns>
-        public static string GetRuleFields()
+        public static string? GetDeviceSetting(string deviceId, string setting)
         {
-            var fields = new Dictionary<string, string>();
-            fields.Add("gamename", "string");
+            using var dbContext = new TwDbContext();
 
-            fields.Add("halftime_count", "int");
-            fields.Add("halftime_length", "int");
-            fields.Add("halftime_overtime", "bool");
-            fields.Add("halftime_last_pause_time_on_event", "bool");
-            fields.Add("halftime_last_pause_time_on_event_seconds", "int");
+            var sets = dbContext.DeviceSettings;
+            if (sets != null)
+            {
+                var set = sets.SingleOrDefault(x => x.DeviceId == deviceId && x.SettingName == setting);
+                if (set != null)
+                {
+                    var dto = set.ToDto();
 
-            fields.Add("match_extension_on_draw", "bool");
-
-            fields.Add("foul_penaltytime_1", "bool");
-            fields.Add("foul_penaltytime_1_seconds", "int");
-            fields.Add("foul_penaltytime_2", "bool");
-            fields.Add("foul_penaltytime_2_seconds", "int");
-            fields.Add("foul_penaltytime_3", "bool");
-            fields.Add("foul_penaltytime_3_seconds", "int");
-            fields.Add("foul_warning_1", "bool");
-            fields.Add("foul_warning_1_alias", "string");
-            fields.Add("foul_warning_2", "bool");
-            fields.Add("foul_warning_2_alias", "string");
-            fields.Add("foul_warning_3", "bool");
-            fields.Add("foul_warning_3_alias", "string");
-
-            return JsonConvert.SerializeObject(fields, Helper.GetJsonSerializer());
+                    return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                }
+            }
+            return null;
         }
 
         /// <summary>
-        /// Gets the rules of the gamerules.json file
+        /// Creates or sets a device Setting
         /// </summary>
-        /// <returns></returns>
-        public async static Task<string> GetRules()
+        public static async Task SetDeviceSetting(string deviceId, string settingName, string settingValue)
         {
-            System.IO.StreamReader sR = new StreamReader("gamerules.json");
-            var rulesJson = await sR.ReadToEndAsync();
-            var ruleList = JsonConvert.DeserializeObject<DtoRuleBody>(rulesJson, Helper.GetJsonSerializer());
+            using var dbContext = new TwDbContext();
+            var set = dbContext.DeviceSettings;
+            if (set != null)
+            {
+                var tm = set.SingleOrDefault(x => x.DeviceId == deviceId && x.SettingName == settingName);
+                if (tm != null)
+                {
+                    tm.SettingValue = settingValue;
+                }
+                else
+                {
+                    set.Add(new DeviceSetting(deviceId, settingName, settingValue));
+                }
 
-            return JsonConvert.SerializeObject(ruleList, Helper.GetJsonSerializer());
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }

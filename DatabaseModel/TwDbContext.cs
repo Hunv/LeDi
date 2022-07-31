@@ -12,6 +12,7 @@ namespace Tiwaz.Server.DatabaseModel
     {
         public DbSet<Match>? Matches { get; set; }
         public DbSet<Setting>? Settings { get; set; }
+        public DbSet<DeviceSetting>? DeviceSettings { get; set; }
         public DbSet<Player>? Players { get; set; }
         public DbSet<Player2Match>? Player2Matches { get; set; }
 
