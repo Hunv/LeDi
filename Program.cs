@@ -11,18 +11,17 @@ builder.Services.AddSwaggerGen();
 
 //Ensure database is created
 using (var dbContext = new TwDbContext())
-{    
+{
     var created = dbContext.Database.EnsureCreated();
     if (created) //created is true, if the database was just created
     {
         if (dbContext.Settings != null)
         {
-            dbContext.Settings.Add(new Setting( "timezone", "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"));
+            dbContext.Settings.Add(new Setting("timezone", "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"));
             dbContext.SaveChanges();
         }
     }
 }
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

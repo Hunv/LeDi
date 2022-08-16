@@ -21,13 +21,13 @@ namespace Tiwaz.Server.DatabaseModel
         /// <summary>
         /// The Deivce ID this setting is for
         /// </summary>
-        [Key]
+        ///[Key] Set in TwDbContext because multiple keys cannot being set via Attribute
         public string DeviceId { get; set; }
 
         /// <summary>
         /// The Name of the Setting
         /// </summary>
-        [Key]
+        ///[Key] Set in TwDbContext because multiple keys cannot being set via Attribute
         public string SettingName { get; set; }
 
 

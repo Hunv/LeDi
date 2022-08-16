@@ -46,6 +46,10 @@ namespace Tiwaz.Server.DatabaseModel
                 entity.HasMany(e => e.MatchEvents);
             });
 
+            modelBuilder.Entity<DeviceSetting>(entity =>
+            {
+                entity.HasKey(new string[] { "SettingName", "DeviceId" });
+            });
 
             //base.OnModelCreating(modelBuilder);
         }
