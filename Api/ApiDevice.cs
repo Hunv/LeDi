@@ -26,6 +26,47 @@ namespace Tiwaz.Server.Api
         }
 
         /// <summary>
+        /// Get a Device
+        /// </summary>
+        public static string? GetDevice(string deviceId)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Device != null)
+            {
+                var dev = dbContext.Device.SingleOrDefault(x => x.DeviceId == deviceId);
+
+                if (dev == null)
+                {
+                    Console.WriteLine("DeviceId {0} not found.", deviceId);
+                    return null;
+                }
+
+                DtoDevice? dto = dev.ToDto();
+                return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets all settings of a device
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        public static string? GetDeviceSettings(string deviceId)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.DeviceSettings != null)
+            {
+                List<DtoDeviceSetting>? dto = dbContext.DeviceSettings.Select(aSet => aSet.ToDto()).ToList();
+
+                return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Get a Device Setting
         /// </summary>
         public static string? GetDeviceSetting(string deviceId, string setting)
@@ -69,6 +110,25 @@ namespace Tiwaz.Server.Api
             }
         }
 
+        
+        /// <summary>
+        /// Deletes a device Setting
+        /// </summary>
+        public static async Task DeleteDeviceSetting(string deviceId, string settingName)
+        {
+            using var dbContext = new TwDbContext();
+            var set = dbContext.DeviceSettings;
+            if (set != null)
+            {
+                var tm = set.SingleOrDefault(x => x.DeviceId == deviceId && x.SettingName == settingName);
+                if (tm != null)
+                {
+                    set.Remove(tm);
+                }
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
         /// <summary>
         /// Creates a new device for device setting configuration
         /// </summary>
@@ -94,6 +154,39 @@ namespace Tiwaz.Server.Api
                 return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
             }
             return null;
+        }
+
+        /// <summary>
+        /// Deletes a device
+        /// </summary>
+        public static async Task DeleteDevice(string deviceId)
+        {
+            using var dbContext = new TwDbContext();
+            var set = dbContext.DeviceSettings;
+            if (set != null)
+            {
+                // Get all Settings of the device
+                var tm = set.Where(x => x.DeviceId == deviceId);
+                if (tm != null)
+                {
+                    // Delete all settings of the device
+                    set.RemoveRange(tm);
+                }
+                await dbContext.SaveChangesAsync();
+            }
+
+            var dev = dbContext.Device;
+            if (dev != null)
+            {
+                // Get all Settings of the device
+                var tm = dev.SingleOrDefault(x => x.DeviceId == deviceId);
+                if (tm != null)
+                {
+                    // Delete all settings of the device
+                    dev.Remove(tm);
+                }
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }
