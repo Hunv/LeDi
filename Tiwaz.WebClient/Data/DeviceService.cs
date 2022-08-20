@@ -102,7 +102,7 @@ namespace Tiwaz.WebClient.Data
             var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
             HttpClient client = new HttpClient(handler);
 
-            using (var jsonStream = await client.GetStreamAsync(_ServerBaseUrl + "Device/" + settingName))
+            using (var jsonStream = await client.GetStreamAsync(_ServerBaseUrl + "Device/" + deviceId + "/" + settingName))
             {
                 var sR = new StreamReader(jsonStream);
                 var json = await sR.ReadToEndAsync();

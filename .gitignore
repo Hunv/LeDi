@@ -14,3 +14,4 @@ Publish/
 Tiwaz.Server/.config/
 Tiwaz.WebClient/.config/
 .user/
+*.user

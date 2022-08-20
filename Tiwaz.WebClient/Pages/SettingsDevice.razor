@@ -34,7 +34,8 @@ else
                 {
                     <tr>
                         <td>
-                            <InputText id="txtSetting@aSetting.Name" type="text" class="form-control" @bind-Value="@aSetting.Name" />                        
+                            <a>@aSetting.Name</a>
+                            @*<InputText id="txtSetting@aSetting.Name" type="text" class="form-control" @bind-Value="@aSetting.Name" />*@
                             @*<ValidationMessage For="@(() => aSetting.Name)" />*@
                         </td>
                         <td>
@@ -42,7 +43,7 @@ else
                             @*<ValidationMessage For="@(() => aSetting.Value)" />*@
                         </td>
                         <td>
-                            <a href="/SettingsDeviceSettingDelete/@Id/@aSetting.Name">🗑</a>
+                            <a href="/SettingsDeviceSettingDelete/@Id/@aSetting.Name" class="text-decoration-none">🗑</a>
                         </td>
                     </tr>
                 }      
@@ -52,18 +53,20 @@ else
         <button class="btn btn-primary" type="submit">Save Changes</button>
     </EditForm>
     <br /><br />
-    <p>Add a new setting:</p>
+    <h3>Add a new setting:</h3>
     <EditForm Model="@NewSetting" OnValidSubmit="@SaveNewSetting">
         @*<DataAnnotationsValidator />
         <ValidationSummary />*@
 
         <a>Setting Name</a>
-        <InputText id="txtNewSettingName" type="text" class="form-control" @bind-Value="@NewSetting.Name" />                        
+        <InputText id="txtNewSettingName" type="text" class="form-control" @bind-Value="@NewSetting.Name" />
         @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+        <br />
 
         <a>Setting Value</a>
-        <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.Value" />                        
+        <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.Value" />
         @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+        <br />
         
         <button class="btn btn-primary" type="submit">Add Setting</button>
     </EditForm>  
@@ -89,7 +92,7 @@ else
             await JSRuntime.InvokeVoidAsync("alert", "No DeviceSettings to save.");
             return;
         }
-        
+
         // Get the current serversettings to check which settings changed
         var currentServerSettings = await DeviceService.GetDeviceSettingsAsync(Id);
         if (currentServerSettings == null)
@@ -102,12 +105,13 @@ else
         foreach(var aServerSet in currentServerSettings)
         {
             var locSet = DeviceSettingList.SingleOrDefault(x => x.Name == aServerSet.Name);
-            
+
             if (locSet == null)
                 continue;
 
             if (locSet.Value != aServerSet.Value)
             {
+                Console.WriteLine("Save setting {0} to value {1}", locSet.Name, locSet.Value);
                 await DeviceService.SetDeviceSettingAsync(Id, locSet);
             }
         }
