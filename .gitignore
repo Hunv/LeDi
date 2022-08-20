@@ -1,6 +1,5 @@
-obj/
-Tiwaz.db
-Tiwaz.db-shm
-Tiwaz.db-wal
+Tiwaz.Display.TestApp/bin/
+Tiwaz.Display.TestApp/obj/
+Tiwaz.Shared/bin/
+Tiwaz.Shared/obj/
 .vs/
-bin/

@@ -1,0 +1,53 @@
+﻿@page "/settingsdevicedelete/{id}"
+
+<PageTitle>Confirm Deletion of Device</PageTitle>
+
+@using Tiwaz.Shared.DtoModel;
+@using Tiwaz.WebClient.Data
+@inject DeviceService DeviceService
+@inject NavigationManager NavigationManager
+
+<h1>Confirm Deletion of Device</h1>
+
+@if (ToDeleteDevice == null)
+{
+    <p><em>Loading Device...</em></p>
+}
+else
+{
+    <p>Confirm the deletion of device @Id:</p>
+    <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">       
+        
+        <button class="btn btn-warning" type="submit">Confirm Delete</button>
+        <button class="btn btn-danger" type="reset">Cancel Delete</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    private DtoDevice ToDeleteDevice = new DtoDevice("", "", "");
+
+    protected override async Task OnInitializedAsync()
+    {
+        var devices = await DeviceService.GetDeviceAsync();
+        if (devices == null || devices.Count == 0)
+            return;
+
+        ToDeleteDevice = devices.SingleOrDefault(x => x.DeviceId == Id) ?? new DtoDevice("","","");
+    }
+
+    private void CancelDelete()
+    {
+        NavigationManager.NavigateTo("/settings");
+    }
+
+    private async void ConfirmDelete()
+    {
+        await DeviceService.DeleteDeviceAsync(Id);
+
+        NavigationManager.NavigateTo("/settings");
+        
+    }
+}

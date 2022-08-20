@@ -1,0 +1,101 @@
+﻿{
+	"name":"60x10 Testpanel",
+	"width":60,
+	"height": 10,
+	"characterset": "Default",
+	"hardareaborders": true,
+	"brightness": 120,
+	"arealist": [
+		{
+			"name": "team1goals",
+			"positionX": 0,
+			"positionY": 0,
+			"width": 8,
+			"height": 10
+		},
+		{
+			"name": "team2goals",
+			"positionX": 15,
+			"positionY": 0,
+			"width": 8,
+			"height": 10
+		},
+		{
+			"name": "goaldivider",
+			"positionX": 10,
+			"positionY": 0,
+			"width": 3,
+			"height": 10
+		},
+		{
+			"name": "time",
+			"positionX": 26,
+			"positionY": 0,
+			"width": 34,
+			"height": 10
+		}
+	],
+
+	"characterlist": [
+		{
+			"name": "Zero",
+			"char": "0",
+			"file": "0.char"
+		},
+		{
+			"name": "One",
+			"char": "1",
+			"file": "1.char"
+		},
+		{
+			"name": "Two",
+			"char": "2",
+			"file": "2.char"
+		},
+		{
+			"name": "Three",
+			"char": "3",
+			"file": "3.char"
+		},
+		{
+			"name": "Four",
+			"char": "4",
+			"file": "4.char"
+		},
+		{
+			"name": "Five",
+			"char": "5",
+			"file": "5.char"
+		},
+		{
+			"name": "Six",
+			"char": "6",
+			"file": "6.char"
+		},
+		{
+			"name": "Seven",
+			"char": "7",
+			"file": "7.char"
+		},
+		{
+			"name": "Eight",
+			"char": "8",
+			"file": "8.char"
+		},
+		{
+			"name": "Nine",
+			"char": "9",
+			"file": "9.char"
+		},
+		{
+			"name": "Colon",
+			"char": ":",
+			"file": "colon.char"
+		},
+		{
+			"name": "Space",
+			"char": " ",
+			"file": "space.char"
+		}
+	]
+}

@@ -1,0 +1,100 @@
+﻿@page "/settings"
+
+<PageTitle>Settings</PageTitle>
+
+@using Tiwaz.Shared.DtoModel;
+@using Tiwaz.WebClient.Data
+@inject SettingService SettingService
+@inject DeviceService DeviceService
+
+<h1>Settings</h1>
+
+@if (SettingList == null)
+{
+    <p><em>Loading Settinglist...</em></p>
+}
+else
+{
+    <p>The following settings are configured:</p>
+    <EditForm Model="@SettingList" OnValidSubmit="@SaveSettings">
+        @*<DataAnnotationsValidator />
+        <ValidationSummary />*@
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Setting</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var aSetting in SettingList)
+                {
+                    <tr>
+                        <td>
+                            <InputText id="txtSetting@aSetting.Name" type="text" class="form-control" @bind-Value="@aSetting.Name" />                        
+                            @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+                        </td>
+                        <td>
+                            <InputText id="txtSetting@aSetting.Value" type="text" class="form-control" @bind-Value="@aSetting.Value" />                        
+                            @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                        </td>
+                    </tr>
+                }      
+            </tbody>
+        </table>    
+        
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+    </EditForm>
+}
+
+<h1>Devices</h1>
+
+@if (DeviceList == null)
+{
+    <p><em>Loading Devicelist...</em></p>
+}
+else
+{
+    <p>The following devices are known:</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Device ID</th>
+                <th>Device Model</th>
+                <th>Device Type</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var aDevice in DeviceList)
+            {
+                <tr>
+                    <td><p>@aDevice.DeviceId</p></td>
+                    <td><p>@aDevice.DeviceModel</p></td>
+                    <td><p>@aDevice.DeviceType</p></td>
+                    <td><a href="/SettingsDevice/@aDevice.DeviceId">🔧</a></td>
+                    <td><a href="/SettingsDeviceDelete/@aDevice.DeviceId">🗑</a></td>
+                </tr>
+            }      
+        </tbody>
+    </table>    
+}
+
+@code {
+    private List<DtoSetting>? SettingList;
+    private List<DtoDevice>? DeviceList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SettingList = await SettingService.GetSettingAsync();
+        DeviceList = await DeviceService.GetDeviceAsync();
+    }
+    
+    private async void SaveSettings()
+    {
+        //await ApiSrv.SetMatchAsync(Match);
+    }
+}

@@ -1,0 +1,22 @@
+Install the Pi:
+Setup a Raspberry Pi with the latest Raspberry Pi OS. Use the 32 Bit version. The "Server" version called "Lite" without the desktop environment is recommended to save resources.
+
+
+
+
+Install .Net 6:
+- Go to https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+- Select for OS "Linux" the Binary "Arm32"
+- Copy the URL at "direct link" (i.e. https://download.visualstudio.microsoft.com/download/pr/5a24144e-0d7d-4cc9-b9d8-b4d32d6bb084/e882181e475e3c66f48a22fbfc7b19c0/dotnet-sdk-6.0.400-linux-arm.tar.gz)
+- go to the Rapsberry Pi SSH connection and enter "wget <url from above>"
+- Run the following commands. Replace the filename at the first line.
+DOTNET_FILE=dotnet-sdk-6.0.100-linux-x64.tar.gz
+export DOTNET_ROOT=$(pwd)/.dotnet
+
+mkdir -p "$DOTNET_ROOT" && tar zxf "$DOTNET_FILE" -C "$DOTNET_ROOT"
+
+export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+
+- .Net is installed now.
+
+

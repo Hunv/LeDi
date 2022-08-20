@@ -1,0 +1,129 @@
+﻿@page "/settingsdevice/{id}"
+
+<PageTitle>Device Settings</PageTitle>
+
+@using Tiwaz.Shared.DtoModel;
+@using Tiwaz.WebClient.Data
+@inject SettingService SettingService
+@inject DeviceService DeviceService
+@inject IJSRuntime JSRuntime
+
+<h1>Device Settings</h1>
+
+@if (DeviceSettingList == null)
+{
+    <p><em>Loading Device Settings...</em></p>
+}
+else
+{
+    <p>The following settings are configured for device @Id:</p>
+    <EditForm Model="@DeviceSettingList" OnValidSubmit="@SaveSettings">
+        @*<DataAnnotationsValidator />
+        <ValidationSummary />*@
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Setting</th>
+                    <th>Value</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var aSetting in DeviceSettingList)
+                {
+                    <tr>
+                        <td>
+                            <InputText id="txtSetting@aSetting.Name" type="text" class="form-control" @bind-Value="@aSetting.Name" />                        
+                            @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+                        </td>
+                        <td>
+                            <InputText id="txtSetting@aSetting.Value" type="text" class="form-control" @bind-Value="@aSetting.Value" />                        
+                            @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                        </td>
+                        <td>
+                            <a href="/SettingsDeviceSettingDelete/@Id/@aSetting.Name">🗑</a>
+                        </td>
+                    </tr>
+                }      
+            </tbody>
+        </table>    
+        
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+    </EditForm>
+    <br /><br />
+    <p>Add a new setting:</p>
+    <EditForm Model="@NewSetting" OnValidSubmit="@SaveNewSetting">
+        @*<DataAnnotationsValidator />
+        <ValidationSummary />*@
+
+        <a>Setting Name</a>
+        <InputText id="txtNewSettingName" type="text" class="form-control" @bind-Value="@NewSetting.Name" />                        
+        @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+
+        <a>Setting Value</a>
+        <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.Value" />                        
+        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+        
+        <button class="btn btn-primary" type="submit">Add Setting</button>
+    </EditForm>  
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    private List<DtoDeviceSetting>? DeviceSettingList;
+    private DtoDeviceSetting NewSetting = new DtoDeviceSetting("", "", "");
+
+    protected override async Task OnInitializedAsync()
+    {
+        DeviceSettingList = await DeviceService.GetDeviceSettingsAsync(Id);
+        NewSetting = new DtoDeviceSetting(Id, "", "");
+    }
+
+    private async void SaveSettings()
+    {
+        if (DeviceSettingList == null) 
+        {   
+            await JSRuntime.InvokeVoidAsync("alert", "No DeviceSettings to save.");
+            return;
+        }
+        
+        // Get the current serversettings to check which settings changed
+        var currentServerSettings = await DeviceService.GetDeviceSettingsAsync(Id);
+        if (currentServerSettings == null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Cannot get current settings from server.");
+            return;
+        }
+
+        // Update all changed settings
+        foreach(var aServerSet in currentServerSettings)
+        {
+            var locSet = DeviceSettingList.SingleOrDefault(x => x.Name == aServerSet.Name);
+            
+            if (locSet == null)
+                continue;
+
+            if (locSet.Value != aServerSet.Value)
+            {
+                await DeviceService.SetDeviceSettingAsync(Id, locSet);
+            }
+        }
+
+        //Reload Device settings
+        DeviceSettingList = await DeviceService.GetDeviceSettingsAsync(Id);
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void SaveNewSetting()
+    {
+        await DeviceService.SetDeviceSettingAsync(Id, NewSetting);
+
+        DeviceSettingList = await DeviceService.GetDeviceSettingsAsync(Id);
+        NewSetting = new DtoDeviceSetting(Id, "", "");
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+}
