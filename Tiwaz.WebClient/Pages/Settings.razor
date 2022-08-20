@@ -6,6 +6,7 @@
 @using Tiwaz.WebClient.Data
 @inject SettingService SettingService
 @inject DeviceService DeviceService
+@inject IJSRuntime JSRuntime
 
 <h1>Settings</h1>
 
@@ -47,7 +48,7 @@ else
         <button class="btn btn-primary" type="submit">Save Changes</button>
     </EditForm>
 }
-
+<br /><br />
 <h1>Devices</h1>
 
 @if (DeviceList == null)
@@ -95,6 +96,36 @@ else
     
     private async void SaveSettings()
     {
-        //await ApiSrv.SetMatchAsync(Match);
+        if (SettingList == null) 
+        {   
+            await JSRuntime.InvokeVoidAsync("alert", "No Settings to save.");
+            return;
+        }
+        
+        // Get the current serversettings to check which settings changed
+        var currentServerSettings = await SettingService.GetSettingAsync();
+        if (currentServerSettings == null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Cannot get current settings from server.");
+            return;
+        }
+
+        // Update all changed settings
+        foreach(var aServerSet in currentServerSettings)
+        {
+            var locSet = SettingList.SingleOrDefault(x => x.Name == aServerSet.Name);
+            
+            if (locSet == null)
+                continue;
+
+            if (locSet.Value != aServerSet.Value)
+            {
+                await SettingService.SetSettingAsync(locSet);
+            }
+        }
+
+        //Reload Device settings
+        SettingList = await SettingService.GetSettingAsync();
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 }

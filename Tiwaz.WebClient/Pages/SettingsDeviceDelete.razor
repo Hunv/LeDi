@@ -19,7 +19,7 @@ else
     <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">       
         
         <button class="btn btn-warning" type="submit">Confirm Delete</button>
-        <button class="btn btn-danger" type="reset">Cancel Delete</button>
+        <button class="btn btn-danger" type="button" @onclick="CancelDelete">Cancel Delete</button>
     </EditForm>
 }
 

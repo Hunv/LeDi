@@ -68,7 +68,7 @@ namespace Tiwaz.WebClient.Data
         /// Sets a Setting to a new value
         /// </summary>
         /// <param name="setting"></param>
-        public async Task SetMatchAsync(DtoSetting setting)
+        public async Task SetSettingAsync(DtoSetting setting)
         {
             var json = JsonConvert.SerializeObject(setting, Helper.GetJsonSerializer());
 

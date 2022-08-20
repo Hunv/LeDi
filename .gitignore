@@ -3,3 +3,14 @@ Tiwaz.Display.TestApp/obj/
 Tiwaz.Shared/bin/
 Tiwaz.Shared/obj/
 .vs/
+Tiwaz.Display.TestApp/Properties/PublishProfiles/FolderProfile.pubxml.user
+Tiwaz.Display.TestApp/Properties/PublishProfiles/FolderProfile.pubxml
+Tiwaz.Display/Properties/PublishProfiles/FolderProfile.pubxml
+Tiwaz.Display/Properties/PublishProfiles/FolderProfile.pubxml.user
+Tiwaz.Server/Properties/PublishProfiles/FolderProfile.pubxml
+Tiwaz.Server/Properties/PublishProfiles/FolderProfile.pubxml.user
+Tiwaz.WebClient/Properties/PublishProfiles/FolderProfile.pubxml
+Publish/
+Tiwaz.Server/.config/
+Tiwaz.WebClient/.config/
+.user/

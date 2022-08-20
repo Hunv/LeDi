@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tiwaz.Shared\Tiwaz.Shared\Tiwaz.Shared.csproj" />
+    <ProjectReference Include="..\Tiwaz.Shared\Tiwaz.Shared.csproj" />
   </ItemGroup>
 
 </Project>
