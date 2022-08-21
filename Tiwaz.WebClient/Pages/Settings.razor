@@ -4,8 +4,7 @@
 
 @using Tiwaz.Shared.DtoModel;
 @using Tiwaz.WebClient.Data
-@inject SettingService SettingService
-@inject DeviceService DeviceService
+@inject Tiwaz.Shared.Api Api
 @inject IJSRuntime JSRuntime
 
 <h1>Settings</h1>
@@ -90,8 +89,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        SettingList = await SettingService.GetSettingAsync();
-        DeviceList = await DeviceService.GetDeviceAsync();
+        SettingList = await Api.GetSettingAsync();
+        DeviceList = await Api.GetDeviceAsync();
     }
     
     private async void SaveSettings()
@@ -103,7 +102,7 @@ else
         }
         
         // Get the current serversettings to check which settings changed
-        var currentServerSettings = await SettingService.GetSettingAsync();
+        var currentServerSettings = await Api.GetSettingAsync();
         if (currentServerSettings == null)
         {
             await JSRuntime.InvokeVoidAsync("alert", "Cannot get current settings from server.");
@@ -120,12 +119,12 @@ else
 
             if (locSet.Value != aServerSet.Value)
             {
-                await SettingService.SetSettingAsync(locSet);
+                await Api.SetSettingAsync(locSet);
             }
         }
 
         //Reload Device settings
-        SettingList = await SettingService.GetSettingAsync();
+        SettingList = await Api.GetSettingAsync();
         await InvokeAsync(() => { StateHasChanged(); });
     }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/matchplanning"
 @using Tiwaz.Shared.DtoModel
+@inject Tiwaz.Shared.Api Api
 
 <PageTitle>Spielplanung</PageTitle>
 
@@ -82,8 +83,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var apiSrv = new Data.MatchService();
-        MatchList = await apiSrv.GetMatchListAsync();
+        MatchList = await Api.GetMatchListAsync();
         
     }
 

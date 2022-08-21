@@ -15,7 +15,7 @@ namespace Tiwaz.Display
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var connector = new Connector();
-            await connector.LoadConfig();
+            await connector.LoadLocalDeviceConfigAsync();
             await connector.RegisterDevice();
             var displayManager = new DisplayManager(connector.Layout);
 

@@ -14,12 +14,24 @@ namespace Tiwaz.Display.Api
         private string? ServerUrl;
         public string? Layout { get; set; }
 
+        public Shared.Api SrvApi = new();
+
         public Connector()
         {   
         }
 
-        public async Task LoadConfig()
+        /// <summary>
+        /// Gets the config of the current device
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoadLocalDeviceConfigAsync()
         {
+            if (!File.Exists("config.json"))
+            {
+                Console.WriteLine("unable to load config.json.");
+                return;
+            }
+
             var sR = new StreamReader("config.json");
             var rulesJson = await sR.ReadToEndAsync();
 
@@ -49,35 +61,12 @@ namespace Tiwaz.Display.Api
         {
             Console.WriteLine("Registering Device...");
             var json = "{\"DeviceType\":\"Display\",\"DeviceModel\":\"LED Screen\",\"DeviceId\":\"\"}";
-            
-            //Allow untrusted certificates
-            var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator};
 
-            //Create HttpClient to query the information
-            HttpClient client = new HttpClient(handler);
-            var requestMessage = new HttpRequestMessage()
-            {
-                Method = new HttpMethod("POST"),
-                RequestUri = new Uri(ServerUrl + "Device"),
-                Content = new StringContent(json)
-            };
+            var responseBody = await SrvApi.RegisterDevice(json);
 
-            if (requestMessage.Content == null)
-            {
-                Console.WriteLine("No content set. Not setting content type...");
-            }
-            else
-            {
-                requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-            }
-
-            Console.WriteLine("Query data from: {0}", requestMessage.RequestUri);
-
-            var response = await client.SendAsync(requestMessage);
-            if (response.IsSuccessStatusCode)
+            if (responseBody != null)
             {
                 Console.WriteLine("Device registered.");
-                var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (responseBody == null)
                 {
@@ -99,7 +88,7 @@ namespace Tiwaz.Display.Api
             }
             else
             {
-                Console.WriteLine("Failed to register device. Responsecode: {0}. Response: {1}", response.StatusCode, response.Content.ToString());
+                Console.WriteLine("Failed to register device.");
             }
         }
     }

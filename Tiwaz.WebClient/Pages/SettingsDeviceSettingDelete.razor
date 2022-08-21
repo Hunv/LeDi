@@ -4,7 +4,7 @@
 
 @using Tiwaz.Shared.DtoModel;
 @using Tiwaz.WebClient.Data
-@inject DeviceService DeviceService
+@inject Tiwaz.Shared.Api Api
 @inject NavigationManager NavigationManager
 
 <h1>Confirm Deletion of Device Setting</h1>
@@ -34,7 +34,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var devSetting = await DeviceService.GetDeviceSettingAsync(deviceId, settingName);
+        var devSetting = await Api.GetDeviceSettingAsync(deviceId, settingName);
         
         if (devSetting == null)
             return;
@@ -49,7 +49,7 @@ else
 
     private async void ConfirmDelete()
     {
-        await DeviceService.DeleteDeviceSettingAsync(deviceId, settingName);
+        await Api.DeleteDeviceSettingAsync(deviceId, settingName);
 
         NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);
         

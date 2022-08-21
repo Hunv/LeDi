@@ -19,9 +19,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-builder.Services.AddSingleton<SettingService>();
-builder.Services.AddSingleton<DeviceService>();
-builder.Services.AddSingleton<MatchService>();
+builder.Services.AddSingleton<Tiwaz.Shared.Api>();
 
 var app = builder.Build();
 
