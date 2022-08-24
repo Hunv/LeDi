@@ -1,18 +1,215 @@
-﻿@page "/matchcontrol"
+﻿@page "/Matchcontrol"
 
-<PageTitle>Spielverwaltung</PageTitle>
+<PageTitle>MatchControl</PageTitle>
+@*<EditForm >*@
+@*    <DataAnnotationsValidator />
+    <ValidationSummary />*@
+<table>
+    <tr>
+        <th>
+            <center hidden=@Hidden>
+                <font size= "3">
+                     <a>Strafzeit</a>
+                </font>
+            </center>
+        </th>
+        <th>
+            <center>
+                <font size= "5">
+                     <a>Spielzeit</a>
+                </font>
+            </center>
+        </th>
+        <th>
+            <center hidden=@Hidden2>
+                <font size= "3">
+                     <a>Strafzeit</a>
+                </font>
+            </center>
+        </th>
+    </tr>
+    <tr>
+        <th>
+            <center hidden="@Hidden">
+                <font size="4">
+                     @duration2
+                </font>
+            </center>
+        </th>
+        <th>
+            <center>
+                <font size= "7">
+                     @duration
+                </font>
+            </center>
+        </th>
+        <th>
+            <center hidden="@Hidden2">
+                <font size="4">
+                     @duration3
+                </font>
+            </center>
+        </th>
+    </tr>@*Spielzeiten*@
+    <tr>
+        <th>
 
-<h1>Counter</h1>
+        </th>
+        <th>
+            <button class="btn btn-primary" @onclick="@StartTimer">
+                start
+            </button>
+            <button class="btn btn-primary" @onclick="@TimerStop">
+                anhalten
+            </button>
+            <button class="btn btn-primary" @onclick="@TimerStart">
+                weiter
+            </button>
+        </th>
+        <th>
 
-<p role="status">Current count: @currentCount</p>
+        </th>
+    </tr>@*Timer Buttons*@
+    
+    <tr>
+        <th>
+            Heimmannschaft:
+            <p role="status"> <center> <font size="7"> @CountHome </font> </center></p>
+            <button class="btn btn-primary" @onclick="@IncrementCountHome">
+                Tor
+            </button>
+            <button class="btn btn-danger" @onclick="@DecreaseCountHome">
+                Kein Tor
+            </button>
+        </th>
+        <th>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+        </th>
+        <th>
+            Gastmannschaft:
+            <p role="status"><center> <font size="7"> @CountGuest </font> </center> </p>
+            <button class="btn btn-primary" @onclick="@IncrementCountGuest">
+                Tor
+            </button>
+            <button class="btn btn-danger" @onclick="@DecreaseCountGuest">
+                Kein Tor
+            </button>
+        </th>
+    </tr>@*Tore Eingeben*@
 
-@code {
-    private int currentCount = 0;
+    <tr>
+        <th>
+            <button class="btn btn-primary" @onclick="@Penalty2MinHome" >
+                2min Strafzeit
+            </button>
+        </th>
+        <th>
 
-    private void IncrementCount()
+        </th>
+        <th>
+            <button class="btn btn-primary" @onclick="@Penalty2MinGuest" >
+                2min Strafzeit
+            </button>
+        </th>
+    </tr>
+
+</table>
+
+
+
+@code{
+
+    System.Timers.Timer timer1 = new System.Timers.Timer();
+    int duration = 60;
+    int duration2 = 15;
+    int duration3 = 15;
+    int CountHome = 0;
+    int CountGuest = 0;
+    bool Hidden = true;
+    bool Hidden2 = true;
+
+    private void IncrementCountHome()
     {
-        currentCount++;
+        CountHome++;
+    }
+    private void DecreaseCountHome()
+    {
+        CountHome--;
+    }
+
+    private void IncrementCountGuest()
+    {
+        CountGuest++;
+    }
+    private void DecreaseCountGuest()
+    {
+        CountGuest--;
+    }
+
+    private void TimerStop()
+    {
+        timer1.Stop();
+    }
+    private void TimerStart()
+    {
+        timer1.Start();
+    }
+    private void StartTimer()
+    {
+        timer1.Interval = 1000;
+        timer1.Elapsed += count_down;   
+        timer1.Start();  
+
+    }
+    private void Penalty2MinHome()
+    {
+        duration2 = 15;
+        timer1.Interval = 1000;
+        timer1.Elapsed += count_downHome;
+        Hidden = false;
+    }
+    private void Penalty2MinGuest()
+    {
+        duration3 = 15;
+        timer1.Interval = 1000;
+        timer1.Elapsed += count_downGuest;
+        Hidden2 = false;
+    }
+
+    private async void count_down(object? sender, EventArgs e)
+    {
+        if (duration == 0)
+        {
+            timer1.Stop();
+        }
+        else if(duration > 0)
+        {
+            duration--;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+    private async void count_downHome(object? sender, EventArgs e)
+    {
+        if (duration2 == 0)
+        {
+            Hidden = true;
+        }
+        else if(duration2 > 0)
+        {
+            duration2--;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+    private async void count_downGuest(object? sender, EventArgs e)
+    {
+        if (duration3 == 0)
+        {
+            Hidden2 = true;
+        }
+        else if(duration3 > 0)
+        {
+            duration3--;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
     }
 }

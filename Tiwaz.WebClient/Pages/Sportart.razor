@@ -1,0 +1,53 @@
+﻿@page "/Sportart"
+
+<PageTitle>Sportart auswählen</PageTitle>
+@*<EditForm >*@
+@*    <DataAnnotationsValidator />
+    <ValidationSummary />*@
+
+    <a>Sportart wählen</a>
+    <select name=" " onchange="@ShowFields"> 
+        <option value="">  </option>
+        <option value="UWH">Unterwasserhockey</option>
+        <option value="Handball">Handball</option>
+    </select>
+    <br /> 
+    <a hidden="@Hidden">Team 1:</a>
+    <input id="TeamName1" class="form-control" type="text" hidden="@Hidden" size="20"/>
+    <a hidden="@Hidden"> Teams 2:</a>
+    <input id="TeamName2" class="form-control" type="text" hidden="@Hidden" size="20"/>
+    <a hidden="@Hidden"> Anzahl Halbzeiten:</a>
+    <input id="HalfTimeCount" class="form-control" type="text" hidden="@Hidden" size="20"/>
+    <a hidden="@Hidden"> Länge der Halbzeit in Min. :</a>
+    <input id="HalfTimeTime" class="form-control" type="text" hidden="@Hidden" size="20"/>
+    <br />
+   
+    <body>
+    <a class="btn btn-primary" href="Matchcontrol" role="button">Bestätigen</a>
+    </body>
+
+
+
+
+@*    <button class="btn btn-primary" type="submit">Speichern</button>
+</EditForm>*@
+
+@code{
+
+    bool Hidden = true;
+
+    private void ShowFields( ChangeEventArgs e)
+    {
+
+        if(e.Value.ToString() == "UWH")
+        {
+            Hidden = false;
+        }
+        else
+        {
+            Hidden = true;
+        }
+        
+
+    }
+}
