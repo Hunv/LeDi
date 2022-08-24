@@ -110,9 +110,9 @@ namespace Tiwaz.Display.Display
             Console.Read();
         }
 
-        public static void Initialize(string layoutName)
+        public static void Initialize(Layout layout)
         {
-            LoadLayout(layoutName);
+            LoadLayout(layout);
             LoadCharacters();
 
             if (LayoutConfig == null)
@@ -121,7 +121,7 @@ namespace Tiwaz.Display.Display
                 return;
             }
 
-            Console.WriteLine("Initializing Controller for {0} with {1} LEDs on PWM0, DMA Channel {2} and a Frequency of {3}Hz", layoutName, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency);
+            Console.WriteLine("Initializing Controller for {0} with {1} LEDs on PWM0, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency);
 
             //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10
             ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why
@@ -135,10 +135,10 @@ namespace Tiwaz.Display.Display
             _TmrWorker.Start();
         }
 
-        public static void LoadLayout(string layoutName)
+        public static void LoadLayout(Layout layoutSetting)
         {
-            Console.WriteLine("Loading layout {0}", layoutName);
-            var layoutFilePath = string.Format("Config/Layouts/{0}.layout", layoutName);
+            Console.WriteLine("Loading layout {0}", layoutSetting.Name);
+            var layoutFilePath = string.Format("Config/Layouts/{0}.layout", layoutSetting.Name);
 
             if (!File.Exists(layoutFilePath))
             {
@@ -153,9 +153,34 @@ namespace Tiwaz.Display.Display
             LayoutConfig = JsonConvert.DeserializeObject<Layout>(layout);
 
             if (LayoutConfig != null)
-                Console.WriteLine("Layout loaded successfully");
+            {
+                Console.WriteLine("Layout loaded successfully default settings");
+
+                //Setting the non-default settings received from server (manually set via UI)
+                if (layoutSetting.Brightness > 0)
+                    LayoutConfig.Brightness = layoutSetting.Brightness;
+
+                if (layoutSetting.DmaChannel > 0)
+                    LayoutConfig.DmaChannel = layoutSetting.DmaChannel;
+
+                if (layoutSetting.CharacterSet != null)
+                    LayoutConfig.CharacterSet = layoutSetting.CharacterSet;
+
+                if (layoutSetting.Frequency > 0)
+                    LayoutConfig.Frequency = layoutSetting.Frequency;
+
+                LayoutConfig.HardAreaBorders = layoutSetting.HardAreaBorders;
+
+                if (layoutSetting.Height > 0)
+                    LayoutConfig.Height = layoutSetting.Height;
+
+                if (layoutSetting.Width > 0)
+                    LayoutConfig.Width = layoutSetting.Width;
+            }
             else
-                Console.WriteLine("Loading layout FAILED");
+            {
+                Console.WriteLine("Loading default layout FAILED");
+            }
         }
 
         public static void LoadCharacters()

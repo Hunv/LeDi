@@ -10,12 +10,18 @@ namespace Tiwaz.Shared
 {
     public class Api
     {
-        private static readonly string _ServerBaseUrl = "https://localhost:7077/api/";
+        public string ServerBaseUrl { get; set; } = "https://localhost:7077/api/";
 
         public Api()
         {
-            Console.WriteLine("Using Serverbase URL " + _ServerBaseUrl);
+            Console.WriteLine("Using Serverbase URL " + ServerBaseUrl);
         }
+        public Api(string serverUrl)
+        {
+            ServerBaseUrl = serverUrl; 
+            Console.WriteLine("Using Serverbase URL " + ServerBaseUrl);
+        }
+
 
         #region Device
 
@@ -25,7 +31,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<List<DtoDevice>?> GetDeviceAsync()
         {
-            var setting = (List<DtoDevice>?)await Helper.ApiRequestGet(_ServerBaseUrl + "Device");
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device");
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<List<DtoDevice>?>(json, Helper.GetJsonSerializer());
             return setting;
         }
 
@@ -35,16 +45,24 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<DtoDevice?> GetDeviceAsync(string deviceId)
         {
-            var device = (DtoDevice?)await Helper.ApiRequestGet(_ServerBaseUrl + "Device/" + deviceId);
-            return device;
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId);
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<DtoDevice?>(json, Helper.GetJsonSerializer());
+            return setting;
         }
 
-
+        /// <summary>
+        /// Register a new device at the server. Returns a Device Objects containing the DeviceID
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
         public async Task<string?> RegisterDevice(string json)
         {
             Console.WriteLine("Registering Device...");
 
-            var responseBody = await Helper.ApiRequestPost(_ServerBaseUrl + "Device", json);
+            var responseBody = await Helper.ApiRequestPost(ServerBaseUrl + "Device", json);
 
             return responseBody;
         }
@@ -58,7 +76,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<List<DtoDeviceSetting>?> GetDeviceSettingsAsync(string deviceId)
         {
-            var setting = (List<DtoDeviceSetting>?)await Helper.ApiRequestGet(_ServerBaseUrl + "Device/" + deviceId);
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId);
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<List<DtoDeviceSetting>?>(json, Helper.GetJsonSerializer());
             return setting;
         }
 
@@ -69,7 +91,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<DtoDeviceSetting?> GetDeviceSettingAsync(string deviceId, string settingName)
         {
-            var setting = (DtoDeviceSetting?)await Helper.ApiRequestGet(_ServerBaseUrl + "Device/" + deviceId + "/" + settingName);
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId + "/" + settingName);
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<DtoDeviceSetting?>(json, Helper.GetJsonSerializer());
             return setting;
         }
 
@@ -81,7 +107,7 @@ namespace Tiwaz.Shared
         {
             var json = JsonConvert.SerializeObject(setting, Helper.GetJsonSerializer());
 
-            var response = await Helper.ApiRequestPut(_ServerBaseUrl + "Device", json);
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Device", json);
 
             if (response == null)
             {
@@ -95,7 +121,7 @@ namespace Tiwaz.Shared
         /// <param name="setting"></param>
         public async Task DeleteDeviceSettingAsync(string deviceId, string settingName)
         {
-            await Helper.ApiRequestDelete(_ServerBaseUrl + "Device/" + deviceId + "/" + settingName);
+            await Helper.ApiRequestDelete(ServerBaseUrl + "Device/" + deviceId + "/" + settingName);
         }
 
         #endregion
@@ -107,7 +133,7 @@ namespace Tiwaz.Shared
         /// <param name="setting"></param>
         public async Task DeleteDeviceAsync(string deviceId)
         {
-            await Helper.ApiRequestDelete(_ServerBaseUrl + "Device/" + deviceId);
+            await Helper.ApiRequestDelete(ServerBaseUrl + "Device/" + deviceId);
         }
 
         /// <summary>
@@ -116,7 +142,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<List<DtoSetting>?> GetSettingAsync()
         {
-            var setting = (List<DtoSetting>?)await Helper.ApiRequestGet(_ServerBaseUrl + "Setting");
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Setting");
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<List<DtoSetting>?>(json, Helper.GetJsonSerializer());
             return setting;
         }
 
@@ -127,7 +157,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<DtoSetting?> GetSettingAsync(string settingName)
         {
-            var setting = (DtoSetting?)await Helper.ApiRequestGet(_ServerBaseUrl + "Setting/" + settingName);
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Setting/" + settingName);
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<DtoSetting?>(json, Helper.GetJsonSerializer());
             return setting;
         }
 
@@ -139,7 +173,7 @@ namespace Tiwaz.Shared
         {
             var json = JsonConvert.SerializeObject(setting, Helper.GetJsonSerializer());
 
-            var response = await Helper.ApiRequestPut(_ServerBaseUrl + "Setting", json);
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Setting", json);
 
             if (response == null)
             {
@@ -157,7 +191,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<DtoMatch?> GetMatchAsync(int matchId)
         {
-            var setting = (DtoMatch?)await Helper.ApiRequestGet(_ServerBaseUrl + "Match/" + matchId);
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId);
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<DtoMatch?>(json, Helper.GetJsonSerializer());
             return setting;
         }
 
@@ -168,7 +206,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<int> GetMatchTimeAsync(int matchId)
         {
-            var setting = (int?)await Helper.ApiRequestGet(_ServerBaseUrl + "Match/" + matchId + "/time");
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/time");
+            if (json == null)
+                return -1;
+
+            var setting = JsonConvert.DeserializeObject<int?>(json, Helper.GetJsonSerializer());
             return setting ?? -1;
         }
 
@@ -178,7 +220,11 @@ namespace Tiwaz.Shared
         /// <returns></returns>
         public async Task<List<DtoMatch>> GetMatchListAsync()
         {
-            var setting = (List<DtoMatch>?)await Helper.ApiRequestGet(_ServerBaseUrl + "Match");
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match");
+            if (json == null)
+                return new List<DtoMatch>();
+
+            var setting = JsonConvert.DeserializeObject<List<DtoMatch>>(json, Helper.GetJsonSerializer());
             return setting ?? new List<DtoMatch>();
         }
 
@@ -195,7 +241,7 @@ namespace Tiwaz.Shared
             var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
             HttpClient client = new HttpClient(handler);
 
-            var requestMessage = Helper.GetRequestMessage("POST", _ServerBaseUrl + "Match", json);
+            var requestMessage = Helper.GetRequestMessage("POST", ServerBaseUrl + "Match", json);
             if (requestMessage.Content == null)
             {
                 Console.WriteLine("No content set. Not setting content type...");
@@ -219,7 +265,7 @@ namespace Tiwaz.Shared
         public async Task SetMatchAsync(DtoMatch match)
         {
             var json = JsonConvert.SerializeObject(match, Helper.GetJsonSerializer());
-            var response = await Helper.ApiRequestPut(_ServerBaseUrl + "Match/" + match.Id, json);
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + match.Id, json);
 
             if (response == null)
             {
@@ -232,7 +278,7 @@ namespace Tiwaz.Shared
         /// </summary>
         public async Task ControlMatchtimeAsync(int matchId, string command)
         {
-            var response = await Helper.ApiRequestPut(_ServerBaseUrl + "Match/" + matchId + "/time/" + command, "");
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/time/" + command, "");
 
             if (response == null)
             {
@@ -242,7 +288,7 @@ namespace Tiwaz.Shared
 
         public async Task SetMatchGoalAsync(int matchId, int teamId, int amount)
         {
-            var response = await Helper.ApiRequestPut(_ServerBaseUrl + "Match/" + matchId + "/goal/" + teamId + "/" + amount, "");
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/goal/" + teamId + "/" + amount, "");
 
             if (response == null)
             {

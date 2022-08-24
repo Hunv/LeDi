@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="config.conf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="config.conf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="digitalhigh.rpi-ws281x-csharp" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -929,6 +939,9 @@
     </None>
     <None Update="Config\Characters\Default\8x10\Z.char">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Layouts\0x0.layout">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Layouts\20x10.layout">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

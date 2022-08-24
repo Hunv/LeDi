@@ -55,7 +55,7 @@ namespace Tiwaz.Shared
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<object?> ApiRequestGet(string url)
+        public static async Task<string?> ApiRequestGet(string url)
         {
             //Allow untrusted certificates
             var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
@@ -66,8 +66,8 @@ namespace Tiwaz.Shared
                 var sR = new StreamReader(jsonStream);
                 var json = await sR.ReadToEndAsync();
                 sR.Close();
-
-                return JsonConvert.DeserializeObject(json, GetJsonSerializer());
+                
+                return json;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Tiwaz.Shared
             }
 
             var response = await client.SendAsync(requestMessage);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 if (response.Content == null)
                     return "";
@@ -123,7 +123,7 @@ namespace Tiwaz.Shared
             var requestMessage = GetRequestMessage("DELETE", url);
 
             var response = await client.SendAsync(requestMessage);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 if (response.Content == null)
                     return "";
@@ -161,7 +161,7 @@ namespace Tiwaz.Shared
             }
 
             var response = await client.SendAsync(requestMessage);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 if (response.Content == null)
                     return "";
@@ -170,7 +170,7 @@ namespace Tiwaz.Shared
             }
             else
             {
-                Console.WriteLine("Failed to PUT {0}", url);
+                Console.WriteLine("Failed to POST {0}", url);
                 return null;
             }
         }

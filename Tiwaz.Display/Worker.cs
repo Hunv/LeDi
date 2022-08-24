@@ -1,4 +1,3 @@
-using Tiwaz.Display.Api;
 using Tiwaz.Display.Display;
 
 namespace Tiwaz.Display
@@ -17,7 +16,15 @@ namespace Tiwaz.Display
             var connector = new Connector();
             await connector.LoadLocalDeviceConfigAsync();
             await connector.RegisterDevice();
-            var displayManager = new DisplayManager(connector.Layout);
+            var layout = await connector.GetDeviceSettings();
+
+            if (layout == null)
+            {
+                Console.WriteLine("Unable to load layout.");
+                return;
+            }
+
+            var displayManager = new DisplayManager(layout);
 
             while (!stoppingToken.IsCancellationRequested)
             {

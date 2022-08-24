@@ -13,7 +13,7 @@ namespace Tiwaz.Display.Display
         /// </summary>
         public bool IsInitialized { get { return Display.LayoutConfig == null ? false : true; } }
 
-        public DisplayManager(string? layout)
+        public DisplayManager(Layout layout)
         {
             Initialize(layout);
         }
@@ -46,11 +46,11 @@ namespace Tiwaz.Display.Display
         /// Initializes the Display Manager
         /// </summary>
         /// <param name="layoutName"></param>
-        public void Initialize(string? layoutName)
+        public void Initialize(Layout layout)
         {
-            if (Display.LayoutConfig == null && layoutName != null)
+            if (Display.LayoutConfig == null && layout != null)
             {
-                Display.Initialize(layoutName);
+                Display.Initialize(layout);
             }
         }
 

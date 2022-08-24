@@ -35,7 +35,11 @@ namespace LedGameDisplayTestApp
                     continue;
                 input = int.Parse(answer);
 
-                Display.Initialize("20x10");
+                var layout = new Layout();
+                layout.Width = 20;
+                layout.Height = 10;
+                layout.Name = "20x10";
+                Display.Initialize(layout);
 
                 if (input != 4)
                 {
