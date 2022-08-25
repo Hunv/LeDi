@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Timers;
+using Tiwaz.Display.Effects;
+using Tiwaz.Shared;
 
 namespace Tiwaz.Display.Display
 {
@@ -13,9 +15,94 @@ namespace Tiwaz.Display.Display
         /// </summary>
         public bool IsInitialized { get { return Display.LayoutConfig == null ? false : true; } }
 
-        public DisplayManager(Layout layout)
+        /// <summary>
+        /// Timer to query commands from server
+        /// </summary>
+        private readonly System.Timers.Timer _TmrMisc = new(2000);
+        private Api Api = new Api();
+        private Connector _Connector;
+        private bool _MiscRunning = false;
+
+        public DisplayManager(Layout layout, Connector connector)
         {
             Initialize(layout);
+            _Connector = connector;
+            _TmrMisc.Elapsed += _TmrMisc_Elapsed;
+            _TmrMisc.Start();
+        }
+
+        private async void _TmrMisc_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            if (_MiscRunning)
+                return;
+
+            _MiscRunning = true;
+
+            var commands = await _Connector.GetDeviceCommands();
+            if (commands == null || commands.Count == 0)
+            {
+                _MiscRunning = false;
+                return;
+            }
+
+            foreach(var aCmd in commands)
+            {
+                IEffect effect = new TestPixelWipe();
+                switch (aCmd.Command)
+                {
+                    case "showareas":
+                        effect = new TestArea();
+                        break;
+                    case "showtestpattern":
+                        effect = new TestPattern();
+                        break;
+                    case "showcolortest":
+                        effect = new TestColorWipe();
+                        break;
+                    case "showfullcolortest":
+                        effect = new TestFullColor();
+                        break;
+                    case "showclock":
+                    case "calibratefps":
+                    case "calibratebrightness":
+                        Display.SetBrightness(255);
+                        effect = new TestBrightness();
+                        break;
+                    case "reload":
+                        Console.WriteLine("Reloading Display settings...");
+                        await _Connector.LoadLocalDeviceConfigAsync();
+                        await _Connector.RegisterDevice();
+                        var layout = await _Connector.GetDeviceSettings();
+                        if (layout != null)
+                            Initialize(layout, true);
+                        Console.WriteLine("Display settings reloaded...");
+                        break;
+                    case "restartsoft":
+                    case "restarthard":
+                        break;
+                    default:
+                        Console.WriteLine("Unknown command {0}", aCmd.Command);
+                        break;
+                }
+                if (effect != null)
+                {
+                    Console.WriteLine("Running Effect {0}...", aCmd.Command);
+                    try
+                    {
+                        effect.Execute();
+                    }
+                    catch(Exception ea)
+                    {
+                        Console.WriteLine("Stopped effect {0} because of Error: {1}", aCmd.Command, ea.ToString());
+                    }
+                    Display.SetBrightness(Display.Brightness);
+                    Console.WriteLine("Effect {0} done...", aCmd.Command);
+                    await Api.RemoveDeviceCommand(aCmd);
+                }
+            }
+            
+            _MiscRunning = false;
+            
         }
 
         /// <summary>
@@ -46,9 +133,9 @@ namespace Tiwaz.Display.Display
         /// Initializes the Display Manager
         /// </summary>
         /// <param name="layoutName"></param>
-        public void Initialize(Layout layout)
+        public void Initialize(Layout layout, bool force = false)
         {
-            if (Display.LayoutConfig == null && layout != null)
+            if ((Display.LayoutConfig == null || force) && layout != null)
             {
                 Display.Initialize(layout);
             }

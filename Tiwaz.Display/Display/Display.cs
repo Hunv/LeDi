@@ -24,6 +24,11 @@ namespace Tiwaz.Display.Display
         public static int Y { get { return LayoutConfig == null ? 0 : LayoutConfig.Height; } }
 
         /// <summary>
+        /// Returns the brightness of the LED Panel based on Layout Configuration
+        /// </summary>
+        public static byte Brightness { get { return LayoutConfig == null ? (byte)0 : LayoutConfig.Brightness; } }
+
+        /// <summary>
         /// Is the first line data line feed on the left and the second line on the right and so on?
         /// </summary>
         public static bool HasAlternatingRows { get; set; } = true;
@@ -125,7 +130,7 @@ namespace Tiwaz.Display.Display
 
             //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10
             ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why
-            Controller = ControllerSettings.AddController(LedCount, StripType.WS2812_STRIP, ControllerType.PWM0, LayoutConfig.Brightness, false);
+            Controller = ControllerSettings.AddController(LedCount, StripType.WS2812_STRIP, ControllerType.PWM0, Brightness, false);
             WS281X = new WS281x(ControllerSettings);
 
             SetAll(Color.Black);
@@ -267,16 +272,36 @@ namespace Tiwaz.Display.Display
         public static void SetLed(int LedNumber, Color color)
         {
             if (Controller == null)
+            {
+                Console.Write("Controller is null. Not setting all LEDs.");
                 return;
+            }
+
+            //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
             Controller.SetLED(LedNumber, color);
         }
         public static void SetAll(Color color)
         {
             if (Controller == null)
+            {
+                Console.Write("Controller is null. Not setting all LEDs.");
                 return;
+            }
+            //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
             Controller.SetAll(color);
+        }
+
+        public static void SetBrightness(byte brightness)
+        {
+            if (Controller == null)
+            {
+                Console.Write("Controller is null. Not setting brightness.");
+                return;
+            }
+            Console.WriteLine("brightness: "+ WS281X.GetBrightness());
+            WS281X.SetBrightness(brightness);
         }
 
         public static void Render()

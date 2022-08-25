@@ -16,7 +16,7 @@
 else
 {
     <p>Confirm the deletion of device @Id:</p>
-    <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">       
+    <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete">       
         
         <button class="btn btn-warning" type="submit">Confirm Delete</button>
         <button class="btn btn-danger" type="button" @onclick="CancelDelete">Cancel Delete</button>
@@ -48,6 +48,7 @@ else
         await Api.DeleteDeviceAsync(Id);
 
         NavigationManager.NavigateTo("/settings");
-        
+        await Api.AddMatchAsync(new DtoMatch());
+
     }
 }

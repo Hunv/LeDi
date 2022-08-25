@@ -11,6 +11,8 @@ namespace Tiwaz.Display.Effects
     {
         public override void Execute()
         {
+            Console.WriteLine("Running Idle Bar");
+
             while (1 == 1)
             {
                 for (var currentPosition = 0; currentPosition <= Display.Display.X + 2; currentPosition++)
