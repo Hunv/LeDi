@@ -1,40 +1,57 @@
 ﻿@page "/Sportart"
+@using Tiwaz.Shared.DtoModel
+@inject Tiwaz.Shared.Api Api
+@inject NavigationManager NavigationManager
 
 <PageTitle>Sportart auswählen</PageTitle>
-@*<EditForm >*@
-@*    <DataAnnotationsValidator />
-    <ValidationSummary />*@
+@if (newMatch == null)
+{
+    <p><em>Loading Data...</em></p>
+}
+else
+{
+    <EditForm Model="@newMatch" OnValidSubmit="@SaveMatch">
+    @*    <DataAnnotationsValidator />
+        <ValidationSummary />*@
 
-    <a>Sportart wählen</a>
-    <select name=" " onchange="@ShowFields"> 
-        <option value="">  </option>
-        <option value="UWH">Unterwasserhockey</option>
-        <option value="Handball">Handball</option>
-    </select>
-    <br /> 
-    <a hidden="@Hidden">Team 1:</a>
-    <input id="TeamName1" class="form-control" type="text" hidden="@Hidden" size="20"/>
-    <a hidden="@Hidden"> Teams 2:</a>
-    <input id="TeamName2" class="form-control" type="text" hidden="@Hidden" size="20"/>
-    <a hidden="@Hidden"> Anzahl Halbzeiten:</a>
-    <input id="HalfTimeCount" class="form-control" type="text" hidden="@Hidden" size="20"/>
-    <a hidden="@Hidden"> Länge der Halbzeit in Min. :</a>
-    <input id="HalfTimeTime" class="form-control" type="text" hidden="@Hidden" size="20"/>
-    <br />
+        <a>Sportart wählen</a>
+
+        <select name=" " onchange="@ShowFields"> 
+            <option value="">  </option>
+            <option value="UWH">Unterwasserhockey</option>
+            <option value="Handball">Handball</option>
+        </select>
+        <br /> 
+        <a hidden="@Hidden">Team 1:</a>
+        <InputText id="txtTeamName1" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team1Name"/>
+        <a hidden="@Hidden"> Teams 2:</a>
+        <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team2Name"/>
+        <a hidden="@Hidden"> Anzahl Halbzeiten:</a>
+       @* <InputText id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" />*@
+        <a hidden="@Hidden"> Länge der Halbzeit in Min. :</a>
+        <InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.TimeLeftSeconds"/>
+        <br />
    
-    <body>
-    <a class="btn btn-primary" href="Matchcontrol" role="button">Bestätigen</a>
-    </body>
+        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Speichern und Starten</button>
+        <button class="btn btn-primary" type="submit">Speichern</button>
 
-
-
-
-@*    <button class="btn btn-primary" type="submit">Speichern</button>
-</EditForm>*@
+    
+    </EditForm>
+}
 
 @code{
 
     bool Hidden = true;
+    DtoMatch newMatch = new DtoMatch()
+        {
+            Team1Name = "Team1",
+            Team2Name = "Team2",
+            TimeLeftSeconds = 10
+    };
+    //string teamName1 = "Team1";
+    //string teamName2 = "Team2";
+    //int halfTimeCount;
+    //int halfTimeTime;
 
     private void ShowFields( ChangeEventArgs e)
     {
@@ -47,7 +64,28 @@
         {
             Hidden = true;
         }
-        
+
+
+    }
+    
+    private async void SaveMatch()
+    {
+
+        newMatch.TimeLeftSeconds = newMatch.TimeLeftSeconds*60;
+
+        await Api.AddMatchAsync(newMatch);
+        newMatch = new DtoMatch()
+            {
+                Team1Name = "Team1",
+                Team2Name = "Team2",
+                TimeLeftSeconds = 10
+            };
+    }
+    
+    private void SaveStartMatch()
+    {
+        SaveMatch();
+        NavigationManager.NavigateTo("/MatchControl");
 
     }
 }
