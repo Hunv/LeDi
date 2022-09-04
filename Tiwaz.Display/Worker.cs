@@ -24,7 +24,7 @@ namespace Tiwaz.Display
                 return;
             }
 
-            var displayManager = new DisplayManager(layout);
+            var displayManager = new DisplayManager(layout, connector);
 
             while (!stoppingToken.IsCancellationRequested)
             {
