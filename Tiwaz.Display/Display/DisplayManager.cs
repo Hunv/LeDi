@@ -47,7 +47,7 @@ namespace Tiwaz.Display.Display
 
             foreach(var aCmd in commands)
             {
-                IEffect effect = new TestPixelWipe();
+                IEffect effect = new NoEffect();
                 switch (aCmd.Command)
                 {
                     case "showareas":
@@ -63,7 +63,16 @@ namespace Tiwaz.Display.Display
                         effect = new TestFullColor();
                         break;
                     case "showclock":
+                        Display.SetAll(Color.Black);
+                        Display.ShowString(DateTime.Now.ToString("HH:mm"), null, null, false, 5, 3);
+                        Display.Render();
+                        break;
                     case "calibratefps":
+                        Display.SetAll(Color.Black);
+                        Display.Calibrate();
+                        Display.ShowString(Display.FPS.ToString("F0"), null, null, false, 5, 3);
+                        Display.Render();
+                        break;
                     case "calibratebrightness":
                         Display.SetBrightness(255);
                         effect = new TestBrightness();
@@ -79,6 +88,8 @@ namespace Tiwaz.Display.Display
                         break;
                     case "restartsoft":
                     case "restarthard":
+                        Display.SetAll(Color.Black);
+                        Display.SetLed(1, Color.Red);
                         break;
                     default:
                         Console.WriteLine("Unknown command {0}", aCmd.Command);
@@ -95,7 +106,7 @@ namespace Tiwaz.Display.Display
                     {
                         Console.WriteLine("Stopped effect {0} because of Error: {1}", aCmd.Command, ea.ToString());
                     }
-                    Display.SetBrightness(Display.Brightness);
+                    Display.SetBrightness(Display.Brightness); //Setting Brightness back to configured value in case it was changed for calibration tests
                     Console.WriteLine("Effect {0} done...", aCmd.Command);
                     await Api.RemoveDeviceCommand(aCmd);
                 }

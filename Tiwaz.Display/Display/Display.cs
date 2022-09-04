@@ -98,21 +98,38 @@ namespace Tiwaz.Display.Display
                 return;
             }
 
-            //if all pixel changing
-            TestColorWipe cfrw = new();
-
             Console.WriteLine("Starting all pixel change benchmark...");
 
             var start = DateTime.Now;
-            cfrw.Execute(); //Performing 256 changes
+
+            //Performing 256 changes
+            for (int i = 0; i < 256; i++)
+            {
+                switch (i % 3)
+                {
+                    case 0:
+                        SetAll(Color.Red);
+                        break;
+                    case 1:
+                        SetAll(Color.Green);
+                        break;
+                    case 2:
+                        SetAll(Color.Blue);
+                        break;
+                }
+                Render();
+            }
+            
             var end = DateTime.Now;
+
+            // Change all back to black
+            SetAll(Color.Black);
+            Render();
 
             var diff2 = end.Subtract(start);
             FPS = 256 / diff2.TotalSeconds;
 
-            Console.WriteLine("full pixel change FPS: {0} FPS", 256 / diff2.TotalSeconds);
-            Console.WriteLine("Press enter to continue...");
-            Console.Read();
+            Console.WriteLine("full pixel change FPS: {0} FPS", FPS);
         }
 
         public static void Initialize(Layout layout)
@@ -290,7 +307,13 @@ namespace Tiwaz.Display.Display
             }
             //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
-            Controller.SetAll(color);
+            // Does not work for some reason
+            //Controller.SetAll(color);
+
+            for (var i = 0; i < Controller.LEDCount; i++)
+            {
+                SetLed(i, color);
+            }            
         }
 
         public static void SetBrightness(byte brightness)
@@ -315,7 +338,7 @@ namespace Tiwaz.Display.Display
             Console.WriteLine(" Done ({0}ms)", DateTime.Now.Subtract(start).TotalMilliseconds);
         }
 
-        public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false)
+        public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false, int maxHeight = int.MaxValue, int maxWidth = int.MaxValue)
         {
             if (LayoutConfig == null || CharacterSets == null)
             {
@@ -329,7 +352,7 @@ namespace Tiwaz.Display.Display
             var area = areaName == null ? new Area() { Width = X, Height = Y } : LayoutConfig.AreaList.Single(x => x.Name == areaName);
 
             var matchingCharSets = CharacterSets.Where(x => x.Name == (characterSet ?? CharacterSet));
-            matchingCharSets = matchingCharSets.Where(x => x.Height <= area.Height).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
+            matchingCharSets = matchingCharSets.Where(x => x.Height <= area.Height && x.Height <= maxHeight && x.Width <= maxWidth).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
             var charSet = matchingCharSets.First();
 
             Console.WriteLine("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
