@@ -83,14 +83,16 @@ namespace Tiwaz.Display
 
         public async Task RegisterDevice()
         {
+            var json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"\"}";
             if (DeviceId != null)
             {
-                Console.WriteLine("No registration required. Device already has Device ID {0}", DeviceId);
-                return;
+                Console.WriteLine("No registration required. Device already has Device ID {0}. Checking if Server knows the device.", DeviceId);
+                json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"" + DeviceId + "\"}";
             }
-
-            Console.WriteLine("Registering Device...");
-            var json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"\"}";
+            else
+            {
+                Console.WriteLine("Registering Device...");
+            }            
 
             var responseBody = await SrvApi.RegisterDevice(json);
 
@@ -114,6 +116,15 @@ namespace Tiwaz.Display
                 }
 
                 Console.WriteLine("Device ID: {0}", deviceObj.DeviceId);
+                if (deviceObj.DeviceId == DeviceId)
+                {
+                    Console.WriteLine("Device ID confirmed.");
+                    return;
+                }
+                else if (!string.IsNullOrEmpty(DeviceId))
+                {
+                    Console.WriteLine("Device ID changed. New Device ID: {0}", deviceObj.DeviceId);
+                }
                 DeviceId = deviceObj.DeviceId;
                 
                 //Save received deviceId to config file
@@ -204,6 +215,15 @@ namespace Tiwaz.Display
                     case "hardborders":
                         layout.HardAreaBorders = Convert.ToBoolean(aSetting.Value);
                         break;
+                    case "led_toptobottom":
+                        Display.Display.IsBottomToTop = Convert.ToBoolean(aSetting.Value);
+                        break;
+                    case "led_alternatingrows":
+                        Display.Display.HasAlternatingRows = Convert.ToBoolean(aSetting.Value);
+                        break;
+                    case "led_firstledleft":
+                        Display.Display.IsLeftToRight = Convert.ToBoolean(aSetting.Value);
+                        break;
                 }
             }
 
@@ -216,6 +236,20 @@ namespace Tiwaz.Display
             //    layout.AreaList
                 
             return layout;
+        }
+
+        /// <summary>
+        /// Gets the DeviceCommands from the Server
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<DtoDeviceCommand>?> GetDeviceCommands()
+        {
+            if (DeviceId == null)
+            {
+                Console.WriteLine("Cannot get DeviceCommands. DeviceId is not set.");
+                return null;
+            }
+            return await SrvApi.GetDeviceCommandAsync(DeviceId);
         }
     }
 }

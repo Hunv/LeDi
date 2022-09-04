@@ -24,6 +24,11 @@ namespace Tiwaz.Display.Display
         public static int Y { get { return LayoutConfig == null ? 0 : LayoutConfig.Height; } }
 
         /// <summary>
+        /// Returns the brightness of the LED Panel based on Layout Configuration
+        /// </summary>
+        public static byte Brightness { get { return LayoutConfig == null ? (byte)0 : LayoutConfig.Brightness; } }
+
+        /// <summary>
         /// Is the first line data line feed on the left and the second line on the right and so on?
         /// </summary>
         public static bool HasAlternatingRows { get; set; } = true;
@@ -32,6 +37,11 @@ namespace Tiwaz.Display.Display
         /// Is the data feed line at the bottom of the panel?
         /// </summary>
         public static bool IsBottomToTop { get; set; } = true;
+
+        /// <summary>
+        /// Is the data feed line at the left of the panel?
+        /// </summary>
+        public static bool IsLeftToRight { get; set; } = true;
 
         /// <summary>
         /// Returns the amount of LEDs of the panel
@@ -93,21 +103,38 @@ namespace Tiwaz.Display.Display
                 return;
             }
 
-            //if all pixel changing
-            TestColorWipe cfrw = new();
-
             Console.WriteLine("Starting all pixel change benchmark...");
 
             var start = DateTime.Now;
-            cfrw.Execute(); //Performing 256 changes
+
+            //Performing 256 changes
+            for (int i = 0; i < 256; i++)
+            {
+                switch (i % 3)
+                {
+                    case 0:
+                        SetAll(Color.Red);
+                        break;
+                    case 1:
+                        SetAll(Color.Green);
+                        break;
+                    case 2:
+                        SetAll(Color.Blue);
+                        break;
+                }
+                Render();
+            }
+            
             var end = DateTime.Now;
+
+            // Change all back to black
+            SetAll(Color.Black);
+            Render();
 
             var diff2 = end.Subtract(start);
             FPS = 256 / diff2.TotalSeconds;
 
-            Console.WriteLine("full pixel change FPS: {0} FPS", 256 / diff2.TotalSeconds);
-            Console.WriteLine("Press enter to continue...");
-            Console.Read();
+            Console.WriteLine("full pixel change FPS: {0} FPS", FPS);
         }
 
         public static void Initialize(Layout layout)
@@ -125,7 +152,7 @@ namespace Tiwaz.Display.Display
 
             //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10
             ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why
-            Controller = ControllerSettings.AddController(LedCount, StripType.WS2812_STRIP, ControllerType.PWM0, LayoutConfig.Brightness, false);
+            Controller = ControllerSettings.AddController(LedCount, StripType.WS2812_STRIP, ControllerType.PWM0, Brightness, false);
             WS281X = new WS281x(ControllerSettings);
 
             SetAll(Color.Black);
@@ -267,16 +294,42 @@ namespace Tiwaz.Display.Display
         public static void SetLed(int LedNumber, Color color)
         {
             if (Controller == null)
+            {
+                Console.Write("Controller is null. Not setting all LEDs.");
                 return;
+            }
+
+            //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
             Controller.SetLED(LedNumber, color);
         }
         public static void SetAll(Color color)
         {
             if (Controller == null)
+            {
+                Console.Write("Controller is null. Not setting all LEDs.");
                 return;
+            }
+            //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
-            Controller.SetAll(color);
+            // Does not work for some reason
+            //Controller.SetAll(color);
+
+            for (var i = 0; i < Controller.LEDCount; i++)
+            {
+                SetLed(i, color);
+            }            
+        }
+
+        public static void SetBrightness(byte brightness)
+        {
+            if (Controller == null)
+            {
+                Console.Write("Controller is null. Not setting brightness.");
+                return;
+            }
+            Console.WriteLine("brightness: "+ WS281X.GetBrightness());
+            WS281X.SetBrightness(brightness);
         }
 
         public static void Render()
@@ -290,7 +343,7 @@ namespace Tiwaz.Display.Display
             Console.WriteLine(" Done ({0}ms)", DateTime.Now.Subtract(start).TotalMilliseconds);
         }
 
-        public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false)
+        public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false, int maxHeight = int.MaxValue, int maxWidth = int.MaxValue)
         {
             if (LayoutConfig == null || CharacterSets == null)
             {
@@ -304,7 +357,7 @@ namespace Tiwaz.Display.Display
             var area = areaName == null ? new Area() { Width = X, Height = Y } : LayoutConfig.AreaList.Single(x => x.Name == areaName);
 
             var matchingCharSets = CharacterSets.Where(x => x.Name == (characterSet ?? CharacterSet));
-            matchingCharSets = matchingCharSets.Where(x => x.Height <= area.Height).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
+            matchingCharSets = matchingCharSets.Where(x => x.Height <= area.Height && x.Height <= maxHeight && x.Width <= maxWidth).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
             var charSet = matchingCharSets.First();
 
             Console.WriteLine("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
@@ -556,22 +609,28 @@ namespace Tiwaz.Display.Display
             var calculatedY = matrixY;
 
             //If the panel has alternating rows and it is an even row, inverse the LED count.
-            if (Display.HasAlternatingRows && matrixY % 2 != 0)
+            if (HasAlternatingRows && matrixY % 2 != 0)
             {
-                calculatedX = Display.X - 1 - matrixX;
+                calculatedX = X - 1 - matrixX;
                 //Console.WriteLine("Alternating Row. X is now {0}", calculatedX);
             }
 
             //If the LED #1 is at the bottom, switch Y axis
-            if (Display.IsBottomToTop)
+            if (IsBottomToTop)
             {
-                calculatedY = Display.Y - 1 - matrixY;
-                calculatedX = Display.X - 1 - calculatedX;
+                calculatedY = Y - 1 - matrixY;
+                // calculatedX = X - 1 - calculatedX;
                 //Console.WriteLine("Switched Y={0} to Y={1}", matrixY, calculatedY);
             }
 
+            //Switch the order from left to right in case the first LED is on the right
+            if (!IsLeftToRight)
+            {
+                calculatedX = X - 1 - calculatedX;
+            }
+
             //Console.WriteLine("LED Number is {0}", calculatedX + X * matrixY);
-            return calculatedX + Display.X * calculatedY;
+            return calculatedX + X * calculatedY;
         }
 
 

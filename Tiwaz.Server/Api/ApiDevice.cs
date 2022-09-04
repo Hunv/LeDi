@@ -141,10 +141,33 @@ namespace Tiwaz.Server.Api
             var dev = dbContext.Device;
             if (dev != null)
             {
+                //Check if device ID exists
+                if (!string.IsNullOrEmpty(device.DeviceId))
+                {
+                    if (dev.Any(x => x.DeviceId == device.DeviceId))
+                    {
+                        //DeviceID exists
+                        Console.WriteLine("Verified Device {0}", device.DeviceId);
+                        var dtoExists = new DtoDevice(device.DeviceId, device.DeviceModel, device.DeviceType);
+                        return JsonConvert.SerializeObject(dtoExists, Helper.GetJsonSerializer());
+                    }
+                }
+
                 //Create a new device ID
                 var devId = Guid.NewGuid().ToString();
                 var newDevice = new Device(devId, device.DeviceModel, device.DeviceType);
                 dev.Add(newDevice);
+
+                // Add default settings
+                if (dbContext.DeviceSettings != null)
+                {
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "width", "0"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "height", "0"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "brightness", "50"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_toptobottom", "true"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_alternatingrows", "true"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_firstledleft", "true"));
+                }
 
                 await dbContext.SaveChangesAsync();
                 Console.WriteLine("Created new Device with GUID {0}, Type {1} and Model {2}", devId, device.DeviceType, device.DeviceModel);

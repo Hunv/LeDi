@@ -68,7 +68,28 @@ else
         <br />
         
         <button class="btn btn-primary" type="submit">Add Setting</button>
-    </EditForm>  
+    </EditForm>
+    <br /><br />
+    <h3>Send command to device:</h3>
+    <EditForm Model="@selectedDeviceCommand" OnValidSubmit="@ExecuteDeviceCommand">
+        <InputSelect @bind-Value="selectedDeviceCommand" class="form-control">
+            <option value="showareas">Show Areas</option>
+            <option value="showtestpattern">Show Testpattern</option>            
+            <option value="showcolortest">Show Colortest (60s)</option>
+            <option value="showfullcolortest">Show Fullcolortest (60s)</option>
+            <option value="showclock">Show current Time</option>
+            <option value="idlebar">Show Idlebar</option>
+            <option value="calibratefps">Calibration Test (~10s)</option>
+            <option value="calibratebrightness">Brightness Test</option>
+            <option value="reload">Reload Display Settings</option>
+            <option value=""></option>
+            <option value="">DANGER ZONE:</option>
+            <option value="restartsoft">Restart Display Service</option>
+            <option value="restarthard">Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</option>
+            <option value="shutdown">Shutdown Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</option>
+        </InputSelect>
+        <button class="btn btn-primary" type="submit">Send Command</button>
+    </EditForm>
 }
 
 @code {
@@ -77,6 +98,7 @@ else
 
     private List<DtoDeviceSetting>? DeviceSettingList;
     private DtoDeviceSetting NewSetting = new DtoDeviceSetting("", "", "");
+    private string selectedDeviceCommand = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,6 +148,17 @@ else
 
         DeviceSettingList = await Api.GetDeviceSettingsAsync(Id);
         NewSetting = new DtoDeviceSetting(Id, "", "");
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void ExecuteDeviceCommand()
+    {
+        if (string.IsNullOrWhiteSpace(selectedDeviceCommand))
+            return;
+
+        await Api.SetDeviceCommand(Id, selectedDeviceCommand, "");
+        selectedDeviceCommand = "";
 
         await InvokeAsync(() => { StateHasChanged(); });
     }

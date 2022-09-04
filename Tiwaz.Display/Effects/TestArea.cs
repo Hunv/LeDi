@@ -11,6 +11,8 @@ namespace Tiwaz.Display.Effects
     {
         public override void Execute()
         {
+            Console.WriteLine("Running Area Test");
+
             if (Display.Display.LayoutConfig == null)
                 return;
 
@@ -19,6 +21,8 @@ namespace Tiwaz.Display.Effects
 
             var colors = new Color[] {Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Cyan, Color.Purple, Color.Orange, Color.Navy, Color.White, Color.Violet, Color.Tomato, Color.Turquoise, Color.Teal, Color.Tan };
             var colorcount = 0;
+
+            Display.Display.SetAll(Color.Black);
 
             foreach (var aArea in Display.Display.LayoutConfig.AreaList)
             {

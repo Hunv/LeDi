@@ -66,6 +66,56 @@ namespace Tiwaz.Shared
 
             return responseBody;
         }
+
+        #endregion
+        #region DeviceCommand
+
+        /// <summary>
+        /// Sends a command request to the database to tell a device to run a command
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <param name="command"></param>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public async Task SetDeviceCommand(string deviceId, string command, string parameter)
+        {
+            Console.WriteLine("Sending Device Command {0} to device {1} with parameter {2}...", command, deviceId, parameter);
+            var obj = new DtoDeviceCommand()
+            {
+                DeviceId = deviceId,
+                Command = command,
+                Parameter = parameter
+            };
+            var json = Helper.SerializeObject(obj);
+            await Helper.ApiRequestPost(ServerBaseUrl + "DeviceCommand", json);
+
+        }
+
+        /// <summary>
+        /// Gets all devices
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<DtoDeviceCommand>> GetDeviceCommandAsync(string deviceId)
+        {
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "DeviceCommand/" + deviceId);
+            if (json == null)
+                return new List<DtoDeviceCommand>();
+
+            var command = JsonConvert.DeserializeObject<List<DtoDeviceCommand>?>(json, Helper.GetJsonSerializer());
+            return command ?? new List<DtoDeviceCommand>();
+        }
+
+        /// <summary>
+        /// Removes a command requested
+        /// </summary>
+        /// <returns></returns>
+        public async Task RemoveDeviceCommand(DtoDeviceCommand command)
+        {
+            Console.WriteLine("Sending Remove DeviceCommand for command {0} to device {1}...", command.Id, command.DeviceId);
+            var json = Helper.SerializeObject(command);
+            await Helper.ApiRequestDelete(ServerBaseUrl + "DeviceCommand", json);
+        }
+
         #endregion
         #region DeviceSetting
 

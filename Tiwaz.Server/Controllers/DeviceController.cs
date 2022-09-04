@@ -39,25 +39,6 @@ namespace Tiwaz.Server.Controllers
             return result;
         }
 
-
-        /// <summary>
-        /// Gets a device
-        /// </summary>
-        /// <returns></returns>
-        //[HttpGet("{deviceId}")]
-        //public IActionResult GetDevice(
-        //    string deviceId
-        //    )
-        //{
-        //    _logger.LogDebug("{0}: Get Device {1}", Request.HttpContext.Connection.RemoteIpAddress);
-
-        //    var json = Api.ApiDevice.GetDevice(deviceId);
-        //    var result = new OkObjectResult(json);
-
-        //    _logger.LogDebug("{0}: Got Device {1}. {2}", Request.HttpContext.Connection.RemoteIpAddress, json);
-        //    return result;
-        //}
-
         /// <summary>
         /// Gets all Settings of a Device
         /// </summary>
@@ -140,11 +121,14 @@ namespace Tiwaz.Server.Controllers
             [FromBody] DtoDevice device
             )
         {
-            _logger.LogDebug("{0}: Creating a new device... Model: {1}, Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
+            if (string.IsNullOrEmpty(device.DeviceId))
+                _logger.LogDebug("{0}: Creating a new device... Model: {1}, Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
+            else
+                _logger.LogDebug("{0}: Verifing device... ID: {1}, Model: {2}, Type: {3}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceId, device.DeviceModel, device.DeviceType);
 
             var json = await Api.ApiDevice.NewDevice(device);
 
-            _logger.LogDebug("{0}: Created Device Model: {1} Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
+            _logger.LogDebug("{0}: Created/Verified Device. Model: {1} Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
             return new OkObjectResult(json); ;
         }
 

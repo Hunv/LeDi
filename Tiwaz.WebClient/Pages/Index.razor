@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Tiwaz.Shared.DtoModel
+@inject Tiwaz.Shared.Api Api
 
 <PageTitle>Current Match</PageTitle>
 
@@ -14,3 +16,14 @@ Tore:<br />
 <br />
 Strafzeiten<br />
 - keine -                   12 - Nathan Walker (0:23)<br />
+
+@code {
+    //DtoMatch Match = new DtoMatch();
+
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    Match = await Api.GetMatchAsync();
+
+    //}
+}

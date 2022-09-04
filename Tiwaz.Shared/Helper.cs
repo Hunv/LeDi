@@ -83,7 +83,7 @@ namespace Tiwaz.Shared
             var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
             HttpClient client = new HttpClient(handler);
 
-            var requestMessage = Helper.GetRequestMessage("PUT", url, body);
+            var requestMessage = GetRequestMessage("PUT", url, body);
 
             if (requestMessage.Content == null)
             {
@@ -114,13 +114,25 @@ namespace Tiwaz.Shared
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<string?> ApiRequestDelete(string url)
+        public static async Task<string?> ApiRequestDelete(string url, string? body = null)
         {
             //Allow untrusted certificates
             var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
             HttpClient client = new HttpClient(handler);
 
-            var requestMessage = GetRequestMessage("DELETE", url);
+            HttpRequestMessage requestMessage;
+
+            if (body == null)
+            {
+                Console.WriteLine("No content set. Not setting content type header...");
+                requestMessage = GetRequestMessage("DELETE", url);
+            }
+            else
+            {
+                requestMessage = GetRequestMessage("DELETE", url, body);
+                if (requestMessage.Content != null)
+                    requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+            }
 
             var response = await client.SendAsync(requestMessage);
             if (response.IsSuccessStatusCode)

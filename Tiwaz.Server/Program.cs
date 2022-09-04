@@ -18,6 +18,7 @@ using (var dbContext = new TwDbContext())
         if (dbContext.Settings != null)
         {
             dbContext.Settings.Add(new Setting("timezone", "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"));
+            dbContext.Settings.Add(new Setting("wifi_password", ""));
             dbContext.SaveChanges();
         }
     }

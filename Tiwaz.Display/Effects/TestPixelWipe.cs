@@ -11,7 +11,8 @@ namespace Tiwaz.Display.Effects
 
         public override void Execute()
         {
-            for (int i = 0; i <= Display.Display.LedCount -1; i++)
+            Console.WriteLine("Running PixelWipe");
+            for (int i = 0; i < Display.Display.LedCount; i++)
             {
                 Display.Display.SetLed(i, Color);
                 Display.Display.Render();

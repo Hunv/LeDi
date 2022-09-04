@@ -10,21 +10,22 @@ namespace Tiwaz.Display.Effects
     {
         public override void Execute()
         {
-            
-            for (int i = 0; i < 255; i++)
+            Console.WriteLine("Running ColorWipe");
+            for (int i = 0; i < 60; i++)
             {
                 var color = i % 3;
                 if (color == 0)
-                    Display.Display.SetAll(Color.FromArgb(i,0,0));
+                    Display.Display.SetAll(Color.Red);
                 else if (color == 1)
-                    Display.Display.SetAll(Color.FromArgb(0, i, 0));
+                    Display.Display.SetAll(Color.Green);
                 else if (color == 2)
-                    Display.Display.SetAll(Color.FromArgb(0, 0, i));
+                    Display.Display.SetAll(Color.Blue);
 
                 Display.Display.Render();
+                Thread.Sleep(1000);
             }
 
-            Display.Display.SetAll(Color.FromArgb(0, 0, 0));
+            Display.Display.SetAll(Color.Black);
             Display.Display.Render();
             
         }
