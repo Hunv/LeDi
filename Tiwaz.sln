@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.WebClient", ".\Tiwaz.WebClient\Tiwaz.WebClient.csproj", "{7B3E8645-82DA-4FC1-9BF7-521ADB4D108D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.WebClient", "Tiwaz.WebClient\Tiwaz.WebClient.csproj", "{7B3E8645-82DA-4FC1-9BF7-521ADB4D108D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Server", ".\Tiwaz.Server\Tiwaz.Server.csproj", "{FC1DC4E6-B207-4442-B6AE-56072A2C179F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Server", "Tiwaz.Server\Tiwaz.Server.csproj", "{FC1DC4E6-B207-4442-B6AE-56072A2C179F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Display", ".\Tiwaz.Display\Tiwaz.Display.csproj", "{16470072-EEF4-4491-8C26-8FED5CBC28AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Display", "Tiwaz.Display\Tiwaz.Display.csproj", "{16470072-EEF4-4491-8C26-8FED5CBC28AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Display.TestApp", ".\Tiwaz.Display.TestApp\Tiwaz.Display.TestApp.csproj", "{EA7CAABF-F47B-4E87-88CC-8037ABA7B4BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Display.TestApp", "Tiwaz.Display.TestApp\Tiwaz.Display.TestApp.csproj", "{EA7CAABF-F47B-4E87-88CC-8037ABA7B4BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tiwaz.Shared", ".\Tiwaz.Shared\Tiwaz.Shared.csproj", "{AF0CA65B-7AF2-40B2-9F76-E544F4D4DAED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiwaz.Shared", "Tiwaz.Shared\Tiwaz.Shared.csproj", "{AF0CA65B-7AF2-40B2-9F76-E544F4D4DAED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
