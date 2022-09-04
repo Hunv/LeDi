@@ -1,120 +1,128 @@
 ﻿@page "/Matchcontrol"
+@inject Tiwaz.Shared.Api Api
+@using Tiwaz.Shared.DtoModel
 
 <PageTitle>MatchControl</PageTitle>
-@*<EditForm >*@
-@*    <DataAnnotationsValidator />
-    <ValidationSummary />*@
-<table>
-    <tr>
-        <th>
-            <center hidden=@Hidden>
-                <font size= "3">
-                     <a>Strafzeit</a>
-                </font>
-            </center>
-        </th>
-        <th>
-            <center>
-                <font size= "5">
-                     <a>Spielzeit</a>
-                </font>
-            </center>
-        </th>
-        <th>
-            <center hidden=@Hidden2>
-                <font size= "3">
-                     <a>Strafzeit</a>
-                </font>
-            </center>
-        </th>
-    </tr>
-    <tr>
-        <th>
-            <center hidden="@Hidden">
-                <font size="4">
-                     @duration2
-                </font>
-            </center>
-        </th>
-        <th>
-            <center>
-                <font size= "7">
-                     @duration
-                </font>
-            </center>
-        </th>
-        <th>
-            <center hidden="@Hidden2">
-                <font size="4">
-                     @duration3
-                </font>
-            </center>
-        </th>
-    </tr>@*Spielzeiten*@
-    <tr>
-        <th>
+@if (match == null)
+{
+    <p><em>Loading Data...</em></p>
+}
+else
+{
+    @*<EditForm >*@
+    @*    <DataAnnotationsValidator />
+        <ValidationSummary />*@
+    <table>
+        <tr>
+            <th>
+                <center hidden=@Hidden>
+                    <font size= "3">
+                         <a>Strafzeit</a>
+                    </font>
+                </center>
+            </th>
+            <th>
+                <center>
+                    <font size= "5">
+                         <a>Spielzeit</a>
+                    </font>
+                </center>
+            </th>
+            <th>
+                <center hidden=@Hidden2>
+                    <font size= "3">
+                         <a>Strafzeit</a>
+                    </font>
+                </center>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <center hidden="@Hidden">
+                    <font size="4">
+                         @duration2
+                    </font>
+                </center>
+            </th>
+            <th>
+                <center>
+                    <font size= "7">
+                         @duration
+                    </font>
+                </center>
+            </th>
+            <th>
+                <center hidden="@Hidden2">
+                    <font size="4">
+                         @duration3
+                    </font>
+                </center>
+            </th>
+        </tr>@*Spielzeiten*@
+        <tr>
+            <th>
 
-        </th>
-        <th>
-            <button class="btn btn-primary" @onclick="@StartTimer">
-                start
-            </button>
-            <button class="btn btn-primary" @onclick="@TimerStop">
-                anhalten
-            </button>
-            <button class="btn btn-primary" @onclick="@TimerStart">
-                weiter
-            </button>
-        </th>
-        <th>
+            </th>
+            <th>
+                <button class="btn btn-primary" @onclick="@StartTimer">
+                    start
+                </button>
+                <button class="btn btn-primary" @onclick="@TimerStop">
+                    anhalten
+                </button>
+                <button class="btn btn-primary" @onclick="@TimerStart">
+                    weiter
+                </button>
+            </th>
+            <th>
 
-        </th>
-    </tr>@*Timer Buttons*@
+            </th>
+        </tr>@*Timer Buttons*@
     
-    <tr>
-        <th>
-            Heimmannschaft:
-            <p role="status"> <center> <font size="7"> @CountHome </font> </center></p>
-            <button class="btn btn-primary" @onclick="@IncrementCountHome">
-                Tor
-            </button>
-            <button class="btn btn-danger" @onclick="@DecreaseCountHome">
-                Kein Tor
-            </button>
-        </th>
-        <th>
+        <tr>
+            <th>
+                <a>@match.Team1Name</a>
+                <p role="status"> <center> <font size="7"> @CountHome </font> </center></p>
+                <button class="btn btn-primary" @onclick="@IncrementCountHome">
+                    Tor
+                </button>
+                <button class="btn btn-danger" @onclick="@DecreaseCountHome">
+                    Kein Tor
+                </button>
+            </th>
+            <th>
 
-        </th>
-        <th>
-            Gastmannschaft:
-            <p role="status"><center> <font size="7"> @CountGuest </font> </center> </p>
-            <button class="btn btn-primary" @onclick="@IncrementCountGuest">
-                Tor
-            </button>
-            <button class="btn btn-danger" @onclick="@DecreaseCountGuest">
-                Kein Tor
-            </button>
-        </th>
-    </tr>@*Tore Eingeben*@
+            </th>
+            <th>
+                <a>@match.Team2Name</a>
+                <p role="status"><center> <font size="7"> @CountGuest </font> </center> </p>
+                <button class="btn btn-primary" @onclick="@IncrementCountGuest">
+                    Tor
+                </button>
+                <button class="btn btn-danger" @onclick="@DecreaseCountGuest">
+                    Kein Tor
+                </button>
+            </th>
+        </tr>@*Tore Eingeben*@
 
-    <tr>
-        <th>
-            <button class="btn btn-primary" @onclick="@Penalty2MinHome" >
-                2min Strafzeit
-            </button>
-        </th>
-        <th>
+        <tr>
+            <th>
+                <button class="btn btn-primary" @onclick="@Penalty2MinHome" >
+                    2min Strafzeit
+                </button>
+            </th>
+            <th>
 
-        </th>
-        <th>
-            <button class="btn btn-primary" @onclick="@Penalty2MinGuest" >
-                2min Strafzeit
-            </button>
-        </th>
-    </tr>
+            </th>
+            <th>
+                <button class="btn btn-primary" @onclick="@Penalty2MinGuest" >
+                    2min Strafzeit
+                </button>
+            </th>
+        </tr>
 
-</table>
-
+    </table>
+}
 
 
 @code{
@@ -127,6 +135,7 @@
     int CountGuest = 0;
     bool Hidden = true;
     bool Hidden2 = true;
+    DtoMatch match = new DtoMatch();
 
     private void IncrementCountHome()
     {
@@ -211,5 +220,14 @@
             duration3--;
             await InvokeAsync(() => { StateHasChanged(); });
         }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+
+        var matchList= await Api.GetMatchListAsync();
+        if (matchList.Count == 0)
+            return;
+
+        match = matchList[matchList.Count-1];
     }
 }
