@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Tiwaz Display</a>
+        <a class="navbar-brand" href="">Tiwaz Match Engine</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -11,47 +11,41 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-timer" aria-hidden="true"></span> Aktuelles Spiel
+                <span class="oi oi-timer" aria-hidden="true"></span> Current Match
             </NavLink>
         </div>
         
         @*For icons see https://useiconic.com/open*@
         @*<AuthorizeView>
             <Authorized>*@
-                <div class="nav-item px-4">
+                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="start">
-                        <span class="oi oi-target" aria-hidden="true"></span> Start
+                        <span class="oi oi-badge" aria-hidden="true"></span> Start
                     </NavLink>
                 </div> 
-
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Spielsteuerung
-                    </NavLink>
-                </div>        
-                <div class="nav-item px-4">
                     <NavLink class="nav-link" href="matchcontrol">
-                        <span class="oi oi-target" aria-hidden="true"></span> Steuerung
+                        <span class="oi oi-target" aria-hidden="true"></span> Referee Match
                     </NavLink>
                 </div>                        
-                <div class="nav-item px-4">
+                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="matchplayers">
-                        <span class="oi oi-people" aria-hidden="true"></span> Spielerliste
+                        <span class="oi oi-people" aria-hidden="true"></span> Playerlist
                     </NavLink>
                 </div>        
-                <div class="nav-item px-4">
+                <div class="nav-item px-3">
                     <NavLink class="nav-link" href="matchsummary">
-                        <span class="oi oi-list" aria-hidden="true"></span> Spielbericht
+                        <span class="oi oi-list" aria-hidden="true"></span> Match Summary
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="matchplanning">
-                        <span class="oi oi-calendar" aria-hidden="true"></span> Spielplanung
+                        <span class="oi oi-calendar" aria-hidden="true"></span> Match planning
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="settings">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Einstellungen
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Settings
                     </NavLink>
                 </div>
         @*    </Authorized>
@@ -59,7 +53,7 @@
         
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="about">
-                <span class="oi oi-info" aria-hidden="true"></span> Über Tiwaz
+                <span class="oi oi-info" aria-hidden="true"></span> About Tiwaz
             </NavLink>
         </div>
     </nav>
