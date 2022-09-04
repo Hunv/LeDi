@@ -39,6 +39,11 @@ namespace Tiwaz.Display.Display
         public static bool IsBottomToTop { get; set; } = true;
 
         /// <summary>
+        /// Is the data feed line at the left of the panel?
+        /// </summary>
+        public static bool IsLeftToRight { get; set; } = true;
+
+        /// <summary>
         /// Returns the amount of LEDs of the panel
         /// </summary>
         public static int LedCount { get { return X * Y; } }
@@ -604,22 +609,28 @@ namespace Tiwaz.Display.Display
             var calculatedY = matrixY;
 
             //If the panel has alternating rows and it is an even row, inverse the LED count.
-            if (Display.HasAlternatingRows && matrixY % 2 != 0)
+            if (HasAlternatingRows && matrixY % 2 != 0)
             {
-                calculatedX = Display.X - 1 - matrixX;
+                calculatedX = X - 1 - matrixX;
                 //Console.WriteLine("Alternating Row. X is now {0}", calculatedX);
             }
 
             //If the LED #1 is at the bottom, switch Y axis
-            if (Display.IsBottomToTop)
+            if (IsBottomToTop)
             {
-                calculatedY = Display.Y - 1 - matrixY;
-                calculatedX = Display.X - 1 - calculatedX;
+                calculatedY = Y - 1 - matrixY;
+                // calculatedX = X - 1 - calculatedX;
                 //Console.WriteLine("Switched Y={0} to Y={1}", matrixY, calculatedY);
             }
 
+            //Switch the order from left to right in case the first LED is on the right
+            if (!IsLeftToRight)
+            {
+                calculatedX = X - 1 - calculatedX;
+            }
+
             //Console.WriteLine("LED Number is {0}", calculatedX + X * matrixY);
-            return calculatedX + Display.X * calculatedY;
+            return calculatedX + X * calculatedY;
         }
 
 

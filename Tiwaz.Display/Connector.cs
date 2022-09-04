@@ -204,6 +204,15 @@ namespace Tiwaz.Display
                     case "hardborders":
                         layout.HardAreaBorders = Convert.ToBoolean(aSetting.Value);
                         break;
+                    case "led_toptobottom":
+                        Display.Display.IsBottomToTop = Convert.ToBoolean(aSetting.Value);
+                        break;
+                    case "led_alternatingrows":
+                        Display.Display.HasAlternatingRows = Convert.ToBoolean(aSetting.Value);
+                        break;
+                    case "led_firstledleft":
+                        Display.Display.IsLeftToRight = Convert.ToBoolean(aSetting.Value);
+                        break;
                 }
             }
 

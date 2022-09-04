@@ -39,25 +39,6 @@ namespace Tiwaz.Server.Controllers
             return result;
         }
 
-
-        /// <summary>
-        /// Gets a device
-        /// </summary>
-        /// <returns></returns>
-        //[HttpGet("{deviceId}")]
-        //public IActionResult GetDevice(
-        //    string deviceId
-        //    )
-        //{
-        //    _logger.LogDebug("{0}: Get Device {1}", Request.HttpContext.Connection.RemoteIpAddress);
-
-        //    var json = Api.ApiDevice.GetDevice(deviceId);
-        //    var result = new OkObjectResult(json);
-
-        //    _logger.LogDebug("{0}: Got Device {1}. {2}", Request.HttpContext.Connection.RemoteIpAddress, json);
-        //    return result;
-        //}
-
         /// <summary>
         /// Gets all Settings of a Device
         /// </summary>
