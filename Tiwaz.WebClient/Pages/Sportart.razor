@@ -3,7 +3,7 @@
 @inject Tiwaz.Shared.Api Api
 @inject NavigationManager NavigationManager
 
-<PageTitle>Sportart auswählen</PageTitle>
+<PageTitle>Select type of sport</PageTitle>
 @if (newMatch == null)
 {
     <p><em>Loading Data...</em></p>
@@ -14,7 +14,7 @@ else
     @*    <DataAnnotationsValidator />
         <ValidationSummary />*@
 
-        <a>Sportart wählen</a>
+        <a>Select type of sport</a>
 
         <select name=" " onchange="@ShowFields"> 
             <option value="">  </option>
@@ -26,14 +26,14 @@ else
         <InputText id="txtTeamName1" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team1Name"/>
         <a hidden="@Hidden"> Teams 2:</a>
         <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team2Name"/>
-        <a hidden="@Hidden"> Anzahl Halbzeiten:</a>
+        <a hidden="@Hidden"> Number of halftimes:</a>
        @* <InputText id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" />*@
-        <a hidden="@Hidden"> Länge der Halbzeit in Min. :</a>
+        <a hidden="@Hidden"> Length of a halftime in minutes:</a>
         <InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.TimeLeftSeconds"/>
         <br />
    
-        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Speichern und Starten</button>
-        <button class="btn btn-primary" type="submit">Speichern</button>
+        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
+        <button class="btn btn-primary" type="submit">Save</button>
 
     
     </EditForm>
@@ -56,7 +56,11 @@ else
     private void ShowFields( ChangeEventArgs e)
     {
 
-        if(e.Value.ToString() == "UWH")
+        if (e.Value == null)
+        {
+            return;
+        }
+        else if (e.Value.ToString() == "UWH")
         {
             Hidden = false;
         }

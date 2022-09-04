@@ -16,11 +16,11 @@ namespace Tiwaz.Server
 
         public MatchHandler(int matchId)
         {
-            MatchId = matchId;
-            MatchStatus = MatchStatusEnum.Planned;
+            MatchId = matchId;            
+            Task.Run(async () => await SetMatchStatus(MatchStatusEnum.Planned, MatchId)).Wait();
         }
 
-        private void TmrMatchtimer_Elapsed(object? sender, ElapsedEventArgs e)
+        private async void TmrMatchtimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             //If not initialized, cancel
             if (ReferenceSystemTime == null)
@@ -48,7 +48,7 @@ namespace Tiwaz.Server
                         (MatchRules.Rules == null || MatchRules.Rules.HalftimeOvertime == false)
                         )
                     {
-                        Stop();
+                        await Stop();
                     }
                     else
                     {
@@ -68,9 +68,8 @@ namespace Tiwaz.Server
                 tmrDisposeTimer.Elapsed += TmrDisposetimer_Elapsed;
                 IsInitialized = true;
 
-
+                // Load the Match rules
                 using var dbContext = new TwDbContext();
-
                 if (dbContext.Matches != null)
                 {
                     var match = dbContext.Matches.SingleOrDefault(x => x.Id == MatchId);
@@ -87,36 +86,60 @@ namespace Tiwaz.Server
             ReferenceSystemTime = DateTime.Now;
             ReferenceSecond = DateTime.Now.Second == 0 ? 59 : DateTime.Now.Second - 1;
             tmrMatchtimer.Start();
-            MatchStatus = MatchStatusEnum.Running;
+            await SetMatchStatus(MatchStatusEnum.Running, MatchId);
         }
 
-        public void Stop()
+        public async Task Stop()
         {
             tmrMatchtimer.Stop();
             ReferenceSystemTime = null;
-            MatchStatus = MatchStatusEnum.Ended;
+            await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
         }
 
         /// <summary>
         /// The game ended and the scores are fixed. Time is not running anymore and no overtime, penalty shots etc. are left.
         /// </summary>
-        public void Finish()
+        public async Task Finish()
         {
             tmrMatchtimer.Stop();
             ReferenceSystemTime = null;
-            MatchStatus = MatchStatusEnum.Ended;
+            await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
             tmrDisposeTimer.Start();
         }
 
+        /// <summary>
+        /// Sets the MatchStatus in the cache and in the Database.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="matchId"></param>
+        private async Task SetMatchStatus(MatchStatusEnum status, int matchId)
+        {
+            // Set the cached status
+            MatchStatus = status;
+
+            // Set the Database status
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
+            {
+                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (match != null)
+                {
+                    // Set the match status in DB
+                    match.MatchStatus = (int)status;
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+        }
 
         /// <summary>
         /// Cleanup this Handler
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TmrDisposetimer_Elapsed(object? sender, ElapsedEventArgs e)
+        private async void TmrDisposetimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            MatchStatus = MatchStatusEnum.Ended;
+            await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
             OnDisposeMatchhandler(new EventArgs());
         }
 

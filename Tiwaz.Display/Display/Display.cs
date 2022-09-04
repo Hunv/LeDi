@@ -323,7 +323,7 @@ namespace Tiwaz.Display.Display
 
         public static void SetBrightness(byte brightness)
         {
-            if (Controller == null)
+            if (Controller == null || WS281X == null)
             {
                 Console.Write("Controller is null. Not setting brightness.");
                 return;

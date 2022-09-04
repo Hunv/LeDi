@@ -9,29 +9,26 @@
 }
 else
 {
-    @*<EditForm >*@
-    @*    <DataAnnotationsValidator />
-        <ValidationSummary />*@
     <table>
         <tr>
             <th>
                 <center hidden=@Hidden>
                     <font size= "3">
-                         <a>Strafzeit</a>
+                         <a>Penalty</a>
                     </font>
                 </center>
             </th>
             <th>
                 <center>
                     <font size= "5">
-                         <a>Spielzeit</a>
+                         <a>Time</a>
                     </font>
                 </center>
             </th>
             <th>
                 <center hidden=@Hidden2>
                     <font size= "3">
-                         <a>Strafzeit</a>
+                         <a>Penalty</a>
                     </font>
                 </center>
             </th>
@@ -47,7 +44,7 @@ else
             <th>
                 <center>
                     <font size= "7">
-                         @duration
+                         @(match.TimeLeftSeconds / 60):@(((match.TimeLeftSeconds % 60) ?? 0).ToString().PadLeft(2,'0'))
                     </font>
                 </center>
             </th>
@@ -58,20 +55,20 @@ else
                     </font>
                 </center>
             </th>
-        </tr>@*Spielzeiten*@
+        </tr>@*Match time*@
         <tr>
             <th>
 
             </th>
             <th>
-                <button class="btn btn-primary" @onclick="@StartTimer">
-                    start
+                <button class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled">
+                    Start
                 </button>
-                <button class="btn btn-primary" @onclick="@TimerStop">
-                    anhalten
+                <button class="btn btn-primary" @onclick="@PauseMatch">
+                    Pause
                 </button>
-                <button class="btn btn-primary" @onclick="@TimerStart">
-                    weiter
+                <button class="btn btn-primary" @onclick="@ResumeMatch">
+                    Resume
                 </button>
             </th>
             <th>
@@ -82,12 +79,12 @@ else
         <tr>
             <th>
                 <a>@match.Team1Name</a>
-                <p role="status"> <center> <font size="7"> @CountHome </font> </center></p>
-                <button class="btn btn-primary" @onclick="@IncrementCountHome">
-                    Tor
+                <p role="status"> <center> <font size="7"> @CountTeam1 </font> </center></p>
+                <button class="btn btn-primary" @onclick="@IncrementCountTeam1">
+                    Score
                 </button>
-                <button class="btn btn-danger" @onclick="@DecreaseCountHome">
-                    Kein Tor
+                <button class="btn btn-danger" @onclick="@DecreaseCountTeam1">
+                    Revoke
                 </button>
             </th>
             <th>
@@ -95,28 +92,28 @@ else
             </th>
             <th>
                 <a>@match.Team2Name</a>
-                <p role="status"><center> <font size="7"> @CountGuest </font> </center> </p>
-                <button class="btn btn-primary" @onclick="@IncrementCountGuest">
-                    Tor
+                <p role="status"><center> <font size="7"> @CountTeam2 </font> </center> </p>
+                <button class="btn btn-primary" @onclick="@IncrementCountTeam2">
+                    Score
                 </button>
-                <button class="btn btn-danger" @onclick="@DecreaseCountGuest">
-                    Kein Tor
+                <button class="btn btn-danger" @onclick="@DecreaseCountTeam2">
+                    Revoke
                 </button>
             </th>
-        </tr>@*Tore Eingeben*@
+        </tr>@*Enter goals*@
 
         <tr>
             <th>
-                <button class="btn btn-primary" @onclick="@Penalty2MinHome" >
-                    2min Strafzeit
+                <button class="btn btn-primary" @onclick="@Penalty2MinTeam1" >
+                    2min Penalty
                 </button>
             </th>
             <th>
 
             </th>
             <th>
-                <button class="btn btn-primary" @onclick="@Penalty2MinGuest" >
-                    2min Strafzeit
+                <button class="btn btn-primary" @onclick="@Penalty2MinTeam2" >
+                    2min Penalty
                 </button>
             </th>
         </tr>
@@ -127,77 +124,80 @@ else
 
 @code{
 
-    System.Timers.Timer timer1 = new System.Timers.Timer();
-    int duration = 60;
+    System.Timers.Timer tmrMatchtime = new System.Timers.Timer();
     int duration2 = 15;
     int duration3 = 15;
-    int CountHome = 0;
-    int CountGuest = 0;
+    int CountTeam1 = 0;
+    int CountTeam2 = 0;
     bool Hidden = true;
     bool Hidden2 = true;
     DtoMatch match = new DtoMatch();
+    bool StartButtonDisabled = false;
 
-    private void IncrementCountHome()
+    private void IncrementCountTeam1()
     {
-        CountHome++;
+        CountTeam1++;
     }
-    private void DecreaseCountHome()
+    private void DecreaseCountTeam1()
     {
-        CountHome--;
-    }
-
-    private void IncrementCountGuest()
-    {
-        CountGuest++;
-    }
-    private void DecreaseCountGuest()
-    {
-        CountGuest--;
+        CountTeam1--;
     }
 
-    private void TimerStop()
+    private void IncrementCountTeam2()
     {
-        timer1.Stop();
+        CountTeam2++;
     }
-    private void TimerStart()
+    private void DecreaseCountTeam2()
     {
-        timer1.Start();
+        CountTeam2--;
     }
-    private void StartTimer()
-    {
-        timer1.Interval = 1000;
-        timer1.Elapsed += count_down;   
-        timer1.Start();  
 
+    private async void PauseMatch()
+    {
+        await Api.ControlMatchtimeAsync(match.Id, "pause");
     }
-    private void Penalty2MinHome()
+    private async void ResumeMatch()
+    {
+        await Api.ControlMatchtimeAsync(match.Id, "resume");
+    }
+    private async void StartMatch()
+    {
+        StartButtonDisabled = true;
+        await Api.ControlMatchtimeAsync(match.Id, "start");
+    }
+    private void Penalty2MinTeam1()
     {
         duration2 = 15;
-        timer1.Interval = 1000;
-        timer1.Elapsed += count_downHome;
+        tmrMatchtime.Interval = 1000;
+        tmrMatchtime.Elapsed += count_downTeam1;
         Hidden = false;
     }
-    private void Penalty2MinGuest()
+    private void Penalty2MinTeam2()
     {
         duration3 = 15;
-        timer1.Interval = 1000;
-        timer1.Elapsed += count_downGuest;
+        tmrMatchtime.Interval = 1000;
+        tmrMatchtime.Elapsed += count_downTeam2;
         Hidden2 = false;
     }
 
-    private async void count_down(object? sender, EventArgs e)
+    private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
     {
-        if (duration == 0)
-        {
-            timer1.Stop();
+        // If local timer says, time is over check verify before stopping
+        if (match.TimeLeftSeconds == 0)
+        {            
+            match.TimeLeftSeconds = await Api.GetMatchTimeAsync(match.Id);
+
+            // Stop Timer only if the Server based timer is done.
+            if (match.TimeLeftSeconds == 0)
+                tmrMatchtime.Stop();
         }
-        else if(duration > 0)
+        else //update local timer
         {
-            duration--;
-            await InvokeAsync(() => { StateHasChanged(); });
+            match.TimeLeftSeconds = await Api.GetMatchTimeAsync(match.Id);
         }
+        await InvokeAsync(() => { StateHasChanged(); });
     }
-    private async void count_downHome(object? sender, EventArgs e)
+    private async void count_downTeam1(object? sender, EventArgs e)
     {
         if (duration2 == 0)
         {
@@ -209,7 +209,7 @@ else
             await InvokeAsync(() => { StateHasChanged(); });
         }
     }
-    private async void count_downGuest(object? sender, EventArgs e)
+    private async void count_downTeam2(object? sender, EventArgs e)
     {
         if (duration3 == 0)
         {
@@ -223,11 +223,22 @@ else
     }
     protected override async Task OnInitializedAsync()
     {
-
         var matchList= await Api.GetMatchListAsync();
         if (matchList.Count == 0)
             return;
 
         match = matchList[matchList.Count-1];
+
+        if (match.MatchStatus >= 2)
+        {
+            StartButtonDisabled = true;
+        }
+
+        // Needs to be initialized at the load of the page to also show running matches
+        tmrMatchtime.Interval = 1000;
+        tmrMatchtime.Elapsed += tmrMatchtime_Elapsed;   
+
+        tmrMatchtime.Start();
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 }
