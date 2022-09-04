@@ -87,9 +87,64 @@ namespace Tiwaz.Display.Display
                         Console.WriteLine("Display settings reloaded...");
                         break;
                     case "restartsoft":
+                        Display.SetAll(Color.Black);
+                        Display.SetLed(1, Color.Red);
+
+                        try
+                        {
+                            System.Diagnostics.Process procSoft = new System.Diagnostics.Process();
+                            procSoft.StartInfo.FileName = "/bin/bash";
+                            procSoft.StartInfo.Arguments = "-c \"/usr/bin/systemctl restart tiwaz.display\"";
+                            procSoft.StartInfo.UseShellExecute = false;
+                            procSoft.StartInfo.RedirectStandardOutput = true;
+                            procSoft.Start();
+                        }
+                        catch(Exception ea)
+                        {
+                            Console.WriteLine("Failed to run command. Error: " + ea.ToString());
+                        }
+
+                        break;
                     case "restarthard":
                         Display.SetAll(Color.Black);
                         Display.SetLed(1, Color.Red);
+                        Display.SetLed(2, Color.Red);
+
+                        try
+                        {
+                            System.Diagnostics.Process procHard = new System.Diagnostics.Process();
+                            procHard.StartInfo.FileName = "/bin/bash";
+                            procHard.StartInfo.Arguments = "-c \"/usr/sbin/shutdown -r now\"";
+                            procHard.StartInfo.UseShellExecute = false;
+                            procHard.StartInfo.RedirectStandardOutput = true;
+                            procHard.Start();
+                        }
+                        catch (Exception ea)
+                        {
+                            Console.WriteLine("Failed to run command. Error: " + ea.ToString());
+                        }
+
+                break;
+                    case "shutdown":
+                        Display.SetAll(Color.Black);
+                        Display.SetLed(1, Color.Red);
+                        Display.SetLed(2, Color.Red);
+                        Display.SetLed(3, Color.Red);
+
+                        try
+                        { 
+                            System.Diagnostics.Process procDown = new System.Diagnostics.Process();
+                            procDown.StartInfo.FileName = "/bin/bash";
+                            procDown.StartInfo.Arguments = "-c \"/usr/sbin/shutdown -h now\"";
+                            procDown.StartInfo.UseShellExecute = false;
+                            procDown.StartInfo.RedirectStandardOutput = true;
+                            procDown.Start();
+                        }
+                        catch (Exception ea)
+                        {
+                            Console.WriteLine("Failed to run command. Error: " + ea.ToString());
+                        }
+
                         break;
                     default:
                         Console.WriteLine("Unknown command {0}", aCmd.Command);
