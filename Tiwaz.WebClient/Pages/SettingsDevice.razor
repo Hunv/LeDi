@@ -157,5 +157,7 @@ else
 
         await Api.SetDeviceCommand(Id, selectedDeviceCommand, "");
         selectedDeviceCommand = "";
+
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 }
