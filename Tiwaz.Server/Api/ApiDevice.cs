@@ -141,6 +141,18 @@ namespace Tiwaz.Server.Api
             var dev = dbContext.Device;
             if (dev != null)
             {
+                //Check if device ID exists
+                if (!string.IsNullOrEmpty(device.DeviceId))
+                {
+                    if (dev.Any(x => x.DeviceId == device.DeviceId))
+                    {
+                        //DeviceID exists
+                        Console.WriteLine("Verified Device {0}", device.DeviceId);
+                        var dtoExists = new DtoDevice(device.DeviceId, device.DeviceModel, device.DeviceType);
+                        return JsonConvert.SerializeObject(dtoExists, Helper.GetJsonSerializer());
+                    }
+                }
+
                 //Create a new device ID
                 var devId = Guid.NewGuid().ToString();
                 var newDevice = new Device(devId, device.DeviceModel, device.DeviceType);
