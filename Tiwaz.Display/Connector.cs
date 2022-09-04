@@ -217,5 +217,19 @@ namespace Tiwaz.Display
                 
             return layout;
         }
+
+        /// <summary>
+        /// Gets the DeviceCommands from the Server
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<DtoDeviceCommand>?> GetDeviceCommands()
+        {
+            if (DeviceId == null)
+            {
+                Console.WriteLine("Cannot get DeviceCommands. DeviceId is not set.");
+                return null;
+            }
+            return await SrvApi.GetDeviceCommandAsync(DeviceId);
+        }
     }
 }

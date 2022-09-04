@@ -13,10 +13,12 @@ namespace Tiwaz.Display.Effects
     {
         public override void Execute()
         {
+            Console.WriteLine("Running CharTest");
             if (Display.Display.LayoutConfig == null || Display.Display.CharacterSets == null || Display.Display.LayoutConfig.AreaList == null)
             {
                 return;
             }
+            Display.Display.SetAll(Color.Black);
 
             foreach (var aArea in Display.Display.LayoutConfig.AreaList)
             {

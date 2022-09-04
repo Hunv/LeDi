@@ -14,9 +14,9 @@ namespace Tiwaz.Server.DatabaseModel
         public DbSet<Setting>? Settings { get; set; }
         public DbSet<Device>? Device { get; set; }
         public DbSet<DeviceSetting>? DeviceSettings { get; set; }
+        public DbSet<DeviceCommand>? DeviceCommands { get; set; }
         public DbSet<Player>? Players { get; set; }
         public DbSet<Player2Match>? Player2Matches { get; set; }
-
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
