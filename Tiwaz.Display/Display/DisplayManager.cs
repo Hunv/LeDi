@@ -67,6 +67,9 @@ namespace Tiwaz.Display.Display
                         Display.ShowString(DateTime.Now.ToString("HH:mm"), null, null, false, 5, 3);
                         Display.Render();
                         break;
+                    case "idlebar":
+                        effect = new IdleBar();
+                        break;
                     case "calibratefps":
                         Display.SetAll(Color.Black);
                         Display.Calibrate();
@@ -89,6 +92,10 @@ namespace Tiwaz.Display.Display
                     case "restartsoft":
                         Display.SetAll(Color.Black);
                         Display.SetLed(1, Color.Red);
+                        Display.Render();
+
+                        //Remove the command already here. Otherwise it will not being removed because the system/service stops too fast.
+                        await Api.RemoveDeviceCommand(aCmd);
 
                         try
                         {
@@ -109,6 +116,10 @@ namespace Tiwaz.Display.Display
                         Display.SetAll(Color.Black);
                         Display.SetLed(1, Color.Red);
                         Display.SetLed(2, Color.Red);
+                        Display.Render();
+
+                        //Remove the command already here. Otherwise it will not being removed because the system/service stops too fast.
+                        await Api.RemoveDeviceCommand(aCmd);
 
                         try
                         {
@@ -130,6 +141,10 @@ namespace Tiwaz.Display.Display
                         Display.SetLed(1, Color.Red);
                         Display.SetLed(2, Color.Red);
                         Display.SetLed(3, Color.Red);
+                        Display.Render();
+
+                        //Remove the command already here. Otherwise it will not being removed because the system/service stops too fast.
+                        await Api.RemoveDeviceCommand(aCmd);
 
                         try
                         { 

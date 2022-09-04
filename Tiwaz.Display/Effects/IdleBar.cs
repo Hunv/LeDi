@@ -12,8 +12,10 @@ namespace Tiwaz.Display.Effects
         public override void Execute()
         {
             Console.WriteLine("Running Idle Bar");
+            Display.Display.SetAll(Color.Black);
+            var cycles = 10;
 
-            while (1 == 1)
+            while (cycles > 0)
             {
                 for (var currentPosition = 0; currentPosition <= Display.Display.X + 2; currentPosition++)
                 {
@@ -40,10 +42,13 @@ namespace Tiwaz.Display.Effects
                     }
 
                     Display.Display.Render();
+                    Thread.Sleep(100);
 
                     if (currentPosition == Display.Display.X + 3)
                         currentPosition = 0;
                 }
+
+                cycles--;
             }
         }
     }
