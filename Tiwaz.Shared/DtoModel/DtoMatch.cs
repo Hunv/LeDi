@@ -68,5 +68,10 @@ namespace Tiwaz.Shared.DtoModel
         /// Type of game to apply the game rules.
         /// </summary>
         public string? GameName { get; set; }
+
+        /// <summary>
+        /// Number of Halftimes
+        /// </summary>
+        public int HalfTimeCount { get; set; }
     }
 }
