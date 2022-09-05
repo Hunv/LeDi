@@ -37,7 +37,7 @@ else
                     </td>
                     <td>@match.Team1Score:@match.Team2Score</td>
                     <td>@match.ScheduledTime</td>
-                    <td>@(Enum.GetName(typeof(Tiwaz.WebClient.Data.Classes.MatchStatusEnum), @match.MatchStatus))</td>
+                    <td>@(Enum.GetName(typeof(Tiwaz.Shared.Enum.MatchStatusEnum), @match.MatchStatus))</td>
                     <td><a href="/match/@match.Id">Edit</a></td>
                 </tr>
             }
@@ -70,7 +70,7 @@ else
                     </td>
                     <td>@match.Team1Score:@match.Team2Score</td>
                     <td>@match.ScheduledTime</td>
-                    <td>@(Enum.GetName(typeof(Tiwaz.WebClient.Data.Classes.MatchStatusEnum), @match.MatchStatus))</td>
+                    <td>@(Enum.GetName(typeof(Tiwaz.Shared.Enum.MatchStatusEnum), @match.MatchStatus))</td>
                     <td><a href="/match/@match.Id">Edit</a></td>
                 </tr>
             }

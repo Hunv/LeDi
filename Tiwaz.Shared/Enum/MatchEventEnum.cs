@@ -1,7 +1,7 @@
-﻿namespace Tiwaz.WebClient.Data.Classes
+﻿namespace Tiwaz.Shared.Enum
 {
     public enum MatchEventEnum
-    {
+    {        
         Undefined = 0,
 
         //Range 1-99 = Time related events like Start/Stop of time
@@ -24,7 +24,7 @@
         ScoreRevokeTeam1 = 102,
         ScoreRevokeTeam2 = 103,
         MatchWinTeam1 = 110,
-        MatchWinTeam2 = 111,
+        MatchWinTeam2 = 111,        
 
         //Range 200-299 Fouls
         FoulTeam1 = 200,

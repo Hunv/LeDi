@@ -99,7 +99,7 @@ else {
             var matches = await Api.GetMatchListAsync();
             if (matches.Count > 1)
             {
-                var runningMatches = matches.Where(x => x.MatchStatus == 2); //0 = undefined, 1 = planned, 2 = running, 3 = ended
+                var runningMatches = matches.Where(x => x.MatchStatus == (int)Tiwaz.Shared.Enum.MatchStatusEnum.Running); //0 = undefined, 1 = planned, 2 = running, 3 = ended
                 if (runningMatches.Count() > 1)
                 {
                     //More than one match to show. Show modal dialog to select.
@@ -153,7 +153,7 @@ else {
         else //Update all matches
         {
             // Get the ongoing matches
-            var updatedData = (await Api.GetMatchListAsync()).Where(x => x.MatchStatus == 2);
+            var updatedData = (await Api.GetMatchListAsync()).Where(x => x.MatchStatus == (int)Tiwaz.Shared.Enum.MatchStatusEnum.Running);
 
             // Cancel if no data returned
             if (updatedData == null)

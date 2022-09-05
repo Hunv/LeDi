@@ -73,5 +73,10 @@ namespace Tiwaz.Shared.DtoModel
         /// Number of Halftimes
         /// </summary>
         public int HalfTimeCount { get; set; }
+
+        /// <summary>
+        /// Current number of Halftime
+        /// </summary>
+        public int HalfTimeCurrent { get; set; }
     }
 }

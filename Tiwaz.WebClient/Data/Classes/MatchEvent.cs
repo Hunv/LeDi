@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Tiwaz.Shared.Enum;
 
 namespace Tiwaz.WebClient.Data.Classes
 {

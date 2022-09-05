@@ -1,6 +1,7 @@
 ﻿using System.Timers;
 using Tiwaz.Server.Classes;
 using Tiwaz.Server.DatabaseModel;
+using Tiwaz.Shared.Enum;
 
 namespace Tiwaz.Server
 {

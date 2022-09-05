@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Tiwaz.Server.Classes;
+using Tiwaz.Shared.Enum;
+
 
 namespace Tiwaz.Server.DatabaseModel
 {

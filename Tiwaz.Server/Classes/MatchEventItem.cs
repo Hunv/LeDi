@@ -1,4 +1,6 @@
-﻿namespace Tiwaz.Server.Classes
+﻿using Tiwaz.Shared.Enum;
+
+namespace Tiwaz.Server.Classes
 {
     /// <summary>
     /// This class is for extenting the MatchEventEnum to have more details about the events

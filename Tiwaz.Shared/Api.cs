@@ -309,7 +309,7 @@ namespace Tiwaz.Shared
         }
 
         /// <summary>
-        /// Add a new Tournament
+        /// Updates and existing Match
         /// </summary>
         /// <param name="match"></param>
         public async Task SetMatchAsync(DtoMatch match)
