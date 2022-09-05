@@ -75,7 +75,7 @@ else
 
             </th>
         </tr>@*Timer Buttons*@
-    
+
         <tr>
             <th>
                 <a>@match.Team1Name</a>
@@ -87,8 +87,11 @@ else
                     Revoke
                 </button>
             </th>
-            <th>
-
+            <th style="text-align:center">
+                <a>Halbzeit:</a>
+                <br>
+                <a>@HalfTime von: @match.HalfTimeCount</a> 
+                @*Nochmal anpassen, sobald die Halbzeit auf dem Server angepasst wurde -> Siehe Ticket #27*@
             </th>
             <th>
                 <a>@match.Team2Name</a>
@@ -129,6 +132,7 @@ else
     int duration3 = 15;
     int CountTeam1 = 0;
     int CountTeam2 = 0;
+    int HalfTime = 1;
     bool Hidden = true;
     bool Hidden2 = true;
     DtoMatch match = new DtoMatch();
@@ -197,6 +201,7 @@ else
         }
         await InvokeAsync(() => { StateHasChanged(); });
     }
+
     private async void count_downTeam1(object? sender, EventArgs e)
     {
         if (duration2 == 0)

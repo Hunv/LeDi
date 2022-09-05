@@ -27,7 +27,7 @@ else
         <a hidden="@Hidden"> Teams 2:</a>
         <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team2Name"/>
         <a hidden="@Hidden"> Number of halftimes:</a>
-       @* <InputText id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" />*@
+        <InputNumber id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.HalfTimeCount"/>
         <a hidden="@Hidden"> Length of a halftime in minutes:</a>
         <InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.TimeLeftSeconds"/>
         <br />
@@ -46,6 +46,7 @@ else
         {
             Team1Name = "Team1",
             Team2Name = "Team2",
+            HalfTimeCount = 2,
             TimeLeftSeconds = 10
     };
     //string teamName1 = "Team1";
