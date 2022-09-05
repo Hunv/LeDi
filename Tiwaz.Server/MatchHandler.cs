@@ -90,11 +90,15 @@ namespace Tiwaz.Server
             await SetMatchStatus(MatchStatusEnum.Running, MatchId);
         }
 
+        /// <summary>
+        /// Stops the timer but not end the match
+        /// </summary>
+        /// <returns></returns>
         public async Task Stop()
         {
             tmrMatchtimer.Stop();
-            ReferenceSystemTime = null;
-            await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
+            //ReferenceSystemTime = null;
+            //await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
         }
 
         /// <summary>

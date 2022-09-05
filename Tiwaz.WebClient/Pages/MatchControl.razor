@@ -154,16 +154,18 @@ else
 
     private async void PauseMatch()
     {
-        await Api.ControlMatchtimeAsync(match.Id, "pause");
+        await Api.ControlMatchtimeAsync(match.Id, "stop");
     }
     private async void ResumeMatch()
     {
-        await Api.ControlMatchtimeAsync(match.Id, "resume");
+        await Api.ControlMatchtimeAsync(match.Id, "start");
+        match.TimeLeftSeconds--;
     }
     private async void StartMatch()
     {
         StartButtonDisabled = true;
         await Api.ControlMatchtimeAsync(match.Id, "start");
+        match.TimeLeftSeconds--;
     }
     private void Penalty2MinTeam1()
     {
