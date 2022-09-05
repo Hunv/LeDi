@@ -191,12 +191,23 @@ else
             if (match.TimeLeftSeconds == 0)
                 tmrMatchtime.Stop();
         }
-        else //update local timer
+        else // update local timer
         {
-            match.TimeLeftSeconds = await Api.GetMatchTimeAsync(match.Id);
+            //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
+            var serverTimeLeft = await Api.GetMatchTimeAsync(match.Id);
+            if (match.TimeLeftSeconds - serverTimeLeft > 1 ||
+                match.TimeLeftSeconds - serverTimeLeft < 1)
+            {
+                match.TimeLeftSeconds = serverTimeLeft;
+            }
+            else
+            {
+                match.TimeLeftSeconds--;
+            }
         }
         await InvokeAsync(() => { StateHasChanged(); });
     }
+
     private async void count_downTeam1(object? sender, EventArgs e)
     {
         if (duration2 == 0)
@@ -209,6 +220,7 @@ else
             await InvokeAsync(() => { StateHasChanged(); });
         }
     }
+
     private async void count_downTeam2(object? sender, EventArgs e)
     {
         if (duration3 == 0)
@@ -221,6 +233,7 @@ else
             await InvokeAsync(() => { StateHasChanged(); });
         }
     }
+
     protected override async Task OnInitializedAsync()
     {
         var matchList= await Api.GetMatchListAsync();

@@ -59,7 +59,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var match in MatchList.Where(x => x.ScheduledTime < DateTime.Now.Subtract(new TimeSpan(1, 0, 0))))
+            @foreach (var match in MatchList.Where(x => x.ScheduledTime < DateTime.Now.Subtract(new TimeSpan(1, 0, 0)) || x.ScheduledTime == null))
             {
                 <tr>
                     <td>
@@ -85,6 +85,7 @@ else
     {
         MatchList = await Api.GetMatchListAsync();
         
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 
     private string SecondsToTime(int seconds)

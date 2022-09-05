@@ -3,65 +3,10 @@
 @using Tiwaz.WebClient.Components
 @inject Tiwaz.Shared.Api Api
 
-<PageTitle>Current Match</PageTitle>
+<PageTitle>Index</PageTitle>
 
-@if (Match != null)
-{
-    <a style="font-size:40pt">@Match.Team1Score:@Match.Team2Score</a><br />
-    <a>@Match.Team1Name vs. @Match.Team2Name</a><br />
-    <br />
-    <a>Time left:</a><br />
-    <a style="font-size:40pt">@(Match.TimeLeftSeconds / 60):@(((Match.TimeLeftSeconds % 60) ?? 0).ToString().PadLeft(2,'0'))</a><br />
-    <br />
-    <a>Goals:</a><br />
-    <a>4 - Heiner Bego (2:31)      1 - Lin Kebazille (1:02)</a><br />
-    <a>8 - Jan Täuscher (4:21)</a><br />
-    <br />
-    <a>Penalties:</a><br />
-    <a>- keine -                   12 - Nathan Walker (0:23)</a><br />
-}
-else {
-    <a>Currently no match ongoing.</a>
-}
+More to do here.
 
 @code {
-    DtoMatch? Match = null;
-    System.Timers.Timer tmrUpdate = new System.Timers.Timer();
-
-    protected override async Task OnInitializedAsync()
-    {
-        tmrUpdate.Elapsed += tmrUpdate_Elapsed;
-        tmrUpdate.Interval = 1000;
-
-        var matches = await Api.GetMatchListAsync();
-        if (matches.Count > 1)
-        {
-            var runningMatches = matches.Where(x => x.MatchStatus == 2); //0 = undefined, 1 = planned, 2 = running, 3 = ended
-            if (runningMatches.Count() > 1)
-            {
-                //More than one match to show. Show modal dialog to select.
-                //todo
-            }
-            else if (runningMatches.Count() == 0)
-            {
-                //No match to show.
-                //todo
-            }
-            else
-            {
-                // The only match that makes sense to show.
-                Match = runningMatches.First();
-                tmrUpdate.Start();
-            }
-        }
-    }
     
-    private async void tmrUpdate_Elapsed(object? sender, EventArgs e)
-    {
-        if (Match != null)
-        {
-            Match.TimeLeftSeconds = await Api.GetMatchTimeAsync(Match.Id);
-            await InvokeAsync(() => { StateHasChanged(); });
-        }
-    }
 }
