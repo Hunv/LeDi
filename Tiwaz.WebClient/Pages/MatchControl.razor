@@ -44,7 +44,7 @@ else
             <th>
                 <center>
                     <font size= "7">
-                         @(match.TimeLeftSeconds / 60):@(((match.TimeLeftSeconds % 60) ?? 0).ToString().PadLeft(2,'0'))
+                         @(match.TimeLeftSeconds / 60):@((match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))
                     </font>
                 </center>
             </th>
@@ -88,10 +88,9 @@ else
                 </button>
             </th>
             <th style="text-align:center">
-                <a>Halbzeit:</a>
+                <a>Halftime:</a>
                 <br>
-                <a>@HalfTime von: @match.HalfTimeCount</a> 
-                @*Nochmal anpassen, sobald die Halbzeit auf dem Server angepasst wurde -> Siehe Ticket #27*@
+                <a>@match.HalfTimeCurrent of @match.HalfTimeCount</a>
             </th>
             <th>
                 <a>@match.Team2Name</a>
@@ -132,11 +131,11 @@ else
     int duration3 = 15;
     int CountTeam1 = 0;
     int CountTeam2 = 0;
-    int HalfTime = 1;
     bool Hidden = true;
     bool Hidden2 = true;
     DtoMatch match = new DtoMatch();
     bool StartButtonDisabled = false;
+    int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
 
     private void IncrementCountTeam1()
     {
@@ -163,13 +162,29 @@ else
     private async void ResumeMatch()
     {
         await Api.ControlMatchtimeAsync(match.Id, "start");
-        match.TimeLeftSeconds--;
+
+        if (match.TimeLeftSeconds > 0)
+            match.TimeLeftSeconds--;
     }
     private async void StartMatch()
     {
         StartButtonDisabled = true;
+
+        // Update match object to the current status
+        match = await Api.GetMatchAsync(match.Id) ?? match;
+
+        // Set the LastKnownMatchHash to the current status
+        var matchCore = await Api.GetMatchCoreAsync(match.Id);
+        if (matchCore == null) {
+            Console.WriteLine("Failed to get MatchCore");
+            return;
+        }
+        LastKnownMatchHash = matchCore.PropertyHash;
+
         await Api.ControlMatchtimeAsync(match.Id, "start");
-        match.TimeLeftSeconds--;
+        
+        if (match.TimeLeftSeconds > 0)
+            match.TimeLeftSeconds--;
     }
     private void Penalty2MinTeam1()
     {
@@ -188,10 +203,22 @@ else
 
     private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
     {
+        var matchCore = await Api.GetMatchCoreAsync(match.Id);
+        if (matchCore == null) {
+            Console.WriteLine("Failed to get MatchCore");
+            return;
+        }
+
+        // Update match object in case the hash is different
+        if (LastKnownMatchHash != matchCore.PropertyHash)
+        {
+            match = await Api.GetMatchAsync(match.Id) ?? match;
+        }
+
         // If local timer says, time is over check verify before stopping
         if (match.TimeLeftSeconds == 0)
         {            
-            match.TimeLeftSeconds = await Api.GetMatchTimeAsync(match.Id);
+            match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
 
             // Stop Timer only if the Server based timer is done.
             if (match.TimeLeftSeconds == 0)
@@ -200,14 +227,14 @@ else
         else // update local timer
         {
             //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
-            var serverTimeLeft = await Api.GetMatchTimeAsync(match.Id);
+            var serverTimeLeft = matchCore.TimeLeftSeconds;
             if (match.TimeLeftSeconds - serverTimeLeft > 1 ||
                 match.TimeLeftSeconds - serverTimeLeft < 1)
             {
                 match.TimeLeftSeconds = serverTimeLeft;
             }
-            else
-            {
+            else if (match.TimeLeftSeconds > 0)
+            {                
                 match.TimeLeftSeconds--;
             }
         }
@@ -248,7 +275,7 @@ else
 
         match = matchList[matchList.Count-1];
 
-        if (match.MatchStatus >= 2)
+        if (match.MatchStatus >= (int)Tiwaz.Shared.Enum.MatchStatusEnum.Running)
         {
             StartButtonDisabled = true;
         }

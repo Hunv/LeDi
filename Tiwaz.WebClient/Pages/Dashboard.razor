@@ -3,6 +3,7 @@
 @using Tiwaz.Shared.DtoModel
 @using Tiwaz.WebClient.Components
 @inject Tiwaz.Shared.Api Api
+@inject NavigationManager NavigationManager
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -13,7 +14,7 @@
     <br />
     <br />
     <h1 class="text-center">Time left:</h1>
-    <h1 class="text-center text-responsive">@(Match.TimeLeftSeconds / 60):@(((Match.TimeLeftSeconds % 60) ?? 0).ToString().PadLeft(2,'0'))</h1>
+    <h1 class="text-center text-responsive">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</h1>
 
     <br />
     <br />
@@ -46,7 +47,7 @@ else if (LiveMatchList != null)
                 <tr>
                     <td>@aMatch.Team1Name</td>
                     <td>@aMatch.Team2Name</td>
-                    <td>@(aMatch.TimeLeftSeconds / 60):@(((aMatch.TimeLeftSeconds % 60) ?? 0).ToString().PadLeft(2,'0'))</td>
+                    <td>@(aMatch.TimeLeftSeconds / 60):@((aMatch.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</td>
                     <td>@aMatch.Team1Score</td>
                     <td>@aMatch.Team2Score</td>
                     <td><a href="dashboard/@aMatch.Id">Show</a></td>
@@ -63,6 +64,7 @@ else {
     DtoMatch? Match = null;
     IEnumerable<DtoMatch>? LiveMatchList = null;
     System.Timers.Timer tmrUpdate = new System.Timers.Timer();
+    int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
 
     [Parameter]
     public int? Id { get; set; }
@@ -89,6 +91,13 @@ else {
         if (Id != null)
         {
             Match = await Api.GetMatchAsync(Id.Value);
+            if (Match == null)
+                return;
+
+            var matchCore = await Api.GetMatchCoreAsync(Match.Id);            
+            if (matchCore != null) {
+                LastKnownMatchHash = matchCore.PropertyHash;
+            }
             await InvokeAsync(() => { StateHasChanged(); });
         }
         else
@@ -114,6 +123,14 @@ else {
                 {
                     // The only match that makes sense to show.
                     Match = runningMatches.First();
+
+                    // Set hash for last known match properties
+                    var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+                    if (matchCore != null) {
+                        LastKnownMatchHash = matchCore.PropertyHash;
+                    }
+                    tmrUpdate.Start();
+                    NavigationManager.NavigateTo("dashboard/" + Match.Id);
                 }
             }
         }
@@ -125,28 +142,34 @@ else {
         // If one match is shown update only that one match
         if (Match != null)
         {
-            Match.TimeLeftSeconds = await Api.GetMatchTimeAsync(Match.Id);
-
-            // Get the current date
-            var updatedData = await Api.GetMatchAsync(Match.Id);
-
-            // Cancel if no data returned
-            if (updatedData == null)
+            var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+            if (matchCore == null)
                 return;
 
-            // Set score
-            Match.Team1Score = updatedData.Team1Score;
-            Match.Team2Score = updatedData.Team2Score;
+            Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
 
-            //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
-            if (Match.TimeLeftSeconds - updatedData.TimeLeftSeconds > 1 ||
-                Match.TimeLeftSeconds - updatedData.TimeLeftSeconds < 1)
+            if (LastKnownMatchHash != matchCore.PropertyHash)
             {
-                Match.TimeLeftSeconds = updatedData.TimeLeftSeconds;
+                // Get the current data
+                var updatedData = await Api.GetMatchAsync(Match.Id);
+
+                // Cancel if no data returned
+                if (updatedData == null)
+                    return;
+
+                Match = updatedData;
+                
+                //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
+                if (Match.TimeLeftSeconds - updatedData.TimeLeftSeconds > 1 ||
+                    Match.TimeLeftSeconds - updatedData.TimeLeftSeconds < 1)
+                {
+                    Match.TimeLeftSeconds = updatedData.TimeLeftSeconds;
+                }
             }
             else
             {
-                Match.TimeLeftSeconds--;
+                if (Match.TimeLeftSeconds > 0)
+                    Match.TimeLeftSeconds--;
             }
 
         }

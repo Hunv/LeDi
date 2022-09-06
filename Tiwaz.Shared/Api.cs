@@ -265,6 +265,21 @@ namespace Tiwaz.Shared
         }
 
         /// <summary>
+        /// Gets the time left of a match and a hash of all other values that might change
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <returns></returns>
+        public async Task<DtoMatchCore?> GetMatchCoreAsync(int matchId)
+        {
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/core");
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<DtoMatchCore?>(json, Helper.GetJsonSerializer());
+            return setting;
+        }
+
+        /// <summary>
         /// Gets all Matches
         /// </summary>
         /// <returns></returns>

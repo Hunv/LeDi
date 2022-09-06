@@ -76,14 +76,20 @@ namespace Tiwaz.Server.Api
                     if (!string.IsNullOrEmpty(match.Team2Name))
                         dto.Team2Name = match.Team2Name;
 
-                    if (match.TimeLeftSeconds.HasValue)
-                        dto.CurrentTimeLeft = match.TimeLeftSeconds.Value;
+                    if (match.TimeLeftSeconds >= 0)
+                        dto.CurrentTimeLeft = match.TimeLeftSeconds;
 
                     if (match.MatchStatus != 0)
                         dto.MatchStatus = match.MatchStatus;
 
                     if (match.ScheduledTime.HasValue)
                         dto.ScheduledTime = match.ScheduledTime;
+
+                    if (match.HalfTimeCount >= 0)
+                        dto.HalftimeCount = match.HalfTimeCount;
+
+                    if (match.HalfTimeCurrent >= 0)
+                        dto.CurrentHalftime = match.HalfTimeCurrent;
 
                     await dbContext.SaveChangesAsync();
                 }
@@ -106,10 +112,12 @@ namespace Tiwaz.Server.Api
                 Team2Score = match.Team2Score ?? 0,
                 Team1Name = match.Team1Name,
                 Team2Name = match.Team2Name,
-                CurrentTimeLeft = match.TimeLeftSeconds ?? 0,
+                CurrentTimeLeft = match.TimeLeftSeconds,
                 ScheduledTime = match.ScheduledTime,
                 GameName = match.GameName,
-                MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus //set to draft status if no Status is set
+                MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus, //set to draft status if no Status is set
+                HalftimeCount = match.HalfTimeCount
+                
             };
 
             // Add Team1 players
@@ -171,6 +179,36 @@ namespace Tiwaz.Server.Api
         }
 
         /// <summary>
+        /// Gets the Match time and a hash of all other values.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static async Task<string> GetMatchCore(int matchId)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
+            {
+                var match = await dbContext.Matches.SingleOrDefaultAsync(x => x.Id == matchId);
+                if (match != null)
+                {
+                    // Create a hash of match values that might change
+                    var propHash = (match.CurrentHalftime + "@@@" + string.Join(',', match.MatchEventIds ?? new List<int> { 0 }) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score).GetHashCode();
+
+                    // Create the DtoMatchCore object
+                    var dto = new DtoMatchCore() { TimeLeftSeconds = match.CurrentTimeLeft, PropertyHash = propHash };
+
+                    var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                    return json;
+                }
+                else
+                    return "";
+            }
+            return "";
+
+        }
+
+        /// <summary>
         /// Set the time left in seconds of a specific match
         /// </summary>
         /// <param name="id"></param>
@@ -191,6 +229,7 @@ namespace Tiwaz.Server.Api
             }
 
         }
+
 
         /// <summary>
         /// Start time for a specific match

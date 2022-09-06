@@ -42,7 +42,7 @@ namespace Tiwaz.Shared.DtoModel
         /// Time left
         /// </summary>
         [Range(0,int.MaxValue,ErrorMessage ="Die Zeit muss größer als 0 Sekunden sein.")]
-        public int? TimeLeftSeconds { get; set; }
+        public int TimeLeftSeconds { get; set; }
 
         /// <summary>
         /// Only for Livematches: The current status of the Match (see EnumMatchStatus for ID resolution)

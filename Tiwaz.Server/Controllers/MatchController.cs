@@ -71,6 +71,22 @@ namespace Tiwaz.Server.Controllers
         }
 
         /// <summary>
+        /// Gets the remaining seconds and a hash of all other values. If they changed, the hash will change and the client will know to request a full match dataset
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{matchId}/core")]
+        public async Task<IActionResult> GetMatchHash(int matchId)
+        {
+            _logger.LogDebug("{0}: Get Match Core for ID {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+
+            var json = await Api.ApiMatch.GetMatchCore(matchId);
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got Match Core for ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, json);
+            return result;
+        }
+
+        /// <summary>
         /// Modify an existing Match
         /// </summary>
         /// <returns></returns>

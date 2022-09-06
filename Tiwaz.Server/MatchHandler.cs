@@ -49,13 +49,13 @@ namespace Tiwaz.Server
                         (MatchRules.Rules == null || MatchRules.Rules.HalftimeOvertime == false)
                         )
                     {
-                        await Stop();
+                        Stop();
                     }
                     else
                     {
                         dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft -= diff;
                         Console.WriteLine("{2} Timeleft: {0}, (-{1}) ", dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft, diff, MatchId);
-                        dbContext.SaveChanges();
+                        await dbContext.SaveChangesAsync();
                     }
                 }
             }
@@ -80,7 +80,11 @@ namespace Tiwaz.Server
                         {
                             await MatchRules.LoadRules(match.GameName);
                         }
+
+                        if (match.CurrentHalftime == 0)
+                            match.CurrentHalftime++;
                     }
+                    await dbContext.SaveChangesAsync();
                 }
             }
 
@@ -94,7 +98,7 @@ namespace Tiwaz.Server
         /// Stops the timer but not end the match
         /// </summary>
         /// <returns></returns>
-        public async Task Stop()
+        public void Stop()
         {
             tmrMatchtimer.Stop();
             //ReferenceSystemTime = null;

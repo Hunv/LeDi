@@ -110,6 +110,8 @@ namespace Tiwaz.Server.DatabaseModel
                 Team1Name = Team1Name,
                 Team2Name = Team2Name,
                 TimeLeftSeconds = CurrentTimeLeft,
+                HalfTimeCurrent = CurrentHalftime,
+                HalfTimeCount = HalftimeCount,
                 MatchStatus = MatchStatus,
                 ScheduledTime = ScheduledTime,
                 Team1PlayerIds = Team1PlayerIds,
@@ -130,7 +132,9 @@ namespace Tiwaz.Server.DatabaseModel
             Team2Score = dto.Team2Score ?? 0;
             Team1Name = dto.Team1Name;
             Team2Name = dto.Team2Name;
-            CurrentTimeLeft = dto.TimeLeftSeconds ?? 0;            
+            CurrentTimeLeft = dto.TimeLeftSeconds;
+            CurrentHalftime = dto.HalfTimeCurrent;
+            HalftimeCount = dto.HalfTimeCount;
             MatchStatus = dto.MatchStatus;
             ScheduledTime = dto.ScheduledTime;
             GameName = dto.GameName;
