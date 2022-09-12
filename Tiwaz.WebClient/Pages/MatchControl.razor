@@ -179,19 +179,23 @@ else
     private async void IncrementCountTeam1()
     {
         await Api.SetMatchGoalAsync(Match.Id, 0, 1);
+        await LoadMatch();
     }
     private async void DecreaseCountTeam1()
     {
         await Api.SetMatchGoalAsync(Match.Id, 0, -1);
+        await LoadMatch();
     }
 
     private async void IncrementCountTeam2()
     {
         await Api.SetMatchGoalAsync(Match.Id, 1, 1);
+        await LoadMatch();
     }
     private async void DecreaseCountTeam2()
     {
         await Api.SetMatchGoalAsync(Match.Id, 1, -1);
+        await LoadMatch();
     }
 
     private async void PauseMatch()
@@ -225,19 +229,21 @@ else
         if (Match.TimeLeftSeconds > 0)
             Match.TimeLeftSeconds--;
     }
-    private void Penalty2MinTeam1()
+    private async void Penalty2MinTeam1()
     {
         duration2 = 15;
         tmrMatchtime.Interval = 1000;
-        tmrMatchtime.Elapsed += count_downTeam1;
+        tmrMatchtime.Elapsed += PenaltyTimerTeam1;
         Hidden = false;
+        await LoadMatch();
     }
-    private void Penalty2MinTeam2()
+    private async void Penalty2MinTeam2()
     {
         duration3 = 15;
         tmrMatchtime.Interval = 1000;
-        tmrMatchtime.Elapsed += count_downTeam2;
+        tmrMatchtime.Elapsed += PenaltyTimerTeam2;
         Hidden2 = false;
+        await LoadMatch();
     }
 
     private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
@@ -288,7 +294,7 @@ else
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
-    private async void count_downTeam1(object? sender, EventArgs e)
+    private async void PenaltyTimerTeam1(object? sender, EventArgs e)
     {
         if (duration2 == 0)
         {
@@ -301,7 +307,7 @@ else
         }
     }
 
-    private async void count_downTeam2(object? sender, EventArgs e)
+    private async void PenaltyTimerTeam2(object? sender, EventArgs e)
     {
         if (duration3 == 0)
         {
@@ -361,5 +367,6 @@ else
         {
             StartButtonDisabled = false;
         }
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 }
