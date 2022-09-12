@@ -116,7 +116,7 @@ else
             <tr>
                 <th>
                     <a>@Match.Team1Name</a>
-                    <p role="status"> <center> <font size="7"> @CountTeam1 </font> </center></p>
+                    <p role="status"> <center> <font size="7"> @Match.Team1Score </font> </center></p>
                     <button class="btn btn-primary" @onclick="@IncrementCountTeam1">
                         Score
                     </button>
@@ -131,7 +131,7 @@ else
                 </th>
                 <th>
                     <a>@Match.Team2Name</a>
-                    <p role="status"><center> <font size="7"> @CountTeam2 </font> </center> </p>
+                    <p role="status"><center> <font size="7"> @Match.Team2Score </font> </center> </p>
                     <button class="btn btn-primary" @onclick="@IncrementCountTeam2">
                         Score
                     </button>
@@ -166,8 +166,6 @@ else
     System.Timers.Timer tmrMatchtime = new System.Timers.Timer();
     int duration2 = 15;
     int duration3 = 15;
-    int CountTeam1 = 0;
-    int CountTeam2 = 0;
     bool Hidden = true;
     bool Hidden2 = true;
     DtoMatch Match = new DtoMatch(); // currently selected match
@@ -178,22 +176,22 @@ else
     [Parameter]
     public int? SelectedMatchId { get; set; }
 
-    private void IncrementCountTeam1()
+    private async void IncrementCountTeam1()
     {
-        CountTeam1++;
+        await Api.SetMatchGoalAsync(Match.Id, 0, 1);
     }
-    private void DecreaseCountTeam1()
+    private async void DecreaseCountTeam1()
     {
-        CountTeam1--;
+        await Api.SetMatchGoalAsync(Match.Id, 0, -1);
     }
 
-    private void IncrementCountTeam2()
+    private async void IncrementCountTeam2()
     {
-        CountTeam2++;
+        await Api.SetMatchGoalAsync(Match.Id, 1, 1);
     }
-    private void DecreaseCountTeam2()
+    private async void DecreaseCountTeam2()
     {
-        CountTeam2--;
+        await Api.SetMatchGoalAsync(Match.Id, 1, -1);
     }
 
     private async void PauseMatch()
@@ -250,10 +248,18 @@ else
             return;
         }
 
+        //Console.WriteLine("New Hash: " + matchCore.PropertyHash + " Last known Hash: " + LastKnownMatchHash);
+
         // Update match object in case the hash is different
         if (LastKnownMatchHash != matchCore.PropertyHash)
         {
-            Match = await Api.GetMatchAsync(Match.Id) ?? Match;
+            Console.WriteLine("New Hash is different. Refreshing all Match infos...");
+            var newMatchInfo = await Api.GetMatchAsync(Match.Id);
+            if (newMatchInfo != null) {
+                Console.WriteLine("Updated Match infos.");
+                Match = newMatchInfo;
+                LastKnownMatchHash = matchCore.PropertyHash;
+            }
         }
 
         // If local timer says, time is over check verify before stopping
