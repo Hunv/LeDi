@@ -4,32 +4,37 @@
 @inject NavigationManager NavigationManager
 
 <PageTitle>Tiwaz - Select type of sport</PageTitle>
-@if (newMatch == null)
+@if (NewMatch == null)
 {
     <p><em>Loading Data...</em></p>
 }
 else
 {
-    <EditForm Model="@newMatch" OnValidSubmit="@SaveMatch">
+    <EditForm Model="@NewMatch" OnValidSubmit="@SaveMatch">
     @*    <DataAnnotationsValidator />
         <ValidationSummary />*@
 
         <a>Select type of sport</a>
 
-        <select name=" " onchange="@ShowFields"> 
+        <InputSelect id="cmbGamename" @bind-Value="SelectedGamename" class="form-control">
             <option value="">  </option>
             <option value="UWH">Underwaterhockey</option>
             <option value="Handball">Handball</option>
-        </select>
+        </InputSelect>
+        @*<select name=" " onchange="@ShowFields"> 
+            <option value="">  </option>
+            <option value="UWH">Underwaterhockey</option>
+            <option value="Handball">Handball</option>
+        </select>*@
         <br /> 
         <a hidden="@Hidden">Team 1:</a>
-        <InputText id="txtTeamName1" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team1Name"/>
+        <InputText id="txtTeamName1" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.Team1Name"/>
         <a hidden="@Hidden"> Teams 2:</a>
-        <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.Team2Name"/>
+        <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.Team2Name"/>
         <a hidden="@Hidden"> Number of halftimes:</a>
-        <InputNumber id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.HalfTimeCount"/>
+        <InputNumber id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.HalfTimeCount"/>
         <a hidden="@Hidden"> Length of a halftime in minutes:</a>
-        <InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@newMatch.TimeLeftSeconds"/>
+        <InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.TimeLeftSeconds"/>
         <br />
    
         <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
@@ -42,26 +47,34 @@ else
 @code{
 
     bool Hidden = true;
-    DtoMatch newMatch = new DtoMatch()
+    DtoMatch NewMatch = new DtoMatch()
         {
             Team1Name = "Team1",
             Team2Name = "Team2",
             HalfTimeCount = 2,
             TimeLeftSeconds = 10
     };
-    //string teamName1 = "Team1";
-    //string teamName2 = "Team2";
-    //int halfTimeCount;
-    //int halfTimeTime;
+    
+    private string _SelectedGamename = "";
+    string SelectedGamename {
+        get
+        {
+            return _SelectedGamename;
+        } 
+        set
+        {
+            _SelectedGamename = value;
+            ShowFields();
+        }
+    }
 
-    private void ShowFields( ChangeEventArgs e)
+    private void ShowFields()
     {
-
-        if (e.Value == null)
+        if (string.IsNullOrWhiteSpace(SelectedGamename))
         {
             return;
         }
-        else if (e.Value.ToString() == "UWH")
+        else if (SelectedGamename == "UWH")
         {
             Hidden = false;
         }
@@ -76,10 +89,10 @@ else
     private async void SaveMatch()
     {
 
-        newMatch.TimeLeftSeconds = newMatch.TimeLeftSeconds*60;
+        NewMatch.TimeLeftSeconds = NewMatch.TimeLeftSeconds*60;
 
-        await Api.AddMatchAsync(newMatch);
-        newMatch = new DtoMatch()
+        await Api.AddMatchAsync(NewMatch);
+        NewMatch = new DtoMatch()
             {
                 Team1Name = "Team1",
                 Team2Name = "Team2",

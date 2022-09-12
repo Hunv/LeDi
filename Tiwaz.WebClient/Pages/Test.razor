@@ -1,0 +1,50 @@
+﻿@page "/test"
+
+<PageTitle>Tiwaz - Testpage</PageTitle>
+
+<p role="status">Current count: @currentCount</p>
+
+<a>Button styles:</a><br />
+<button class="btn btn-primary" @onclick="IncrementCount">Primary</button><br />
+<button class="btn btn-outline-primary" @onclick="IncrementCount">outline-Primary</button><br />
+<button class="btn btn-secondary" @onclick="IncrementCount">Secondary</button><br />
+<button class="btn btn-outline-secondary" onclick="IncrementCount">outline-secondary</button><br />
+<button class="btn btn-danger" @onclick="IncrementCount">danger</button><br />
+<button class="btn btn-outline-danger" @onclick="IncrementCount">outline-danger</button><br />
+<button class="btn btn-dark" @onclick="IncrementCount">dark</button><br />
+<button class="btn btn-outline-dark" @onclick="IncrementCount">outline-dark</button><br />
+<button class="btn btn-success" @onclick="IncrementCount">success</button><br />
+<button class="btn btn-outline-success" @onclick="IncrementCount">outline-success</button><br />
+<button class="btn btn-info" @onclick="IncrementCount">info</button><br />
+<button class="btn btn-outline-info" @onclick="IncrementCount">outline-info</button><br />
+<button class="btn btn-light" @onclick="IncrementCount">light</button><br />
+<button class="btn btn-outline-light" @onclick="IncrementCount">outline-light</button><br />
+<button class="btn btn-check" @onclick="IncrementCount">check</button><br />
+<button class="btn btn-close" @onclick="IncrementCount">close</button><br />
+<button class="btn btn-close-white" @onclick="IncrementCount">close-white</button><br />
+<button class="btn btn-lg" @onclick="IncrementCount">lg</button><br />
+<button class="btn btn-link" @onclick="IncrementCount">link</button><br />
+<button class="btn btn-toolbar" @onclick="IncrementCount">toolbar</button><br />
+
+<br />
+<br />
+<br />
+
+<a>Text size/style</a>
+<a class="fs-1">fs1</a><br />
+<a class="fs-2">fs2</a><br />
+<a class="fs-3">fs3</a><br />
+<a class="fs-4">fs4</a><br />
+<a class="fs-5">fs5</a><br />
+<a class="fs-6">fs6</a><br />
+<a class="fs-italic">fs-italic</a><br />
+<a class="fs-normal">fs-normal</a><br />
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

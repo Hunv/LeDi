@@ -1,128 +1,165 @@
-﻿@page "/Matchcontrol"
+﻿@page "/matchcontrol"
+@page "/matchcontrol/{SelectedMatchId:int}"
 @inject Tiwaz.Shared.Api Api
 @using Tiwaz.Shared.DtoModel
+@using Tiwaz.Shared.Enum
 
 <PageTitle>Tiwaz - Referee Match</PageTitle>
-@if (match == null)
+@if (MatchList == null)
 {
-    <p><em>Loading Data...</em></p>
+    <p><em>Loading Matches...</em></p>
 }
-else
+else if (SelectedMatchId == null)
 {
-    <table>
-        <tr>
-            <th>
-                <center hidden=@Hidden>
-                    <font size= "3">
-                         <a>Penalty</a>
-                    </font>
-                </center>
-            </th>
-            <th>
-                <center>
-                    <font size= "5">
-                         <a>Time</a>
-                    </font>
-                </center>
-            </th>
-            <th>
-                <center hidden=@Hidden2>
-                    <font size= "3">
-                         <a>Penalty</a>
-                    </font>
-                </center>
-            </th>
-        </tr>
-        <tr>
-            <th>
-                <center hidden="@Hidden">
-                    <font size="4">
-                         @duration2
-                    </font>
-                </center>
-            </th>
-            <th>
-                <center>
-                    <font size= "7">
-                         @(match.TimeLeftSeconds / 60):@((match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))
-                    </font>
-                </center>
-            </th>
-            <th>
-                <center hidden="@Hidden2">
-                    <font size="4">
-                         @duration3
-                    </font>
-                </center>
-            </th>
-        </tr>@*Match time*@
-        <tr>
-            <th>
-
-            </th>
-            <th>
-                <button class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled">
-                    Start
-                </button>
-                <button class="btn btn-primary" @onclick="@PauseMatch">
-                    Pause
-                </button>
-                <button class="btn btn-primary" @onclick="@ResumeMatch">
-                    Resume
-                </button>
-            </th>
-            <th>
-
-            </th>
-        </tr>@*Timer Buttons*@
-
-        <tr>
-            <th>
-                <a>@match.Team1Name</a>
-                <p role="status"> <center> <font size="7"> @CountTeam1 </font> </center></p>
-                <button class="btn btn-primary" @onclick="@IncrementCountTeam1">
-                    Score
-                </button>
-                <button class="btn btn-danger" @onclick="@DecreaseCountTeam1">
-                    Revoke
-                </button>
-            </th>
-            <th style="text-align:center">
-                <a>Halftime:</a>
-                <br>
-                <a>@match.HalfTimeCurrent of @match.HalfTimeCount</a>
-            </th>
-            <th>
-                <a>@match.Team2Name</a>
-                <p role="status"><center> <font size="7"> @CountTeam2 </font> </center> </p>
-                <button class="btn btn-primary" @onclick="@IncrementCountTeam2">
-                    Score
-                </button>
-                <button class="btn btn-danger" @onclick="@DecreaseCountTeam2">
-                    Revoke
-                </button>
-            </th>
-        </tr>@*Enter goals*@
-
-        <tr>
-            <th>
-                <button class="btn btn-primary" @onclick="@Penalty2MinTeam1" >
-                    2min Penalty
-                </button>
-            </th>
-            <th>
-
-            </th>
-            <th>
-                <button class="btn btn-primary" @onclick="@Penalty2MinTeam2" >
-                    2min Penalty
-                </button>
-            </th>
-        </tr>
-
-    </table>
+    @*Select the Match to referee about*@
+    <div class="container-fluid">
+    @foreach(var aMatch in MatchList)
+    {
+        <div class="row">
+            <div class="col-12">
+                @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
+                {
+                    <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                }
+                else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
+                {
+                    <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                }
+                else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                {
+                    <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                }
+                else {
+                    <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                }
+            </div>
+        </div>
+    }    
+    <a>Legend: Green = Running Match, Gray = Finished Match, Blue = Ready to Start, Other = White</a>
+    </div>
 }
+else 
+{
+    @if (Match == null)
+    {
+        <p><em>Loading Match...</em></p>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <th>
+                    <center hidden=@Hidden>
+                        <font size= "3">
+                             <a>Penalty</a>
+                        </font>
+                    </center>
+                </th>
+                <th>
+                    <center>
+                        <font size= "5">
+                             <a>Time</a>
+                        </font>
+                    </center>
+                </th>
+                <th>
+                    <center hidden=@Hidden2>
+                        <font size= "3">
+                             <a>Penalty</a>
+                        </font>
+                    </center>
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    <center hidden="@Hidden">
+                        <font size="4">
+                             @duration2
+                        </font>
+                    </center>
+                </th>
+                <th>
+                    <center>
+                        <font size= "7">
+                             @(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))
+                        </font>
+                    </center>
+                </th>
+                <th>
+                    <center hidden="@Hidden2">
+                        <font size="4">
+                             @duration3
+                        </font>
+                    </center>
+                </th>
+            </tr>@*Match time*@
+            <tr>
+                <th>
 
+                </th>
+                <th>
+                    <button class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled">
+                        Start
+                    </button>
+                    <button class="btn btn-primary" @onclick="@PauseMatch">
+                        Pause
+                    </button>
+                    <button class="btn btn-primary" @onclick="@ResumeMatch">
+                        Resume
+                    </button>
+                </th>
+                <th>
+
+                </th>
+            </tr>@*Timer Buttons*@
+
+            <tr>
+                <th>
+                    <a>@Match.Team1Name</a>
+                    <p role="status"> <center> <font size="7"> @CountTeam1 </font> </center></p>
+                    <button class="btn btn-primary" @onclick="@IncrementCountTeam1">
+                        Score
+                    </button>
+                    <button class="btn btn-danger" @onclick="@DecreaseCountTeam1">
+                        Revoke
+                    </button>
+                </th>
+                <th style="text-align:center">
+                    <a>Halftime:</a>
+                    <br>
+                    <a>@Match.HalfTimeCurrent of @Match.HalfTimeCount</a>
+                </th>
+                <th>
+                    <a>@Match.Team2Name</a>
+                    <p role="status"><center> <font size="7"> @CountTeam2 </font> </center> </p>
+                    <button class="btn btn-primary" @onclick="@IncrementCountTeam2">
+                        Score
+                    </button>
+                    <button class="btn btn-danger" @onclick="@DecreaseCountTeam2">
+                        Revoke
+                    </button>
+                </th>
+            </tr>@*Enter goals*@
+
+            <tr>
+                <th>
+                    <button class="btn btn-primary" @onclick="@Penalty2MinTeam1" >
+                        2min Penalty
+                    </button>
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    <button class="btn btn-primary" @onclick="@Penalty2MinTeam2" >
+                        2min Penalty
+                    </button>
+                </th>
+            </tr>
+
+        </table>
+    }
+}
 
 @code{
 
@@ -133,9 +170,13 @@ else
     int CountTeam2 = 0;
     bool Hidden = true;
     bool Hidden2 = true;
-    DtoMatch match = new DtoMatch();
+    DtoMatch Match = new DtoMatch(); // currently selected match
+    List<DtoMatch>? MatchList = null; // List of all not finished matches
     bool StartButtonDisabled = false;
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
+
+    [Parameter]
+    public int? SelectedMatchId { get; set; }
 
     private void IncrementCountTeam1()
     {
@@ -157,34 +198,34 @@ else
 
     private async void PauseMatch()
     {
-        await Api.ControlMatchtimeAsync(match.Id, "stop");
+        await Api.ControlMatchtimeAsync(Match.Id, "stop");
     }
     private async void ResumeMatch()
     {
-        await Api.ControlMatchtimeAsync(match.Id, "start");
+        await Api.ControlMatchtimeAsync(Match.Id, "start");
 
-        if (match.TimeLeftSeconds > 0)
-            match.TimeLeftSeconds--;
+        if (Match.TimeLeftSeconds > 0)
+            Match.TimeLeftSeconds--;
     }
     private async void StartMatch()
     {
         StartButtonDisabled = true;
 
         // Update match object to the current status
-        match = await Api.GetMatchAsync(match.Id) ?? match;
+        Match = await Api.GetMatchAsync(Match.Id) ?? Match;
 
         // Set the LastKnownMatchHash to the current status
-        var matchCore = await Api.GetMatchCoreAsync(match.Id);
+        var matchCore = await Api.GetMatchCoreAsync(Match.Id);
         if (matchCore == null) {
             Console.WriteLine("Failed to get MatchCore");
             return;
         }
         LastKnownMatchHash = matchCore.PropertyHash;
 
-        await Api.ControlMatchtimeAsync(match.Id, "start");
-        
-        if (match.TimeLeftSeconds > 0)
-            match.TimeLeftSeconds--;
+        await Api.ControlMatchtimeAsync(Match.Id, "start");
+
+        if (Match.TimeLeftSeconds > 0)
+            Match.TimeLeftSeconds--;
     }
     private void Penalty2MinTeam1()
     {
@@ -203,7 +244,7 @@ else
 
     private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
     {
-        var matchCore = await Api.GetMatchCoreAsync(match.Id);
+        var matchCore = await Api.GetMatchCoreAsync(Match.Id);
         if (matchCore == null) {
             Console.WriteLine("Failed to get MatchCore");
             return;
@@ -212,30 +253,30 @@ else
         // Update match object in case the hash is different
         if (LastKnownMatchHash != matchCore.PropertyHash)
         {
-            match = await Api.GetMatchAsync(match.Id) ?? match;
+            Match = await Api.GetMatchAsync(Match.Id) ?? Match;
         }
 
         // If local timer says, time is over check verify before stopping
-        if (match.TimeLeftSeconds == 0)
+        if (Match.TimeLeftSeconds == 0)
         {            
-            match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
+            Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
 
             // Stop Timer only if the Server based timer is done.
-            if (match.TimeLeftSeconds == 0)
+            if (Match.TimeLeftSeconds == 0)
                 tmrMatchtime.Stop();
         }
         else // update local timer
         {
             //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
             var serverTimeLeft = matchCore.TimeLeftSeconds;
-            if (match.TimeLeftSeconds - serverTimeLeft > 1 ||
-                match.TimeLeftSeconds - serverTimeLeft < 1)
+            if (Match.TimeLeftSeconds - serverTimeLeft > 1 ||
+                Match.TimeLeftSeconds - serverTimeLeft < 1)
             {
-                match.TimeLeftSeconds = serverTimeLeft;
+                Match.TimeLeftSeconds = serverTimeLeft;
             }
-            else if (match.TimeLeftSeconds > 0)
+            else if (Match.TimeLeftSeconds > 0)
             {                
-                match.TimeLeftSeconds--;
+                Match.TimeLeftSeconds--;
             }
         }
         await InvokeAsync(() => { StateHasChanged(); });
@@ -267,17 +308,26 @@ else
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadMatch();
+
+        await base.OnParametersSetAsync();
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        var matchList= await Api.GetMatchListAsync();
-        if (matchList.Count == 0)
-            return;
 
-        match = matchList[matchList.Count-1];
-
-        if (match.MatchStatus >= (int)Tiwaz.Shared.Enum.MatchStatusEnum.Running)
+        if (SelectedMatchId == null)
         {
-            StartButtonDisabled = true;
+            var matchList= await Api.GetMatchListAsync();
+            if (matchList.Count == 0)
+                return;
+            MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList();
+        }
+        else
+        {
+            await LoadMatch();
         }
 
         // Needs to be initialized at the load of the page to also show running matches
@@ -286,5 +336,24 @@ else
 
         tmrMatchtime.Start();
         await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task LoadMatch()
+    {
+        if (SelectedMatchId == null)
+            return;
+
+        Match = await Api.GetMatchAsync(SelectedMatchId.Value);
+        if (Match == null)
+            return;
+
+        if (Match.MatchStatus >= (int)Tiwaz.Shared.Enum.MatchStatusEnum.Running)
+        {
+            StartButtonDisabled = true;
+        }
+        else
+        {
+            StartButtonDisabled = false;
+        }
     }
 }

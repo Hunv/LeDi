@@ -33,24 +33,24 @@ else if (LiveMatchList != null)
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>Team1</th>
                 <th>Team2</th>
                 <th>Time left</th>
                 <th>Team1 Score</th>
                 <th>Team2 Score</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var aMatch in LiveMatchList)
             {
                 <tr>
+                    <td><a href="dashboard/@aMatch.Id" class="btn btn-primary">Show</a></td>
                     <td>@aMatch.Team1Name</td>
                     <td>@aMatch.Team2Name</td>
                     <td>@(aMatch.TimeLeftSeconds / 60):@((aMatch.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</td>
                     <td>@aMatch.Team1Score</td>
                     <td>@aMatch.Team2Score</td>
-                    <td><a href="dashboard/@aMatch.Id">Show</a></td>
                 </tr>
             }
         </tbody>
