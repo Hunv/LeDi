@@ -23,6 +23,15 @@ namespace Tiwaz.Server
 
         private async void TmrMatchtimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            await UpdateMatchtimer();
+        }
+
+        /// <summary>
+        /// Is updating the match timer.
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateMatchtimer()
+        {
             //If not initialized, cancel
             if (ReferenceSystemTime == null)
                 return;
@@ -91,6 +100,7 @@ namespace Tiwaz.Server
             ReferenceSystemTime = DateTime.Now;
             ReferenceSecond = DateTime.Now.Second == 0 ? 59 : DateTime.Now.Second - 1;
             tmrMatchtimer.Start();
+            await UpdateMatchtimer();
             await SetMatchStatus(MatchStatusEnum.Running, MatchId);
         }
 

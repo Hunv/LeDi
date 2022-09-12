@@ -204,10 +204,8 @@ else
     }
     private async void ResumeMatch()
     {
-        await Api.ControlMatchtimeAsync(Match.Id, "start");
-
-        if (Match.TimeLeftSeconds > 0)
-            Match.TimeLeftSeconds--;
+        await Api.ControlMatchtimeAsync(Match.Id, "start");        
+        await LoadMatch();
     }
     private async void StartMatch()
     {
@@ -223,7 +221,7 @@ else
             return;
         }
         LastKnownMatchHash = matchCore.PropertyHash;
-
+        
         await Api.ControlMatchtimeAsync(Match.Id, "start");
 
         if (Match.TimeLeftSeconds > 0)
