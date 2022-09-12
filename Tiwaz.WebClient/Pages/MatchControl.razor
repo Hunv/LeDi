@@ -170,8 +170,9 @@ else
     bool Hidden2 = true;
     DtoMatch Match = new DtoMatch(); // currently selected match
     List<DtoMatch>? MatchList = null; // List of all not finished matches
-    bool StartButtonDisabled = false;
+    bool StartButtonDisabled = false; //Is the Start button disabled?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
+    bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered=
 
     [Parameter]
     public int? SelectedMatchId { get; set; }
@@ -221,7 +222,7 @@ else
             return;
         }
         LastKnownMatchHash = matchCore.PropertyHash;
-        
+
         await Api.ControlMatchtimeAsync(Match.Id, "start");
 
         if (Match.TimeLeftSeconds > 0)
@@ -340,9 +341,13 @@ else
             await LoadMatch();
         }
 
-        // Needs to be initialized at the load of the page to also show running matches
-        tmrMatchtime.Interval = 1000;
-        tmrMatchtime.Elapsed += tmrMatchtime_Elapsed;   
+        // Needs to be initialized at the load of the page to also show running matches        
+        if (tmrMatchtimeElapsedRegistered == false)
+        {
+            tmrMatchtime.Interval = 1000;
+            tmrMatchtime.Elapsed += tmrMatchtime_Elapsed;
+            tmrMatchtimeElapsedRegistered = true;
+        }
 
         tmrMatchtime.Start();
         await InvokeAsync(() => { StateHasChanged(); });
