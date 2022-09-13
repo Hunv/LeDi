@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tiwaz.Shared.DtoModel;
 using Newtonsoft.Json;
+using Tiwaz.Shared.Enum;
 
 namespace Tiwaz.Shared
 {
@@ -351,6 +352,13 @@ namespace Tiwaz.Shared
             }
         }
 
+        /// <summary>
+        /// Sets match score for a team
+        /// </summary>
+        /// <param name="matchId">The match ID for the match</param>
+        /// <param name="teamId">The Team ID for the team that gets the points (zero based)</param>
+        /// <param name="amount">The amount of points the team gets</param>
+        /// <returns></returns>
         public async Task SetMatchGoalAsync(int matchId, int teamId, int amount)
         {
             var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/goal/" + teamId + "/" + amount, "");
@@ -361,6 +369,33 @@ namespace Tiwaz.Shared
             }
         }
 
-        #endregion
-    }
+        /// <summary>
+        /// Sets match score for a team
+        /// </summary>
+        /// <param name="matchId">The match ID for the match</param>
+        /// <param name="newMatchStatus">The new Matchstatus ID</param>
+        /// <returns></returns>
+        public async Task SetMatchStatusAsync(int matchId, int newMatchStatus)
+        {
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/status", newMatchStatus.ToString());
+
+            if (response == null)
+            {
+                Console.WriteLine("Failed to set match status for {0} and status {1}", matchId, newMatchStatus);
+            }
+        }
+
+
+        /// <summary>
+        /// Sets match score for a team
+        /// </summary>
+        /// <param name="matchId">The match ID for the match</param>
+        /// <param name="newMatchStatus">The new Matchstatus</param>
+        /// <returns></returns>
+        public async Task SetMatchStatusAsync(int matchId, MatchStatusEnum newMatchStatus)
+        {
+            await SetMatchStatusAsync(matchId, (int)newMatchStatus);
+        }
+#endregion
+        }
 }

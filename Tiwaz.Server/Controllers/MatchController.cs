@@ -187,6 +187,23 @@ namespace Tiwaz.Server.Controllers
             return new OkResult(); 
         }
 
+        /// <summary>
+        /// Set the remaining seconds
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{matchId}/status")]
+        public async Task<IActionResult> SetMatchStatus(
+            int matchId,
+            [FromQuery] int status
+            )
+        {
+            _logger.LogDebug("{0}: Set MatchStatus {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, status);
+
+            await Api.ApiMatch.SetMatchStatus(matchId, status);
+
+            _logger.LogDebug("{0}: Set MatchStatus ID {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, status);
+            return new OkResult();
+        }
 
         /// <summary>
         /// Gets all live Matches

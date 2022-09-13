@@ -52,9 +52,9 @@ namespace Tiwaz.Server.Api
         }
 
         /// <summary>
-        /// Sets parameters of a match
+        /// Sets parameters of a match. Null or 0 values will be ignored and not updated.
         /// </summary>
-        /// <param name="match"></param>
+        /// <param name="match">The match object with the new properties.</param>
         /// <returns></returns>
         public async static Task SetMatch(DtoMatch match, int matchId)
         {
@@ -68,7 +68,7 @@ namespace Tiwaz.Server.Api
                     // Perform actions that need to be done on Status change
                     if (match.MatchStatus != 0 && match.MatchStatus != dto.MatchStatus)
                     {
-                        RunMatchStatusChangeActions(dto, match.MatchStatus);
+                        await RunMatchStatusChangeActions(dto, match.MatchStatus);
                     }
 
                     if (match.Team1Score.HasValue)
@@ -106,7 +106,7 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Create a new Match
         /// </summary>
-        /// <param name="match"></param>
+        /// <param name="match">The DtoMatch object to create a new match from.</param>
         /// <returns></returns>
         public async static Task NewMatch(DtoMatch match)
         {
@@ -167,15 +167,15 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Gets the time left of a specific match
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static string GetMatchTime(int id)
+        /// <param name="matchId">ID of the match</param>
+        /// <returns>The time left in seconds as a string</returns>
+        public static string GetMatchTime(int matchId)
         {
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
             {
-                var dto = dbContext.Matches.SingleOrDefault(x => x.Id == id);
+                var dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
                     return JsonConvert.SerializeObject(dto.CurrentTimeLeft, Helper.GetJsonSerializer());
                 else
@@ -187,8 +187,8 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Gets the Match time and a hash of all other values.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID of the match</param>
+        /// <returns>The JSON with the current time left and a hash over all other properties relevant for a live match.</returns>
         public static async Task<string> GetMatchCore(int matchId)
         {
             using var dbContext = new TwDbContext();
@@ -215,18 +215,42 @@ namespace Tiwaz.Server.Api
         }
 
         /// <summary>
-        /// Set the time left in seconds of a specific match
+        /// Sets the matchstatus only by a matchId
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="timeleft"></param>
+        /// <param name="matchId">The ID of the match to set the status for</param>
+        /// <param name="newStatus">The new Status ID of the match</param>
         /// <returns></returns>
-        public static async Task SetMatchTime(int id, int timeleft)
+        public static async Task SetMatchStatus(int matchId, int newStatus)
         {
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
             {
-                var dto = dbContext.Matches.SingleOrDefault(x => x.Id == id);
+                Match? dbMatch = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (dbMatch != null)
+                {   
+                    dbMatch.MatchStatus = newStatus;
+
+                    await dbContext.SaveChangesAsync();
+                    await RunMatchStatusChangeActions(dbMatch, newStatus);
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Set the time left in seconds of a specific match
+        /// </summary>
+        /// <param name="matchId">The ID of the match to set the time for</param>
+        /// <param name="timeleft">The time left in seconds for the match</param>
+        /// <returns></returns>
+        public static async Task SetMatchTime(int matchId, int timeleft)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
+            {
+                var dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
                 {
                     dto.CurrentTimeLeft = timeleft;
@@ -240,7 +264,7 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Start time for a specific match
         /// </summary>
-        /// <param name="matchId"></param>
+        /// <param name="matchId">The match ID of the match to start the time for</param>
         public static async Task StartMatchtime(int matchId)
         {
             //If match not already exist, create a new one
@@ -256,7 +280,7 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Pause time for a specific match
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The match ID of the match to pause the time for</param>
         public static void PauseMatchtime(int matchId)
         {
             var match = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
@@ -267,7 +291,7 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Ends a match
         /// </summary>
-        /// <param name="matchId"></param>
+        /// <param name="matchId">The match ID of the match to end</param>
         public static void EndMatch(int matchId)
         {
             var match = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
@@ -278,9 +302,9 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Set a new value for a team score
         /// </summary>
-        /// <param name="matchId"></param>
-        /// <param name="teamId"></param>
-        /// <param name="amount"></param>
+        /// <param name="matchId">The ID of the match to count a goal for</param>
+        /// <param name="teamId">The team ID of the team that gains a goal (zero based)</param>
+        /// <param name="amount">The amount of goals/points to add for the team. Can also be negative to revoke points/goals.</param>
         /// <returns></returns>
         public static async Task SetMatchGoal(int matchId, int teamId, int amount)
         {
@@ -305,7 +329,7 @@ namespace Tiwaz.Server.Api
         /// <summary>
         /// Gets a list of all ongoing matches
         /// </summary>
-        /// <returns></returns>
+        /// <returns>JSON string with the list of all mathces that are currently loaded on the cache, so they are prepared, running or recently finished.</returns>
         public static string GetLiveMatchList()
         {
             using var dbContext = new TwDbContext();
