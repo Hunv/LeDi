@@ -45,7 +45,7 @@ else
 
         <div class="panel">
             <button class="btn btn-primary" @onclick="e => this.EditCollapsed = !this.EditCollapsed">
-                @( this.EditCollapsed ? "Show match scores" : "Hide match scores")
+                <span class="oi oi-arrow-circle-bottom" /> @(this.EditCollapsed ? "Show live match properties" : "Hide live match properties")
             </button>
 
             <div class="panel @(EditCollapsed?"collapse":"")">
