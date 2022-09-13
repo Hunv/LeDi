@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tiwaz.Shared;
+using Tiwaz.Shared.Enum;
 
 namespace Tiwaz.Server.Api
 {
@@ -64,6 +65,12 @@ namespace Tiwaz.Server.Api
                 Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
                 {
+                    // Perform actions that need to be done on Status change
+                    if (match.MatchStatus != 0 && match.MatchStatus != dto.MatchStatus)
+                    {
+                        RunMatchStatusChangeActions(dto, match.MatchStatus);
+                    }
+
                     if (match.Team1Score.HasValue)
                         dto.Team1Score = match.Team1Score.Value;
 
@@ -95,7 +102,6 @@ namespace Tiwaz.Server.Api
                 }
             }
         }
-
 
         /// <summary>
         /// Create a new Match
@@ -318,6 +324,29 @@ namespace Tiwaz.Server.Api
             else
             {
                 return "{}";
+            }
+        }
+
+        /// <summary>
+        /// Performs the actions required on changes of the Match Status (i.e. Stop time).
+        /// </summary>
+        /// <param name="dto">The current (old) Match object</param>
+        /// <param name="newMatchStatus">the new match status</param>
+        private async static Task RunMatchStatusChangeActions(Match dto, int newMatchStatus)
+        {
+            int[] stopTimeStatus = new int[] { (int)MatchStatusEnum.Canceled, (int)MatchStatusEnum.Closed, (int)MatchStatusEnum.Ended, (int)MatchStatusEnum.Planned, (int)MatchStatusEnum.ReadyToStart, (int)MatchStatusEnum.Stopped };
+            int[] startTimeStatus = new int[] { (int)MatchStatusEnum.Running };
+
+            // If the new Match status is a stop status
+            if (stopTimeStatus.Contains(newMatchStatus))
+            {
+                //Stop the match time
+                MatchEngine.OngoingMatches.Single(x => x.MatchId == dto.Id).Stop();
+            }
+            else if (startTimeStatus.Contains(newMatchStatus))
+            {
+                //Start the match time
+                await MatchEngine.OngoingMatches.Single(x => x.MatchId == dto.Id).Start();
             }
         }
     }
