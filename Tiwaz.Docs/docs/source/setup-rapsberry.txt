@@ -1,7 +1,7 @@
 Install the Pi:
 Setup a Raspberry Pi with the latest Raspberry Pi OS. Use the 32 Bit version. The "Server" version called "Lite" without the desktop environment is recommended to save resources.
-
-
+sudo apt update
+sudo apt upgrade
 
 
 Install .Net 6:
@@ -20,3 +20,73 @@ export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
 - .Net is installed now.
 
 
+
+Setup the Access Point
+To connect to the Raspberry via WiFi where the Rapsberry Pi acts as the Access Point, we need to perform the following steps. To avoid connection loss, connect the Rapsberry Pi via Ethernet cable to your network or PC.
+Install Hostapd and Dnsmasq:
+sudo apt install hostapd -y
+sudo apt install dnsmasq -y
+sudo systemctl unmask hostapd
+sudo systemctl enable hostapd
+
+Stop the services, so we can edit the config files after:
+sudo systemctl stop hostapd
+sudo systemctl stop dnsmasq
+
+Now we setup the private network for the Wifi interface of the Raspberry Pi. We will choose a subnet in one of the private IP segments and a /24 (255.255.255.0) subnetmask. We will take 10.10.100.1 for the IP address of the Rapsberry Pi Wifi interface.
+Edit the IP configuration as follows:
+sudo nano /etc/dhcpcd.conf
+add the following lines at the end of the file:
+interface wlan0
+nohook wpa_supplicant
+static ip_address=10.10.100.1/24
+static domain_name_servers=10.10.100.1
+Save the file with Ctrl+O and exit with Ctrl+X
+
+Now we configure the DHCP server which will serve the IPs to the connecting clients.
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+sudo nano /etc/dnsmasq.conf
+paste the following content:
+interface=wlan0
+dhcp-range=10.10.100.11,10.10.100.254,255.255.255.0,1h
+domain=intern
+listen-address=10.10.100.1
+listen-address=127.0.0.1
+local=/intern/
+Save the file with Ctrl+O and exit with Ctrl+X.
+That lines mean that we will serve IPs from 10.10.100.11 to 10.10.100.254 in the subnet 255.255.255.0 with 1 hour of lease time to connecting clients. We leave the first 10 IPs free for infrastructure devices we may connect somewhen.
+It also defines, that also other systems than the local system can connect to the dnsmasq-service to get DNS information as well as that the "intern"-Domain should not be resolved by anyone else than the local system (in case it will have an uplink while it runs).
+
+Now we configure the DNS resolution:
+sudo nano /etc/hosts
+add the line:
+10.10.100.1	tiwaz.intern
+10.10.100.1	board board.intern
+The last line would mean, that the system will have an alias called "board" that clients are able to use to connect to the page. Feel free to change it or add more/other alias'.
+Save the file with Ctrl+O and exit with Ctrl+X.
+
+
+After that we configure the AccessPoint itself.
+sudo nano /etc/hostapd/hostapd.conf
+paste the following lines:
+interface=wlan0
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=0
+ssid=Tiwaz
+Save the file with Ctrl+O and exit with Ctrl+X.
+This will configure the interface wlan0. The connection is named "Tiwaz" by default and unencrypted so everyone will be able to connect.
+
+Link the new config from the initscript file:
+sudo nano /etc/default/hostapd
+Replace the Line "#DAEMON_CONF=""" with "DAEMON_CONF="/etc/hostapd/hostapd.conf"" to remove the leading # and add the path the new config file.
+Save the file with Ctrl+O and exit with Ctrl+X.
+
+(Re-)Start the Services:
+sudo systemctl restart dhcpcd
+sudo systemctl start hostapd
+sudo systemctl start dnsmasq
