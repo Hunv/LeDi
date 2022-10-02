@@ -1,7 +1,7 @@
-Install Tiwaz on a RaspberryPi
+Install LeDi on a RaspberryPi
 ==============================
 
-This guide will lead you threw the process of installing Tiwaz on a RaspberryPi from scratch. This guide was created using a RaspberryPi 3 but this should also be valid for a RaspberryPi 4. For RaspberryPi 1 and 2 you might need an alternative solution for hosting the Wifi Hotspot by adding a USB wifi stick or by adding a access point to the network. As we only recommend to use a RaspberryPi 3 or 4, we will not go into details how to implement this for RaspberryPi 1 or 2.
+This guide will lead you threw the process of installing LeDi on a RaspberryPi from scratch. This guide was created using a RaspberryPi 3 but this should also be valid for a RaspberryPi 4. For RaspberryPi 1 and 2 you might need an alternative solution for hosting the Wifi Hotspot by adding a USB wifi stick or by adding a access point to the network. As we only recommend to use a RaspberryPi 3 or 4, we will not go into details how to implement this for RaspberryPi 1 or 2.
 
 Install the RapsberryPi
 #######################
@@ -40,7 +40,7 @@ Congratiulations. Dotnet is installed.
 
 Setup the Access Point
 ######################
-This section will setup the RaspberryPi as a stand alone Hotspot. You can skip this, if you don't plan to use Tiwaz stand alone. Otherwise if you plan to just take your display and go to the next court, pool, field or whatever - you should implement this.
+This section will setup the RaspberryPi as a stand alone Hotspot. You can skip this, if you don't plan to use LeDi stand alone. Otherwise if you plan to just take your display and go to the next court, pool, field or whatever - you should implement this.
 To connect to the Raspberry via wifi where the RapsberryPi acts as the access point, we need to perform the following steps. To avoid connection loss, connect the RapsberryPi via Ethernet cable to your network or PC. Summarized we will setup the RapsberryPi as a DNS server (dnsmasq) and DHCP server (dhcpcd) and install hostapd to use the wifi adapter to provide a wifi to clients to connect to it.
 
 Install Hostapd and Dnsmasq:
@@ -109,7 +109,7 @@ Now we configure the DNS resolution. Edit the hosts file:
 Add the lines at the end:
 .. code-block:: text
     :linenos:
-    10.10.100.1	tiwaz.intern
+    10.10.100.1	LeDi.intern
     10.10.100.1	board board.intern
 
 The last line would mean, that the system will have an alias called "board" that clients are able to use to connect to the page. Feel free to change it or add more/other alias'.
@@ -133,10 +133,10 @@ Paste the following lines:
     auth_algs=1
     ignore_broadcast_ssid=0
     wpa=0
-    ssid=Tiwaz
+    ssid=LeDi
 
 Save the file with Ctrl+O and exit with Ctrl+X.
-This will configure the interface wlan0. The connection is named "Tiwaz" by default and unencrypted so everyone will be able to connect.
+This will configure the interface wlan0. The connection is named "LeDi" by default and unencrypted so everyone will be able to connect.
 
 Link the new config from the initscript file:
 .. code-block:: bash

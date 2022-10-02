@@ -1,5 +1,5 @@
-Tiwaz.WebClient
-===============
+LeDi.Display
+=============
 
 .. autosummary::
    :toctree: generated

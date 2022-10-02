@@ -1,4 +1,4 @@
-Tiwaz.Server
+LeDi.Server
 ============
 
 .. _installation:

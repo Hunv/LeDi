@@ -1,5 +1,5 @@
-Tiwaz.Display
-=============
+LeDi.Hardware
+==============
 
 .. autosummary::
    :toctree: generated

@@ -1,5 +1,5 @@
-Tiwaz.Hardware
-==============
+LeDi.WebClient
+===============
 
 .. autosummary::
    :toctree: generated

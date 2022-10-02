@@ -1,7 +1,7 @@
 Idee
 ====
 
-Die Idee zu Tiwaz entstand bei einem Unterwasserhockey Turnier, bei dem eine Anzeigetafel mit Hilfe eines normalen Fernsehers umgesetzt wurde. Dies brachte jedoch drei erhebliche Probleme mit sich:
+Die Idee zu LeDi entstand bei einem Unterwasserhockey Turnier, bei dem eine Anzeigetafel mit Hilfe eines normalen Fernsehers umgesetzt wurde. Dies brachte jedoch drei erhebliche Probleme mit sich:
 1. Wenn die Sonne auf den Bildschirm schien, war dieser nicht mehr lesbar.
 2. Wenn man aus einem halbwegs spitzen Winkel auf den Bildschirm geguckt hat, war nichts zu erkennen.
 3. Es gab Reflextionen von hellen Wänden und anderen Objekten, welche teile des Bildschirms nicht mehr lesbar machten.

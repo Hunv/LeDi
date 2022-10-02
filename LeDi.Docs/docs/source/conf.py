@@ -2,9 +2,9 @@
 
 # -- Project information
 
-project = 'Tiwaz'
-copyright = '2022, Tiwaz Team (Kristian Reukauff, Albert Sanders)'
-author = 'Tiwaz Team'
+project = 'LeDi'
+copyright = '2022, LeDi Team (Kristian Reukauff, Albert Sanders)'
+author = 'LeDi Team'
 
 release = '0.1'
 version = '0.1.0'

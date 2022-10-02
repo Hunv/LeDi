@@ -1,4 +1,4 @@
-Tiwaz.Docs
+LeDi.Docs
 ==========
 
 .. autosummary::
