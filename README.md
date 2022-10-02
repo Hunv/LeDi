@@ -5,4 +5,4 @@ It contains primary of three software compoments: Server, WebClient and Display.
 
 LeDi is the short form of "LED Display".
 
-Full documentation can be found here: https://tiwazdocs.readthedocs.io/ 
+Full documentation can be found here: https://ledi.readthedocs.io/ 
