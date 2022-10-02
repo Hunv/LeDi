@@ -1,53 +1,53 @@
-Willkommen zur LeDi's Dokumentation!
+Welcome to LeDi's documentation!
 =====================================
 
-**LeDi** ist ein Open Source Software und Hardware Projekt, welches dazu dient Spiele, vornehmlich sportlicher Natur, mit einer Anzeigetafel zu begleiten und gleichzeitig das Spielmanagement an sich zu übernehmen (Zeitmessung, Spielerverwaltung uvm.).
+**LeDi** is an open source Soft- and Hardware project to primary manage sport matches. It is supported by a LED display to show the current time left, player information, scores etc..
 
+Project at GitHub: `LeDi <https://github.com/Hunv/LeDi>`_
 
-Projekt auf GitHub: `LeDi <https://github.com/Hunv/LeDi>`_
-
-Das Projekt unterteilt sich in fünf Unterprojekte:
+The project has multiple subprojects:
 
 LeDi.Docs
 ##########
-Dieses Projekt stellt die Dokumentation des Projektes da. Hier ist alles zu finden was benötigt wird, um das Projekt nachzubauen und selbst zu betreiben sowie Überlegungen und Hintergründe. Diese Seite ist der Hauptbestandteil dieses Projekts.
-Auch die Installation und Konfiguration eines Raspberry Pis zum Betrieb der Softwarekomponenten ist Teil dieses Projektes
+This projects are the documentation like this. It documents how to setup the software and how to build the hardware. It documents the road of custructing the hardware until the final result came out.
 
 LeDi.Server
 ############
-Dies ist die Softwarekomponente, welche die Spielsteuerung übernimmt sowie eine API bereitstellt um den anderen Softwarekomponenten via REST API eine Datenbasis bereit zu stellen.
-Nur LeDi.Server hält Daten permenent vor und ist das führende und zentrale Glied in der Kette.
-Die Entwicklung geschieht in C# auf Basis von .Net 6.0.
+This is the main software component. It is the core of the software architecture and provides an API to provide the current match status. The API can be accessed via a REST API.
+LeDi.Server is the only software component that holds the valid match information.
+It is created using C# based on .Net 6.0 (LTS).
 
 LeDi.WebClient
 ###############
-Dies ist die Softwarekomponente, welche den Schiedsrichtern und anderen Interessierten eine Oberfläche bietet, mit der die zentrale Komponente gesteuert werden kann. 
-Die Entwicklung geschieht in C#, HTML, CSS und JavaScript auf Basis von Microsoft Blazor (Server) und .Net 6.0.
+This is the software component that provides the frontend to the referees and all other people. The referees can control the match using this component while other people can watch the current standings.
+Admins configure the software after installation using the LeDi.WebClient.
+It is created in C#, HTML, CSS and Java Script based on Microsoft Balzor (Server) and .Net 6.0 (LTS).
 
 LeDi.Display
 #############
-Dies ist die Softwarekomponente, welche ein LED Display ansteuert, welches auf Basis von WS2812B LEDs erstellt wurde. Gesteuert wird dies ebenfalls über die Zentrale Softwarekomponente.
-Die Entwicklung geschieht in C# auf Basis von .Net 6.0
+This software component controls the LED display, based on WS2812B LEDs. It connects to the LeDi.Server API and gets the information about the behaviour and what needs to be shown from this server also via REST API.
+It is created using C# based on .Net 6.0 (LTS).
 
 LeDi.Hardware
 ##############
-Dieses Projekt dokumentiert den Bau der Hardware des LED Displays. Dies ist die Hardwarekomponente von LeDi.Display.
-Dieses Projekt beinhaltet sowohl den Bau eines Gehäuses mit den LEDs und Netzteilen sowie die Gestaltung der Elektronik. Letzteres sollte auf jeden Fall von einem Elektriker begleitet werden um Gefahr für Leib und Leben sowohl bei der Konstruktion als auch beim späteren Betrieb ausschließen zu können.
-
+This project documents the creation of the display hardware. This is the hardware counterpart to the LeDi.Display project.
+It contains the mounting of the case and power supplies as well as the drafts for the electronics and cableing. Especially electronics and calbing should be supported by a trained electican to exclude damage to your health due to electic shocks or other dangers during build and run.
 
 
 .. note::
 
-   Dieses Projekt und alle Unterprojekte sind noch in Entwicklung
+   This project and all subprojects are currently under developlement.
+   For a roadmap see the roadmap in GitHub.
 
-Inhalt
+Index
 --------
 
 .. toctree::
 
+   idea
    ledi-server
    Ledi-webclient
    ledi-display
    ledi-hardware
    ledi-docs
-   ledi-raspberrysetupEN
+   ledi-raspberrysetup

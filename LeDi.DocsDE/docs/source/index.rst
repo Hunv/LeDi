@@ -45,9 +45,10 @@ Inhalt
 
 .. toctree::
 
+   idea
    ledi-server
    Ledi-webclient
    ledi-display
    ledi-hardware
    ledi-docs
-   ledi-raspberrysetupEN
+   ledi-raspberrysetup
