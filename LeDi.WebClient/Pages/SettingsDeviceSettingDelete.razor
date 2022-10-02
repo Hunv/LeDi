@@ -1,0 +1,57 @@
+﻿@page "/settingsdevicesettingdelete/{deviceId}/{settingName}"
+@using LeDi.Shared.DtoModel;
+@using LeDi.WebClient.Data
+@inject LeDi.Shared.Api Api
+@inject NavigationManager NavigationManager
+
+<PageTitle>LeDi - Confirm Deletion of Device</PageTitle>
+
+
+<h1>Confirm Deletion of Device Setting</h1>
+
+@if (ToDeleteDeviceSetting == null)
+{
+    <p><em>Loading Device...</em></p>
+}
+else
+{
+    <p>Confirm the deletion of device setting @settingName:</p>
+    <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">       
+        
+        <button class="btn btn-warning" type="submit">Confirm Delete</button>
+        <button class="btn btn-danger" type="button" @onclick="CancelDelete">Cancel Delete</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string deviceId { get; set; } = "";
+
+    [Parameter]
+    public string settingName { get; set; } = "";
+
+    private DtoDeviceSetting ToDeleteDeviceSetting = new DtoDeviceSetting("", "", "");
+
+    protected override async Task OnInitializedAsync()
+    {
+        var devSetting = await Api.GetDeviceSettingAsync(deviceId, settingName);
+        
+        if (devSetting == null)
+            return;
+
+        ToDeleteDeviceSetting = devSetting;
+    }
+
+    private void CancelDelete()
+    {
+        NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);
+    }
+
+    private async void ConfirmDelete()
+    {
+        await Api.DeleteDeviceSettingAsync(deviceId, settingName);
+
+        NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);
+        
+    }
+}

@@ -1,0 +1,110 @@
+﻿@page "/Sportart"
+@using LeDi.Shared.DtoModel
+@inject LeDi.Shared.Api Api
+@inject NavigationManager NavigationManager
+
+<PageTitle>LeDi - Select type of sport</PageTitle>
+@if (NewMatch == null)
+{
+    <p><em>Loading Data...</em></p>
+}
+else
+{
+    <EditForm Model="@NewMatch" OnValidSubmit="@SaveMatch">
+    @*    <DataAnnotationsValidator />
+        <ValidationSummary />*@
+
+        <a>Select type of sport</a>
+
+        <InputSelect id="cmbGamename" @bind-Value="SelectedGamename" class="form-control">
+            <option value="">  </option>
+            <option value="UWH">Underwaterhockey</option>
+            <option value="Handball">Handball</option>
+        </InputSelect>
+        @*<select name=" " onchange="@ShowFields"> 
+            <option value="">  </option>
+            <option value="UWH">Underwaterhockey</option>
+            <option value="Handball">Handball</option>
+        </select>*@
+        <br /> 
+        <a hidden="@Hidden">Team 1:</a>
+        <InputText id="txtTeamName1" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.Team1Name"/>
+        <a hidden="@Hidden"> Teams 2:</a>
+        <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.Team2Name"/>
+        <a hidden="@Hidden"> Number of halftimes:</a>
+        <InputNumber id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.HalfTimeCount"/>
+        <a hidden="@Hidden"> Length of a halftime in minutes:</a>
+        <InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.TimeLeftSeconds"/>
+        <br />
+   
+        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
+        <button class="btn btn-primary" type="submit">Save</button>
+
+    
+    </EditForm>
+}
+
+@code{
+
+    bool Hidden = true;
+    DtoMatch NewMatch = new DtoMatch()
+        {
+            Team1Name = "Team1",
+            Team2Name = "Team2",
+            HalfTimeCount = 2,
+            TimeLeftSeconds = 10
+    };
+    
+    private string _SelectedGamename = "";
+    string SelectedGamename {
+        get
+        {
+            return _SelectedGamename;
+        } 
+        set
+        {
+            _SelectedGamename = value;
+            ShowFields();
+        }
+    }
+
+    private void ShowFields()
+    {
+        if (string.IsNullOrWhiteSpace(SelectedGamename))
+        {
+            return;
+        }
+        else if (SelectedGamename == "UWH")
+        {
+            Hidden = false;
+        }
+        else
+        {
+            Hidden = true;
+        }
+
+
+    }
+    
+    private async void SaveMatch()
+    {
+
+        NewMatch.TimeLeftSeconds = NewMatch.TimeLeftSeconds*60;
+
+        await Api.AddMatchAsync(NewMatch);
+        NewMatch = new DtoMatch()
+            {
+                Team1Name = "Team1",
+                Team2Name = "Team2",
+                TimeLeftSeconds = 10,
+                HalfTimeCount = 2
+            };
+    }
+    
+    private void SaveStartMatch()
+    {
+        SaveMatch();
+        NavigationManager.NavigateTo("/MatchControl");
+
+    }
+}

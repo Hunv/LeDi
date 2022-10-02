@@ -1,0 +1,159 @@
+﻿@page "/match/{Id:int}"
+@using LeDi.Shared.DtoModel
+@using LeDi.Shared.Enum
+@using LeDi.WebClient.Components
+@inject LeDi.Shared.Api Api
+
+<PageTitle>LeDi - Edit Match</PageTitle>
+
+@if (Match == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{   
+    <EditForm Model="@Match" OnValidSubmit="@SaveMatch">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <a>Team 1 Name</a>
+        <InputText id="txtTeam1Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team1Name" />
+        <ValidationMessage For="@(() => Match.Team1Name)" />
+        <br />
+
+        <a>Team 2 Name</a>                
+        <InputText id="txtTeam2Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team2Name" />
+        <ValidationMessage For="@(() => Match.Team2Name)" />
+        <br />
+        
+        <a>Halftime count</a>
+        <InputNumber id="txtHalftimeCount" class="form-control" type="text" @bind-Value="Match.HalfTimeCount" />
+        <br />
+
+        <a>Scheduled Start Time</a>
+        <input id="txtScheduledTime" class="form-control" width="150" type="time" @bind="Match.ScheduledTime" />
+        <br />
+
+        <a>Match Status</a>
+        <InputSelect @bind-Value="MatchStatus" id="cmbMatchStatus" class="form-control" width="150">
+            @foreach (var value in Enum.GetValues(typeof(MatchStatusEnum)))
+            {
+                <option>@value</option>
+            }
+        </InputSelect>
+        <br />
+
+
+        <div class="panel">
+            <button class="btn btn-primary" @onclick="e => this.EditCollapsed = !this.EditCollapsed">
+                <span class="oi oi-arrow-circle-bottom" /> @(this.EditCollapsed ? "Show live match properties" : "Hide live match properties")
+            </button>
+
+            <div class="panel @(EditCollapsed?"collapse":"")">
+                
+                <a>Team 1 Score</a>
+                <InputNumber id="txtScoreTeam1" class="form-control" type="text" @bind-Value="Match.Team1Score" />
+                <br />
+
+                <a>Team 2 Score</a>
+                <InputNumber id="txtScoreTeam2" class="form-control" type="text" @bind-Value="Match.Team2Score" />
+                <br />  
+                
+                <label>Time left</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
+                    <span class="input-group-addon mt-1">:</span> @*todo: shift this a bit more down to have it centered between the other two controls*@
+                    <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
+                </div>
+                <br /> 
+
+                <a>Current Halftime (0 = Not started)</a>
+                <InputNumber id="txtHalftimeCurrent" class="form-control" type="text" @bind-Value="Match.HalfTimeCurrent" />
+                <br />
+            </div>
+        </div>
+        <br />
+        <button class="btn btn-primary" type="submit">Save Match</button>
+        <a class="btn btn-danger" href="matchplanning" role="button">Cancel</a>
+    </EditForm>
+}
+
+@code {
+    private DtoMatch? Match = null;
+    private bool EditCollapsed = true;
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    private MatchStatusEnum MatchStatus
+    {
+        get
+        { 
+            return Match == null ? MatchStatusEnum.Undefined : (MatchStatusEnum)Match.MatchStatus;
+        }
+        set 
+        {
+            if (Match == null) 
+                return;
+
+            Match.MatchStatus = (int)value;
+        }
+    }
+    
+    private int TimeLeftMinutesProxy
+    {
+        get
+        {
+
+            if (Match == null)
+                return 0;
+
+            return (int)(Match.TimeLeftSeconds / 60);
+        }
+        set
+        {
+            if (Match == null)
+                return;
+            
+            Match.TimeLeftSeconds = value * 60 + TimeLeftSecondsProxy;
+        }
+    }
+
+    private int TimeLeftSecondsProxy
+    {
+        get
+        {
+
+            if (Match == null)
+                return 0;
+
+            return (int)(Match.TimeLeftSeconds % 60);
+        }
+        set
+        {
+            if (Match == null)
+                return;
+            
+            Match.TimeLeftSeconds = TimeLeftMinutesProxy + value;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == null)
+            return;
+
+        Match = await Api.GetMatchAsync(Id.Value);
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void SaveMatch()
+    {
+        if (Match == null)
+            return;
+
+        await Api.SetMatchAsync(Match);
+    }
+
+}

@@ -1,0 +1,212 @@
+﻿@page "/dashboard"
+@page "/dashboard/{Id:int}"
+@using LeDi.Shared.DtoModel
+@using LeDi.WebClient.Components
+@inject LeDi.Shared.Api Api
+@inject NavigationManager NavigationManager
+
+<PageTitle>LeDi - Dashboard</PageTitle>
+
+@if (Match != null)
+{
+    <h1 class="text-center text-responsive">@Match.Team1Name vs. @Match.Team2Name</h1>
+    <h1 class="text-center text-responsiveXL">@Match.Team1Score : @Match.Team2Score</h1>
+    <br />
+    <br />
+    <h1 class="text-center">Time left:</h1>
+    <h1 class="text-center text-responsive">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</h1>
+
+    <br />
+    <br />
+
+    <a>Goals:</a><br />
+    <a>4 - Heiner Bego (2:31)      1 - Lin Kebazille (1:02)</a><br />
+    <a>8 - Jan Täuscher (4:21)</a><br />
+    <br />
+    <a>Penalties:</a><br />
+    <a>- none -                    12 - Nathan Walker (0:23)</a><br />
+}
+else if (LiveMatchList != null)
+{
+    <p>Currently ongoing matches:</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Team1</th>
+                <th>Team2</th>
+                <th>Time left</th>
+                <th>Team1 Score</th>
+                <th>Team2 Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aMatch in LiveMatchList)
+            {
+                <tr>
+                    <td><a href="dashboard/@aMatch.Id" class="btn btn-primary">Show</a></td>
+                    <td>@aMatch.Team1Name</td>
+                    <td>@aMatch.Team2Name</td>
+                    <td>@(aMatch.TimeLeftSeconds / 60):@((aMatch.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</td>
+                    <td>@aMatch.Team1Score</td>
+                    <td>@aMatch.Team2Score</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else {
+    <a>Currently no ongoing matches</a>
+}
+
+@code {
+    DtoMatch? Match = null;
+    IEnumerable<DtoMatch>? LiveMatchList = null;
+    System.Timers.Timer tmrUpdate = new System.Timers.Timer();
+    int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            Match = await Api.GetMatchAsync(Id.Value);
+        }
+        else if (Id == null)
+        {
+            Match = null;
+        }
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tmrUpdate.Elapsed += tmrUpdate_Elapsed;
+        tmrUpdate.Interval = 1000;
+
+        if (Id != null)
+        {
+            Match = await Api.GetMatchAsync(Id.Value);
+            if (Match == null)
+                return;
+
+            var matchCore = await Api.GetMatchCoreAsync(Match.Id);            
+            if (matchCore != null) {
+                LastKnownMatchHash = matchCore.PropertyHash;
+            }
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+        else
+        {
+            // Reset Match value
+            Match = null; 
+
+            var matches = await Api.GetMatchListAsync();
+            if (matches.Count > 1)
+            {
+                var runningMatches = matches.Where(x => x.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Running); //0 = undefined, 1 = planned, 2 = running, 3 = ended
+                if (runningMatches.Count() > 1)
+                {
+                    //More than one match to show. Show modal dialog to select.
+                    LiveMatchList = runningMatches;
+                }
+                else if (runningMatches.Count() == 0)
+                {
+                    //No match to show.
+                    //todo
+                }
+                else
+                {
+                    // The only match that makes sense to show.
+                    Match = runningMatches.First();
+
+                    // Set hash for last known match properties
+                    var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+                    if (matchCore != null) {
+                        LastKnownMatchHash = matchCore.PropertyHash;
+                    }
+                    tmrUpdate.Start();
+                    NavigationManager.NavigateTo("dashboard/" + Match.Id);
+                }
+            }
+        }
+        tmrUpdate.Start();
+    }
+
+    private async void tmrUpdate_Elapsed(object? sender, EventArgs e)
+    {
+        // If one match is shown update only that one match
+        if (Match != null)
+        {
+            var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+            if (matchCore == null)
+                return;
+
+            Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
+
+            if (LastKnownMatchHash != matchCore.PropertyHash)
+            {
+                // Get the current data
+                var updatedData = await Api.GetMatchAsync(Match.Id);
+
+                // Cancel if no data returned
+                if (updatedData == null)
+                    return;
+
+                Match = updatedData;
+                
+                //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
+                if (Match.TimeLeftSeconds - updatedData.TimeLeftSeconds > 1 ||
+                    Match.TimeLeftSeconds - updatedData.TimeLeftSeconds < 1)
+                {
+                    Match.TimeLeftSeconds = updatedData.TimeLeftSeconds;
+                }
+            }
+            else
+            {
+                if (Match.TimeLeftSeconds > 0)
+                    Match.TimeLeftSeconds--;
+            }
+
+        }
+        else //Update all matches
+        {
+            // Get the ongoing matches
+            var updatedData = (await Api.GetMatchListAsync()).Where(x => x.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Running);
+
+            // Cancel if no data returned
+            if (updatedData == null)
+                return;
+
+            // Cancel if no matches lodaded
+            if (LiveMatchList == null)
+                return;
+
+            foreach (var ud in updatedData)
+            {
+                if (LiveMatchList.Any(x => x.Id == ud.Id))
+                {
+                    LiveMatchList.Single(x => x.Id == ud.Id).Team1Score = ud.Team1Score;
+                    LiveMatchList.Single(x => x.Id == ud.Id).Team2Score = ud.Team2Score;
+
+
+                    //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
+                    if (LiveMatchList.Single(x => x.Id == ud.Id).TimeLeftSeconds - ud.TimeLeftSeconds > 1 ||
+                        LiveMatchList.Single(x => x.Id == ud.Id).TimeLeftSeconds - ud.TimeLeftSeconds < 1)
+                    {
+                        LiveMatchList.Single(x => x.Id == ud.Id).TimeLeftSeconds = ud.TimeLeftSeconds;
+                    }
+                    else
+                    {
+                        LiveMatchList.Single(x => x.Id == ud.Id).TimeLeftSeconds--;
+                    }
+                }
+            }
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+}
