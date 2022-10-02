@@ -1,0 +1,40 @@
+﻿@page "/userlogin"
+
+<h3>Referee Login</h3>
+
+<br />
+
+@if (IsAuthenticated) 
+{
+    @*Provides the logout button as well as access to the profile*@
+    <LoginDisplay />
+}
+else
+{
+    <a class="btn btn-primary" href="Identity/Account/Register">Register a new referee</a>
+    <br />
+    <br />
+    <a class="btn btn-primary" href="Identity/Account/Login">Login an existing referee</a>
+}
+
+@code{
+
+    [CascadingParameter] protected Task<AuthenticationState>? AuthStat { get; set; }
+    private bool IsAuthenticated{ get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        
+        if (AuthStat == null) return;
+        var user = (await AuthStat).User;
+        if (user.Identity == null) return;
+
+        if (user.Identity.IsAuthenticated)
+            IsAuthenticated = true;
+        else
+            IsAuthenticated = false;
+    }
+
+}

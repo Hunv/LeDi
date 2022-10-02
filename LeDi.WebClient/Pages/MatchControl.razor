@@ -9,33 +9,37 @@
 {
     <p><em>Loading Matches...</em></p>
 }
+else if (MatchList.Count == 0)
+{
+    <p><em>Currently no matches running.</em></p>
+}
 else if (SelectedMatchId == null)
 {
     @*Select the Match to referee about*@
     <div class="container-fluid">
-    @foreach(var aMatch in MatchList)
-    {
-        <div class="row">
-            <div class="col-12">
-                @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
-                {
-                    <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
-                }
-                else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
-                {
-                    <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
-                }
-                else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
-                {
-                    <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
-                }
-                else {
-                    <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
-                }
+        @foreach(var aMatch in MatchList)
+        {
+            <div class="row">
+                <div class="col-12">
+                    @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
+                    {
+                        <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                    }
+                    else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
+                    {
+                        <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                    }
+                    else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                    {
+                        <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                    }
+                    else {
+                        <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                    }
+                </div>
             </div>
-        </div>
-    }    
-    <a>Legend: Green = Running Match, Gray = Finished Match, Blue = Ready to Start, Other = White</a>
+        }    
+        <a>Legend: Green = Running Match, Gray = Finished Match, Blue = Ready to Start, Other = White</a>
     </div>
 }
 else 
@@ -331,9 +335,13 @@ else
 
         if (SelectedMatchId == null)
         {
-            var matchList= await Api.GetMatchListAsync();
+            var matchList = await Api.GetMatchListAsync();
             if (matchList.Count == 0)
+            {
+                //Create emtpy list
+                matchList = new List<DtoMatch>();
                 return;
+            }
             MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList();
         }
         else

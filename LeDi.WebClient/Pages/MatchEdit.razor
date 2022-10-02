@@ -46,7 +46,7 @@ else
 
         <div class="panel">
             <button class="btn btn-primary" @onclick="e => this.EditCollapsed = !this.EditCollapsed">
-                <span class="oi oi-arrow-circle-bottom" /> @(this.EditCollapsed ? "Show live match properties" : "Hide live match properties")
+                <span class="oi @(this.EditCollapsed ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.EditCollapsed ? "Show live match properties" : "Hide live match properties")
             </button>
 
             <div class="panel @(EditCollapsed?"collapse":"")">
@@ -59,10 +59,10 @@ else
                 <InputNumber id="txtScoreTeam2" class="form-control" type="text" @bind-Value="Match.Team2Score" />
                 <br />  
                 
-                <label>Time left</label>
+                <label>Time left (Minutes : Seconds)</label>
                 <div class="input-group">
                     <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
-                    <span class="input-group-addon mt-1">:</span> @*todo: shift this a bit more down to have it centered between the other two controls*@
+                    <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
                     <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
                 </div>
                 <br /> 
@@ -104,7 +104,6 @@ else
     {
         get
         {
-
             if (Match == null)
                 return 0;
 
@@ -123,7 +122,6 @@ else
     {
         get
         {
-
             if (Match == null)
                 return 0;
 
