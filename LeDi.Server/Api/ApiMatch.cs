@@ -261,7 +261,7 @@ namespace LeDi.Server.Api
         }
 
 
-        /// <summary>
+        /// <summary> 
         /// Start time for a specific match
         /// </summary>
         /// <param name="matchId">The match ID of the match to start the time for</param>
@@ -275,6 +275,25 @@ namespace LeDi.Server.Api
 
             //Start the match
             await MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId).Start();
+
+            // Create the match event
+            using var dbContext = new TwDbContext();
+            if (dbContext.Matches != null)
+            {
+                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (match != null)
+                {
+                    if (match.MatchEvents != null)
+                    {
+                        match.MatchEvents.Add(new MatchEvent
+                        {
+                            Event = MatchEventEnum.MatchStart,
+                            Text = "Match started.",
+                            Timestamp = DateTime.Now
+                        });
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -283,9 +302,30 @@ namespace LeDi.Server.Api
         /// <param name="id">The match ID of the match to pause the time for</param>
         public static void PauseMatchtime(int matchId)
         {
-            var match = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
-            if (match != null)
-                match.Stop();
+            var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
+            if (matchHandler != null)
+            {
+                matchHandler.Stop();
+
+                // Create the match event
+                using var dbContext = new TwDbContext();
+                if (dbContext.Matches != null)
+                {
+                    var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                    if (match != null)
+                    {
+                        if (match.MatchEvents != null)
+                        {
+                            match.MatchEvents.Add(new MatchEvent
+                            {
+                                Event = MatchEventEnum.MatchPaused,
+                                Text = "Match paused.",
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -294,9 +334,30 @@ namespace LeDi.Server.Api
         /// <param name="matchId">The match ID of the match to end</param>
         public static void EndMatch(int matchId)
         {
-            var match = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
-            if (match != null)
-                MatchEngine.OngoingMatches.Remove(match);
+            var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
+            if (matchHandler != null)
+            {
+                MatchEngine.OngoingMatches.Remove(matchHandler);
+
+                // Create the match event
+                using var dbContext = new TwDbContext();
+                if (dbContext.Matches != null)
+                {
+                    var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                    if (match != null)
+                    {
+                        if (match.MatchEvents != null)
+                        {
+                            match.MatchEvents.Add(new MatchEvent
+                            {
+                                Event = MatchEventEnum.MatchEnd,
+                                Text = "Match ended.",
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -312,13 +373,39 @@ namespace LeDi.Server.Api
 
             if (dbContext.Matches != null)
             {
-                var dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                if (dto != null)
+                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (match != null)
                 {
                     if (teamId == 0)
-                        dto.Team1Score += amount;
+                    {
+                        match.Team1Score += amount;
+
+                        // Create the match event
+                        if (match.MatchEvents != null)
+                        {
+                            match.MatchEvents.Add(new MatchEvent
+                            {
+                                Event = MatchEventEnum.ScoreTeam1,
+                                Text = match.Team1Name + " scored (" + amount + ").",
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                    }
                     else if (teamId == 1)
-                        dto.Team2Score += amount;
+                    {
+                        match.Team2Score += amount;
+
+                        // Create the match event
+                        if (match.MatchEvents != null)
+                        {
+                            match.MatchEvents.Add(new MatchEvent
+                            {
+                                Event = MatchEventEnum.ScoreTeam1,
+                                Text = match.Team2Name + " scored (" + amount + ").",
+                                Timestamp = DateTime.Now
+                            });
+                        }
+                    }
 
                     await dbContext.SaveChangesAsync();
                 }
@@ -364,13 +451,20 @@ namespace LeDi.Server.Api
             // If the new Match status is a stop status
             if (stopTimeStatus.Contains(newMatchStatus))
             {
-                //Stop the match time
-                MatchEngine.OngoingMatches.Single(x => x.MatchId == dto.Id).Stop();
+                if (MatchEngine.OngoingMatches.Any(x => x.MatchId == dto.Id))
+                {
+                    //Stop the match time
+                    MatchEngine.OngoingMatches.Single(x => x.MatchId == dto.Id).Stop();
+                }
             }
             else if (startTimeStatus.Contains(newMatchStatus))
             {
-                //Start the match time
-                await MatchEngine.OngoingMatches.Single(x => x.MatchId == dto.Id).Start();
+
+                if (MatchEngine.OngoingMatches.Any(x => x.MatchId == dto.Id))
+                {
+                    //Start the match time
+                    await MatchEngine.OngoingMatches.Single(x => x.MatchId == dto.Id).Start();
+                }
             }
         }
     }

@@ -186,3 +186,4 @@ LeDi.Server/bin/
 LeDi.Server/obj/
 LeDi.WebClient/bin/
 LeDi.WebClient/obj/
+LeDi.Server/LeDi.db-wal

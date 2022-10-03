@@ -1,9 +1,9 @@
-﻿@page "/Sportart"
+﻿@page "/matchadd"
 @using LeDi.Shared.DtoModel
 @inject LeDi.Shared.Api Api
 @inject NavigationManager NavigationManager
 
-<PageTitle>LeDi - Select type of sport</PageTitle>
+<PageTitle>LeDi - New match</PageTitle>
 @if (NewMatch == null)
 {
     <p><em>Loading Data...</em></p>
@@ -35,7 +35,6 @@ else
         <br /> 
 
         <a hidden="@Hidden">Length of a halftime (minutes : seconds)</a>
-        @*<InputNumber id="txtHalfTimeTime" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.TimeLeftSeconds"/>*@
         <div class="input-group" hidden="@Hidden">
             <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
             <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
@@ -43,6 +42,11 @@ else
         </div>
         <br />
    
+        <a hidden="@Hidden">Scheduled Start Date and Time</a>
+        @*<InputDate id="txtScheduledTime" class="form-control" hidden="@Hidden" @bind-Value="@NewMatch.ScheduledTime"/>*@
+        <input hidden="@Hidden" type="datetime" class="form-control" @bind-value="NewMatch.ScheduledTime"/>
+        <br /> 
+
         <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
         <button class="btn btn-primary" type="submit">Save</button>
 
@@ -58,7 +62,9 @@ else
             Team1Name = "Team1",
             Team2Name = "Team2",
             HalfTimeCount = 2,
-            TimeLeftSeconds = 10
+            TimeLeftSeconds = 600,
+            ScheduledTime = DateTime.Now,
+            MatchStatus = (int)LeDi.Shared.Enum.MatchStatusEnum.Planned
     };
 
     private string _SelectedGamename = "";

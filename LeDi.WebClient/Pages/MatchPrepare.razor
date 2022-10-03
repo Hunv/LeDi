@@ -1,0 +1,138 @@
+﻿@page "/matchprepare/{Id:int}"
+@using LeDi.Shared.DtoModel
+@using LeDi.Shared.Enum
+@using LeDi.WebClient.Components
+@inject LeDi.Shared.Api Api
+
+<PageTitle>LeDi - Prepare Match</PageTitle>
+
+@if (Match == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="@Match" OnValidSubmit="@SaveMatch">
+        <a>Prepare match @Match.Team1Name vs. @Match.Team2Name scheduled for @Match.ScheduledTime.</a><br />
+        <br />
+        <a>Assign Players to the teams:</a><br />
+        <a>Todo</a><br />
+        <br />
+        <br />
+        <a>Main Referee Name:</a><br />
+        <InputText id="txtReferee1" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee1Name" />
+        <br />
+        <a>Water Referee Name:</a><br />
+        <InputText id="txtReferee2" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee2Name" />
+        <br />
+        <a>Water Referee Name:</a><br />
+        <InputText id="txtReferee3" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee3Name" />
+        <br />
+        <a>Water Referee Name:</a><br />
+        <InputText id="txtReferee4" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee4Name" />
+        <br />
+        <a>Water Referee Name:</a><br />
+        <InputText id="txtReferee5" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee5Name" />
+        <br />
+        <a>Time Keeper Name:</a><br />
+        <InputText id="txtTimeKeeper" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="TimeKeeperName" />
+        <br />
+
+        <button class="btn btn-primary" type="submit">Preperation done</button>
+        <a class="btn btn-danger" href="matchplanning" role="button">Cancel</a>
+    </EditForm>
+}
+
+
+@code {
+    private DtoMatch? Match = null;
+    private string Referee1Name { get; set; } = "";
+    private string Referee2Name { get; set; } = "";
+    private string Referee3Name { get; set; } = "";
+    private string Referee4Name { get; set; } = "";
+    private string Referee5Name { get; set; } = "";
+    private string TimeKeeperName { get; set; } = "";
+
+    [Parameter]
+    public int? Id { get; set; }    
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == null)
+            return;
+
+        Match = await Api.GetMatchAsync(Id.Value);
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void SaveMatch()
+    {
+        if (Match == null)
+            return;
+
+        if (!string.IsNullOrWhiteSpace(Referee1Name))
+        {
+            Match.Referees.Add(new DtoMatchReferee
+                {
+                    Name = Referee1Name,
+                    Role = "Chief Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee2Name))
+        {
+            Match.Referees.Add(new DtoMatchReferee
+                {
+                    Name = Referee2Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee3Name))
+        {
+            Match.Referees.Add(new DtoMatchReferee
+                {
+                    Name = Referee3Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee4Name))
+        {
+            Match.Referees.Add(new DtoMatchReferee
+                {
+                    Name = Referee4Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee5Name))
+        {
+            Match.Referees.Add(new DtoMatchReferee
+                {
+                    Name = Referee5Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(TimeKeeperName))
+        {
+            Match.Referees.Add(new DtoMatchReferee
+                {
+                    Name = TimeKeeperName,
+                    Role = "Time-Keeper"
+                }
+            );
+        }
+
+        Match.MatchStatus = (int)LeDi.Shared.Enum.MatchStatusEnum.ReadyToStart;
+
+        await Api.SetMatchAsync(Match);
+    }
+}

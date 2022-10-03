@@ -31,7 +31,8 @@ else
         <br />
 
         <a>Scheduled Start Time</a>
-        <input id="txtScheduledTime" class="form-control" width="150" type="time" @bind="Match.ScheduledTime" />
+        @*<input id="txtScheduledTime" class="form-control" width="150" type="time" @bind="Match.ScheduledTime" />*@        
+        <input id="txtScheduledTime" type="datetime" class="form-control" @bind-value="Match.ScheduledTime"/>
         <br />
 
         <a>Match Status</a>

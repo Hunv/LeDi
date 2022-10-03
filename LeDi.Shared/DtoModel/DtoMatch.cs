@@ -27,7 +27,7 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [MaxLength(256, ErrorMessage = "Der Name kann höchstens aus 256 Zeichen bestehen.")]
         [MinLength(2, ErrorMessage = "Der Name muss mindestens aus zwei Zeichen bestehen.")]
-        [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen")]
+        [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen.")]
         public string? Team1Name { get; set; }
 
         /// <summary>
@@ -35,13 +35,13 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [MaxLength(256, ErrorMessage = "Der Name kann höchstens aus 256 Zeichen bestehen.")]
         [MinLength(2, ErrorMessage = "Der Name muss mindestens aus zwei Zeichen bestehen.")]
-        [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen")]
+        [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen.")]
         public string? Team2Name { get; set; }
 
         /// <summary>
         /// Time left
         /// </summary>
-        [Range(0,int.MaxValue,ErrorMessage ="Die Zeit muss größer als 0 Sekunden sein.")]
+        [Range(0,int.MaxValue,ErrorMessage = "Die Zeit muss größer als 0 Sekunden sein.")]
         public int TimeLeftSeconds { get; set; }
 
         /// <summary>
@@ -78,5 +78,10 @@ namespace LeDi.Shared.DtoModel
         /// Current number of Halftime
         /// </summary>
         public int HalfTimeCurrent { get; set; }
+
+        /// <summary>
+        /// List of referees for this match
+        /// </summary>
+        public List<DtoMatchReferee> Referees { get; set; } = new List<DtoMatchReferee>();
     }
 }
