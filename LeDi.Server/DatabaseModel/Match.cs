@@ -97,6 +97,11 @@ namespace LeDi.Server.DatabaseModel
 
 
         /// <summary>
+        /// The referees of the event
+        /// </summary>
+        public List<MatchReferee>? MatchReferees { get; set; }
+
+        /// <summary>
         /// Converts the object to a DTO object
         /// </summary>
         /// <returns></returns>
@@ -117,6 +122,15 @@ namespace LeDi.Server.DatabaseModel
                 Team1PlayerIds = Team1PlayerIds,
                 Team2PlayerIds = Team2PlayerIds
             };
+
+            if (MatchReferees != null)
+            {
+                dto.Referees = new List<DtoMatchReferee>();
+                foreach (var aRef in MatchReferees)
+                {
+                    dto.Referees.Add(aRef.ToDto());
+                }
+            }
 
             return dto;
         }
@@ -178,6 +192,23 @@ namespace LeDi.Server.DatabaseModel
                             Team2Players.Add(player);
                         }
                     }
+                }
+            }
+
+            // Get referees
+            if (dto.Referees != null && dto.Referees.Count > 0)
+            {
+                foreach (var aRef in dto.Referees)
+                {
+                    if (MatchReferees == null)
+                        MatchReferees = new List<MatchReferee>();
+
+                    MatchReferees.Add(new MatchReferee
+                    {
+                        Name = aRef.Name,
+                        Clubname = aRef.Clubname,
+                        Role = aRef.Role
+                    });
                 }
             }
         }
