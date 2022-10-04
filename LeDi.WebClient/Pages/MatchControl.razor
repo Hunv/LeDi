@@ -5,15 +5,15 @@
 @using LeDi.Shared.Enum
 
 <PageTitle>LeDi - Referee Match</PageTitle>
-@if (MatchList == null)
+@if (MatchList == null && SelectedMatchId == null)
 {
     <p><em>Loading Matches...</em></p>
 }
-else if (MatchList.Count == 0)
+else if (SelectedMatchId == null && MatchList != null && MatchList.Count == 0)
 {
     <p><em>Currently no matches running.</em></p>
 }
-else if (SelectedMatchId == null)
+else if (SelectedMatchId == null && MatchList != null)
 {
     @*Select the Match to referee about*@
     <div class="container-fluid">
@@ -42,7 +42,7 @@ else if (SelectedMatchId == null)
         <a>Legend: Green = Running Match, Gray = Finished Match, Blue = Ready to Start, Other = White</a>
     </div>
 }
-else 
+else if (SelectedMatchId != null)
 {
     @if (Match == null)
     {
@@ -167,6 +167,11 @@ else
         <a>todo...</a><br />
     }
 }
+else
+{   
+    <p><em>Unable to load Match or Matches...</em></p>
+}
+
 
 @code{
 
@@ -352,7 +357,7 @@ else
             await LoadMatch();
         }
 
-        // Needs to be initialized at the load of the page to also show running matches        
+        // Needs to be initialized at the load of the page to also show running matches
         if (tmrMatchtimeElapsedRegistered == false)
         {
             tmrMatchtime.Interval = 1000;

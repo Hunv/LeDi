@@ -101,7 +101,7 @@ namespace LeDi.Server.Controllers
             await Api.ApiMatch.SetMatch(match, matchId);
             
             _logger.LogDebug("{0}: Set Match ID {1}", Request.HttpContext.Connection.RemoteIpAddress, match.Id);
-            return new OkResult(); ;
+            return new OkResult();
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace LeDi.Server.Controllers
             await Api.ApiMatch.StartMatchtime(matchId);
 
             _logger.LogDebug("{0}: Started Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
-            return new OkResult(); ;
+            return new OkResult();
         }
 
 
@@ -132,7 +132,7 @@ namespace LeDi.Server.Controllers
             Api.ApiMatch.PauseMatchtime(matchId);
 
             _logger.LogDebug("{0}: Stopped Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
-            return new OkResult(); ;
+            return new OkResult();
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace LeDi.Server.Controllers
             await Api.ApiMatch.SetMatchGoal(matchid, teamid, amount);
 
             _logger.LogDebug("{0}: Set Goal in Match {1} for team {2} by {3}", Request.HttpContext.Connection.RemoteIpAddress, matchid, teamid, amount);
-            return new OkResult(); ;
+            return new OkResult();
         }
 
 
@@ -163,10 +163,10 @@ namespace LeDi.Server.Controllers
         {
             _logger.LogDebug("{0}: New Match", Request.HttpContext.Connection.RemoteIpAddress);
 
-            await Api.ApiMatch.NewMatch(match);
+            var newMatchDto = await Api.ApiMatch.NewMatch(match);
 
             _logger.LogDebug("{0}: New Match", Request.HttpContext.Connection.RemoteIpAddress);
-            return new OkResult(); ;
+            return new OkObjectResult(newMatchDto);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace LeDi.Server.Controllers
         [HttpPut("{matchId}/status")]
         public async Task<IActionResult> SetMatchStatus(
             int matchId,
-            [FromQuery] int status
+            [FromBody] int status
             )
         {
             _logger.LogDebug("{0}: Set MatchStatus {1} to {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, status);

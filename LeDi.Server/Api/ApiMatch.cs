@@ -108,7 +108,7 @@ namespace LeDi.Server.Api
         /// </summary>
         /// <param name="match">The DtoMatch object to create a new match from.</param>
         /// <returns></returns>
-        public async static Task NewMatch(DtoMatch match)
+        public async static Task<DtoMatch?> NewMatch(DtoMatch match)
         {
             using var dbContext = new TwDbContext();
 
@@ -157,11 +157,15 @@ namespace LeDi.Server.Api
             }
 
             if (dbContext.Matches == null)
-                return;
+                return null;
 
             dbContext.Matches.Add(newMatch);
 
+            //This adds the ID to the newMatch variable
             await dbContext.SaveChangesAsync();
+
+
+            return newMatch.ToDto();
         }
 
         /// <summary>

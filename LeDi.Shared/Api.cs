@@ -299,7 +299,7 @@ namespace LeDi.Shared
         /// Add a new Tournament
         /// </summary>
         /// <param name="match"></param>
-        public async Task AddMatchAsync(DtoMatch match)
+        public async Task<DtoMatch?> AddMatchAsync(DtoMatch match)
         {
             var json = JsonConvert.SerializeObject(match, Helper.GetJsonSerializer());
 
@@ -321,6 +321,15 @@ namespace LeDi.Shared
             if (!response.IsSuccessStatusCode)
             {
                 var responseBody = await response.Content.ReadAsStringAsync();
+                return null;
+            }
+            else //It is successful and contains the newMatch DTO Object
+            {
+                var newMatch = await response.Content.ReadAsStringAsync();
+                if (newMatch == null)
+                    return null;
+
+                return JsonConvert.DeserializeObject<DtoMatch>(newMatch, Helper.GetJsonSerializer());
             }
         }
 

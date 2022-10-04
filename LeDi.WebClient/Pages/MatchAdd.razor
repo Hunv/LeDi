@@ -97,7 +97,7 @@ else
         {
             if (NewMatch == null)
                 return;
-            
+
             NewMatch.TimeLeftSeconds = value * 60 + TimeLeftSecondsProxy;
         }
     }
@@ -118,7 +118,7 @@ else
         {
             if (NewMatch == null)
                 return;
-            
+
             NewMatch.TimeLeftSeconds = TimeLeftMinutesProxy + value;
         }
     }
@@ -139,16 +139,15 @@ else
         {
             Hidden = true;
         }
-
-
     }
-    
-    private async void SaveMatch()
+
+    /// <summary>
+    /// Exectued if the "Save"-Button is clicked or if called by other methods like SaveStartMatch()
+    /// </summary>
+    /// <returns>The DTO object of the new Match</returns>
+    private async Task<DtoMatch?> SaveMatch()
     {
-
-        NewMatch.TimeLeftSeconds = NewMatch.TimeLeftSeconds*60;
-
-        await Api.AddMatchAsync(NewMatch);
+        var newMatch = await Api.AddMatchAsync(NewMatch);
         NewMatch = new DtoMatch()
             {
                 Team1Name = "Team1",
@@ -156,13 +155,22 @@ else
                 TimeLeftSeconds = 10,
                 HalfTimeCount = 2
             };
+        return newMatch;
     }
-    
-    private void SaveStartMatch()
+
+    /// <summary>
+    /// Executed if the "Save and Start"-Button is clicked
+    /// </summary>
+    private async void SaveStartMatch()
     {
-        SaveMatch();
-        NavigationManager.NavigateTo("/MatchControl");
+        var newMatch = await SaveMatch();
 
+        if (newMatch == null)
+            NavigationManager.NavigateTo("/matchcontrol");
+        else
+        {
+            await Api.SetMatchStatusAsync(newMatch.Id, LeDi.Shared.Enum.MatchStatusEnum.ReadyToStart);            
+            NavigationManager.NavigateTo("/matchcontrol/" + newMatch.Id);
+        }
     }
-
 }
