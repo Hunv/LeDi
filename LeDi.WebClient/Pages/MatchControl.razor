@@ -342,10 +342,10 @@ else
             if (matchList.Count == 0)
             {
                 //Create emtpy list
-                matchList = new List<DtoMatch>();
+                MatchList = new List<DtoMatch>();
                 return;
             }
-            MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList();
+            MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList() ?? new List<DtoMatch>();
         }
         else
         {
