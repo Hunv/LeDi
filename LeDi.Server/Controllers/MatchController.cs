@@ -136,6 +136,22 @@ namespace LeDi.Server.Controllers
         }
 
         /// <summary>
+        /// Load the next halftime after another halftime ended
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{matchId}/next")]
+        public async Task<IActionResult> SetMatchHalftime(int matchId)
+        {
+            _logger.LogDebug("{0}: Set next Match halftime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+
+            await Api.ApiMatch.NextHalftime(matchId);
+
+            _logger.LogDebug("{0}: Set next Match halftime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            return new OkResult();
+        }
+
+
+        /// <summary>
         /// Stops the counter of a Match
         /// </summary>
         /// <returns></returns>

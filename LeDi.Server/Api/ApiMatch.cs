@@ -337,6 +337,23 @@ namespace LeDi.Server.Api
         }
 
         /// <summary>
+        /// Loads the next match halfitme
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <returns></returns>
+        public static async Task NextHalftime(int matchId)
+        {
+            var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
+            if (matchHandler != null)
+            {
+                await matchHandler.NextHalftime();
+
+                // Create the match event
+                //await LogEvent(matchId, MatchEventEnum., "Match halftime loaded.");
+            }
+        }
+
+        /// <summary>
         /// Logs an event match
         /// </summary>
         /// <param name="matchId"></param>

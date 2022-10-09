@@ -1,3 +1,4 @@
+using LeDi.Server;
 using LeDi.Server.DatabaseModel;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,10 @@ using (var dbContext = new TwDbContext())
         }
     }
 }
+
+// load not ended matches
+MatchEngine.LoadRunningMatches();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

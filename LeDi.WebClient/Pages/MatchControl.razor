@@ -1,6 +1,7 @@
 ﻿@page "/matchcontrol"
 @page "/matchcontrol/{SelectedMatchId:int}"
 @inject LeDi.Shared.Api Api
+@inject NavigationManager NavigationManager
 @using LeDi.Shared
 @using LeDi.Shared.DtoModel
 @using LeDi.Shared.Enum
@@ -37,6 +38,7 @@ else if (SelectedMatchId == null && MatchList != null)
                     else {
                         <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
                     }
+                    <br />
                 </div>
             </div>
         }    
@@ -103,18 +105,18 @@ else if (SelectedMatchId != null)
 
                 </th>
                 <th>
-                    <button class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled">
-                        Start
+                    <button id="btnStart" class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled" hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)">
+                        Start/Continue
                     </button>
-                    <button class="btn btn-primary" @onclick="@PauseMatch" disabled="@PauseButtonDisabled">
+                    <button id="btnPause" class="btn btn-primary" @onclick="@PauseMatch" disabled="@PauseButtonDisabled" hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)">
                         Pause
                     </button>
-                    <button class="btn btn-primary" @onclick="@ResumeMatch" disabled="@ResumeButtonDisabled">
-                        Resume
-                    </button>
                     <br />
-                    <button class="btn btn-primary" @onclick="@PrepareHalftime" disabled="@PrepareHalftimeButtonDisabled">
+                    <button id="btnPrepareHalftime" class="btn btn-primary" @onclick="@PrepareHalftime" disabled="@PrepareHalftimeButtonDisabled" hidden="@PrepareHalftimeButtonDisabled">
                         Prepare next halftime
+                    </button>
+                    <button id="btnCloseMatch" class="btn btn-primary" @onclick="@CloseMatch" disabled="@CloseMatchButtonDisabled" hidden="@CloseMatchButtonDisabled">
+                        Close match
                     </button>
                 </th>
                 <th>
@@ -230,8 +232,8 @@ else
     List<DtoMatch>? MatchList = null; // List of all not finished matches
     bool StartButtonDisabled = false; //Is the Start button disabled?
     bool PauseButtonDisabled = true; //Is the Pause button disabled?
-    bool ResumeButtonDisabled = true; //Is the Resume button disabled?
     bool PrepareHalftimeButtonDisabled = true; //Is the Prepare Halftime button disabled?
+    bool CloseMatchButtonDisabled = true; //The close button is disabled and invisible?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
     bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered?    
 
@@ -260,37 +262,53 @@ else
         await LoadMatch();
     }
 
+    /// <summary>
+    /// Executed when the Pause button was clicked
+    /// </summary>
     private async void PauseMatch()
     {
         await Api.ControlMatchtimeAsync(Match.Id, "stop");
+
+        // Show/hide buttons
+        StartButtonDisabled = false;
+        PauseButtonDisabled = true;
+
+        await LoadMatchEvents();
     }
-    private async void ResumeMatch()
-    {
-        await Api.ControlMatchtimeAsync(Match.Id, "start");        
-        await LoadMatch();
-    }
+
+    /// <summary>
+    /// Executed when the Start button was clicked
+    /// </summary>
     private async void StartMatch()
     {
+        // Show/hide buttons
         StartButtonDisabled = true;
         PauseButtonDisabled = false;
-        ResumeButtonDisabled = true;
 
         // Update match object to the current status
         Match = await Api.GetMatchAsync(Match.Id) ?? Match;
 
         // Set the LastKnownMatchHash to the current status
         var matchCore = await Api.GetMatchCoreAsync(Match.Id);
-        if (matchCore == null) {
+        if (matchCore == null)
+        {
             Console.WriteLine("Failed to get MatchCore");
             return;
         }
         LastKnownMatchHash = matchCore.PropertyHash;
 
+        // Send start to the server
         await Api.ControlMatchtimeAsync(Match.Id, "start");
 
+        // Fix the first second gap. It is just a local visual thing.
         if (Match.TimeLeftSeconds > 0)
             Match.TimeLeftSeconds--;
+
+        // Reload match details
+        await LoadMatch();
     }
+
+
     private async void Penalty2MinTeam1()
     {
         duration2 = 15;
@@ -310,7 +328,14 @@ else
 
     private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
     {
+        // Only run if a match was selected
+        if (SelectedMatchId == null || SelectedMatchId == 0)
+            return;
+
+        // Get the time left and the hash of all match properties
         var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+
+        // If the core value query failed, cancel.
         if (matchCore == null) {
             Console.WriteLine("Failed to get MatchCore");
             return;
@@ -331,7 +356,8 @@ else
 
         // If local timer says, time is over check verify before stopping
         if (Match.TimeLeftSeconds == 0)
-        {            
+        {
+            // Set the current time left to the server data
             Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
 
             // Stop Timer only if the Server based timer is done.
@@ -339,12 +365,20 @@ else
             {
                 tmrMatchtime.Stop();
                 PauseButtonDisabled = true;
-                ResumeButtonDisabled = true;
 
+                // If this is not the last halftime, show the start button to start the next halftime
                 if (Match.HalfTimeCurrent != Match.HalfTimeCount)
+                {
                     StartButtonDisabled = false;
+                    PrepareHalftimeButtonDisabled = false;
+                    CloseMatchButtonDisabled = true;
+                }
                 else
+                {
                     StartButtonDisabled = true;
+                    PrepareHalftimeButtonDisabled = true;
+                    CloseMatchButtonDisabled = false;
+                }
 
                 await LoadMatchEvents();
             }
@@ -396,6 +430,9 @@ else
     {
         await LoadMatch();
 
+        if (!tmrMatchtime.Enabled)
+            tmrMatchtime.Start();
+
         await base.OnParametersSetAsync();
     }
 
@@ -443,19 +480,11 @@ else
         {
             StartButtonDisabled = true;            
             PauseButtonDisabled = false;
-            ResumeButtonDisabled = true;
-        }
-        else if (Match.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Stopped)
-        {
-            StartButtonDisabled = true;
-            PauseButtonDisabled = false;
-            ResumeButtonDisabled = true;
         }
         else
         {
-            StartButtonDisabled = true;
+            StartButtonDisabled = false;
             PauseButtonDisabled = true;
-            ResumeButtonDisabled = false;
         }
 
         // Update the Match Events
@@ -477,26 +506,54 @@ else
     /// <summary>
     /// Executed, when the prepare halftime button is clicked.
     /// </summary>
-    private void PrepareHalftime()
+    private async Task PrepareHalftime()
     {
         if (Match == null)
             return;
 
-        // only if the current halftime is over
-        if (Match.TimeLeftSeconds == 0)
+        if (SelectedMatchId == null)
             return;
+
+        // only if the current halftime is over
+        if (Match.TimeLeftSeconds != 0)
+        {
+            PrepareHalftimeButtonDisabled = true;
+            return;
+        }
 
         //Check if there is another halftime
         if (Match.HalfTimeCurrent < Match.HalfTimeCount)
         {
-            PrepareHalftimeButtonDisabled = false;
+            PrepareHalftimeButtonDisabled = true;
 
-            //missing info for length Move the is the server and load here
-            //Match.HalfTimeCurrent++;
-            //Match.TimeLeftSeconds = Match.time 
+            await Api.SetMatchHalftimeNext(SelectedMatchId.Value);
+            await LoadMatch();
 
-            
-            //await InvokeAsync(() => { StateHasChanged(); });
+            await InvokeAsync(() => { StateHasChanged(); });
         }
+    }
+
+    /// <summary>
+    /// Executed when the close button is clicked
+    /// </summary>
+    private async Task CloseMatch()
+    {
+        if (Match == null)
+            return;
+
+        if (SelectedMatchId == null)
+            return;
+
+        // The last halftime must be over
+        if (Match.HalfTimeCurrent != Match.HalfTimeCount && Match.TimeLeftSeconds == 0)
+            return;
+
+        await Api.SetMatchStatusAsync(Match.Id, (int)MatchStatusEnum.Closed);
+        CloseMatchButtonDisabled = true;
+
+        // Go back to the match control page
+        SelectedMatchId = null;
+        MatchList = null;
+        NavigationManager.NavigateTo("matchcontrol");
     }
 }

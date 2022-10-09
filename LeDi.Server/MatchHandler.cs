@@ -15,10 +15,12 @@ namespace LeDi.Server
         private MatchStatusEnum MatchStatus = MatchStatusEnum.Undefined;
         public int MatchId { get; set; }
 
-        public MatchHandler(int matchId)
+        public MatchHandler(int matchId, bool setPlannedStatus = true)
         {
             MatchId = matchId;            
-            Task.Run(async () => await SetMatchStatus(MatchStatusEnum.Planned, MatchId)).Wait();
+
+            if (setPlannedStatus)
+                Task.Run(async () => await SetMatchStatus(MatchStatusEnum.Planned, MatchId)).Wait();
         }
 
         private async void TmrMatchtimer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -92,6 +94,7 @@ namespace LeDi.Server
 
                         if (match.CurrentHalftime == 0)
                             match.CurrentHalftime++;
+
                     }
                     await dbContext.SaveChangesAsync();
                 }
@@ -124,6 +127,28 @@ namespace LeDi.Server
             ReferenceSystemTime = null;
             await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
             tmrDisposeTimer.Start();
+        }
+
+        /// <summary>
+        /// Load the next halftime after another halftime ended (increase halftime counter and reset the halftime length)
+        /// </summary>
+        public async Task NextHalftime()
+        {
+            using var dbContext = new TwDbContext();
+            if (dbContext.Matches != null)
+            {
+                var match = dbContext.Matches.SingleOrDefault(x => x.Id == MatchId);
+                if (match != null)
+                {
+                    if (match.CurrentHalftime < match.HalftimeCount && match.CurrentTimeLeft == 0)
+                    {
+                        match.CurrentHalftime++;
+                        match.CurrentTimeLeft = match.HalftimeLength;
+                    }
+
+                    await dbContext.SaveChangesAsync();
+                }
+            }
         }
 
         /// <summary>

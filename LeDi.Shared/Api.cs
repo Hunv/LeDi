@@ -420,6 +420,20 @@ namespace LeDi.Shared
             return setting ?? new List<DtoMatchEvent>();
         }
 
+        /// <summary>
+        /// Sets the next match halftime
+        /// </summary>
+        /// <param name="matchId">The match ID for the match</param>
+        /// <returns></returns>
+        public async Task SetMatchHalftimeNext(int matchId)
+        {
+            var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/next", "");
+
+            if (response == null)
+            {
+                Console.WriteLine("Failed to set next halftime for matchId {0}", matchId);
+            }
+        }
         #endregion
     }
 }
