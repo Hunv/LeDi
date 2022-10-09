@@ -84,17 +84,18 @@ namespace LeDi.Server.DatabaseModel
         public DateTime? ScheduledTime { get; set; }
 
         /// <summary>
-        /// The timestamps of matchevents
+        /// The timestamps of matchevents (For Database)
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
-        public List<MatchEvent>? MatchEvents { get; set; }
+        public ICollection<MatchEvent> MatchEvents { get; set; } = new List<MatchEvent>();
 
-        /// <summary>
-        /// The event IDs for this Match
-        /// </summary>
-        [NotMapped]
-        public List<int>? MatchEventIds { get; set; }
-
+        ///// <summary>
+        ///// The event IDs for this Match (For API DTO)
+        ///// </summary>
+        //[NotMapped]
+        //public List<int>? MatchEventIds {
+        //    get { return  MatchEvents == null ? new List<int>() : MatchEvents.Select(x => x.Id).ToList(); }
+        //}
 
         /// <summary>
         /// The referees of the event

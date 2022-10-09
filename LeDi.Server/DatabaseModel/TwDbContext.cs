@@ -11,6 +11,7 @@ namespace LeDi.Server.DatabaseModel
     public class TwDbContext : DbContext
     {
         public DbSet<Match>? Matches { get; set; }
+        public DbSet<MatchEvent>? MatchEvents { get; set; }
         public DbSet<Setting>? Settings { get; set; }
         public DbSet<Device>? Device { get; set; }
         public DbSet<DeviceSetting>? DeviceSettings { get; set; }
@@ -29,6 +30,7 @@ namespace LeDi.Server.DatabaseModel
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Map table names
+
             // Players to Matches
             modelBuilder.Entity<Player2Match>().ToTable("Player2Matches");
             modelBuilder.Entity<Player2Match>(entity =>
@@ -38,14 +40,14 @@ namespace LeDi.Server.DatabaseModel
                     .WithMany(e => e.MatchList);
             });
 
+            // Matchevents to matches
+            //modelBuilder.Entity<Match>(entity =>
+            //{
+            //    entity.HasKey(e => e.Id);
+            //    entity.HasMany(e => e.MatchEvents);
+            //});
 
-            // Players to Matches            
-            modelBuilder.Entity<Match>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.HasMany(e => e.MatchEvents);
-            });
-
+            // Primary key for DeviceSettings
             modelBuilder.Entity<DeviceSetting>(entity =>
             {
                 entity.HasKey(new string[] { "SettingName", "DeviceId" });

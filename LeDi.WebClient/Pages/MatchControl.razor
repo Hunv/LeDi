@@ -1,6 +1,7 @@
 ﻿@page "/matchcontrol"
 @page "/matchcontrol/{SelectedMatchId:int}"
 @inject LeDi.Shared.Api Api
+@using LeDi.Shared
 @using LeDi.Shared.DtoModel
 @using LeDi.Shared.Enum
 
@@ -62,7 +63,7 @@ else if (SelectedMatchId != null)
                 <th>
                     <center>
                         <font size= "5">
-                             <a>Time</a>
+                             <a>Time left</a>
                         </font>
                     </center>
                 </th>
@@ -105,11 +106,15 @@ else if (SelectedMatchId != null)
                     <button class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled">
                         Start
                     </button>
-                    <button class="btn btn-primary" @onclick="@PauseMatch">
+                    <button class="btn btn-primary" @onclick="@PauseMatch" disabled="@PauseButtonDisabled">
                         Pause
                     </button>
-                    <button class="btn btn-primary" @onclick="@ResumeMatch">
+                    <button class="btn btn-primary" @onclick="@ResumeMatch" disabled="@ResumeButtonDisabled">
                         Resume
+                    </button>
+                    <br />
+                    <button class="btn btn-primary" @onclick="@PrepareHalftime" disabled="@PrepareHalftimeButtonDisabled">
+                        Prepare next halftime
                     </button>
                 </th>
                 <th>
@@ -164,7 +169,47 @@ else if (SelectedMatchId != null)
         </table>
         <br />
         <a>Match log:</a><br />
-        <a>todo...</a><br />
+        @if(MatchEventList == null) 
+        {
+            <a>No match events available.</a><br />
+        }
+        else
+        {
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-1">
+                        <b>#</b>
+                    </div>
+                    <div class="col-1">
+                        <b>Matchtime</b>
+                    </div>
+                    <div class="col-2">
+                        <b>Creator</b>
+                    </div>
+                    <div class="col-auto">
+                        <b>Note</b>
+                    </div>
+                </div>
+         
+                @foreach(var aEvent in MatchEventList.Reverse<DtoMatchEvent>())
+                {
+                    <div class="row justify-content-start">                    
+                        <div class="col-1">
+                            @aEvent.Event
+                        </div>
+                        <div class="col-1">
+                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
+                        </div>
+                        <div class="col-2">
+                            @(aEvent.Source ?? "System")
+                        </div>
+                        <div class="col-auto">
+                            @aEvent.Text
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     }
 }
 else
@@ -181,10 +226,14 @@ else
     bool Hidden = true;
     bool Hidden2 = true;
     DtoMatch Match = new DtoMatch(); // currently selected match
+    List<DtoMatchEvent>? MatchEventList = null; //List of all match events
     List<DtoMatch>? MatchList = null; // List of all not finished matches
     bool StartButtonDisabled = false; //Is the Start button disabled?
+    bool PauseButtonDisabled = true; //Is the Pause button disabled?
+    bool ResumeButtonDisabled = true; //Is the Resume button disabled?
+    bool PrepareHalftimeButtonDisabled = true; //Is the Prepare Halftime button disabled?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
-    bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered=
+    bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered?    
 
     [Parameter]
     public int? SelectedMatchId { get; set; }
@@ -223,6 +272,8 @@ else
     private async void StartMatch()
     {
         StartButtonDisabled = true;
+        PauseButtonDisabled = false;
+        ResumeButtonDisabled = true;
 
         // Update match object to the current status
         Match = await Api.GetMatchAsync(Match.Id) ?? Match;
@@ -265,8 +316,6 @@ else
             return;
         }
 
-        //Console.WriteLine("New Hash: " + matchCore.PropertyHash + " Last known Hash: " + LastKnownMatchHash);
-
         // Update match object in case the hash is different
         if (LastKnownMatchHash != matchCore.PropertyHash)
         {
@@ -276,7 +325,8 @@ else
                 Console.WriteLine("Updated Match infos.");
                 Match = newMatchInfo;
                 LastKnownMatchHash = matchCore.PropertyHash;
-            }
+            }            
+            await LoadMatchEvents();
         }
 
         // If local timer says, time is over check verify before stopping
@@ -286,7 +336,18 @@ else
 
             // Stop Timer only if the Server based timer is done.
             if (Match.TimeLeftSeconds == 0)
+            {
                 tmrMatchtime.Stop();
+                PauseButtonDisabled = true;
+                ResumeButtonDisabled = true;
+
+                if (Match.HalfTimeCurrent != Match.HalfTimeCount)
+                    StartButtonDisabled = false;
+                else
+                    StartButtonDisabled = true;
+
+                await LoadMatchEvents();
+            }
         }
         else // update local timer
         {
@@ -374,18 +435,68 @@ else
         if (SelectedMatchId == null)
             return;
 
-        Match = await Api.GetMatchAsync(SelectedMatchId.Value);
-        if (Match == null)
+        Match = (await Api.GetMatchAsync(SelectedMatchId.Value)) ?? new DtoMatch() { Id = 0 };
+        if (Match.Id == 0)
             return;
 
         if (Match.MatchStatus >= (int)LeDi.Shared.Enum.MatchStatusEnum.Running)
         {
+            StartButtonDisabled = true;            
+            PauseButtonDisabled = false;
+            ResumeButtonDisabled = true;
+        }
+        else if (Match.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Stopped)
+        {
             StartButtonDisabled = true;
+            PauseButtonDisabled = false;
+            ResumeButtonDisabled = true;
         }
         else
         {
-            StartButtonDisabled = false;
+            StartButtonDisabled = true;
+            PauseButtonDisabled = true;
+            ResumeButtonDisabled = false;
         }
+
+        // Update the Match Events
+        await LoadMatchEvents();
+
         await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task LoadMatchEvents()
+    {
+        if (SelectedMatchId == null)
+            return;
+
+        MatchEventList = await Api.GetMatchEvents(SelectedMatchId.Value);
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    /// <summary>
+    /// Executed, when the prepare halftime button is clicked.
+    /// </summary>
+    private void PrepareHalftime()
+    {
+        if (Match == null)
+            return;
+
+        // only if the current halftime is over
+        if (Match.TimeLeftSeconds == 0)
+            return;
+
+        //Check if there is another halftime
+        if (Match.HalfTimeCurrent < Match.HalfTimeCount)
+        {
+            PrepareHalftimeButtonDisabled = false;
+
+            //missing info for length Move the is the server and load here
+            //Match.HalfTimeCurrent++;
+            //Match.TimeLeftSeconds = Match.time 
+
+            
+            //await InvokeAsync(() => { StateHasChanged(); });
+        }
     }
 }

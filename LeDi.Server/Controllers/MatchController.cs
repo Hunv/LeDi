@@ -125,11 +125,11 @@ namespace LeDi.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut("{matchId}/time/stop")]
-        public IActionResult SetMatchtimeStop(int matchId)
+        public async Task<IActionResult> SetMatchtimeStop(int matchId)
         {
             _logger.LogDebug("{0}: Stop Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            Api.ApiMatch.PauseMatchtime(matchId);
+            await Api.ApiMatch.PauseMatchtime(matchId);
 
             _logger.LogDebug("{0}: Stopped Matchtime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkResult();
@@ -219,6 +219,23 @@ namespace LeDi.Server.Controllers
 
             _logger.LogDebug("{0}: Got Livematchlist JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
             return result;
+        }
+
+        /// <summary>
+        /// Get match events
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{matchId}/events")]
+        public IActionResult GetMatchEvents(
+            int matchId
+            )
+        {
+            _logger.LogDebug("{0}: Get MatchEvents for {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+
+            var dto = Api.ApiMatch.GetMatchEvents(matchId);
+
+            _logger.LogDebug("{0}: Got MatchEvents for {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            return new OkObjectResult(dto);
         }
     }
 }

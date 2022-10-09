@@ -119,6 +119,7 @@ namespace LeDi.Server.Api
                 Team1Name = match.Team1Name,
                 Team2Name = match.Team2Name,
                 CurrentTimeLeft = match.TimeLeftSeconds,
+                HalftimeLength = match.TimeLeftSeconds, //TimeLeftSeconds is the Halftime Length on creation
                 ScheduledTime = match.ScheduledTime,
                 GameName = match.GameName,
                 MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus, //set to draft status if no Status is set
@@ -203,7 +204,7 @@ namespace LeDi.Server.Api
                 if (match != null)
                 {
                     // Create a hash of match values that might change
-                    var propHash = (match.CurrentHalftime + "@@@" + string.Join(',', match.MatchEventIds ?? new List<int> { 0 }) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score).GetHashCode();
+                    var propHash = (match.CurrentHalftime + "@@@" + string.Join(',', match.MatchEvents.Select(x => x.Id)) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score).GetHashCode();
 
                     // Create the DtoMatchCore object
                     var dto = new DtoMatchCore() { TimeLeftSeconds = match.CurrentTimeLeft, PropertyHash = propHash };
@@ -261,7 +262,6 @@ namespace LeDi.Server.Api
                     await dbContext.SaveChangesAsync();
                 }
             }
-
         }
 
 
@@ -277,34 +277,38 @@ namespace LeDi.Server.Api
                 MatchEngine.AddOngoingMatch(new MatchHandler(matchId));
             }
 
-            //Start the match
-            await MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId).Start();
+            
+            var match = MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId);
 
             // Create the match event
             using var dbContext = new TwDbContext();
+
             if (dbContext.Matches != null)
             {
-                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                if (match != null)
+                var matchDb = dbContext.Matches.Include("MatchEvents").SingleOrDefault(x => x.Id == matchId);
+                if (matchDb != null)
                 {
-                    if (match.MatchEvents != null)
+                    //Check if the match was started before
+                    if (matchDb.MatchEvents.Any(x => x.Event == MatchEventEnum.MatchStart))
                     {
-                        match.MatchEvents.Add(new MatchEvent
-                        {
-                            Event = MatchEventEnum.MatchStart,
-                            Text = "Match started.",
-                            Timestamp = DateTime.Now
-                        });
+                        await LogEvent(matchId, MatchEventEnum.MatchResumed, "Match resumed.");
+                    }
+                    else
+                    {
+                        await LogEvent(matchId, MatchEventEnum.MatchStart, "Match started.");
                     }
                 }
             }
+
+            //Start the match
+            await match.Start();
         }
 
         /// <summary>
         /// Pause time for a specific match
         /// </summary>
         /// <param name="id">The match ID of the match to pause the time for</param>
-        public static void PauseMatchtime(int matchId)
+        public static async Task PauseMatchtime(int matchId)
         {
             var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
             if (matchHandler != null)
@@ -312,23 +316,7 @@ namespace LeDi.Server.Api
                 matchHandler.Stop();
 
                 // Create the match event
-                using var dbContext = new TwDbContext();
-                if (dbContext.Matches != null)
-                {
-                    var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                    if (match != null)
-                    {
-                        if (match.MatchEvents != null)
-                        {
-                            match.MatchEvents.Add(new MatchEvent
-                            {
-                                Event = MatchEventEnum.MatchPaused,
-                                Text = "Match paused.",
-                                Timestamp = DateTime.Now
-                            });
-                        }
-                    }
-                }
+                await LogEvent(matchId, MatchEventEnum.MatchPaused, "Match paused.");
             }
         }
 
@@ -336,7 +324,7 @@ namespace LeDi.Server.Api
         /// Ends a match
         /// </summary>
         /// <param name="matchId">The match ID of the match to end</param>
-        public static void EndMatch(int matchId)
+        public static async Task EndMatch(int matchId)
         {
             var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
             if (matchHandler != null)
@@ -344,21 +332,40 @@ namespace LeDi.Server.Api
                 MatchEngine.OngoingMatches.Remove(matchHandler);
 
                 // Create the match event
-                using var dbContext = new TwDbContext();
-                if (dbContext.Matches != null)
+                await LogEvent(matchId, MatchEventEnum.MatchEnd, "Match ended.");
+            }
+        }
+
+        /// <summary>
+        /// Logs an event match
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="matchEvent"></param>
+        /// <param name="matchText"></param>
+        /// <returns></returns>
+        private static async Task LogEvent(int matchId, MatchEventEnum matchEvent, string matchText)
+        {
+            using var dbContext = new TwDbContext();
+            if (dbContext.Matches != null)
+            {
+                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (match != null)
                 {
-                    var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                    if (match != null)
+                    if (match.MatchEvents == null)
+                        match.MatchEvents = new List<MatchEvent>();
+
+                    if (match.MatchEvents != null)
                     {
-                        if (match.MatchEvents != null)
+                        var timeSinceStart = match.HalftimeLength - match.CurrentTimeLeft + (match.CurrentHalftime -1) * match.HalftimeLength;
+
+                        match.MatchEvents.Add(new MatchEvent
                         {
-                            match.MatchEvents.Add(new MatchEvent
-                            {
-                                Event = MatchEventEnum.MatchEnd,
-                                Text = "Match ended.",
-                                Timestamp = DateTime.Now
-                            });
-                        }
+                            Event = matchEvent,
+                            Text = matchText,
+                            Timestamp = DateTime.Now,
+                            Matchtime = timeSinceStart
+                        });
+                        await dbContext.SaveChangesAsync();
                     }
                 }
             }
@@ -385,30 +392,14 @@ namespace LeDi.Server.Api
                         match.Team1Score += amount;
 
                         // Create the match event
-                        if (match.MatchEvents != null)
-                        {
-                            match.MatchEvents.Add(new MatchEvent
-                            {
-                                Event = MatchEventEnum.ScoreTeam1,
-                                Text = match.Team1Name + " scored (" + amount + ").",
-                                Timestamp = DateTime.Now
-                            });
-                        }
+                        await LogEvent(matchId, MatchEventEnum.ScoreTeam1, match.Team1Name + " scored (" + (amount > 0 ? "+" : "") + amount + ").");
                     }
                     else if (teamId == 1)
                     {
                         match.Team2Score += amount;
 
                         // Create the match event
-                        if (match.MatchEvents != null)
-                        {
-                            match.MatchEvents.Add(new MatchEvent
-                            {
-                                Event = MatchEventEnum.ScoreTeam1,
-                                Text = match.Team2Name + " scored (" + amount + ").",
-                                Timestamp = DateTime.Now
-                            });
-                        }
+                        await LogEvent(matchId, MatchEventEnum.ScoreTeam2, match.Team2Name + " scored (" + (amount > 0 ? "+" : "") + amount + ").");
                     }
 
                     await dbContext.SaveChangesAsync();
@@ -432,6 +423,38 @@ namespace LeDi.Server.Api
             {
                 foreach (var aMatch in dbContext.Matches.Where(x => ongoingMatchIds.Contains(x.Id)))
                     dto.Add(aMatch.ToDto());
+
+                var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                return json;
+            }
+            else
+            {
+                return "{}";
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of match events
+        /// </summary>
+        /// <returns>JSON string with the list of all match events</returns>
+        public static string GetMatchEvents(int matchId)
+        {
+            using var dbContext = new TwDbContext();
+
+            var dto = new List<DtoMatchEvent>();
+
+            if (dbContext.Matches != null && dbContext.MatchEvents != null)
+            {
+                var match = dbContext.Matches.Include("MatchEvents").SingleOrDefault(x => x.Id == matchId);
+                if (match == null)
+                    return "{}";
+
+                var events = match.MatchEvents;
+                if (events == null)
+                    return "{}";
+
+                foreach(var aEvent in events)
+                    dto.Add(aEvent.ToDto());
 
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
                 return json;

@@ -405,6 +405,21 @@ namespace LeDi.Shared
         {
             await SetMatchStatusAsync(matchId, (int)newMatchStatus);
         }
-#endregion
+
+        /// <summary>
+        /// Gets all Match Events for a match
+        /// </summary>
+        /// <returns>List of match events</returns>
+        public async Task<List<DtoMatchEvent>> GetMatchEvents(int matchId)
+        {
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/events");
+            if (json == null)
+                return new List<DtoMatchEvent>();
+
+            var setting = JsonConvert.DeserializeObject<List<DtoMatchEvent>>(json, Helper.GetJsonSerializer());
+            return setting ?? new List<DtoMatchEvent>();
         }
+
+        #endregion
+    }
 }
