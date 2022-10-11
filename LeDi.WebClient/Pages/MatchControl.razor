@@ -53,165 +53,226 @@ else if (SelectedMatchId != null)
     }
     else
     {
-        <table>
-            <tr>
-                <th>
-                    <center hidden=@Hidden>
-                        <font size= "3">
-                             <a>Penalty</a>
-                        </font>
-                    </center>
-                </th>
-                <th>
-                    <center>
-                        <font size= "5">
-                             <a>Time left</a>
-                        </font>
-                    </center>
-                </th>
-                <th>
-                    <center hidden=@Hidden2>
-                        <font size= "3">
-                             <a>Penalty</a>
-                        </font>
-                    </center>
-                </th>
-            </tr>
-            <tr>
-                <th>
-                    <center hidden="@Hidden">
-                        <font size="4">
-                             @duration2
-                        </font>
-                    </center>
-                </th>
-                <th>
-                    <center>
-                        <font size= "7">
-                             @(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))
-                        </font>
-                    </center>
-                </th>
-                <th>
-                    <center hidden="@Hidden2">
-                        <font size="4">
-                             @duration3
-                        </font>
-                    </center>
-                </th>
-            </tr>@*Match time*@
-            <tr>
-                <th>
-
-                </th>
-                <th>
-                    <button id="btnStart" class="btn btn-primary" @onclick="@StartMatch" disabled="@StartButtonDisabled" hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)">
-                        Start/Continue
-                    </button>
-                    <button id="btnPause" class="btn btn-primary" @onclick="@PauseMatch" disabled="@PauseButtonDisabled" hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)">
-                        Pause
-                    </button>
-                    <br />
-                    <button id="btnPrepareHalftime" class="btn btn-primary" @onclick="@PrepareHalftime" disabled="@PrepareHalftimeButtonDisabled" hidden="@PrepareHalftimeButtonDisabled">
-                        Prepare next halftime
-                    </button>
-                    <button id="btnCloseMatch" class="btn btn-primary" @onclick="@CloseMatch" disabled="@CloseMatchButtonDisabled" hidden="@CloseMatchButtonDisabled">
-                        Close match
-                    </button>
-                </th>
-                <th>
-
-                </th>
-            </tr>@*Timer Buttons*@
-
-            <tr>
-                <th>
-                    <a>@Match.Team1Name</a>
-                    <p role="status"> <center> <font size="7"> @Match.Team1Score </font> </center></p>
-                    <button class="btn btn-primary" @onclick="@IncrementCountTeam1">
-                        Score
-                    </button>
-                    <button class="btn btn-danger" @onclick="@DecreaseCountTeam1">
-                        Revoke
-                    </button>
-                </th>
-                <th style="text-align:center">
-                    <a>Halftime:</a>
-                    <br>
-                    <a>@Match.HalfTimeCurrent of @Match.HalfTimeCount</a>
-                </th>
-                <th>
-                    <a>@Match.Team2Name</a>
-                    <p role="status"><center> <font size="7"> @Match.Team2Score </font> </center> </p>
-                    <button class="btn btn-primary" @onclick="@IncrementCountTeam2">
-                        Score
-                    </button>
-                    <button class="btn btn-danger" @onclick="@DecreaseCountTeam2">
-                        Revoke
-                    </button>
-                </th>
-            </tr>@*Enter goals*@
-
-            <tr>
-                <th>
-                    <button class="btn btn-primary" @onclick="@Penalty2MinTeam1" >
-                        2min Penalty
-                    </button>
-                </th>
-                <th>
-
-                </th>
-                <th>
-                    <button class="btn btn-primary" @onclick="@Penalty2MinTeam2" >
-                        2min Penalty
-                    </button>
-                </th>
-            </tr>
-
-        </table>
-        <br />
-        <a>Match log:</a><br />
-        @if(MatchEventList == null) 
-        {
-            <a>No match events available.</a><br />
-        }
-        else
-        {
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-1">
-                        <b>#</b>
-                    </div>
-                    <div class="col-1">
-                        <b>Matchtime</b>
-                    </div>
-                    <div class="col-2">
-                        <b>Creator</b>
-                    </div>
-                    <div class="col-auto">
-                        <b>Note</b>
+        <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
+            @*Row 1: Time, Scores*@
+            <div class="row align-items-start" style="height:20vh; min-height:20vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
+                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
+                        </div>
                     </div>
                 </div>
-         
-                @foreach(var aEvent in MatchEventList.Reverse<DtoMatchEvent>())
-                {
-                    <div class="row justify-content-start">                    
-                        <div class="col-1">
-                            @aEvent.Event
-                        </div>
-                        <div class="col-1">
-                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
-                        </div>
-                        <div class="col-2">
-                            @(aEvent.Source ?? "System")
-                        </div>
-                        <div class="col-auto">
-                            @aEvent.Text
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Halftime:</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.HalfTimeCurrent of @Match.HalfTimeCount</a>
                         </div>
                     </div>
-                }
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="fs-3 text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
+                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        }
+
+            @*Row 2: Penalties*@
+            <div class="row align-items-start" style="height:15vh; min-height:10vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a 
+                            id="btnPenaltyTeam1"
+                            class="btn btn-danger fs-3" 
+                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam1"
+                            >
+                            Penalty Team 1
+                        </a>
+                        <a class="text-decoration-none text-reset fs-3" >placeholder Penalties team1</a>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a 
+                            id="btnPenaltyTeam2"
+                            class="btn btn-danger fs-3" 
+                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam2"
+                            >
+                            Penalty Team 2
+                        </a>
+                        <a class="text-decoration-none text-reset fs-3">placeholder Penalties team2</a>
+                    </div>
+                    
+                </div>
+            </div>
+
+            @*Row 3: Controls*@
+            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a 
+                            id="btnScoreTeam1"
+                            class="btn btn-primary fs-3" 
+                            style="display:block; width:100%; min-height:80%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam1"
+                            >
+                            Score Team 1
+                        </a>
+                        
+                        <a 
+                            id="btnRevokeTeam1"
+                            class="btn btn-secondary fs-3" 
+                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@DecreaseCountTeam1"
+                            >
+                            Revoke Team 1
+                        </a>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a 
+                            id="btnStart"
+                            class="btn btn-info fs-3" 
+                            style="display:block; width:100%; min-height:50%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@StartMatch"
+                            disabled="@StartButtonDisabled" 
+                            hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
+                            >
+                            Start/Continue
+                        </a>
+
+                        <a 
+                            id="btnPause"
+                            class="btn btn-outline-info fs-3" 
+                            style="display:block; width:100%; min-height:50%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@PauseMatch"
+                            disabled="@StartButtonDisabled" 
+                            hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
+                            >
+                            Pause
+                        </a>
+
+                        <a 
+                            id="btnPrepareHalftime"
+                            class="btn btn-secondary fs-3" 
+                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@PrepareHalftime"
+                            disabled="@PrepareHalftimeButtonDisabled" 
+                            hidden="@PrepareHalftimeButtonDisabled"
+                            >
+                            Prepare next halftime
+                        </a>
+
+                        <a 
+                            id="btnCloseMatch"
+                            class="btn btn-dark fs-3" 
+                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@CloseMatch"
+                            disabled="@CloseMatchButtonDisabled" 
+                            hidden="@CloseMatchButtonDisabled"
+                            >
+                            Close match
+                        </a>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">                                                
+                        <a 
+                            id="btnScoreTeam2"
+                            class="btn btn-primary fs-3" 
+                            style="display:block; width:100%; min-height:80%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam2"
+                            >
+                            Score Team 2
+                        </a>
+                        
+                        <a 
+                            id="btnRevokeTeam2"
+                            class="btn btn-secondary fs-3" 
+                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@DecreaseCountTeam2"
+                            >
+                            Revoke Team 2
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @*Row 4: Matchlog*@
+            
+            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+                <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a class="fs-2">Match log:</a><br />
+                        @if(MatchEventList == null) 
+                        {
+                            <a>No match events available.</a><br />
+                        }
+                        else
+                        {
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-1">
+                                        <b>#</b>
+                                    </div>
+                                    <div class="col-1">
+                                        <b>Matchtime</b>
+                                    </div>
+                                    <div class="col-2">
+                                        <b>Creator</b>
+                                    </div>
+                                    <div class="col-auto">
+                                        <b>Note</b>
+                                    </div>
+                                </div>
+         
+                                @foreach(var aEvent in MatchEventList.Reverse<DtoMatchEvent>())
+                                {
+                                    <div class="row justify-content-start">                    
+                                        <div class="col-1">
+                                            @aEvent.Event
+                                        </div>
+                                        <div class="col-1">
+                                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
+                                        </div>
+                                        <div class="col-2">
+                                            @(aEvent.Source ?? "System")
+                                        </div>
+                                        <div class="col-auto">
+                                            @aEvent.Text
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     }
 }
 else
@@ -438,17 +499,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
         if (SelectedMatchId == null)
         {
-            var matchList = await Api.GetMatchListAsync();
-            if (matchList.Count == 0)
-            {
-                //Create emtpy list
-                MatchList = new List<DtoMatch>();
-                return;
-            }
-            MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList() ?? new List<DtoMatch>();
+            await LoadMatchList();
         }
         else
         {
@@ -465,6 +518,18 @@ else
 
         tmrMatchtime.Start();
         await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async Task LoadMatchList()
+    {
+        var matchList = await Api.GetMatchListAsync();
+        if (matchList.Count == 0)
+        {
+            //Create emtpy list
+            MatchList = new List<DtoMatch>();
+            return;
+        }
+        MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList() ?? new List<DtoMatch>();
     }
 
     private async Task LoadMatch()
@@ -553,7 +618,7 @@ else
 
         // Go back to the match control page
         SelectedMatchId = null;
-        MatchList = null;
+        await LoadMatchList();
         NavigationManager.NavigateTo("matchcontrol");
     }
 }
