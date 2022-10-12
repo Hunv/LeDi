@@ -103,6 +103,11 @@ namespace LeDi.Server.DatabaseModel
         public List<MatchReferee>? MatchReferees { get; set; }
 
         /// <summary>
+        /// The Penalties that were raised in this match
+        /// </summary>
+        public List<MatchPenalty>? MatchPenalties { get; set; }
+
+        /// <summary>
         /// Converts the object to a DTO object
         /// </summary>
         /// <returns></returns>

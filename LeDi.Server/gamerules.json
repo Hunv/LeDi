@@ -10,12 +10,64 @@
 
       "match_extension_on_draw": true,
 
-      "foul_penaltytime_1_seconds": 60,
-      "foul_penaltytime_2_seconds": 180,
-      "foul_penaltytime_3_seconds": 300,
-      "foul_warning_1_alias": "yellow card",
-      "foul_warning_2_alias": "2nd yellow card",
-      "foul_warning_3_alias": "red card"
+      "penalties": [
+        {
+          "name": "warning",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "warning"
+            },
+            {
+              "language": "DE",
+              "text": "Verwarnung"
+            }
+          ]
+        },
+        {
+          "name": "yellow card",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "yellow card"
+            },
+            {
+              "language": "DE",
+              "text": "Gelbe Karte"
+            }
+          ]
+        },
+        {
+          "name": "2nd yellow card",
+          "penalty_seconds": 60,
+          "display": [
+            {
+              "language": "EN",
+              "text": "2nd yellow card"
+            },
+            {
+              "language": "DE",
+              "text": "Zweite gelbe Karte"
+            }
+          ]
+        },
+        {
+          "name": "red card",
+          "total_dismissal": true,
+          "display": [
+            {
+              "language": "EN",
+              "text": "red card"
+            },
+            {
+              "language": "DE",
+              "text": "Rote Karte"
+            }
+          ]
+        }
+      ]
     },
 
     {
@@ -28,8 +80,204 @@
 
       "match_extension_on_draw": false,
 
-      "foul_penaltytime_1_seconds": 120,
-      "foul_penaltytime_2_seconds": 300
+      "penalties": [
+        {
+          "name": "warning",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "warning"
+            },
+            {
+              "language": "DE",
+              "text": "Verwarnung"
+            }
+          ]
+        },
+        {
+          "name": "stick infringement",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "stick infringement"
+            },
+            {
+              "language": "DE",
+              "text": "Schlägerfoul"
+            }
+          ]
+        },
+        {
+          "name": "illegal use of free arm",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "illegal use of free arm"
+            },
+            {
+              "language": "DE",
+              "text": "verbotene Nutzung des freien Arms"
+            }
+          ]
+        },
+        {
+          "name": "obstruction",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "obstruction"
+            },
+            {
+              "language": "DE",
+              "text": "Blockieren"
+            }
+          ]
+        },
+        {
+          "name": "gloving",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "gloving"
+            },
+            {
+              "language": "DE",
+              "text": "Handschuhfoul"
+            }
+          ]
+        },
+        {
+          "name": "illegal stopping the puck",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "illegal stopping the puck"
+            },
+            {
+              "language": "DE",
+              "text": "verbotenes Stoppen des Pucks"
+            }
+          ]
+        },
+        {
+          "name": "illegal substitution",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "illegal substitution"
+            },
+            {
+              "language": "DE",
+              "text": "Wechselfehler"
+            }
+          ]
+        },
+        {
+          "name": "un-sportsmanlike conduct",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "un-sportsmanlike conduct"
+            },
+            {
+              "language": "DE",
+              "text": "Unsportliches Verhalten"
+            }
+          ]
+        },
+        {
+          "name": "incorrect start",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "incorrect start"
+            },
+            {
+              "language": "DE",
+              "text": "Fehlstart"
+            }
+          ]
+        },
+        {
+          "name": "puck out",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "puck out"
+            },
+            {
+              "language": "DE",
+              "text": "Puck aus"
+            }
+          ]
+        },
+        {
+          "name": "time penalty (1 min)",
+          "penalty_seconds": 60,
+          "display": [
+            {
+              "language": "EN",
+              "text": "time penalty (1 min)"
+            },
+            {
+              "language": "DE",
+              "text": "Zeitstrafe (1 min)"
+            }
+          ]
+        },
+        {
+          "name": "time penalty (2 min)",
+          "penalty_seconds": 120,
+          "display": [
+            {
+              "language": "EN",
+              "text": "time penalty (2 min)"
+            },
+            {
+              "language": "DE",
+              "text": "Zeitstrafe (2 min)"
+            }
+          ]
+        },
+        {
+          "name": "time penalty (5 min)",
+          "penalty_seconds": 300,
+          "display": [
+            {
+              "language": "EN",
+              "text": "time penalty (5 min)"
+            },
+            {
+              "language": "DE",
+              "text": "Zeitstrafe (5 min)"
+            }
+          ]
+        },
+        {
+          "name": "total dismissal",
+          "total_dismissal": true,
+          "display": [
+            {
+              "language": "EN",
+              "text": "total dismissal"
+            },
+            {
+              "language": "DE",
+              "text": "Platzverweis"
+            }
+          ]
+        }
+      ]
     },
 
     {
@@ -41,10 +289,64 @@
 
       "match_extension_on_draw": true,
 
-      "foul_warning_1": true,
-      "foul_warning_1_alias": "yellow card",
-      "foul_warning_2": true,
-      "foul_warning_2_alias": "red card"
+      "penalties": [
+        {
+          "name": "foul",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "foul"
+            },
+            {
+              "language": "DE",
+              "text": "Foul"
+            }
+          ]
+        },
+        {
+          "name": "yellow card",
+          "penalty_seconds": 0,
+          "display": [
+            {
+              "language": "EN",
+              "text": "yellow card"
+            },
+            {
+              "language": "DE",
+              "text": "Gelbe Karte"
+            }
+          ]
+        },
+        {
+          "name": "yellow and red card",
+          "total_dismissal": true,
+          "display": [
+            {
+              "language": "EN",
+              "text": "yellow and red card"
+            },
+            {
+              "language": "DE",
+              "text": "Gelb/Rote Karte"
+            }
+          ]
+        },
+        {
+          "name": "red card",
+          "total_dismissal": true,
+          "display": [
+            {
+              "language": "EN",
+              "text": "red card"
+            },
+            {
+              "language": "DE",
+              "text": "Rote Karte"
+            }
+          ]
+        }
+      ]
     },
 
     {

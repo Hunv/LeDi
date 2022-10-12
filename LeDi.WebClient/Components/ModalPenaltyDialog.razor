@@ -1,0 +1,80 @@
+﻿@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Text</p>
+                
+                <div class="container">
+                    @if (PenaltyList != null && PenaltyList.Count > 0) 
+                    {
+                        foreach (var aPenalty in PenaltyList)
+                        {
+                            string penalty = aPenalty;
+                            <div class="row">
+                                <div class="col-12">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetPenalty(penalty))" role="button">@penalty</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <EditForm Model="SelectedPenalty">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-6">
+                                <InputText id="txtPenalty" class="form-control" @bind-Value="@SelectedPenalty" />
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-primary" @onclick="@ModalCancel">Cancel</button>
+                                <button type="submit" class="btn btn-primary" @onclick=@ModalOk>OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public List<string>? PenaltyList { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnClose { get; set; }
+
+    /// <summary>
+    /// The Playernumber entered in the textfield
+    /// </summary>
+    private string SelectedPenalty { get; set; } = "";
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(null);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(SelectedPenalty);
+    }
+
+    private void SetPenalty(string penalty)
+    {
+        SelectedPenalty = penalty;
+        StateHasChanged();
+    }
+}

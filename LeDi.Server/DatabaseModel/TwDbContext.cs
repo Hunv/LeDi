@@ -12,6 +12,7 @@ namespace LeDi.Server.DatabaseModel
     {
         public DbSet<Match>? Matches { get; set; }
         public DbSet<MatchEvent>? MatchEvents { get; set; }
+        public DbSet<MatchPenalty>? MatchPenalties { get; set; }
         public DbSet<Setting>? Settings { get; set; }
         public DbSet<Device>? Device { get; set; }
         public DbSet<DeviceSetting>? DeviceSettings { get; set; }

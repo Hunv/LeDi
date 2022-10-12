@@ -434,6 +434,51 @@ namespace LeDi.Shared
                 Console.WriteLine("Failed to set next halftime for matchId {0}", matchId);
             }
         }
+
+        /// <summary>
+        /// Gets all Match Penalties for a match
+        /// </summary>
+        /// <returns>List of match events</returns>
+        public async Task<List<DtoMatchPenalty>> GetMatchPenalties(int matchId)
+        {
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/penalty");
+            if (json == null)
+                return new List<DtoMatchPenalty>();
+
+            var setting = JsonConvert.DeserializeObject<List<DtoMatchPenalty>>(json, Helper.GetJsonSerializer());
+            return setting ?? new List<DtoMatchPenalty>();
+        }
+
+        /// <summary>
+        /// Adds a new Match Penalty for a match
+        /// </summary>
+        /// <returns>The new match penalty</returns>
+        public async Task<DtoMatchPenalty> AddMatchPenalty(int matchId, DtoMatchPenalty penalty)
+        {
+            var jsonIn = JsonConvert.SerializeObject(penalty, Helper.GetJsonSerializer());
+
+            var json = await Helper.ApiRequestPost(ServerBaseUrl + "Match/" + matchId + "/penalty", jsonIn);
+            if (json == null)
+                return new DtoMatchPenalty();
+
+            var setting = JsonConvert.DeserializeObject<DtoMatchPenalty>(json, Helper.GetJsonSerializer());
+            return setting ?? new DtoMatchPenalty();
+        }
+
+        /// <summary>
+        /// Revokes a penalty
+        /// </summary>
+        /// <returns>the revoked match penalty</returns>
+        public async Task<DtoMatchPenalty> RevokeMatchPenalty(int matchId, int penaltyId, string revokeNote)
+        {            
+            var json = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/penalty/" + penaltyId, System.Text.Json.JsonEncodedText.Encode(revokeNote).ToString());
+            if (json == null)
+                return new DtoMatchPenalty();
+
+            var setting = JsonConvert.DeserializeObject<DtoMatchPenalty>(json, Helper.GetJsonSerializer());
+            return setting ?? new DtoMatchPenalty();
+        }
+
         #endregion
     }
 }

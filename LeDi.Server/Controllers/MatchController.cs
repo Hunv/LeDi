@@ -253,5 +253,61 @@ namespace LeDi.Server.Controllers
             _logger.LogDebug("{0}: Got MatchEvents for {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkObjectResult(dto);
         }
+
+
+        /// <summary>
+        /// Get match penalties
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{matchId}/penalty")]
+        public IActionResult GetMatchPenalty(
+            int matchId
+            )
+        {
+            _logger.LogDebug("{0}: Get MatchPenalties for {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+
+            var dto = Api.ApiMatch.GetMatchPenalties(matchId);
+
+            _logger.LogDebug("{0}: Got MatchPenalties for {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            return new OkObjectResult(dto);
+        }
+
+
+        /// <summary>
+        /// Create a new matchPealty
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("{matchId}/penalty")]
+        public async Task<IActionResult> CreateMatchPenalty(
+            int matchId,
+            [FromBody] DtoMatchPenalty penalty
+            )
+        {
+            _logger.LogDebug("{0}: Set MatchPenalty to {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+
+            var dto = await Api.ApiMatch.AddMatchPenalty(matchId, penalty);
+
+            _logger.LogDebug("{0}: Set MatchPenalty to ID {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            return new OkObjectResult(dto);
+        }
+
+        /// <summary>
+        /// Revokes a matchPenalty
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{matchId}/penalty/{penaltyId}")]
+        public async Task<IActionResult> RevokeMatchPenalty(
+            int matchId,
+            int penaltyId,
+            [FromBody] string revokeNote
+            )
+        {
+            _logger.LogDebug("{0}: Revoke MatchPenalty {1} from match {2}", Request.HttpContext.Connection.RemoteIpAddress, penaltyId, matchId);
+
+            var dto = await Api.ApiMatch.RevokeMatchPenalty(matchId, penaltyId, revokeNote);
+
+            _logger.LogDebug("{0}: Revoke MatchPenalty ID {1} from match {2}", Request.HttpContext.Connection.RemoteIpAddress, penaltyId, matchId);
+            return new OkObjectResult(dto);
+        }
     }
 }

@@ -511,5 +511,111 @@ namespace LeDi.Server.Api
                 }
             }
         }
+
+        /// <summary>
+        /// Adds a new match penalty to database
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async static Task<string> AddMatchPenalty(int matchId, DtoMatchPenalty dto)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null && dbContext.MatchPenalties != null)
+            {
+                var match = dbContext.Matches.Include("MatchPenalties").SingleOrDefault(x => x.Id == matchId);
+                if (match == null)
+                    return "";
+
+                var penalties = match.MatchPenalties;
+                if (penalties == null)
+                    match.MatchPenalties = new List<MatchPenalty>();
+
+                var pen = new MatchPenalty();
+                pen.FromDto(dto);
+
+                await dbContext.MatchPenalties.AddAsync(pen);
+                await dbContext.SaveChangesAsync();
+
+                dto.Id = pen.Id;
+                var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+
+                return json;
+            }
+
+            return "";
+        }
+
+        /// <summary>
+        /// Gets a list of penalties for a match
+        /// </summary>
+        /// <returns>JSON string with the list of all match penaties for a match</returns>
+        public static string GetMatchPenalties(int matchId)
+        {
+            using var dbContext = new TwDbContext();
+
+            var dto = new List<DtoMatchPenalty>();
+
+            if (dbContext.Matches != null && dbContext.MatchPenalties != null)
+            {
+                var match = dbContext.Matches.Include("MatchPenalties").SingleOrDefault(x => x.Id == matchId);
+                if (match == null)
+                    return "{}";
+
+                var penalties = match.MatchPenalties;
+                if (penalties == null)
+                    return "{}";
+
+                foreach (var aPenalty in penalties)
+                    dto.Add(aPenalty.ToDto());
+
+                var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                return json;
+            }
+            else
+            {
+                return "{}";
+            }
+        }
+
+        /// <summary>
+        /// Revokes a previously created match penalty from database
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="penaltyId"></param>
+        /// <returns></returns>
+        public async static Task<string> RevokeMatchPenalty(int matchId, int penaltyId, string revokeNote)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null && dbContext.MatchPenalties != null)
+            {
+                var match = dbContext.Matches.Include("MatchPenalties").SingleOrDefault(x => x.Id == matchId);
+                if (match == null)
+                    return "";
+
+                var penalties = match.MatchPenalties;
+                if (penalties == null)
+                    return "";
+
+                var pen = penalties.SingleOrDefault(x => x.Id == penaltyId);
+                if (pen == null)
+                    return "";
+
+                pen.Revoked = true;
+                pen.RevokeNote = revokeNote;
+
+                await dbContext.SaveChangesAsync();
+
+                var dto = penalties.SingleOrDefault(x => x.Id == penaltyId);
+                if (dto == null)
+                    return "";
+
+                var json = JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                return json;
+            }
+            return "";
+        }
     }
 }

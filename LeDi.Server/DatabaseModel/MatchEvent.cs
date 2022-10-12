@@ -78,8 +78,8 @@ namespace LeDi.Server.DatabaseModel
             Id = dto.Id;
             Timestamp = dto.Timestamp;
             Event = (MatchEventEnum)dto.Event;
-            Text = Text;
-            Source = Source;
+            Text = dto.Text;
+            Source = dto.Source;
         }
     }
 }
