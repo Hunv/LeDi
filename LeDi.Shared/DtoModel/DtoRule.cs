@@ -18,16 +18,16 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("halftime_count")]
         [Range(1, int.MaxValue, ErrorMessage = "The number of halftime must be greater than 0.")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int HalftimeCount { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public int? HalftimeCount { get; set; }
 
         /// <summary>
         /// Length of the Halftime
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("halftime_length")]
-        [Range(10, int.MaxValue, ErrorMessage = "Length of a halftime must be larger at least 10 seconds.")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int HalftimeLength { get; set; }
+        [Range(10, int.MaxValue, ErrorMessage = "Length of a halftime must be at least 10 seconds.")]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public int? HalftimeLength { get; set; }
 
         /// <summary>
         /// Does a halftime have (optional) overtime?
@@ -48,8 +48,8 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("halftime_last_pause_time_on_event_last_seconds")]
         [Range(0, int.MaxValue, ErrorMessage = "The time the time pauses before the end of the match must be 0 or positive.")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int HalftimeLastPauseTimeOnEventSeconds { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public int? HalftimeLastPauseTimeOnEventSeconds { get; set; }
 
 
 
@@ -60,94 +60,10 @@ namespace LeDi.Shared.DtoModel
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool MatchExtensionOnDraw { get; set; }
 
-
-
         /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
+        /// List of penalties the type of game has by default
         /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_penaltytime_1")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool FoulPenaltyTime1 { get; set; }
+        public List<DtoRulePenalty> PenaltyList { get; set; } = new List<DtoRulePenalty>();
 
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_penaltytime_1_seconds")]
-        [Range(0, int.MaxValue, ErrorMessage = "The time for the first penalty must be 0 or positive.")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int FoulPenaltyTime1Seconds { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_penaltytime_2")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool FoulPenaltyTime2 { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_penaltytime_2_seconds")]
-        [Range(0, int.MaxValue, ErrorMessage = "The time for the second penalty must be 0 or positive.")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int FoulPenaltyTime2Seconds { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_penaltytime_3")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool FoulPenaltyTime3 { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_penaltytime_3_seconds")]
-        [Range(0, int.MaxValue, ErrorMessage = "The time for the third penalty must be 0 or positive.")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int FoulPenaltyTime3Seconds { get; set; }
-
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_warning_1")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool FoulWarning1 { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_warning_1_alias")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? FoulWarning1Alias { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_warning_2")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool FoulWarning2 { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_warning_2_alias")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? FoulWarning2Alias { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_warning_3")]
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool FoulWarning3 { get; set; }
-
-        /// <summary>
-        /// Does the match automatically extend if there is a draw at the end of the last regular halftime
-        /// </summary>
-        [System.Text.Json.Serialization.JsonPropertyName("foul_warning_3_alias")]
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string? FoulWarning3Alias { get; set; }
     }
 }

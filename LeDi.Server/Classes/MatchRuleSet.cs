@@ -53,7 +53,7 @@
         /// The penalties that can be given in this game type to players and/or teams
         /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("penalties")]
-        public List<MatchRuleSetPenalty> MatchPenalties { get; set; } = new List<MatchRuleSetPenalty>();
+        public List<MatchRuleSetPenalty> MatchPenaltyList { get; set; } = new List<MatchRuleSetPenalty>();
 
     }
 }

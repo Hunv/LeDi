@@ -129,13 +129,15 @@ else if (SelectedMatchId != null)
                         <a 
                             id="btnScoreTeam1"
                             class="btn btn-primary fs-3" 
-                            style="display:block; width:100%; min-height:80%; display:flex; align-items:center; justify-content:center;" 
+                            style="display:block; width:100%; min-height:75%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@IncrementCountTeam1Clicked"
                             >
                             Score Team 1
+                        </a>                        
+                        <a 
+                            style="display:block; width:100%; min-height:5%; display:flex; align-items:center; justify-content:center;">
                         </a>
-                        
                         <a 
                             id="btnRevokeTeam1"
                             class="btn btn-secondary fs-3" 
@@ -152,19 +154,24 @@ else if (SelectedMatchId != null)
                         <a 
                             id="btnStart"
                             class="btn btn-primary fs-3" 
-                            style="display:block; width:100%; min-height:50%; display:flex; align-items:center; justify-content:center;" 
+                            style="display:block; width:100%; min-height:47%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@StartMatchClicked"
                             disabled="@StartButtonDisabled" 
                             hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
                             >
                             Start/Continue
+                        </a>                        
+                        <a 
+                            style="display:block; width:100%; min-height:6%; display:flex; align-items:center; justify-content:center;"
+                            disabled="@StartButtonDisabled" 
+                            hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
+                            >
                         </a>
-
                         <a 
                             id="btnPause"
                             class="btn btn-outline-primary fs-3" 
-                            style="display:block; width:100%; min-height:50%; display:flex; align-items:center; justify-content:center;" 
+                            style="display:block; width:100%; min-height:47%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@PauseMatchClicked"
                             disabled="@StartButtonDisabled" 
@@ -375,8 +382,12 @@ else
         if (playerId >= 0)
         {
             // 0 = the penalty is for the team. All others are for the given player number.
-            PenaltyList = new List<string> { "A", "B", "C" };
-            //Match.
+            PenaltyList = Match.PenaltyList
+                            .SelectMany(x => x.Display)
+                            .Where(x => x.Language == "EN")
+                            .Select(x => x.Text)
+                            .ToList();
+            
 
             //Ask for the penalty
             PenaltyPenaltyDialogOpen = true;

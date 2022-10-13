@@ -33,14 +33,32 @@ namespace LeDi.Server.Classes
                     return;
                                 
                 Rules.GameName = rl.GameName;
-                Rules.HalftimeCount = rl.HalftimeCount;
+                Rules.HalftimeCount = rl.HalftimeCount ?? 2;
                 Rules.HalftimeLastPauseTimeOnEvent = rl.HalftimeLastPauseTimeOnEvent;
-                Rules.HalftimeLastPauseTimeOnEventSeconds = rl.HalftimeLastPauseTimeOnEventSeconds;
-                Rules.HalftimeLength = rl.HalftimeLength;
+                Rules.HalftimeLastPauseTimeOnEventSeconds = rl.HalftimeLastPauseTimeOnEventSeconds ?? 0;
+                Rules.HalftimeLength = rl.HalftimeLength ?? 10;
                 Rules.HalftimeOvertime = rl.HalftimeOvertime;
                 Rules.MatchExtensionOnDraw = rl.MatchExtensionOnDraw;
 
-                //Rules.MatchPenalties to dto and to client
+                Rules.MatchPenaltyList = new List<MatchRuleSetPenalty>();
+                foreach(var aDtoPenalty in rl.PenaltyList)
+                {
+                    var aPenalty = new MatchRuleSetPenalty();
+                    aPenalty.Name = aDtoPenalty.Name;
+                    aPenalty.TotalDismissal = aDtoPenalty.TotalDismissal;
+                    aPenalty.PenaltySeconds = aDtoPenalty.PenaltySeconds;
+                    
+                    aPenalty.Display = new List<MatchRuleSetDisplayText>();
+                    foreach(var aDtoDisplay in aDtoPenalty.Display)
+                    {
+                        var aDisplay = new MatchRuleSetDisplayText();
+                        aDisplay.Text = aDtoDisplay.Text;
+                        aDisplay.Language = aDtoDisplay.Language;
+                        aPenalty.Display.Add(aDisplay);
+                    }
+
+                    Rules.MatchPenaltyList.Add(aPenalty);
+                }
             }
         }
     }

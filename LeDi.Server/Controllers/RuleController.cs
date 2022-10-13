@@ -23,22 +23,6 @@ namespace LeDi.Server.Controllers
         }
         
         /// <summary>
-        /// Gets the fields available to define rules
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("rulefields")]
-        public IActionResult GetRuleFields()
-        {
-            _logger.LogDebug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
-
-            var json = Api.ApiRule.GetRuleFields();
-            var result = new OkObjectResult(json);
-
-            _logger.LogDebug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
-            return result;
-        }
-
-        /// <summary>
         /// Gets the rules for all game types
         /// </summary>
         /// <returns></returns>

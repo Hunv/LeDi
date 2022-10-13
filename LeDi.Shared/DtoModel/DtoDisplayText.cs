@@ -1,12 +1,13 @@
-﻿namespace LeDi.Server.Classes
-{
-    public class MatchRuleSetDisplayText
-    {
-        /// <summary>
-        /// Internal ID
-        /// </summary>
-        public int Id { get; set; }
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
+namespace LeDi.Shared.DtoModel
+{
+    public class DtoDisplayText
+    {
         /// <summary>
         /// The Language this Item is dedicated to
         /// </summary>

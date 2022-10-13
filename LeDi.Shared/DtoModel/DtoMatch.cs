@@ -89,5 +89,11 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public List<DtoMatchReferee> Referees { get; set; } = new List<DtoMatchReferee>();
+
+        /// <summary>
+        /// List of penalties
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public List<DtoMatchPenalty> Penalties { get; set; } = new List<DtoMatchPenalty>();
     }
 }

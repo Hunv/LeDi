@@ -480,5 +480,21 @@ namespace LeDi.Shared
         }
 
         #endregion
+
+        #region Rules
+        /// <summary>
+        /// Gets all Rules
+        /// </summary>
+        /// <returns></returns>
+        public async Task<DtoRuleBody?> GetRulesAsync()
+        {
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "rules");
+            if (json == null)
+                return null;
+
+            var rules = JsonConvert.DeserializeObject<DtoRuleBody?>(json, Helper.GetJsonSerializer());
+            return rules;
+        }
+        #endregion
     }
 }
