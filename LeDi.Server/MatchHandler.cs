@@ -57,7 +57,7 @@ namespace LeDi.Server
                     //If time is over and there is no overtime, stop the time
                     //otherwise, reduce the time
                     if (dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft <= 0 &&
-                        (MatchRules.Rules == null || MatchRules.Rules.HalftimeOvertime == false)
+                        (MatchRules.Rules == null || MatchRules.Rules.RuleHalftimeOvertime == false)
                         )
                     {
                         Stop();
@@ -140,10 +140,10 @@ namespace LeDi.Server
                 var match = dbContext.Matches.SingleOrDefault(x => x.Id == MatchId);
                 if (match != null)
                 {
-                    if (match.CurrentHalftime < match.HalftimeCount && match.CurrentTimeLeft == 0)
+                    if (match.CurrentHalftime < match.RuleHalftimeCount && match.CurrentTimeLeft == 0)
                     {
                         match.CurrentHalftime++;
-                        match.CurrentTimeLeft = match.HalftimeLength;
+                        match.CurrentTimeLeft = match.RuleHalftimeLength;
                     }
 
                     await dbContext.SaveChangesAsync();

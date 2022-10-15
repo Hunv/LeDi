@@ -28,20 +28,20 @@ namespace LeDi.Server.Classes
 
             if (ruleList != null && ruleList.Rules != null)
             {
-                var rl = ruleList.Rules.SingleOrDefault(x => x.GameName == gameName);
+                var rl = ruleList.Rules.SingleOrDefault(x => x.Gamename == gameName);
                 if (rl == null)
                     return;
                                 
-                Rules.GameName = rl.GameName;
-                Rules.HalftimeCount = rl.HalftimeCount ?? 2;
-                Rules.HalftimeLastPauseTimeOnEvent = rl.HalftimeLastPauseTimeOnEvent;
-                Rules.HalftimeLastPauseTimeOnEventSeconds = rl.HalftimeLastPauseTimeOnEventSeconds ?? 0;
-                Rules.HalftimeLength = rl.HalftimeLength ?? 10;
-                Rules.HalftimeOvertime = rl.HalftimeOvertime;
-                Rules.MatchExtensionOnDraw = rl.MatchExtensionOnDraw;
+                Rules.GameName = rl.Gamename;
+                Rules.RuleHalftimeCount = rl.RuleHalftimeCount ?? 2;
+                Rules.RuleHalftimeLastPauseTimeOnEvent = rl.RuleHalftimeLastPauseTimeOnEvent;
+                Rules.RuleHalftimeLastPauseTimeOnEventSeconds = rl.RuleHalftimeLastPauseTimeOnEventSeconds ?? 0;
+                Rules.RuleHalftimeLength = rl.RuleHalftimeLength ?? 10;
+                Rules.RuleHalftimeOvertime = rl.RuleHalftimeOvertime;
+                Rules.RuleMatchExtensionOnDraw = rl.RuleMatchExtensionOnDraw;
 
-                Rules.MatchPenaltyList = new List<MatchRuleSetPenalty>();
-                foreach(var aDtoPenalty in rl.PenaltyList)
+                Rules.RulePenaltyList = new List<MatchRuleSetPenalty>();
+                foreach(var aDtoPenalty in rl.RulePenaltyList)
                 {
                     var aPenalty = new MatchRuleSetPenalty();
                     aPenalty.Name = aDtoPenalty.Name;
@@ -57,7 +57,7 @@ namespace LeDi.Server.Classes
                         aPenalty.Display.Add(aDisplay);
                     }
 
-                    Rules.MatchPenaltyList.Add(aPenalty);
+                    Rules.RulePenaltyList.Add(aPenalty);
                 }
             }
         }

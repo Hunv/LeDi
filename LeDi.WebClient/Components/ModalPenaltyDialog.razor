@@ -29,12 +29,15 @@
                 <EditForm Model="SelectedPenalty">
                     <div class="container">
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-6 align-content-start">
+                                <a>Custom Penalty Text:</a>
                                 <InputText id="txtPenalty" class="form-control" @bind-Value="@SelectedPenalty" />
                             </div>
-                            <div class="col-6">
-                                <button type="button" class="btn btn-outline-primary" @onclick="@ModalCancel">Cancel</button>
-                                <button type="submit" class="btn btn-primary" @onclick=@ModalOk>OK</button>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 align-content-end">
+                                <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:50%;" @onclick="@ModalCancel">Cancel</button>
+                                <button type="submit" class="btn btn-primary fs-1" style="height:100% width:50%;" @onclick=@ModalOk>OK</button>
                             </div>
                         </div>
                     </div>
@@ -72,9 +75,9 @@
         return OnClose.InvokeAsync(SelectedPenalty);
     }
 
-    private void SetPenalty(string penalty)
+    private async Task SetPenalty(string penalty)
     {
         SelectedPenalty = penalty;
-        StateHasChanged();
+        await ModalOk();
     }
 }

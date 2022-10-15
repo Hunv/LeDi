@@ -49,10 +49,19 @@ namespace LeDi.Shared.DtoModel
         public int PenaltyTimeStart { get; set; }
 
         /// <summary>
-        /// Number of seconds the penalty lasts. 0 if it has no ending.
+        /// Number of seconds the penalty lasts. 0 if no time penalty, -1 if it has no ending.
         /// </summary>
         public int PenaltyTime { get; set; }
 
+        /// <summary>
+        /// The teamId the player is playing for (0 = Team1, 1 = Team2)
+        /// </summary>
+        public int TeamId { get; set; }
+
+        /// <summary>
+        /// The name of the penalty. Always English
+        /// </summary>
+        public string PenaltyName { get; set; } = "";
     }
 }
 

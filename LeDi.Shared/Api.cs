@@ -251,6 +251,21 @@ namespace LeDi.Shared
         }
 
         /// <summary>
+        /// Gets a Match
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <returns></returns>
+        public async Task<DtoMatch?> GetMatchFullAsync(int matchId)
+        {
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/full");
+            if (json == null)
+                return null;
+
+            var setting = JsonConvert.DeserializeObject<DtoMatch?>(json, Helper.GetJsonSerializer());
+            return setting;
+        }
+
+        /// <summary>
         /// Gets the time left of a match
         /// </summary>
         /// <param name="matchId"></param>
@@ -299,7 +314,7 @@ namespace LeDi.Shared
         /// Add a new Tournament
         /// </summary>
         /// <param name="match"></param>
-        public async Task<DtoMatch?> AddMatchAsync(DtoMatch match)
+        public async Task<DtoMatch?> NewMatchAsync(DtoMatch match)
         {
             var json = JsonConvert.SerializeObject(match, Helper.GetJsonSerializer());
 
@@ -321,6 +336,7 @@ namespace LeDi.Shared
             if (!response.IsSuccessStatusCode)
             {
                 var responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Failed to add new match. Error: " + responseBody);
                 return null;
             }
             else //It is successful and contains the newMatch DTO Object
@@ -488,7 +504,7 @@ namespace LeDi.Shared
         /// <returns></returns>
         public async Task<DtoRuleBody?> GetRulesAsync()
         {
-            var json = await Helper.ApiRequestGet(ServerBaseUrl + "rules");
+            var json = await Helper.ApiRequestGet(ServerBaseUrl + "Rule/rules");
             if (json == null)
                 return null;
 

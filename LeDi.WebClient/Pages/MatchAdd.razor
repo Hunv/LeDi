@@ -15,37 +15,120 @@ else
         <ValidationSummary />*@
 
         <a>Select type of sport</a>
-        <InputSelect id="cmbGamename" @bind-Value="SelectedGamename" class="form-control">
-            <option value="">  </option>
-            <option value="UWH">Underwaterhockey</option>
+        <InputSelect id="cmbGamename" class="form-control" @bind-Value="SelectedGamename">
+            <option value=""> </option>
+            <option value="Underwaterhockey">Underwaterhockey</option>
             <option value="Handball">Handball</option>
+            <option value="Soccer">Soccer</option>
+@*            <option value="Baseball">Baseball</option>
+            <option value="Hockey">Hockey</option>
+            <option value="Football">Football</option>
+            <option value="Basketball">Basketball</option>
+            <option value="Tennis">Tennis</option>*@
+            <option value="Other">Other</option>
         </InputSelect>
         <br /> 
 
-        <a hidden="@Hidden">Team 1</a>
-        <InputText id="txtTeamName1" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.Team1Name"/>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName1"))">Team 1</a>
+        <InputText 
+            id="txtTeamName1" 
+            class="form-control" 
+            type="text" 
+            hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName1"))" 
+            @bind-Value="@NewMatch.Team1Name"
+            />
         <br /> 
 
-        <a hidden="@Hidden">Teams 2</a>
-        <InputText id="txtTeamName2" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.Team2Name"/>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName2"))">Team 2</a>
+        <InputText 
+            id="txtTeamName2" 
+            class="form-control" 
+            type="text" 
+            hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName2"))" 
+            @bind-Value="@NewMatch.Team2Name"
+            />
         <br /> 
 
-        <a hidden="@Hidden">Number of halftimes</a>
-        <InputNumber id="txtHalfTimeCount" class="form-control" type="text" hidden="@Hidden" @bind-Value="@NewMatch.HalfTimeCount"/>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeCount"))">Number of halftimes</a>
+        <InputNumber 
+            id="txtHalftimeCount" 
+            class="form-control" 
+            type="text" 
+            hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeCount"))" 
+            min="1"
+            @bind-Value="@NewMatch.RuleHalftimeCount"
+            />
         <br /> 
 
-        <a hidden="@Hidden">Length of a halftime (minutes : seconds)</a>
-        <div class="input-group" hidden="@Hidden">
-            <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeLength"))">Length of a halftime (minutes : seconds)</a>
+        <div id="txtHalftimeLength" class="input-group" hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeLength"))">
+            <input 
+                id="txtHalftimeLengthMin" 
+                type="number" 
+                class="form-control" 
+                style="max-width:100px; min-width:50px" 
+                placeholder="Minutes" 
+                min="0" 
+                max="99999" 
+                @bind-value="TimeLeftMinutesProxy"
+                />
             <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
-            <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
+            <input 
+                id="txtHalftimeLengthSec" 
+                type="number" 
+                class="form-control" 
+                style="max-width:100px; min-width:50px" 
+                placeholder="Seconds" 
+                min="0" 
+                max="59" 
+                @bind-value="TimeLeftSecondsProxy"
+                />
         </div>
         <br />
    
-        <a hidden="@Hidden">Scheduled Start Date and Time</a>
-        @*<InputDate id="txtScheduledTime" class="form-control" hidden="@Hidden" @bind-Value="@NewMatch.ScheduledTime"/>*@
-        <input hidden="@Hidden" type="datetime" class="form-control" @bind-value="NewMatch.ScheduledTime"/>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("dtScheduledTime"))">Scheduled Start Date and Time</a>
+        <input 
+            id="dtScheduledTime" 
+            hidden="@(!FieldList[SelectedGamename].Contains("dtScheduledTime"))" 
+            type="datetime" 
+            class="form-control" 
+            @bind-value="NewMatch.ScheduledTime"
+            />
         <br /> 
+                
+        <InputCheckbox 
+            id="chkHalftimeOvertime" 
+            @bind-Value="NewMatch.RuleHalftimeOvertime" 
+            hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimeOvertime"))"
+            />
+        <a hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimeOvertime"))">Match has overtime</a>
+        <br />
+
+        <InputCheckbox 
+            id="chkHalftimePauseNearEnd" 
+            @bind-Value="NewMatch.RuleHalftimeLastPauseTimeOnEvent" 
+            hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimePauseNearEnd"))"
+            />
+        <a hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimePauseNearEnd"))">Match pauses in case of interruptions near end of match</a>
+        <br /><br />
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimePauseNearEndSec")|| NewMatch.RuleHalftimeLastPauseTimeOnEvent == false)">Number of seconds near end the time will be stopped?</a>
+        <InputNumber 
+            id="txtHalftimePauseNearEndSec" 
+            class="form-control" 
+            type="text" 
+            @bind-Value="@NewMatch.RuleHalftimeLastPauseTimeOnEventSeconds"
+            hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimePauseNearEndSec") || NewMatch.RuleHalftimeLastPauseTimeOnEvent == false)" 
+            />
+        <br /> 
+
+        <InputCheckbox 
+            id="chkMatchExtensionOnDraw" 
+            @bind-Value="NewMatch.RuleMatchExtensionOnDraw" 
+            hidden="@(!FieldList[SelectedGamename].Contains("chkMatchExtensionOnDraw"))"
+            />
+        <a hidden="@(!FieldList[SelectedGamename].Contains("chkMatchExtensionOnDraw"))">Extend match in case of draw after regular play time</a>
+        <br />
+
 
         <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
         <button class="btn btn-primary" type="submit">Save</button>
@@ -56,27 +139,30 @@ else
 
 @code{
 
-    bool Hidden = true;
     DtoMatch NewMatch = new DtoMatch()
         {
+            Gamename = "",
             Team1Name = "Team1",
             Team2Name = "Team2",
-            HalfTimeCount = 2,
+            RuleHalftimeCount = 2,
             TimeLeftSeconds = 600,
             ScheduledTime = DateTime.Now,
             MatchStatus = (int)LeDi.Shared.Enum.MatchStatusEnum.Planned
     };
 
-    private string _SelectedGamename = "";
-    string SelectedGamename {
-        get
+
+    public string SelectedGamename 
+    {
+        get 
         {
-            return _SelectedGamename;
+            return NewMatch.Gamename ?? ""; 
         } 
-        set
+        set 
         {
-            _SelectedGamename = value;
-            ShowFields();
+            NewMatch.Gamename = value;
+            #pragma warning disable CS4014
+            SelectedGamenameChanged();
+            #pragma warning restore CS4014
         }
     }
 
@@ -99,6 +185,7 @@ else
                 return;
 
             NewMatch.TimeLeftSeconds = value * 60 + TimeLeftSecondsProxy;
+            NewMatch.RuleHalftimeLength = NewMatch.TimeLeftSeconds;
         }
     }
 
@@ -120,25 +207,110 @@ else
                 return;
 
             NewMatch.TimeLeftSeconds = TimeLeftMinutesProxy + value;
+            NewMatch.RuleHalftimeLength = NewMatch.TimeLeftSeconds;
         }
     }
 
-
-
-    private void ShowFields()
+    //Dictionary that defines the fields that are shown when SelectedGamename has the value of that match type.
+    public Dictionary<string, List<string>> FieldList = new Dictionary<string, List<string>>
     {
-        if (string.IsNullOrWhiteSpace(SelectedGamename))
         {
+            "", new List<string>
+            {
+
+            }
+        },
+        {
+            "Underwaterhockey", new List<string>
+            {
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtHalftimeCount", 
+                "txtHalftimeLength",
+                "dtScheduledTime",
+                "chkHalftimePauseNearEnd",
+                "txtHalftimePauseNearEndSec",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+        {
+            "Handball", new List<string>
+            {
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtHalftimeCount", 
+                "txtHalftimeLength",
+                "dtScheduledTime",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+        {
+            "Soccer", new List<string>
+            {
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtHalftimeCount", 
+                "txtHalftimeLength",
+                "dtScheduledTime",
+                "chkHalftimeOvertime",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+        {
+            "Other", new List<string>
+            {
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtHalftimeCount", 
+                "txtHalftimeLength",
+                "dtScheduledTime",
+                "chkHalftimeOvertime",
+                "chkHalftimePauseNearEnd",
+                "txtHalftimePauseNearEndSec",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+    };
+
+    // Executed when the selected game name changed
+    private async Task SelectedGamenameChanged()
+    {
+        //NewMatch.GameName = SelectedGamename;
+
+        if (SelectedGamename == "")
             return;
-        }
-        else if (SelectedGamename == "UWH")
-        {
-            Hidden = false;
-        }
-        else
-        {
-            Hidden = true;
-        }
+
+        //get the standard rules
+        var rules = await Api.GetRulesAsync();
+
+        if (rules == null || rules.Rules == null)
+            return;
+
+        //get the standard rules for that game
+        var matchRules = rules.Rules.SingleOrDefault(x => x.Gamename == SelectedGamename);
+
+        if (matchRules == null)
+            return;
+
+        //apply the standardrules to the new match
+        NewMatch = new DtoMatch(){
+                Gamename = SelectedGamename,
+                Team1Name = "Team1",
+                Team2Name = "Team2"
+        };
+        NewMatch.RuleHalftimeCount = matchRules.RuleHalftimeCount ?? 2;
+        NewMatch.RuleHalftimeLastPauseTimeOnEvent = matchRules.RuleHalftimeLastPauseTimeOnEvent;
+        NewMatch.RuleHalftimeLastPauseTimeOnEventSeconds = matchRules.RuleHalftimeLastPauseTimeOnEventSeconds ?? 0;
+        NewMatch.RuleHalftimeLength = matchRules.RuleHalftimeLength;
+        NewMatch.RuleHalftimeOvertime = matchRules.RuleHalftimeOvertime;
+        NewMatch.RuleMatchExtensionOnDraw = matchRules.RuleMatchExtensionOnDraw;
+        NewMatch.RulePenaltyList = matchRules.RulePenaltyList;
+
+        // Set Default values based on rules
+        NewMatch.RuleHalftimeCount = NewMatch.RuleHalftimeCount ?? 2; //Note: RuleHalftimeCount cannot be null here because it is already set to 2 in case it is null above
+        NewMatch.TimeLeftSeconds = NewMatch.RuleHalftimeLength ?? 600;
+
+        await InvokeAsync(() => { StateHasChanged(); });
     }
 
     /// <summary>
@@ -147,13 +319,17 @@ else
     /// <returns>The DTO object of the new Match</returns>
     private async Task<DtoMatch?> SaveMatch()
     {
-        var newMatch = await Api.AddMatchAsync(NewMatch);
+        // Save and get the saved match as return value
+        var newMatch = await Api.NewMatchAsync(NewMatch);
+
+        // Reset the NewMatch variable, that represents the current configuration of the match-to-add. Values are not required anymore after command before was executed.
         NewMatch = new DtoMatch()
             {
+                Gamename = "",
                 Team1Name = "Team1",
                 Team2Name = "Team2",
                 TimeLeftSeconds = 10,
-                HalfTimeCount = 2
+                RuleHalftimeCount = 2
             };
         return newMatch;
     }

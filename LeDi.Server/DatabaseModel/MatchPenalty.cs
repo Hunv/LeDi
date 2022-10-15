@@ -28,6 +28,11 @@ namespace LeDi.Server.DatabaseModel
         public string? PlayerName { get; set; }
 
         /// <summary>
+        /// The TeamID the player is playing for (0 = Team1, 1 = Team2)
+        /// </summary>
+        public int TeamId { get; set; }
+
+        /// <summary>
         /// A note for the penalty
         /// </summary>
         public string Note { get; set; } = "";
@@ -53,6 +58,11 @@ namespace LeDi.Server.DatabaseModel
         public int PenaltyTime { get; set; }
 
         /// <summary>
+        /// The name of the penalty. Internal - always in English.
+        /// </summary>
+        public string PenaltyName { get; set; } = "";
+
+        /// <summary>
         /// Is the penalty revoked?
         /// </summary>
         public bool Revoked { get; set; }
@@ -61,6 +71,11 @@ namespace LeDi.Server.DatabaseModel
         /// Note why the penalty was revoked
         /// </summary>
         public string? RevokeNote { get; set; }
+
+        /// <summary>
+        /// The MatchId this Penalty belongs to
+        /// </summary>
+        public int MatchId { get; set; }
 
 
         /// <summary>
@@ -79,7 +94,9 @@ namespace LeDi.Server.DatabaseModel
                 Source = Source,
                 Timestamp = Timestamp,
                 PenaltyTimeStart = PenaltyTimeStart,
-                PenaltyTime = PenaltyTime
+                PenaltyTime = PenaltyTime,
+                TeamId = TeamId,
+                PenaltyName = PenaltyName
             };
 
             return dto;
@@ -100,7 +117,8 @@ namespace LeDi.Server.DatabaseModel
             Timestamp = dto.Timestamp;
             PenaltyTimeStart = dto.PenaltyTimeStart;
             PenaltyTime = dto.PenaltyTime;
-            
+            TeamId = dto.TeamId;
+            PenaltyName = dto.PenaltyName;
         }
     }
 }

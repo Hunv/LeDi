@@ -29,7 +29,9 @@
         //Range 200-299 Fouls
         FoulTeam1 = 200,
         FoulTeam2 = 201,
-        TimePenaltyTeam1 = 210,
-        TimePenaltyTeam2 = 211,
+        PenaltyTeam1 = 210,
+        PenaltyTeam2 = 211,
+        PenaltyTeam1Revoke = 220,
+        PenaltyTeam2Revoke = 221,
     }
 }

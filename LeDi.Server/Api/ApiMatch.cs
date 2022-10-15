@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LeDi.Shared;
 using LeDi.Shared.Enum;
+using LeDi.Server.Classes;
 
 namespace LeDi.Server.Api
 {
@@ -41,7 +42,36 @@ namespace LeDi.Server.Api
 
             if (dbContext.Matches != null)
             {
-                Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == id);
+                Match? dto = dbContext.Matches
+                    .Include("MatchPenalties")
+                    .SingleOrDefault(x => x.Id == id);
+                if (dto != null)
+                    return JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                else
+                    return "";
+            }
+
+            return "";
+        }
+
+        /// <summary>
+        /// Gets a specific match as JSON including ALL properties (incl. subtrees)
+        /// </summary>
+        /// <param name="id">ID of the Match</param>
+        /// <returns>Specific match details as JSON</returns>
+        public static string GetMatchFull(int id)
+        {
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Matches != null)
+            {
+                Match? dto = dbContext.Matches
+                    .Include("MatchPenalties")
+                    .Include("MatchEvents")
+                    .Include("MatchReferees")
+                    .Include("RulePenaltyList")
+                    .Include("RulePenaltyList.Display")
+                    .SingleOrDefault(x => x.Id == id);
                 if (dto != null)
                     return JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
                 else
@@ -62,41 +92,41 @@ namespace LeDi.Server.Api
 
             if (dbContext.Matches != null)
             {
-                Match? dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
-                if (dto != null)
+                Match? dbMatch = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (dbMatch != null)
                 {
                     // Perform actions that need to be done on Status change
-                    if (match.MatchStatus != 0 && match.MatchStatus != dto.MatchStatus)
+                    if (match.MatchStatus != 0 && match.MatchStatus != dbMatch.MatchStatus)
                     {
-                        await RunMatchStatusChangeActions(dto, match.MatchStatus);
+                        await RunMatchStatusChangeActions(dbMatch, match.MatchStatus);
                     }
 
                     if (match.Team1Score.HasValue)
-                        dto.Team1Score = match.Team1Score.Value;
+                        dbMatch.Team1Score = match.Team1Score.Value;
 
                     if (match.Team2Score.HasValue)
-                        dto.Team2Score = match.Team2Score.Value;
+                        dbMatch.Team2Score = match.Team2Score.Value;
 
                     if (!string.IsNullOrEmpty(match.Team1Name))
-                        dto.Team1Name = match.Team1Name;
+                        dbMatch.Team1Name = match.Team1Name;
 
                     if (!string.IsNullOrEmpty(match.Team2Name))
-                        dto.Team2Name = match.Team2Name;
+                        dbMatch.Team2Name = match.Team2Name;
 
                     if (match.TimeLeftSeconds >= 0)
-                        dto.CurrentTimeLeft = match.TimeLeftSeconds;
+                        dbMatch.CurrentTimeLeft = match.TimeLeftSeconds;
 
                     if (match.MatchStatus != 0)
-                        dto.MatchStatus = match.MatchStatus;
+                        dbMatch.MatchStatus = match.MatchStatus;
 
                     if (match.ScheduledTime.HasValue)
-                        dto.ScheduledTime = match.ScheduledTime;
+                        dbMatch.ScheduledTime = match.ScheduledTime;
 
-                    if (match.HalfTimeCount >= 0)
-                        dto.HalftimeCount = match.HalfTimeCount;
+                    if (match.RuleHalftimeCount >= 0)
+                        dbMatch.RuleHalftimeCount = match.RuleHalftimeCount ?? 2;
 
-                    if (match.HalfTimeCurrent >= 0)
-                        dto.CurrentHalftime = match.HalfTimeCurrent;
+                    if (match.HalftimeCurrent >= 0)
+                        dbMatch.CurrentHalftime = match.HalftimeCurrent;
 
                     await dbContext.SaveChangesAsync();
                 }
@@ -112,50 +142,8 @@ namespace LeDi.Server.Api
         {
             using var dbContext = new TwDbContext();
 
-            var newMatch = new Match()
-            {
-                Team1Score = match.Team1Score ?? 0,
-                Team2Score = match.Team2Score ?? 0,
-                Team1Name = match.Team1Name,
-                Team2Name = match.Team2Name,
-                CurrentTimeLeft = match.TimeLeftSeconds,
-                HalftimeLength = match.TimeLeftSeconds, //TimeLeftSeconds is the Halftime Length on creation
-                ScheduledTime = match.ScheduledTime,
-                GameName = match.GameName,
-                MatchStatus = match.MatchStatus == 0 ? 1 : match.MatchStatus, //set to draft status if no Status is set
-                HalftimeCount = match.HalfTimeCount
-                
-            };
-
-            // Add Team1 players
-            if (match.Team1PlayerIds != null)
-            {
-                newMatch.Team1Players = new List<Player>();
-                foreach (var aPlayerId in match.Team1PlayerIds)
-                {
-                    if (dbContext.Players != null)
-                    {
-                        var player = await dbContext.Players.SingleOrDefaultAsync(x => x.Id == aPlayerId);
-                        if (player != null)
-                            newMatch.Team1Players.Add(player);
-                    }
-                }
-            }
-
-            // Add Team2 players
-            if (match.Team2PlayerIds != null)
-            {
-                newMatch.Team2Players = new List<Player>();
-                foreach (var aPlayerId in match.Team2PlayerIds)
-                {
-                    if (dbContext.Players != null)
-                    {
-                        var player = await dbContext.Players.SingleOrDefaultAsync(x => x.Id == aPlayerId);
-                        if (player != null)
-                            newMatch.Team2Players.Add(player);
-                    }
-                }
-            }
+            var newMatch = new Match();
+            newMatch.FromDto(match);
 
             if (dbContext.Matches == null)
                 return null;
@@ -373,7 +361,9 @@ namespace LeDi.Server.Api
 
                     if (match.MatchEvents != null)
                     {
-                        var timeSinceStart = match.HalftimeLength - match.CurrentTimeLeft + (match.CurrentHalftime -1) * match.HalftimeLength;
+                        var timeSinceStart = match.RuleHalftimeLength - match.CurrentTimeLeft + (match.CurrentHalftime -1) * match.RuleHalftimeLength;
+                        if (timeSinceStart < 0)
+                            timeSinceStart = 0;
 
                         match.MatchEvents.Add(new MatchEvent
                         {
@@ -518,7 +508,7 @@ namespace LeDi.Server.Api
         /// <param name="matchId"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        public async static Task<string> AddMatchPenalty(int matchId, DtoMatchPenalty dto)
+        public async static Task<string> NewMatchPenalty(int matchId, DtoMatchPenalty dto)
         {
             using var dbContext = new TwDbContext();
 
@@ -534,9 +524,16 @@ namespace LeDi.Server.Api
 
                 var pen = new MatchPenalty();
                 pen.FromDto(dto);
+                pen.MatchId = matchId;
 
-                await dbContext.MatchPenalties.AddAsync(pen);
+                dbContext.MatchPenalties.Add(pen);
                 await dbContext.SaveChangesAsync();
+
+                // Create the match event
+                if (dto.PlayerNumber != 0)
+                    await LogEvent(matchId, dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2, String.Format("Player {0} ({1}) got penalty \"{2}\"", dto.PlayerNumber, (dto.TeamId == 0 ? match.Team1Name : match.Team2Name), dto.PenaltyName) + (dto.PenaltyTime == 0 ? "" : " with " + dto.PenaltyTime + " seconds time penalty."));
+                else
+                    await LogEvent(matchId, dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2, String.Format("Team {0} got penalty \"{1}\"", (dto.TeamId == 0 ? match.Team1Name : match.Team2Name), dto.PenaltyName) + (dto.PenaltyTime == 0 ? "" : " with " + dto.PenaltyTime + " seconds time penalty."));
 
                 dto.Id = pen.Id;
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
@@ -607,6 +604,12 @@ namespace LeDi.Server.Api
                 pen.RevokeNote = revokeNote;
 
                 await dbContext.SaveChangesAsync();
+
+                // Create the match event
+                if (pen.PlayerNumber != 0)
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("Penalty \"{0}\" for Player {1} ({2}) revoked.", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                else
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("Penalty \"{0}\" for Team ({1}) revoked.", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
 
                 var dto = penalties.SingleOrDefault(x => x.Id == penaltyId);
                 if (dto == null)

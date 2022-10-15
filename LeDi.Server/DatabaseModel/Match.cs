@@ -84,28 +84,20 @@ namespace LeDi.Server.DatabaseModel
         public DateTime? ScheduledTime { get; set; }
 
         /// <summary>
-        /// The timestamps of matchevents (For Database)
+        /// The timestamps of matchevents
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
         public ICollection<MatchEvent> MatchEvents { get; set; } = new List<MatchEvent>();
 
-        ///// <summary>
-        ///// The event IDs for this Match (For API DTO)
-        ///// </summary>
-        //[NotMapped]
-        //public List<int>? MatchEventIds {
-        //    get { return  MatchEvents == null ? new List<int>() : MatchEvents.Select(x => x.Id).ToList(); }
-        //}
-
         /// <summary>
         /// The referees of the event
         /// </summary>
-        public List<MatchReferee>? MatchReferees { get; set; }
+        public List<MatchReferee> MatchReferees { get; set; } = new List<MatchReferee>();
 
         /// <summary>
         /// The Penalties that were raised in this match
         /// </summary>
-        public List<MatchPenalty>? MatchPenalties { get; set; }
+        public List<MatchPenalty> MatchPenalties { get; set; } = new List<MatchPenalty>();
 
         /// <summary>
         /// Converts the object to a DTO object
@@ -121,12 +113,19 @@ namespace LeDi.Server.DatabaseModel
                 Team1Name = Team1Name,
                 Team2Name = Team2Name,
                 TimeLeftSeconds = CurrentTimeLeft,
-                HalfTimeCurrent = CurrentHalftime,
-                HalfTimeCount = HalftimeCount,
+                HalftimeCurrent = CurrentHalftime,
                 MatchStatus = MatchStatus,
                 ScheduledTime = ScheduledTime,
                 Team1PlayerIds = Team1PlayerIds,
-                Team2PlayerIds = Team2PlayerIds
+                Team2PlayerIds = Team2PlayerIds,
+
+                RuleHalftimeCount = RuleHalftimeCount,
+                RuleHalftimeLength = RuleHalftimeLength,
+                RuleHalftimeLastPauseTimeOnEvent = RuleHalftimeLastPauseTimeOnEvent,
+                RuleHalftimeLastPauseTimeOnEventSeconds = RuleHalftimeLastPauseTimeOnEventSeconds,
+                RuleHalftimeOvertime = RuleHalftimeOvertime,
+                RuleMatchExtensionOnDraw = RuleMatchExtensionOnDraw
+                
             };
 
             if (MatchReferees != null)
@@ -135,6 +134,63 @@ namespace LeDi.Server.DatabaseModel
                 foreach (var aRef in MatchReferees)
                 {
                     dto.Referees.Add(aRef.ToDto());
+                }
+            }
+
+            // Set Rule Penalties
+            if (RulePenaltyList != null && RulePenaltyList.Count > 0)
+            {
+                dto.RulePenaltyList = new List<DtoRulePenalty>();
+                foreach (var aPenalty in RulePenaltyList)
+                {
+                    var dtoRs = new DtoRulePenalty()
+                    {                        
+                        Name = aPenalty.Name,
+                        PenaltySeconds = aPenalty.PenaltySeconds,
+                        TotalDismissal = aPenalty.TotalDismissal
+                    };
+                    
+                    if (aPenalty.Display != null && aPenalty.Display.Count > 0)
+                    {
+                        dtoRs.Display = new List<DtoDisplayText>();
+                        foreach(var aDisp in aPenalty.Display)
+                        {
+                            var dtoDisp = new DtoDisplayText()
+                            {
+                                Language = aDisp.Language,
+                                Text = aDisp.Text
+                            };
+                            
+                            dtoRs.Display.Add(dtoDisp);
+                        }
+                    }
+
+                    dto.RulePenaltyList.Add(dtoRs);
+                }
+            }
+
+
+            // Set Penalties
+            if (MatchPenalties != null && MatchPenalties.Count > 0)
+            {
+                dto.Penalties = new List<DtoMatchPenalty>();
+                foreach(var aMatchPenalty in MatchPenalties)
+                {
+                    var newDtoMp = new DtoMatchPenalty()
+                    {
+                        Id = aMatchPenalty.Id,
+                        Note = aMatchPenalty.Note,
+                        PenaltyTime = aMatchPenalty.PenaltyTime,
+                        PenaltyTimeStart = aMatchPenalty.PenaltyTimeStart,
+                        PlayerId = aMatchPenalty.PlayerId,
+                        PlayerName = aMatchPenalty.PlayerName,
+                        PlayerNumber = aMatchPenalty.PlayerNumber,
+                        Source = aMatchPenalty.Source,
+                        Timestamp = aMatchPenalty.Timestamp,
+                        TeamId = aMatchPenalty.TeamId,
+                        PenaltyName = aMatchPenalty.PenaltyName
+                    };
+                    dto.Penalties.Add(newDtoMp);
                 }
             }
 
@@ -148,16 +204,27 @@ namespace LeDi.Server.DatabaseModel
         public void FromDto(DtoMatch dto)
         {
             Id = dto.Id;
-            Team1Score = dto.Team1Score ?? 0;
-            Team2Score = dto.Team2Score ?? 0;
+            if (dto.Team1Score.HasValue)
+                Team1Score = dto.Team1Score.Value;
+            if (dto.Team2Score.HasValue)
+                Team2Score = dto.Team2Score.Value;
             Team1Name = dto.Team1Name;
             Team2Name = dto.Team2Name;
             CurrentTimeLeft = dto.TimeLeftSeconds;
-            CurrentHalftime = dto.HalfTimeCurrent;
-            HalftimeCount = dto.HalfTimeCount;
+            CurrentHalftime = dto.HalftimeCurrent;
             MatchStatus = dto.MatchStatus;
             ScheduledTime = dto.ScheduledTime;
-            GameName = dto.GameName;
+            GameName = dto.Gamename;
+            if (dto.RuleHalftimeLength.HasValue) 
+                RuleHalftimeLength = dto.RuleHalftimeLength.Value;            
+            if (dto.RuleHalftimeCount.HasValue) 
+                RuleHalftimeCount = dto.RuleHalftimeCount.Value;
+            RuleHalftimeLastPauseTimeOnEvent = dto.RuleHalftimeLastPauseTimeOnEvent;
+            if (dto.RuleHalftimeLastPauseTimeOnEventSeconds.HasValue)
+                RuleHalftimeLastPauseTimeOnEventSeconds = dto.RuleHalftimeLastPauseTimeOnEventSeconds.Value;
+            RuleHalftimeOvertime = dto.RuleHalftimeOvertime;
+            RuleMatchExtensionOnDraw = dto.RuleMatchExtensionOnDraw;
+
 
             // Get team 1 players from database by ID
             if (dto.Team1PlayerIds != null && dto.Team1PlayerIds.Count > 0)
@@ -215,6 +282,54 @@ namespace LeDi.Server.DatabaseModel
                         Clubname = aRef.Clubname,
                         Role = aRef.Role
                     });
+                }
+            }
+
+            // Get Rule Penalties
+            if (dto.RulePenaltyList != null && dto.RulePenaltyList.Count > 0)
+            {
+                RulePenaltyList = new List<MatchRuleSetPenalty>();
+                foreach(var aPenalty in dto.RulePenaltyList)
+                {
+                    var dbRs = new MatchRuleSetPenalty();
+                    dbRs.Name = aPenalty.Name;
+                    dbRs.TotalDismissal = aPenalty.TotalDismissal;
+                    dbRs.PenaltySeconds = aPenalty.PenaltySeconds;
+                    
+                    dbRs.Display = new List<MatchRuleSetDisplayText>();
+                    foreach (var aDisplay in aPenalty.Display)
+                    {
+                        var dbDisp = new MatchRuleSetDisplayText();
+                        dbDisp.Text = aDisplay.Text;
+                        dbDisp.Language = aDisplay.Language;
+                        dbRs.Display.Add(dbDisp);
+                    }
+
+                    RulePenaltyList.Add(dbRs);
+                }
+            }
+
+
+            // Get Penalties
+            if (dto.Penalties != null && dto.Penalties.Count > 0)
+            {
+                MatchPenalties = new List<MatchPenalty>();
+                foreach (var aPenalty in dto.Penalties)
+                {
+                    var dbPen = new MatchPenalty();
+                    dbPen.Id = aPenalty.Id;
+                    dbPen.PlayerId = aPenalty.PlayerId;
+                    dbPen.PlayerName = aPenalty.PlayerName;
+                    dbPen.PlayerNumber = aPenalty.PlayerNumber;
+                    dbPen.Note = aPenalty.Note;
+                    dbPen.Source = aPenalty.Source;
+                    dbPen.PenaltyTime = aPenalty.PenaltyTime;
+                    dbPen.PenaltyTimeStart = aPenalty.PenaltyTimeStart;
+                    dbPen.Timestamp = aPenalty.Timestamp;
+                    dbPen.TeamId = aPenalty.TeamId;
+                    dbPen.PenaltyName = aPenalty.PenaltyName;
+                                        
+                    MatchPenalties.Add(dbPen);
                 }
             }
         }

@@ -70,7 +70,7 @@ else if (SelectedMatchId != null)
                         <div>
                             <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
                             <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Halftime:</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.HalfTimeCurrent of @Match.HalfTimeCount</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.HalftimeCurrent of @Match.RuleHalftimeCount</a>
                         </div>
                     </div>
                 </div>
@@ -97,7 +97,34 @@ else if (SelectedMatchId != null)
                             >
                             Penalty Team 1
                         </a>
-                        <a class="text-decoration-none text-reset fs-3" >placeholder Penalties team1</a>
+                        <a class="text-decoration-none text-reset fs-4">
+                            <div class="container">                                
+                                @foreach(var aPenalty in Match.Penalties.Where(x => x.TeamId == 0))
+                                {
+                                    if (aPenalty.PenaltyTime > 0)
+                                    {
+                                        var timeleft = aPenalty.PenaltyTimeStart - Match.TimeLeftSeconds;
+
+                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                        {
+                                            if (timeleft < 0)
+                                                timeleft = 0;
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                </div>
+                                                <div class="col-10">
+                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                                
+                            </div>
+                            
+                        </a>
                     </div>
                 </div>
                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
@@ -116,9 +143,8 @@ else if (SelectedMatchId != null)
                             >
                             Penalty Team 2
                         </a>
-                        <a class="text-decoration-none text-reset fs-3">placeholder Penalties team2</a>
+                        <a class="text-decoration-none text-reset fs-4">@string.Join("<br />", Match.Penalties.Where(x => x.TeamId == 1).Select(x => x.PenaltyName))</a>
                     </div>
-                    
                 </div>
             </div>
 
@@ -237,7 +263,7 @@ else if (SelectedMatchId != null)
             <div class="row align-items-start" style="height:30vh; min-height:30vh;">
                 <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">
-                        <a class="fs-2">Match log:</a><br />
+                        <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
                         @if(MatchEventList == null) 
                         {
                             <a>No match events available.</a><br />
@@ -330,7 +356,8 @@ else
 
     bool PenaltyPlayerDialogOpen = false; // Is the modal dialog for playernumber for penalties of team 1 opened?
     bool PenaltyPenaltyDialogOpen = false; //Is the modal dialog for the penalty for penalties of team 1 opened?
-    int PenaltyId = -1; //The ID (0 = Team 1, 1 = Team 2) of the team the currently selecting penalty is for.
+    int PenaltyTeamId = -1; //The ID (0 = Team 1, 1 = Team 2) of the team the currently selecting penalty is for.
+    int PenaltyPlayerNumber = -1; //The Playernumber that get the penalty
     List<int> PenaltyPlayerNumbers = new List<int>(); // The playernumbers of a team. Null or empty in case the number should be entered in the modal dialog.
     List<string> PenaltyList = new List<string>(); // The list of penalties the referee can choose for the previously selected player (or team)
 
@@ -361,7 +388,7 @@ else
 
     private async void PenaltyTeam1Clicked()
     {
-        PenaltyId = 0;
+        PenaltyTeamId = 0;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
         PenaltyPlayerDialogOpen = true;
         await InvokeAsync(() => { StateHasChanged(); });
@@ -369,7 +396,7 @@ else
 
     private async void PenaltyTeam2Clicked()
     {
-        PenaltyId = 1;
+        PenaltyTeamId = 1;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
         PenaltyPlayerDialogOpen = true;
         await InvokeAsync(() => { StateHasChanged(); });
@@ -381,30 +408,74 @@ else
 
         if (playerId >= 0)
         {
+            PenaltyPlayerNumber = playerId;
+
             // 0 = the penalty is for the team. All others are for the given player number.
-            PenaltyList = Match.PenaltyList
+            PenaltyList = Match.RulePenaltyList
                             .SelectMany(x => x.Display)
                             .Where(x => x.Language == "EN")
                             .Select(x => x.Text)
                             .ToList();
-            
+
 
             //Ask for the penalty
             PenaltyPenaltyDialogOpen = true;
         }
         else
         {   
-            PenaltyId = -1; // Reset penaltyId for the next penalty
+            PenaltyTeamId = -1; // Reset penaltyId for the next penalty
         }
 
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
     private async void OnPenaltyPenaltyClose(string penalty)
-    {   
-        PenaltyId = -1; // Reset penaltyId for the next penalty
+    {
+        var languageCode = "EN"; // This will be the users language code when localization is being implemented
+        var customPenalty = false;
+
+        // Get the penalty from the rule list
+        var penaltyObj = Match.RulePenaltyList.SingleOrDefault(x => x.Display.Any(y => y.Language == languageCode && y.Text == penalty));
+        if (penaltyObj == null)
+        {
+            Console.WriteLine("The selected penalty is cannot be identified by the text \"" + penalty + "\". Expecting it is a custom penalty. Time penalties need to be added seperately.");
+            customPenalty = true;
+        }
+
+        // Create the new penalty object
+        var newPenalty = new DtoMatchPenalty();
+        newPenalty.PlayerNumber = PenaltyPlayerNumber;
+        newPenalty.PenaltyTimeStart = (Match.RuleHalftimeLength ?? 0) - Match.TimeLeftSeconds;
+        newPenalty.Note = string.Format("Penalty \"{0}\" given to player number {1} of {2}", penalty, PenaltyPlayerNumber, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
+        newPenalty.TeamId = PenaltyTeamId;
+        newPenalty.Timestamp = DateTime.Now;
+
+        if (!customPenalty && penaltyObj != null) // the null check is not required but the null check compiler wants it.
+        {
+            newPenalty.PenaltyTime = penaltyObj.PenaltySeconds;
+            newPenalty.PenaltyName = penaltyObj.Display.Single(x => x.Language == "EN").Text; // The internal name is always the English name
+        }
+        else
+        {
+            newPenalty.PenaltyName = penalty;
+        }
+
+        // it is a team penalty
+        if (PenaltyPlayerNumber == 0) 
+        {
+            newPenalty.Note = string.Format("Penalty \"{0}\" given to team {1}", penalty, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
+        }
+
+        // Register the penalty
+        await Api.AddMatchPenalty(Match.Id, newPenalty);
+
+        // Reset all values and hide dialog
+        PenaltyPlayerNumber = -1;
+        PenaltyTeamId = -1; 
         PenaltyPenaltyDialogOpen = false;
-        await InvokeAsync(() => { StateHasChanged(); });
+
+        // Reload match details (and UI)
+        await LoadMatch();
     }
 
     /// <summary>
@@ -431,7 +502,7 @@ else
         PauseButtonDisabled = false;
 
         // Update match object to the current status
-        Match = await Api.GetMatchAsync(Match.Id) ?? Match;
+        Match = await Api.GetMatchFullAsync(Match.Id) ?? Match;
 
         // Set the LastKnownMatchHash to the current status
         var matchCore = await Api.GetMatchCoreAsync(Match.Id);
@@ -475,7 +546,13 @@ else
             var newMatchInfo = await Api.GetMatchAsync(Match.Id);
             if (newMatchInfo != null) {
                 Console.WriteLine("Updated Match infos.");
-                Match = newMatchInfo;
+                
+                // Update only the fields but not the whole Match object to do not flush the rules
+                Match.HalftimeCurrent = newMatchInfo.HalftimeCurrent;
+                Match.RuleHalftimeCount = newMatchInfo.RuleHalftimeCount;
+                Match.MatchStatus = newMatchInfo.MatchStatus;
+                Match.TimeLeftSeconds = newMatchInfo.TimeLeftSeconds;
+
                 LastKnownMatchHash = matchCore.PropertyHash;
             }            
             await LoadMatchEvents();
@@ -494,7 +571,7 @@ else
                 PauseButtonDisabled = true;
 
                 // If this is not the last halftime, show the start button to start the next halftime
-                if (Match.HalfTimeCurrent != Match.HalfTimeCount)
+                if (Match.HalftimeCurrent != Match.RuleHalftimeCount)
                 {
                     StartButtonDisabled = false;
                     PrepareHalftimeButtonDisabled = false;
@@ -577,7 +654,7 @@ else
         if (SelectedMatchId == null)
             return;
 
-        Match = (await Api.GetMatchAsync(SelectedMatchId.Value)) ?? new DtoMatch() { Id = 0 };
+        Match = (await Api.GetMatchFullAsync(SelectedMatchId.Value)) ?? new DtoMatch() { Id = 0 };
         if (Match.Id == 0)
             return;
 
@@ -627,7 +704,7 @@ else
         }
 
         //Check if there is another halftime
-        if (Match.HalfTimeCurrent < Match.HalfTimeCount)
+        if (Match.HalftimeCurrent < Match.RuleHalftimeCount)
         {
             PrepareHalftimeButtonDisabled = true;
 
@@ -650,7 +727,7 @@ else
             return;
 
         // The last halftime must be over
-        if (Match.HalfTimeCurrent != Match.HalfTimeCount && Match.TimeLeftSeconds == 0)
+        if (Match.HalftimeCurrent != Match.RuleHalftimeCount && Match.TimeLeftSeconds == 0)
             return;
 
         await Api.SetMatchStatusAsync(Match.Id, (int)MatchStatusEnum.Closed);

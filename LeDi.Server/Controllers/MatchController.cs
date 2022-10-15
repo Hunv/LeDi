@@ -55,6 +55,22 @@ namespace LeDi.Server.Controllers
         }
 
         /// <summary>
+        /// Gets all Matches
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{matchId}/full")]
+        public IActionResult GetMatchFull(int matchId)
+        {
+            _logger.LogDebug("{0}: Get MatchFull {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+
+            var json = Api.ApiMatch.GetMatchFull(matchId);
+            var result = new OkObjectResult(json);
+
+            _logger.LogDebug("{0}: Got MatchFull ID {1} JSON {2}", Request.HttpContext.Connection.RemoteIpAddress, matchId, json);
+            return result;
+        }
+
+        /// <summary>
         /// Gets the remaining seconds only
         /// </summary>
         /// <returns></returns>
@@ -285,7 +301,7 @@ namespace LeDi.Server.Controllers
         {
             _logger.LogDebug("{0}: Set MatchPenalty to {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            var dto = await Api.ApiMatch.AddMatchPenalty(matchId, penalty);
+            var dto = await Api.ApiMatch.NewMatchPenalty(matchId, penalty);
 
             _logger.LogDebug("{0}: Set MatchPenalty to ID {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkObjectResult(dto);

@@ -73,16 +73,10 @@ namespace LeDi.Shared.DtoModel
         public List<int>? Team2PlayerIds { get; set; }
 
         /// <summary>
-        /// Number of Halftimes
-        /// </summary>
-        [Range(1, int.MaxValue, ErrorMessage = "The number of halftimes must be 1 or larger")]
-        public int HalfTimeCount { get; set; }
-
-        /// <summary>
         /// Current number of Halftime
         /// </summary>
         [Range(0, int.MaxValue, ErrorMessage = "The current halftime must be 0 or more")]
-        public int HalfTimeCurrent { get; set; }
+        public int HalftimeCurrent { get; set; }
 
         /// <summary>
         /// List of referees for this match
