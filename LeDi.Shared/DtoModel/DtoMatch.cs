@@ -28,27 +28,27 @@ namespace LeDi.Shared.DtoModel
         /// <summary>
         /// Name of Team1
         /// </summary>
-        [MaxLength(256, ErrorMessage = "Der Name kann höchstens aus 256 Zeichen bestehen.")]
-        [MinLength(2, ErrorMessage = "Der Name muss mindestens aus zwei Zeichen bestehen.")]
-        [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen.")]
+        [MaxLength(256, ErrorMessageResourceName = "NameLengthErrorMax", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        [MinLength(2, ErrorMessageResourceName = "NameLengthErrorMin", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        [RegularExpression(@"^[\w\säüößÄÜÖẞ]*$", ErrorMessageResourceName = "NameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string? Team1Name { get; set; }
-
+        
         /// <summary>
         /// Name of Team2
         /// </summary>
-        [MaxLength(256, ErrorMessage = "Der Name kann höchstens aus 256 Zeichen bestehen.")]
-        [MinLength(2, ErrorMessage = "Der Name muss mindestens aus zwei Zeichen bestehen.")]
-        [RegularExpression(@"^[a-zA-Z0-9\s-äüößÄÜÖ\.]*$", ErrorMessage = "Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen.")]
+        [MaxLength(256, ErrorMessageResourceName = "NameLengthErrorMax", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        [MinLength(2, ErrorMessageResourceName = "NameLengthErrorMin", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        [RegularExpression(@"^[\w\säüößÄÜÖẞ]*$", ErrorMessageResourceName = "NameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string? Team2Name { get; set; }
 
         /// <summary>
         /// Time left
         /// </summary>
-        [Range(0,int.MaxValue,ErrorMessage = "Die Zeit muss größer als 0 Sekunden sein.")]
+        [Range(0,int.MaxValue, ErrorMessageResourceName = "TimeMoreThanZero", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        
         public int TimeLeftSeconds { get; set; }
-
         /// <summary>
         /// Only for Livematches: The current status of the Match (see EnumMatchStatus for ID resolution)
         /// </summary>
@@ -75,9 +75,9 @@ namespace LeDi.Shared.DtoModel
         /// <summary>
         /// Current number of Halftime
         /// </summary>
-        [Range(0, int.MaxValue, ErrorMessage = "The current halftime must be 0 or more")]
+        [Range(0, int.MaxValue, ErrorMessageResourceName = "CurrentHalftimeMoreThanZero", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         public int HalftimeCurrent { get; set; }
-
+        
         /// <summary>
         /// List of referees for this match
         /// </summary>

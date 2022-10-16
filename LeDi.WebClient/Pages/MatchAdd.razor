@@ -2,6 +2,7 @@
 @using LeDi.Shared.DtoModel
 @inject LeDi.Shared.Api Api
 @inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
 <PageTitle>LeDi - New match</PageTitle>
 @if (NewMatch == null)
@@ -11,8 +12,8 @@
 else
 {
     <EditForm Model="@NewMatch" OnValidSubmit="@SaveMatch">
-    @*    <DataAnnotationsValidator />
-        <ValidationSummary />*@
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
         <a>Select type of sport</a>
         <InputSelect id="cmbGamename" class="form-control" @bind-Value="SelectedGamename">

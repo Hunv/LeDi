@@ -25,4 +25,27 @@
     <ProjectReference Include="..\LeDi.Shared\LeDi.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Components\" />
+    <Folder Include="Resources\Shared\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Pages\MatchAdd.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MatchAdd.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Pages\MatchAdd.de-DE.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Pages\MatchAdd.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MatchAdd.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
