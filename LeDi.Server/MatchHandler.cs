@@ -60,6 +60,7 @@ namespace LeDi.Server
                         (MatchRules.Rules == null || MatchRules.Rules.RuleHalftimeOvertime == false)
                         )
                     {
+                        await LogEvent(MatchId, MatchEventEnum.HalftimeEnd, "Halftime over.");
                         Stop();
                     }
                     else
@@ -114,8 +115,6 @@ namespace LeDi.Server
         public void Stop()
         {
             tmrMatchtimer.Stop();
-            //ReferenceSystemTime = null;
-            //await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
         }
 
         /// <summary>
@@ -127,6 +126,7 @@ namespace LeDi.Server
             ReferenceSystemTime = null;
             await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
             tmrDisposeTimer.Start();
+            await LogEvent(MatchId, MatchEventEnum.MatchFinished, "Match finished by the main referee.");
         }
 
         /// <summary>
@@ -191,6 +191,44 @@ namespace LeDi.Server
         protected virtual void OnDisposeMatchhandler(EventArgs e)
         {
             DisposeMatchHandler?.Invoke(this, e);
+        }
+
+
+        /// <summary>
+        /// Logs an event match
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="matchEvent"></param>
+        /// <param name="matchText"></param>
+        /// <returns></returns>
+        private static async Task LogEvent(int matchId, MatchEventEnum matchEvent, string matchText)
+        {
+            using var dbContext = new TwDbContext();
+            if (dbContext.Matches != null)
+            {
+                var match = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
+                if (match != null)
+                {
+                    if (match.MatchEvents == null)
+                        match.MatchEvents = new List<MatchEvent>();
+
+                    if (match.MatchEvents != null)
+                    {
+                        var timeSinceStart = match.RuleHalftimeLength - match.CurrentTimeLeft + (match.CurrentHalftime - 1) * match.RuleHalftimeLength;
+                        if (timeSinceStart < 0)
+                            timeSinceStart = 0;
+
+                        match.MatchEvents.Add(new MatchEvent
+                        {
+                            Event = matchEvent,
+                            Text = matchText,
+                            Timestamp = DateTime.Now,
+                            Matchtime = timeSinceStart
+                        });
+                        await dbContext.SaveChangesAsync();
+                    }
+                }
+            }
         }
     }
 }

@@ -120,29 +120,26 @@
                         <div class="row">
                             <div class="col-12">
                                 <div style="height:100%; min-height:100%;" class="p-1">
-                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetPlayernumber(0))" role="button">Team Penalty</a>
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetTeampenalty())" role="button">Team Penalty</a>
                                 </div>
                             </div>
                         </div>
-                    }                    
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <EditForm Model="SelectedPlayerNumber">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-6">
-                                <InputNumber id="txtPlayerNumber" class="form-control" @bind-Value="@SelectedPlayerNumber" />
-                            </div>
-                            <div class="col-6">
-                                <button type="button" class="btn btn-outline-primary" @onclick="@ModalCancel">Cancel</button>
-                                <button type="submit" class="btn btn-primary" @onclick=@ModalOk>OK</button>
+                    }
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <EditForm Model="SelectedPlayerNumber">
+                                    <a class="fs-3 text-decoration-none text-reset">Playernumber:</a>
+                                    <InputNumber id="txtPlayerNumber" class="form-control" @bind-Value="@SelectedPlayerNumber" />
+                                    <br />
+                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>OK</button>                                        
+                                    <br /><br />
+                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">Cancel</button>
+                                </EditForm>
                             </div>
                         </div>
                     </div>
-                    @*<button type="button" class="btn btn-primary" @onclick=@ModalOk>OK</button>*@
-                </EditForm>
+                </div>
             </div>
         </div>
     </div>
@@ -197,11 +194,17 @@
         if (strNumber.Length > 0)
         {
             strNumber = strNumber.Substring(0, strNumber.Length - 1);
-            
+
             if (string.IsNullOrEmpty(strNumber))
                 strNumber = "0";
         }
         SelectedPlayerNumber = Convert.ToInt32(strNumber);
         StateHasChanged();
+    }
+
+    private Task SetTeampenalty()
+    {
+        SetPlayernumber(0);
+        return ModalOk();
     }
 }

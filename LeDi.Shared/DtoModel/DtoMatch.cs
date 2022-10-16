@@ -89,5 +89,17 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public List<DtoMatchPenalty> Penalties { get; set; } = new List<DtoMatchPenalty>();
+
+        /// <summary>
+        /// Contains the current match minute. Calculated by halftimelength, timeleft and current halftime
+        /// </summary>
+        [JsonIgnore]
+        public int MatchMinute
+        {
+            get
+            {
+                return (RuleHalftimeLength ?? 0) - TimeLeftSeconds + ((HalftimeCurrent - 1) * (RuleHalftimeLength ?? 0));
+            }
+        }
     }
 }

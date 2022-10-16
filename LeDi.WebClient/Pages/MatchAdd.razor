@@ -309,6 +309,7 @@ else
         // Set Default values based on rules
         NewMatch.RuleHalftimeCount = NewMatch.RuleHalftimeCount ?? 2; //Note: RuleHalftimeCount cannot be null here because it is already set to 2 in case it is null above
         NewMatch.TimeLeftSeconds = NewMatch.RuleHalftimeLength ?? 600;
+        NewMatch.ScheduledTime = DateTime.Now;
 
         await InvokeAsync(() => { StateHasChanged(); });
     }
@@ -329,7 +330,8 @@ else
                 Team1Name = "Team1",
                 Team2Name = "Team2",
                 TimeLeftSeconds = 10,
-                RuleHalftimeCount = 2
+                RuleHalftimeCount = 2,
+                ScheduledTime = DateTime.Now
             };
         return newMatch;
     }

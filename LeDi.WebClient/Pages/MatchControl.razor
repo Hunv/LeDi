@@ -60,7 +60,7 @@ else if (SelectedMatchId != null)
                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <div>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
+                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
                             <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
                         </div>
                     </div>
@@ -77,7 +77,7 @@ else if (SelectedMatchId != null)
                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <div>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
+                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
                             <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
                         </div>
                     </div>
@@ -95,15 +95,15 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@PenaltyTeam1Clicked"
                             >
-                            Penalty Team 1
+                            Log Penalty
                         </a>
-                        <a class="text-decoration-none text-reset fs-4">
+                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
                             <div class="container">                                
                                 @foreach(var aPenalty in Match.Penalties.Where(x => x.TeamId == 0))
                                 {
                                     if (aPenalty.PenaltyTime > 0)
                                     {
-                                        var timeleft = aPenalty.PenaltyTimeStart - Match.TimeLeftSeconds;
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
 
                                         if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                         {
@@ -121,9 +121,7 @@ else if (SelectedMatchId != null)
                                         }
                                     }
                                 }
-                                
                             </div>
-                            
                         </a>
                     </div>
                 </div>
@@ -141,7 +139,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@PenaltyTeam2Clicked"
                             >
-                            Penalty Team 2
+                            Log Penalty
                         </a>
                         <a class="text-decoration-none text-reset fs-4">@string.Join("<br />", Match.Penalties.Where(x => x.TeamId == 1).Select(x => x.PenaltyName))</a>
                     </div>
@@ -159,7 +157,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@IncrementCountTeam1Clicked"
                             >
-                            Score Team 1
+                            Score
                         </a>                        
                         <a 
                             style="display:block; width:100%; min-height:5%; display:flex; align-items:center; justify-content:center;">
@@ -171,7 +169,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@DecreaseCountTeam1Clicked"
                             >
-                            Revoke Team 1
+                            Revoke Score
                         </a>
                     </div>
                 </div>
@@ -240,7 +238,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@IncrementCountTeam2Clicked"
                             >
-                            Score Team 2
+                            Score
                         </a>
                         <a 
                             style="display:block; width:100%; min-height:5%; display:flex; align-items:center; justify-content:center;">
@@ -252,7 +250,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@DecreaseCountTeam2Clicked"
                             >
-                            Revoke Team 2
+                            Revoke Score
                         </a>
                     </div>
                 </div>
@@ -272,15 +270,15 @@ else if (SelectedMatchId != null)
                         {
                             <div class="container-fluid">
                                 <div class="row">
-                                    <div class="col-1">
+                                    @*<div class="col-1 text-nowrap">
                                         <b>#</b>
-                                    </div>
-                                    <div class="col-1">
+                                    </div>*@
+                                    <div class="col-1 text-nowrap">
                                         <b>Matchtime</b>
-                                    </div>
-                                    <div class="col-2">
+                                    </div>@*
+                                    <div class="col-1 text-nowrap">
                                         <b>Creator</b>
-                                    </div>
+                                    </div>*@
                                     <div class="col-auto">
                                         <b>Note</b>
                                     </div>
@@ -289,15 +287,15 @@ else if (SelectedMatchId != null)
                                 @foreach(var aEvent in MatchEventList.Reverse<DtoMatchEvent>())
                                 {
                                     <div class="row justify-content-start">                    
-                                        <div class="col-1">
+                                        @*<div class="col-1 text-nowrap">
                                             @aEvent.Event
-                                        </div>
-                                        <div class="col-1">
+                                        </div>*@
+                                        <div class="col-1 text-nowrap">
                                             @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
-                                        </div>
-                                        <div class="col-2">
+                                        </div>@*
+                                        <div class="col-1 text-nowrap">
                                             @(aEvent.Source ?? "System")
-                                        </div>
+                                        </div>*@
                                         <div class="col-auto">
                                             @aEvent.Text
                                         </div>
@@ -429,45 +427,52 @@ else
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
+    /// <summary>
+    /// Executed when the dialog to select the penalty closes.
+    /// </summary>
+    /// <param name="penalty"></param>
     private async void OnPenaltyPenaltyClose(string penalty)
     {
-        var languageCode = "EN"; // This will be the users language code when localization is being implemented
-        var customPenalty = false;
-
-        // Get the penalty from the rule list
-        var penaltyObj = Match.RulePenaltyList.SingleOrDefault(x => x.Display.Any(y => y.Language == languageCode && y.Text == penalty));
-        if (penaltyObj == null)
+        if (penalty != null && penalty != "")
         {
-            Console.WriteLine("The selected penalty is cannot be identified by the text \"" + penalty + "\". Expecting it is a custom penalty. Time penalties need to be added seperately.");
-            customPenalty = true;
-        }
+            var languageCode = "EN"; // This will be the users language code when localization is being implemented
+            var customPenalty = false;
 
-        // Create the new penalty object
-        var newPenalty = new DtoMatchPenalty();
-        newPenalty.PlayerNumber = PenaltyPlayerNumber;
-        newPenalty.PenaltyTimeStart = (Match.RuleHalftimeLength ?? 0) - Match.TimeLeftSeconds;
-        newPenalty.Note = string.Format("Penalty \"{0}\" given to player number {1} of {2}", penalty, PenaltyPlayerNumber, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
-        newPenalty.TeamId = PenaltyTeamId;
-        newPenalty.Timestamp = DateTime.Now;
+            // Get the penalty from the rule list
+            var penaltyObj = Match.RulePenaltyList.SingleOrDefault(x => x.Display.Any(y => y.Language == languageCode && y.Text == penalty));
+            if (penaltyObj == null)
+            {
+                Console.WriteLine("The selected penalty is cannot be identified by the text \"" + penalty + "\". Expecting it is a custom penalty. Time penalties need to be added seperately.");
+                customPenalty = true;
+            }
 
-        if (!customPenalty && penaltyObj != null) // the null check is not required but the null check compiler wants it.
-        {
-            newPenalty.PenaltyTime = penaltyObj.PenaltySeconds;
-            newPenalty.PenaltyName = penaltyObj.Display.Single(x => x.Language == "EN").Text; // The internal name is always the English name
-        }
-        else
-        {
-            newPenalty.PenaltyName = penalty;
-        }
+            // Create the new penalty object
+            var newPenalty = new DtoMatchPenalty();
+            newPenalty.PlayerNumber = PenaltyPlayerNumber;
+            newPenalty.PenaltyTimeStart = Match.MatchMinute;
+            newPenalty.Note = string.Format("Penalty \"{0}\" given to player number {1} of {2}", penalty, PenaltyPlayerNumber, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
+            newPenalty.TeamId = PenaltyTeamId;
+            newPenalty.Timestamp = DateTime.Now;
 
-        // it is a team penalty
-        if (PenaltyPlayerNumber == 0) 
-        {
-            newPenalty.Note = string.Format("Penalty \"{0}\" given to team {1}", penalty, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
-        }
+            if (!customPenalty && penaltyObj != null) // the null check is not required but the null check compiler wants it.
+            {
+                newPenalty.PenaltyTime = penaltyObj.PenaltySeconds;
+                newPenalty.PenaltyName = penaltyObj.Display.Single(x => x.Language == "EN").Text; // The internal name is always the English name
+            }
+            else
+            {
+                newPenalty.PenaltyName = penalty;
+            }
 
-        // Register the penalty
-        await Api.AddMatchPenalty(Match.Id, newPenalty);
+            // it is a team penalty
+            if (PenaltyPlayerNumber == 0)
+            {
+                newPenalty.Note = string.Format("Penalty \"{0}\" given to team {1}", penalty, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
+            }
+
+            // Register the penalty
+            await Api.AddMatchPenalty(Match.Id, newPenalty);
+        }
 
         // Reset all values and hide dialog
         PenaltyPlayerNumber = -1;

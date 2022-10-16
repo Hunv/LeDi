@@ -33,5 +33,8 @@
         PenaltyTeam2 = 211,
         PenaltyTeam1Revoke = 220,
         PenaltyTeam2Revoke = 221,
+
+        //Range 300-399 Postmatch handling
+        MatchFinished = 300
     }
 }
