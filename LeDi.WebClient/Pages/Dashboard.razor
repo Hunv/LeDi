@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
 @page "/dashboard/{Id:int}"
 @using LeDi.Shared.DtoModel
+@using LeDi.Shared.Enum
 @using LeDi.WebClient.Components
 @inject LeDi.Shared.Api Api
 @inject NavigationManager NavigationManager
@@ -9,22 +10,155 @@
 
 @if (Match != null)
 {
-    <h1 class="text-center text-responsive">@Match.Team1Name vs. @Match.Team2Name</h1>
-    <h1 class="text-center text-responsiveXL">@Match.Team1Score : @Match.Team2Score</h1>
-    <br />
-    <br />
-    <h1 class="text-center">Time left:</h1>
-    <h1 class="text-center text-responsive">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</h1>
+        <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
+            @*Row 1: Time, Scores*@
+            <div class="row align-items-start" style="height:20vh; min-height:20vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
+                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Halftime:</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.HalftimeCurrent of @Match.RuleHalftimeCount</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
+                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <br />
-    <br />
+            @*Row 2: Penalties*@
+            <div class="row align-items-start" style="height:15vh; min-height:10vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                            <div class="container">                                
+                                @foreach(var aPenalty in Match.Penalties.Where(x => x.TeamId == 0))
+                                {
+                                    if (aPenalty.PenaltyTime > 0)
+                                    {
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
 
-    <a>Goals:</a><br />
-    <a>4 - Heiner Bego (2:31)      1 - Lin Kebazille (1:02)</a><br />
-    <a>8 - Jan Täuscher (4:21)</a><br />
-    <br />
-    <a>Penalties:</a><br />
-    <a>- none -                    12 - Nathan Walker (0:23)</a><br />
+                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                        {
+                                            if (timeleft < 0)
+                                                timeleft = 0;
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                </div>
+                                                <div class="col-10">
+                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                            <div class="container">                                
+                                @foreach(var aPenalty in Match.Penalties.Where(x => x.TeamId == 1))
+                                {
+                                    if (aPenalty.PenaltyTime > 0)
+                                    {
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
+
+                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                        {
+                                            if (timeleft < 0)
+                                                timeleft = 0;
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                </div>
+                                                <div class="col-10">
+                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @*Row 4: Matchlog*@
+            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+                <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1 fs-3">
+                        <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
+                        @if (MatchEventList == null || MatchEventList.Count == 0) 
+                        {
+                            <a>Currently no match events.</a><br />
+                        }
+                        else
+                        {
+                            <div class="container-fluid">
+                                <div class="row">
+                                    @*<div class="col-1 text-nowrap">
+                                        <b>#</b>
+                                    </div>*@
+                                    <div class="col-1 text-nowrap" style="min-width:100px;">
+                                        <b>Time</b>
+                                    </div>@*
+                                    <div class="col-1 text-nowrap">
+                                        <b>Creator</b>
+                                    </div>*@
+                                    <div class="col-auto">
+                                        <b>Note</b>
+                                    </div>
+                                </div>
+         
+                                @foreach(var aEvent in MatchEventList.Reverse<DtoMatchEvent>())
+                                {
+                                    <div class="row justify-content-start">                    
+                                        @*<div class="col-1 text-nowrap">
+                                            @aEvent.Event
+                                        </div>*@
+                                        <div class="col-1 text-nowrap" style="min-width:100px;">
+                                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
+                                        </div>@*
+                                        <div class="col-1 text-nowrap">
+                                            @(aEvent.Source ?? "System")
+                                        </div>*@
+                                        <div class="col-auto">
+                                            @aEvent.Text
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
 }
 else if (LiveMatchList != null)
 {
@@ -65,6 +199,7 @@ else {
     IEnumerable<DtoMatch>? LiveMatchList = null;
     System.Timers.Timer tmrUpdate = new System.Timers.Timer();
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
+    List<DtoMatchEvent>? MatchEventList = null; //List of all match events
 
     [Parameter]
     public int? Id { get; set; }
@@ -74,6 +209,7 @@ else {
         if (Id != null)
         {
             Match = await Api.GetMatchAsync(Id.Value);
+            MatchEventList = await Api.GetMatchEvents(Id.Value);
         }
         else if (Id == null)
         {
@@ -158,7 +294,8 @@ else {
                     return;
 
                 Match = updatedData;
-                
+                MatchEventList = await Api.GetMatchEvents(Match.Id);
+
                 //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
                 if (Match.TimeLeftSeconds - updatedData.TimeLeftSeconds > 1 ||
                     Match.TimeLeftSeconds - updatedData.TimeLeftSeconds < 1)
@@ -175,6 +312,9 @@ else {
         }
         else //Update all matches
         {
+            // Reset matcheventlist because it may belong to another match
+            MatchEventList = null;
+
             // Get the ongoing matches
             var updatedData = (await Api.GetMatchListAsync()).Where(x => x.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Running);
 

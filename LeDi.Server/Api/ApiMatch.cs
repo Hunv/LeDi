@@ -531,9 +531,32 @@ namespace LeDi.Server.Api
 
                 // Create the match event
                 if (dto.PlayerNumber != 0)
-                    await LogEvent(matchId, dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2, String.Format("Player {0} ({1}) got penalty \"{2}\"", dto.PlayerNumber, (dto.TeamId == 0 ? match.Team1Name : match.Team2Name), dto.PenaltyName) + (dto.PenaltyTime == 0 ? "" : " with " + dto.PenaltyTime + " seconds time penalty."));
+                {
+                    //await LogEvent(matchId, dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2, String.Format("Player {0} ({1}) got penalty \"{2}\"", dto.PlayerNumber, (dto.TeamId == 0 ? match.Team1Name : match.Team2Name), dto.PenaltyName) + (dto.PenaltyTime == 0 ? "" : " with " + dto.PenaltyTime + " seconds time penalty."));
+                    await LogEvent(
+                        matchId,
+                        dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2,
+                        string.Format(
+                            "{2} for player #{0} ({1})",
+                            dto.PlayerNumber,
+                            (dto.TeamId == 0 ? match.Team1Name : match.Team2Name),
+                            dto.PenaltyName
+                        )
+                    );
+                }
                 else
-                    await LogEvent(matchId, dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2, String.Format("Team {0} got penalty \"{1}\"", (dto.TeamId == 0 ? match.Team1Name : match.Team2Name), dto.PenaltyName) + (dto.PenaltyTime == 0 ? "" : " with " + dto.PenaltyTime + " seconds time penalty."));
+                {
+                    //await LogEvent(matchId, dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2, string.Format("Team {0} got penalty \"{1}\"", (dto.TeamId == 0 ? match.Team1Name : match.Team2Name), dto.PenaltyName) + (dto.PenaltyTime == 0 ? "" : " with " + dto.PenaltyTime + " seconds time penalty."));
+                    await LogEvent(
+                        matchId,
+                        dto.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2,
+                        string.Format(
+                            "{1} for team {0}",
+                            (dto.TeamId == 0 ? match.Team1Name : match.Team2Name),
+                            dto.PenaltyName
+                        )
+                    );
+                }
 
                 dto.Id = pen.Id;
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
@@ -607,9 +630,9 @@ namespace LeDi.Server.Api
 
                 // Create the match event
                 if (pen.PlayerNumber != 0)
-                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("Penalty \"{0}\" for Player {1} ({2}) revoked.", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("{0} for Player {1} ({2}) revoked.", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
                 else
-                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("Penalty \"{0}\" for Team ({1}) revoked.", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("{0} for Team ({1}) revoked.", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
 
                 var dto = penalties.SingleOrDefault(x => x.Id == penaltyId);
                 if (dto == null)

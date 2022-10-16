@@ -140,8 +140,33 @@ else if (SelectedMatchId != null)
                             @onclick="@PenaltyTeam2Clicked"
                             >
                             Log Penalty
+                        </a>                        
+                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                            <div class="container">                                
+                                @foreach(var aPenalty in Match.Penalties.Where(x => x.TeamId == 1))
+                                {
+                                    if (aPenalty.PenaltyTime > 0)
+                                    {
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
+
+                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                        {
+                                            if (timeleft < 0)
+                                                timeleft = 0;
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                </div>
+                                                <div class="col-10">
+                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
                         </a>
-                        <a class="text-decoration-none text-reset fs-4">@string.Join("<br />", Match.Penalties.Where(x => x.TeamId == 1).Select(x => x.PenaltyName))</a>
                     </div>
                 </div>
             </div>
