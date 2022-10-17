@@ -30,7 +30,7 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [MaxLength(256, ErrorMessageResourceName = "NameLengthErrorMax", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         [MinLength(2, ErrorMessageResourceName = "NameLengthErrorMin", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
-        [RegularExpression(@"^[\w\säüößÄÜÖẞ]*$", ErrorMessageResourceName = "NameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        [RegularExpression(@"^[\w\säüößÄÜÖẞ\s-_\.\+]*$", ErrorMessageResourceName = "NameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string? Team1Name { get; set; }
         
@@ -39,7 +39,7 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [MaxLength(256, ErrorMessageResourceName = "NameLengthErrorMax", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         [MinLength(2, ErrorMessageResourceName = "NameLengthErrorMin", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
-        [RegularExpression(@"^[\w\säüößÄÜÖẞ]*$", ErrorMessageResourceName = "NameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        [RegularExpression(@"^[\w\säüößÄÜÖẞ\s-_\.\+]*$", ErrorMessageResourceName = "NameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string? Team2Name { get; set; }
 

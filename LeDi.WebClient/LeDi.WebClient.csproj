@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Classes\" />
     <Folder Include="Resources\Components\" />
     <Folder Include="Resources\Shared\" />
   </ItemGroup>

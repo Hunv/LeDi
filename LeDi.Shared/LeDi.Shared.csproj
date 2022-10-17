@@ -11,6 +11,31 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Resources\DtoModel\DtoSetting.Designer.cs">
+      <DependentUpon>DtoSetting.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\DtoModel\DtoDeviceSetting.Designer.cs">
+      <DependentUpon>DtoDeviceSetting.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\DtoModel\DtoDevice.Designer.cs">
+      <DependentUpon>DtoDevice.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\DtoModel\DtoDeviceCommand.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DtoDeviceCommand.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\DtoModel\DtoMatchReferee.Designer.cs">
+      <DependentUpon>DtoMatchReferee.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Resources\DtoModel\DtoMatch.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -19,6 +44,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Resources\DtoModel\DtoSetting.resx">
+      <LastGenOutput>DtoSetting.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\DtoModel\DtoDeviceSetting.resx">
+      <LastGenOutput>DtoDeviceSetting.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\DtoModel\DtoDevice.resx">
+      <LastGenOutput>DtoDevice.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\DtoModel\DtoDeviceCommand.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DtoDeviceCommand.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\DtoModel\DtoMatchReferee.resx">
+      <LastGenOutput>DtoMatchReferee.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Resources\DtoModel\DtoMatch.de-DE.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>

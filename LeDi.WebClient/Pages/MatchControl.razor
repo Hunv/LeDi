@@ -112,7 +112,7 @@ else if (SelectedMatchId != null)
 
                                             <div class="row">
                                                 <div class="col-2">
-                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2,'0'))
                                                 </div>
                                                 <div class="col-10">
                                                     Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
@@ -156,7 +156,7 @@ else if (SelectedMatchId != null)
 
                                             <div class="row">
                                                 <div class="col-2">
-                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2,'0'))
                                                 </div>
                                                 <div class="col-10">
                                                     Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
@@ -371,7 +371,6 @@ else
     List<DtoMatchEvent>? MatchEventList = null; //List of all match events
     List<DtoMatch>? MatchList = null; // List of all not finished matches
     bool StartButtonDisabled = false; //Is the Start button disabled?
-    bool PauseButtonDisabled = true; //Is the Pause button disabled?
     bool PrepareHalftimeButtonDisabled = true; //Is the Prepare Halftime button disabled?
     bool CloseMatchButtonDisabled = true; //The close button is disabled and invisible?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
@@ -517,7 +516,6 @@ else
 
         // Show/hide buttons
         StartButtonDisabled = false;
-        PauseButtonDisabled = true;
 
         await LoadMatchEvents();
     }
@@ -529,7 +527,6 @@ else
     {
         // Show/hide buttons
         StartButtonDisabled = true;
-        PauseButtonDisabled = false;
 
         // Update match object to the current status
         Match = await Api.GetMatchFullAsync(Match.Id) ?? Match;
@@ -598,7 +595,6 @@ else
             if (Match.TimeLeftSeconds == 0)
             {
                 tmrMatchtime.Stop();
-                PauseButtonDisabled = true;
 
                 // If this is not the last halftime, show the start button to start the next halftime
                 if (Match.HalftimeCurrent != Match.RuleHalftimeCount)
@@ -690,13 +686,11 @@ else
 
         if (Match.MatchStatus >= (int)LeDi.Shared.Enum.MatchStatusEnum.Running)
         {
-            StartButtonDisabled = true;            
-            PauseButtonDisabled = false;
+            StartButtonDisabled = true;
         }
         else
         {
             StartButtonDisabled = false;
-            PauseButtonDisabled = true;
         }
 
         // Update the Match Events
