@@ -5,6 +5,7 @@ namespace LeDi.Display
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public Worker(ILogger<Worker> logger)
         {
@@ -20,7 +21,7 @@ namespace LeDi.Display
 
             if (layout == null)
             {
-                Console.WriteLine("Unable to load layout.");
+                Logger.Fatal("Unable to load layout.");
                 return;
             }
 
@@ -28,7 +29,7 @@ namespace LeDi.Display
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                //_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                Logger.Info("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(1000, stoppingToken);
             }
         }

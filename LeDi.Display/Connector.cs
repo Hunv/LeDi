@@ -20,8 +20,9 @@ namespace LeDi.Display
         public string? DeviceId { get; set; }
         public string DeviceModel = "LeDiDisplay";
         public string DeviceType = "LED Screen";
+        private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        
+
         public Connector()
         {
         }
@@ -32,9 +33,11 @@ namespace LeDi.Display
         /// <returns></returns>
         public async Task LoadLocalDeviceConfigAsync()
         {
+            Logger.Trace("Loading local device config...");
+            
             if (!File.Exists(ConfigFilename))
             {
-                Console.WriteLine("unable to load " + ConfigFilename);
+                Logger.Fatal("Unable to load " + ConfigFilename);
                 return;
             }
 
@@ -61,7 +64,7 @@ namespace LeDi.Display
                         DeviceType = lineSplit[1];
                         break;
                     default:
-                        Console.WriteLine("Unknown Setting {0} with value {1}", lineSplit[0], lineSplit[1]);
+                        Logger.Warn("Unknown Setting {0} with value {1}", lineSplit[0], lineSplit[1]);
                         break;
                 }
                 
@@ -71,38 +74,40 @@ namespace LeDi.Display
             //If serverUrl not set, the config may not being accessible
             if (ServerUrl == null)
             {
-                Console.WriteLine("Unable to read config values from {0} or the ServerUrl value is missing.", ConfigFilename);
+                Logger.Fatal("Unable to read config values from {0} or the ServerUrl value is missing.", ConfigFilename);
                 return;
             }
 
             //Initialize the Api Interface using the ServerUrl:
             SrvApi = new Api(ServerUrl);
 
-            Console.WriteLine("Config loaded.");
+            Logger.Info("Config {0} loaded.", ConfigFilename);
         }
 
         public async Task RegisterDevice()
         {
+            Logger.Trace("RegisterDevice executed.");
+
             var json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"\"}";
             if (DeviceId != null)
             {
-                Console.WriteLine("No registration required. Device already has Device ID {0}. Checking if Server knows the device.", DeviceId);
+                Logger.Debug("No registration required. Device already has Device ID {0}. Checking if Server knows the device.", DeviceId);
                 json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"" + DeviceId + "\"}";
             }
             else
             {
-                Console.WriteLine("Registering Device...");
+                Logger.Info("Registering Device...");
             }            
 
             var responseBody = await SrvApi.RegisterDevice(json);
 
             if (responseBody != null)
             {
-                Console.WriteLine("Device registered.");
+                Logger.Info("Device registered.");
 
                 if (responseBody == null)
                 {
-                    Console.WriteLine("No response body received.");
+                    Logger.Debug("No response body received.");
                     return;
                 }
 
@@ -111,19 +116,19 @@ namespace LeDi.Display
 
                 if (deviceObj == null)
                 {
-                    Console.WriteLine("Device Object answer is null.");
+                    Logger.Warn("Device Object answer is null.");
                     return;
                 }
 
-                Console.WriteLine("Device ID: {0}", deviceObj.DeviceId);
+                Logger.Info("Device ID: {0}", deviceObj.DeviceId);
                 if (deviceObj.DeviceId == DeviceId)
                 {
-                    Console.WriteLine("Device ID confirmed.");
+                    Logger.Debug("Device ID confirmed.");
                     return;
                 }
                 else if (!string.IsNullOrEmpty(DeviceId))
                 {
-                    Console.WriteLine("Device ID changed. New Device ID: {0}", deviceObj.DeviceId);
+                    Logger.Info("Device ID changed. New Device ID: {0}", deviceObj.DeviceId);
                 }
                 DeviceId = deviceObj.DeviceId;
                 
@@ -147,7 +152,7 @@ namespace LeDi.Display
                             await sW.WriteLineAsync(aLine);
                         }
                         sW.Close();
-
+                        Logger.Debug("Updated deviceid in config file");
                         break;
                     }
                 }
@@ -158,11 +163,13 @@ namespace LeDi.Display
                     var sW = new StreamWriter(ConfigFilename,true);
                     await sW.WriteLineAsync("\nDeviceId:" + deviceObj.DeviceId);
                     sW.Close();
+
+                    Logger.Debug("Wrote deviceid to config file.");
                 }
             }
             else
             {
-                Console.WriteLine("Failed to register device.");
+                Logger.Error("Failed to register device.");
             }
         }
 
@@ -172,9 +179,11 @@ namespace LeDi.Display
         /// <returns></returns>
         public async Task<Layout?> GetDeviceSettings()
         {
+            Logger.Trace("GetDeviceSettings...");
+
             if (DeviceId == null)
             {
-                Console.WriteLine("Cannot load Device Settings. DeviceId not set.");
+                Logger.Error("Cannot load Device Settings. DeviceId not set.");
                 return null;
             }
 
@@ -183,7 +192,7 @@ namespace LeDi.Display
 
             if (settings == null)
             {
-                Console.WriteLine("Failed to load settings from Server.");
+                Logger.Error("Failed to load settings from Server.");
                 return null;
             }
 
@@ -244,9 +253,11 @@ namespace LeDi.Display
         /// <returns></returns>
         public async Task<List<DtoDeviceCommand>?> GetDeviceCommands()
         {
+            Logger.Trace("GetDeviceCommands...");
+
             if (DeviceId == null)
             {
-                Console.WriteLine("Cannot get DeviceCommands. DeviceId is not set.");
+                Logger.Error("Cannot get DeviceCommands. DeviceId is not set.");
                 return null;
             }
             return await SrvApi.GetDeviceCommandAsync(DeviceId);

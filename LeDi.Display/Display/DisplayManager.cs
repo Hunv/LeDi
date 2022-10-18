@@ -22,9 +22,11 @@ namespace LeDi.Display.Display
         private Api Api = new Api();
         private Connector _Connector;
         private bool _MiscRunning = false;
+        private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public DisplayManager(Layout layout, Connector connector)
         {
+            Logger.Info("Initializing DisplayManager...");
             Initialize(layout);
             _Connector = connector;
             _TmrMisc.Elapsed += _TmrMisc_Elapsed;
@@ -33,8 +35,13 @@ namespace LeDi.Display.Display
 
         private async void _TmrMisc_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            Logger.Trace("TmrMisc elapsed");
+
             if (_MiscRunning)
+            {
+                Logger.Debug("TmrMisc skipped due to previous run is still running");
                 return;
+            }
 
             _MiscRunning = true;
 
@@ -42,6 +49,7 @@ namespace LeDi.Display.Display
             if (commands == null || commands.Count == 0)
             {
                 _MiscRunning = false;
+                Logger.Debug("No commands to execute.");
                 return;
             }
 
@@ -51,45 +59,54 @@ namespace LeDi.Display.Display
                 switch (aCmd.Command)
                 {
                     case "showareas":
+                        Logger.Info("Running command \"showareas\"...");
                         effect = new TestArea();
                         break;
                     case "showtestpattern":
+                        Logger.Info("Running command \"showtestpattern\"...");
                         effect = new TestPattern();
                         break;
                     case "showcolortest":
+                        Logger.Info("Running command \"showcolortest\"...");
                         effect = new TestColorWipe();
                         break;
                     case "showfullcolortest":
+                        Logger.Info("Running command \"showfullcolortest\"...");
                         effect = new TestFullColor();
                         break;
                     case "showclock":
+                        Logger.Info("Running command \"showclock\"...");
                         Display.SetAll(Color.Black);
                         Display.ShowString(DateTime.Now.ToString("HH:mm"), null, null, false, 5, 3);
                         Display.Render();
                         break;
                     case "idlebar":
+                        Logger.Info("Running command \"idlebar\"...");
                         effect = new IdleBar();
                         break;
                     case "calibratefps":
+                        Logger.Info("Running command \"calibratefps\"...");
                         Display.SetAll(Color.Black);
                         Display.Calibrate();
                         Display.ShowString(Display.FPS.ToString("F0"), null, null, false, 5, 3);
                         Display.Render();
                         break;
                     case "calibratebrightness":
+                        Logger.Info("Running command \"calibratebrightness\"...");
                         Display.SetBrightness(255);
                         effect = new TestBrightness();
                         break;
                     case "reload":
-                        Console.WriteLine("Reloading Display settings...");
+                        Logger.Info("Running command \"reload\"...");
                         await _Connector.LoadLocalDeviceConfigAsync();
                         await _Connector.RegisterDevice();
                         var layout = await _Connector.GetDeviceSettings();
                         if (layout != null)
                             Initialize(layout, true);
-                        Console.WriteLine("Display settings reloaded...");
+                        Logger.Debug("Display settings reloaded...");
                         break;
                     case "restartsoft":
+                        Logger.Info("Running command \"restartsoft\"...");
                         Display.SetAll(Color.Black);
                         Display.SetLed(1, Color.Red);
                         Display.Render();
@@ -99,6 +116,7 @@ namespace LeDi.Display.Display
 
                         try
                         {
+                            Logger.Info("Executing restart of ledi.display daemon...");
                             System.Diagnostics.Process procSoft = new System.Diagnostics.Process();
                             procSoft.StartInfo.FileName = "/bin/bash";
                             procSoft.StartInfo.Arguments = "-c \"/usr/bin/systemctl restart ledi.display\"";
@@ -108,11 +126,12 @@ namespace LeDi.Display.Display
                         }
                         catch(Exception ea)
                         {
-                            Console.WriteLine("Failed to run command. Error: " + ea.ToString());
+                            Logger.Error("Failed to run command. Error: " + ea.ToString());
                         }
 
                         break;
                     case "restarthard":
+                        Logger.Info("Running command \"restarthard\"...");
                         Display.SetAll(Color.Black);
                         Display.SetLed(1, Color.Red);
                         Display.SetLed(2, Color.Red);
@@ -123,6 +142,7 @@ namespace LeDi.Display.Display
 
                         try
                         {
+                            Logger.Info("Executing restart of hardware device. See you soon...");
                             System.Diagnostics.Process procHard = new System.Diagnostics.Process();
                             procHard.StartInfo.FileName = "/bin/bash";
                             procHard.StartInfo.Arguments = "-c \"/usr/sbin/shutdown -r now\"";
@@ -132,11 +152,12 @@ namespace LeDi.Display.Display
                         }
                         catch (Exception ea)
                         {
-                            Console.WriteLine("Failed to run command. Error: " + ea.ToString());
+                            Logger.Error("Failed to run command. Error: " + ea.ToString());
                         }
 
                 break;
                     case "shutdown":
+                        Logger.Info("Running command \"shutdown\"...");
                         Display.SetAll(Color.Black);
                         Display.SetLed(1, Color.Red);
                         Display.SetLed(2, Color.Red);
@@ -147,7 +168,8 @@ namespace LeDi.Display.Display
                         await Api.RemoveDeviceCommand(aCmd);
 
                         try
-                        { 
+                        {
+                            Logger.Info("Executing shutdown of hardware device. Goodbye...");
                             System.Diagnostics.Process procDown = new System.Diagnostics.Process();
                             procDown.StartInfo.FileName = "/bin/bash";
                             procDown.StartInfo.Arguments = "-c \"/usr/sbin/shutdown -h now\"";
@@ -157,27 +179,27 @@ namespace LeDi.Display.Display
                         }
                         catch (Exception ea)
                         {
-                            Console.WriteLine("Failed to run command. Error: " + ea.ToString());
+                            Logger.Error("Failed to run command. Error: " + ea.ToString());
                         }
 
                         break;
                     default:
-                        Console.WriteLine("Unknown command {0}", aCmd.Command);
+                        Logger.Warn("Unknown command {0}", aCmd.Command);
                         break;
                 }
                 if (effect != null)
                 {
-                    Console.WriteLine("Running Effect {0}...", aCmd.Command);
+                    Logger.Debug("Running Effect {0}...", aCmd.Command);
                     try
                     {
                         effect.Execute();
                     }
                     catch(Exception ea)
                     {
-                        Console.WriteLine("Stopped effect {0} because of Error: {1}", aCmd.Command, ea.ToString());
+                        Logger.Error("Stopped effect {0} because of Error: {1}", aCmd.Command, ea.ToString());
                     }
                     Display.SetBrightness(Display.Brightness); //Setting Brightness back to configured value in case it was changed for calibration tests
-                    Console.WriteLine("Effect {0} done...", aCmd.Command);
+                    Logger.Debug("Effect {0} done...", aCmd.Command);
                     await Api.RemoveDeviceCommand(aCmd);
                 }
             }
@@ -195,7 +217,7 @@ namespace LeDi.Display.Display
         {
             if (Display.LayoutConfig == null)
             {
-                Console.WriteLine("Display not initialized. Call initialize function first.");
+                Logger.Warn("Display not initialized. Call initialize function first.");
                 return;
             }
 
@@ -221,6 +243,5 @@ namespace LeDi.Display.Display
                 Display.Initialize(layout);
             }
         }
-
     }
 }

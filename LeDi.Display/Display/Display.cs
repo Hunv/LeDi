@@ -94,16 +94,17 @@ namespace LeDi.Display.Display
         private static readonly System.Timers.Timer _TmrWorker = new(150);
         private static double fPS;
         private static string characterSetName = "Default";
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static void Calibrate()
         {
             if (LedCount == 0)
             {
-                Console.WriteLine("Please set X and Y first");
+                Logger.Error("Please set X and Y first");
                 return;
             }
 
-            Console.WriteLine("Starting all pixel change benchmark...");
+            Logger.Info("Starting all pixel change benchmark...");
 
             var start = DateTime.Now;
 
@@ -134,7 +135,7 @@ namespace LeDi.Display.Display
             var diff2 = end.Subtract(start);
             FPS = 256 / diff2.TotalSeconds;
 
-            Console.WriteLine("full pixel change FPS: {0} FPS", FPS);
+            Logger.Info("full pixel change FPS: {0} FPS", FPS);
         }
 
         public static void Initialize(Layout layout)
@@ -144,11 +145,11 @@ namespace LeDi.Display.Display
 
             if (LayoutConfig == null)
             {
-                Console.WriteLine("LayoutConfig not initialized.");
+                Logger.Warn("LayoutConfig not initialized.");
                 return;
             }
 
-            Console.WriteLine("Initializing Controller for {0} with {1} LEDs on PWM0, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency);
+            Logger.Info("Initializing Controller for {0} with {1} LEDs on PWM0, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency);
 
             //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10
             ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why
@@ -164,12 +165,12 @@ namespace LeDi.Display.Display
 
         public static void LoadLayout(Layout layoutSetting)
         {
-            Console.WriteLine("Loading layout {0}", layoutSetting.Name);
+            Logger.Trace("Loading layout {0}", layoutSetting.Name);
             var layoutFilePath = string.Format("Config/Layouts/{0}.layout", layoutSetting.Name);
 
             if (!File.Exists(layoutFilePath))
             {
-                Console.WriteLine("Layout file not exists. Please create file {0}", layoutFilePath);
+                Logger.Error("Layout file not exists. Please create file {0}", layoutFilePath);
                 return;
             }
 
@@ -181,7 +182,7 @@ namespace LeDi.Display.Display
 
             if (LayoutConfig != null)
             {
-                Console.WriteLine("Layout loaded successfully default settings");
+                Logger.Debug("Layout loaded successfully default settings");
 
                 //Setting the non-default settings received from server (manually set via UI)
                 if (layoutSetting.Brightness > 0)
@@ -206,7 +207,7 @@ namespace LeDi.Display.Display
             }
             else
             {
-                Console.WriteLine("Loading default layout FAILED");
+                Logger.Error("Loading default layout FAILED");
             }
         }
 
@@ -214,15 +215,15 @@ namespace LeDi.Display.Display
         {
             if (LayoutConfig == null)
             {
-                Console.WriteLine("Layoutconfig not loaded.");
+                Logger.Error("Layoutconfig not loaded.");
                 return;
             }
 
-            Console.WriteLine("Loading characters {0}", LayoutConfig.CharacterSet);
+            Logger.Debug("Loading characters {0}", LayoutConfig.CharacterSet);
             var characterPath = string.Format("Config/Characters/{0}", LayoutConfig.CharacterSet);
             if (!Directory.Exists(characterPath))
             {
-                Console.WriteLine("CharacterSet not found");
+                Logger.Error("CharacterSet not found");
                 return;
             }
 
@@ -276,8 +277,7 @@ namespace LeDi.Display.Display
                         }
                         catch (Exception ea)
                         {
-                            Console.WriteLine("Failed loading Character {0} in line {1} and resolution {2}", charDef.Char, lineCount, aResolutionFolder);
-                            Console.WriteLine(ea.ToString());
+                            Logger.Error(ea, "Failed loading Character {0} in line {1} and resolution {2}", charDef.Char, lineCount, aResolutionFolder);
                         }
                         lineCount++;
                     }
@@ -295,11 +295,9 @@ namespace LeDi.Display.Display
         {
             if (Controller == null)
             {
-                Console.Write("Controller is null. Not setting all LEDs.");
+                Logger.Error("Controller is null. Not setting all LEDs.");
                 return;
             }
-
-            //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
             Controller.SetLED(LedNumber, color);
         }
@@ -307,14 +305,14 @@ namespace LeDi.Display.Display
         {
             if (Controller == null)
             {
-                Console.Write("Controller is null. Not setting all LEDs.");
+                Logger.Error("Controller is null. Not setting all LEDs.");
                 return;
             }
-            //color = Color.FromArgb(color.R * Brightness / 255, color.G * Brightness / 255, color.B * Brightness / 255);
 
             // Does not work for some reason
             //Controller.SetAll(color);
 
+            // Workaround for above. Actually it is doing the same as the SetAll function of the controller.
             for (var i = 0; i < Controller.LEDCount; i++)
             {
                 SetLed(i, color);
@@ -325,10 +323,10 @@ namespace LeDi.Display.Display
         {
             if (Controller == null || WS281X == null)
             {
-                Console.Write("Controller is null. Not setting brightness.");
+                Logger.Error("Controller is null. Not setting brightness.");
                 return;
             }
-            Console.WriteLine("brightness: "+ WS281X.GetBrightness());
+            Logger.Info("Brightness set to " + WS281X.GetBrightness());
             WS281X.SetBrightness(brightness);
         }
 
@@ -338,16 +336,16 @@ namespace LeDi.Display.Display
                 return;
 
             var start = DateTime.Now;
-            Console.Write("Rendering...");
+            Logger.Trace("Rendering...");
             WS281X.Render();
-            Console.WriteLine(" Done ({0}ms)", DateTime.Now.Subtract(start).TotalMilliseconds);
+            Logger.Trace(" Done ({0}ms)", DateTime.Now.Subtract(start).TotalMilliseconds);
         }
 
         public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false, int maxHeight = int.MaxValue, int maxWidth = int.MaxValue)
         {
             if (LayoutConfig == null || CharacterSets == null)
             {
-                Console.WriteLine("LayoutConfig or CharactersSets is null");
+                Logger.Error("LayoutConfig or CharactersSets is null");
                 return;
             }
 
@@ -360,7 +358,7 @@ namespace LeDi.Display.Display
             matchingCharSets = matchingCharSets.Where(x => x.Height <= area.Height && x.Height <= maxHeight && x.Width <= maxWidth).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
             var charSet = matchingCharSets.First();
 
-            Console.WriteLine("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
+            Logger.Debug("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
 
             //Flush Area
             for (int x = area.PositionX; x < area.PositionX + area.Width; x++)
@@ -391,7 +389,7 @@ namespace LeDi.Display.Display
 
                     if (charObj == null)
                     {
-                        Console.WriteLine("Skipping character {0} because it was not found.", aChar);
+                        Logger.Warn("Skipping character {0} because it was not found.", aChar);
                         continue;
                     }
 
@@ -423,7 +421,7 @@ namespace LeDi.Display.Display
                 {
                     if (charSet == null || charSet.Characters == null)
                     {
-                        Console.WriteLine("charSet is not loaded.");
+                        Logger.Error("charSet is not loaded.");
                         continue;
                     }
 
@@ -431,7 +429,7 @@ namespace LeDi.Display.Display
 
                     if (theChar == null)
                     {
-                        Console.WriteLine("Cannot find character {0}", aChar);
+                        Logger.Error("Cannot find character {0}", aChar);
                         continue;
                     }
 
@@ -461,7 +459,7 @@ namespace LeDi.Display.Display
 
                     if (charObj == null)
                     {
-                        Console.WriteLine("Skipping character {0} because it was not found.", aChar);
+                        Logger.Warn("Skipping character {0} because it was not found.", aChar);
                         continue;
                     }
 
@@ -506,7 +504,7 @@ namespace LeDi.Display.Display
 
                     if (charObj == null)
                     {
-                        Console.WriteLine("Skipping character {0} because it was not found.", aChar);
+                        Logger.Warn("Skipping character {0} because it was not found.", aChar);
                         continue;
                     }
 
@@ -539,7 +537,7 @@ namespace LeDi.Display.Display
         {
             if (LayoutConfig == null || areaName == null)
             {
-                Console.WriteLine("Layout Config not loaded.");
+                Logger.Error("Layout Config not loaded.");
                 return;
             }
 
@@ -574,11 +572,11 @@ namespace LeDi.Display.Display
 
         public static void ShowChar(char character, string areaName)
         {
-            Console.WriteLine("showing character {0} in area {1}", character, areaName);
+            Logger.Debug("showing character {0} in area {1}", character, areaName);
 
             if (CharacterSets == null)
             {
-                Console.WriteLine("CharacterSet not loaded.");
+                Logger.Error("CharacterSet not loaded.");
                 return;
             }
 
@@ -593,7 +591,7 @@ namespace LeDi.Display.Display
 
             if (charObj == null)
             {
-                Console.WriteLine("Cannot show character {0}", character);
+                Logger.Error("Cannot show character {0}", character);
                 return;
             }
 
@@ -602,8 +600,6 @@ namespace LeDi.Display.Display
 
         public static int GetLedNumber(int matrixX, int matrixY)
         {
-            //Console.WriteLine("Get LED Number of X={0} Y={1}", matrixX, matrixY);
-
             //contains the modified X-Coordinated in case of alternating Rows
             var calculatedX = matrixX;
             var calculatedY = matrixY;
@@ -649,7 +645,7 @@ namespace LeDi.Display.Display
                 //In case the change is expired, don't handle it and cann the Worker again
                 if (change.Item3 != null && change.Item3 < DateTime.Now)
                 {
-                    Console.WriteLine("Text \"{0}\" expired.", change.Item2);
+                    Logger.Debug("Text \"{0}\" expired.", change.Item2);
                     TmrWorker_Elapsed(sender, e);
                     return;
                 }
