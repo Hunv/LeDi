@@ -281,8 +281,64 @@ else if (SelectedMatchId != null)
                 </div>
             </div>
 
-            @*Row 4: Matchlog*@
+            @*Row 3a: Advanced controls*@
+            <div class="row align-items-start pt-5">
+                 <div class="col-12 p-0 m-0">
+                    <div class="p-1">          
+                        <a 
+                            id="btnAdvancedControlsExpand"
+                            class="btn btn-primary fs-3" 
+                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@ExpandAdvancedControls"
+                            >
+                            <span class="oi @(this.HideAdvancedControls ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideAdvancedControls ? " Show advanced controls" : " Hide advanced controls")
+                        </a>
+                    </div>
+                </div>
+            </div>
             
+            <div class="row align-items-start" hidden="@HideAdvancedControls">
+                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                        <a 
+                            id="btnCancelMatch"
+                            class="btn btn-primary fs-3" 
+                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam1Clicked"
+                            >
+                            Cancel Match
+                        </a>  
+                    </div>
+                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                        <a 
+                            id="btnRestartMatch"
+                            class="btn btn-primary fs-3" 
+                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam1Clicked"
+                            >
+                            Restart Match
+                        </a>  
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                        <a 
+                            id="btnSetTime"
+                            class="btn btn-primary fs-3" 
+                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@IncrementCountTeam1Clicked"
+                            >
+                            Set match time
+                        </a>  
+                    </div>
+                </div>
+            </div>
+
+            @*Row 4: Matchlog*@            
             <div class="row align-items-start" style="height:30vh; min-height:30vh;">
                 <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">
@@ -299,7 +355,7 @@ else if (SelectedMatchId != null)
                                         <b>#</b>
                                     </div>*@
                                     <div class="col-1 text-nowrap">
-                                        <b>Matchtime</b>
+                                        <b>Time</b>
                                     </div>@*
                                     <div class="col-1 text-nowrap">
                                         <b>Creator</b>
@@ -373,6 +429,7 @@ else
     bool StartButtonDisabled = false; //Is the Start button disabled?
     bool PreparePeriodButtonDisabled = true; //Is the Prepare period button disabled?
     bool CloseMatchButtonDisabled = true; //The close button is disabled and invisible?
+    bool HideAdvancedControls = true; //Are the advanced control buttons visible?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
     bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered?    
 
@@ -427,6 +484,13 @@ else
         PenaltyTeamId = 1;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
         PenaltyPlayerDialogOpen = true;
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void ExpandAdvancedControls()
+    {
+        Logger.Trace("ExpandAvancedControls clicked.");
+        HideAdvancedControls = !HideAdvancedControls;
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
