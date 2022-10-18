@@ -5,10 +5,6 @@ namespace LeDi.Server.DatabaseModel
 {
     public class DeviceCommand
     {
-        public DeviceCommand()
-        {
-        }
-
         /// <summary>
         /// Create a new instance of DeviceCommand
         /// </summary>
@@ -23,26 +19,26 @@ namespace LeDi.Server.DatabaseModel
         }
 
         /// <summary>
-        /// The Deivce ID this setting is for
+        /// The internal ID
         /// </summary>
         [Key]
         public int Id { get; set; }
 
         /// <summary>
-        /// The Deivce ID this setting is for
+        /// The Device ID this setting is for
         /// </summary>
-        public string? DeviceId { get; set; }
+        public string DeviceId { get; set; }
 
         /// <summary>
         /// The Name of the Setting
         /// </summary>
-        public string? Command { get; set; }
+        public string Command { get; set; }
 
 
         /// <summary>
         /// The Value of the Setting
         /// </summary>
-        public string? Parameter { get; set; }
+        public string Parameter { get; set; }
 
         /// <summary>
         /// Converts the object to a DTO object
