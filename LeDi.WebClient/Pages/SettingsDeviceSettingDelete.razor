@@ -30,12 +30,13 @@ else
     [Parameter]
     public string settingName { get; set; } = "";
 
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private DtoDeviceSetting ToDeleteDeviceSetting = new DtoDeviceSetting("", "", "");
 
     protected override async Task OnInitializedAsync()
     {
         var devSetting = await Api.GetDeviceSettingAsync(deviceId, settingName);
-        
+
         if (devSetting == null)
             return;
 
@@ -44,11 +45,13 @@ else
 
     private void CancelDelete()
     {
+        Logger.Trace("Cancel clicked.");
         NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);
     }
 
     private async void ConfirmDelete()
     {
+        Logger.Trace("Conform clicked.");
         await Api.DeleteDeviceSettingAsync(deviceId, settingName);
 
         NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);

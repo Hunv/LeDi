@@ -96,6 +96,7 @@ else
     [Parameter]
     public string Id { get; set; } = "";
 
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private List<DtoDeviceSetting>? DeviceSettingList;
     private DtoDeviceSetting NewSetting = new DtoDeviceSetting("", "", "");
     private string selectedDeviceCommand = "";
@@ -109,7 +110,8 @@ else
     private async void SaveSettings()
     {
         if (DeviceSettingList == null) 
-        {   
+        {
+            Logger.Warn("Not devicesettings to save.");
             await JSRuntime.InvokeVoidAsync("alert", "No DeviceSettings to save.");
             return;
         }
@@ -118,7 +120,8 @@ else
         var currentServerSettings = await Api.GetDeviceSettingsAsync(Id);
         if (currentServerSettings == null)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Cannot get current settings from server.");
+            Logger.Error("Cannot get current device settings from server");
+            await JSRuntime.InvokeVoidAsync("alert", "Cannot get current device settings from server.");
             return;
         }
 
@@ -132,7 +135,7 @@ else
 
             if (locSet.Value != aServerSet.Value)
             {
-                Console.WriteLine("Save setting {0} to value {1}", locSet.Name, locSet.Value);
+                Logger.Debug("Save setting {0} to value {1}", locSet.Name, locSet.Value);
                 await Api.SetDeviceSettingAsync(Id, locSet);
             }
         }

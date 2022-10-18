@@ -195,6 +195,7 @@ else {
 }
 
 @code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     DtoMatch? Match = null;
     IEnumerable<DtoMatch>? LiveMatchList = null;
     System.Timers.Timer tmrUpdate = new System.Timers.Timer();
@@ -208,11 +209,13 @@ else {
     {
         if (Id != null)
         {
+            Logger.Trace("On reload the page, ID {0} was set.", Id);
             Match = await Api.GetMatchAsync(Id.Value);
             MatchEventList = await Api.GetMatchEvents(Id.Value);
         }
         else if (Id == null)
         {
+            Logger.Trace("On reload the page, no ID was set.");
             Match = null;
         }
 
@@ -226,6 +229,7 @@ else {
 
         if (Id != null)
         {
+            Logger.Trace("On loading the page, ID {0} was set.", Id);
             Match = await Api.GetMatchAsync(Id.Value);
             if (Match == null)
                 return;
@@ -233,32 +237,41 @@ else {
             var matchCore = await Api.GetMatchCoreAsync(Match.Id);            
             if (matchCore != null) {
                 LastKnownMatchHash = matchCore.PropertyHash;
+                Logger.Debug("Set LastKnowMatchHash to {0}", LastKnownMatchHash);
             }
             await InvokeAsync(() => { StateHasChanged(); });
         }
         else
         {
+            Logger.Trace("On loading the page, no ID was set.");
+
             // Reset Match value
             Match = null; 
 
             var matches = await Api.GetMatchListAsync();
             if (matches.Count > 1)
             {
-                var runningMatches = matches.Where(x => x.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Running); //0 = undefined, 1 = planned, 2 = running, 3 = ended
+                var runningMatches = matches.Where(x => x.MatchStatus == (int)LeDi.Shared.Enum.MatchStatusEnum.Running);
+
                 if (runningMatches.Count() > 1)
                 {
-                    //More than one match to show. Show modal dialog to select.
+                    Logger.Debug("Creating match list for {0} matches.", runningMatches.Count());
+
+                    //More than one match to show. Show list to select.
                     LiveMatchList = runningMatches;
                 }
                 else if (runningMatches.Count() == 0)
                 {
+                    Logger.Debug("No running matches.");
+
                     //No match to show.
-                    //todo
+                    LiveMatchList = null;
                 }
                 else
                 {
                     // The only match that makes sense to show.
                     Match = runningMatches.First();
+                    Logger.Debug("Only match {0} is running. Redirecting to the match...", Match.Id);
 
                     // Set hash for last known match properties
                     var matchCore = await Api.GetMatchCoreAsync(Match.Id);
@@ -278,6 +291,8 @@ else {
         // If one match is shown update only that one match
         if (Match != null)
         {
+            Logger.Trace("Updating match {0}...", Match.Id);
+
             var matchCore = await Api.GetMatchCoreAsync(Match.Id);
             if (matchCore == null)
                 return;
@@ -286,6 +301,8 @@ else {
 
             if (LastKnownMatchHash != matchCore.PropertyHash)
             {
+                Logger.Debug("LastKnownMatchHash changed. Updating match data...");
+
                 // Get the current data
                 var updatedData = await Api.GetMatchAsync(Match.Id);
 
@@ -312,6 +329,8 @@ else {
         }
         else //Update all matches
         {
+            Logger.Trace("No match selected. Updating all matches...");
+
             // Reset matcheventlist because it may belong to another match
             MatchEventList = null;
 

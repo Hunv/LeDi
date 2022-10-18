@@ -139,6 +139,7 @@ else
 }
 
 @code{
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
     DtoMatch NewMatch = new DtoMatch()
         {
@@ -276,6 +277,7 @@ else
     // Executed when the selected game name changed
     private async Task SelectedGamenameChanged()
     {
+        Logger.Debug("Gamename changed to \"{0}\"", SelectedGamename);
         //NewMatch.GameName = SelectedGamename;
 
         if (SelectedGamename == "")

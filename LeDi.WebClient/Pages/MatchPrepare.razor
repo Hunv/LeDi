@@ -45,6 +45,7 @@ else
 
 
 @code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private DtoMatch? Match = null;
     private string Referee1Name { get; set; } = "";
     private string Referee2Name { get; set; } = "";
@@ -68,6 +69,8 @@ else
 
     private async void SaveMatch()
     {
+        Logger.Trace("Saving match...");
+
         if (Match == null)
             return;
 

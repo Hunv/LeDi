@@ -365,7 +365,7 @@ else
 
 
 @code{
-
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     System.Timers.Timer tmrMatchtime = new System.Timers.Timer();
     DtoMatch Match = new DtoMatch(); // currently selected match
     List<DtoMatchEvent>? MatchEventList = null; //List of all match events
@@ -388,28 +388,33 @@ else
 
     private async void IncrementCountTeam1Clicked()
     {
+        Logger.Trace("IncrementCountTeam1Clicked.");
         await Api.SetMatchGoalAsync(Match.Id, 0, 1);
         await LoadMatch();
     }
     private async void DecreaseCountTeam1Clicked()
     {
+        Logger.Trace("DecreaseCountTeam1Clicked.");
         await Api.SetMatchGoalAsync(Match.Id, 0, -1);
         await LoadMatch();
     }
 
     private async void IncrementCountTeam2Clicked()
     {
+        Logger.Trace("IncrementCountTeam2Clicked.");
         await Api.SetMatchGoalAsync(Match.Id, 1, 1);
         await LoadMatch();
     }
     private async void DecreaseCountTeam2Clicked()
     {
+        Logger.Trace("DecreaseCountTeam2Clicked.");
         await Api.SetMatchGoalAsync(Match.Id, 1, -1);
         await LoadMatch();
     }
 
     private async void PenaltyTeam1Clicked()
     {
+        Logger.Trace("PenaltyTeam1Clicked");
         PenaltyTeamId = 0;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
         PenaltyPlayerDialogOpen = true;
@@ -418,6 +423,7 @@ else
 
     private async void PenaltyTeam2Clicked()
     {
+        Logger.Trace("PenaltyTeam2Clicked");
         PenaltyTeamId = 1;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
         PenaltyPlayerDialogOpen = true;
@@ -430,6 +436,7 @@ else
 
         if (playerId >= 0)
         {
+            Logger.Trace("Modal dialog select player closed. Selected PlayerId/Number: {0}", playerId);
             PenaltyPlayerNumber = playerId;
 
             // 0 = the penalty is for the team. All others are for the given player number.
@@ -444,7 +451,8 @@ else
             PenaltyPenaltyDialogOpen = true;
         }
         else
-        {   
+        {
+            Logger.Trace("Modal dialog select player canceled.");
             PenaltyTeamId = -1; // Reset penaltyId for the next penalty
         }
 
@@ -459,6 +467,8 @@ else
     {
         if (penalty != null && penalty != "")
         {
+            Logger.Trace("Modal dialog select penalty closed. Selected penalty: {0}", penalty);
+
             var languageCode = "EN"; // This will be the users language code when localization is being implemented
             var customPenalty = false;
 
@@ -466,7 +476,7 @@ else
             var penaltyObj = Match.RulePenaltyList.SingleOrDefault(x => x.Display.Any(y => y.Language == languageCode && y.Text == penalty));
             if (penaltyObj == null)
             {
-                Console.WriteLine("The selected penalty is cannot be identified by the text \"" + penalty + "\". Expecting it is a custom penalty. Time penalties need to be added seperately.");
+                Logger.Info("The selected penalty is cannot be identified by the text \"" + penalty + "\". Expecting it is a custom penalty. Time penalties need to be added seperately.");
                 customPenalty = true;
             }
 
@@ -497,6 +507,10 @@ else
             // Register the penalty
             await Api.AddMatchPenalty(Match.Id, newPenalty);
         }
+        else
+        {
+            Logger.Trace("Modal dialog select penalty canceled.");
+        }
 
         // Reset all values and hide dialog
         PenaltyPlayerNumber = -1;
@@ -512,6 +526,7 @@ else
     /// </summary>
     private async void PauseMatchClicked()
     {
+        Logger.Trace("PauseMatchClicked");
         await Api.ControlMatchtimeAsync(Match.Id, "stop");
 
         // Show/hide buttons
@@ -525,6 +540,7 @@ else
     /// </summary>
     private async void StartMatchClicked()
     {
+        Logger.Trace("StartMatchClicked");
         // Show/hide buttons
         StartButtonDisabled = true;
 
@@ -535,7 +551,7 @@ else
         var matchCore = await Api.GetMatchCoreAsync(Match.Id);
         if (matchCore == null)
         {
-            Console.WriteLine("Failed to get MatchCore");
+            Logger.Error("Failed to get MatchCore");
             return;
         }
         LastKnownMatchHash = matchCore.PropertyHash;
@@ -553,27 +569,32 @@ else
 
     private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
     {
+        Logger.Trace("Matchtime timer elapsed.");
+
         // Only run if a match was selected
         if (SelectedMatchId == null || SelectedMatchId == 0)
+        {
+            Logger.Debug("No match selected. Nothing to do for the matchtimer.");
             return;
+        }
 
         // Get the time left and the hash of all match properties
         var matchCore = await Api.GetMatchCoreAsync(Match.Id);
 
         // If the core value query failed, cancel.
         if (matchCore == null) {
-            Console.WriteLine("Failed to get MatchCore");
+            Logger.Error("Failed to get MatchCore");
             return;
         }
 
         // Update match object in case the hash is different
         if (LastKnownMatchHash != matchCore.PropertyHash)
         {
-            Console.WriteLine("New Hash is different. Refreshing all Match infos...");
+            Logger.Info("New Hash is different. Refreshing all Match infos...");
             var newMatchInfo = await Api.GetMatchAsync(Match.Id);
             if (newMatchInfo != null) {
-                Console.WriteLine("Updated Match infos.");
-                
+                Logger.Debug("Updated Match infos.");
+
                 // Update only the fields but not the whole Match object to do not flush the rules
                 Match.HalftimeCurrent = newMatchInfo.HalftimeCurrent;
                 Match.RuleHalftimeCount = newMatchInfo.RuleHalftimeCount;
@@ -594,17 +615,20 @@ else
             // Stop Timer only if the Server based timer is done.
             if (Match.TimeLeftSeconds == 0)
             {
+                Logger.Info("Time of match {0} is over.", Match.Id);
                 tmrMatchtime.Stop();
 
                 // If this is not the last halftime, show the start button to start the next halftime
                 if (Match.HalftimeCurrent != Match.RuleHalftimeCount)
                 {
+                    Logger.Debug("Not-the-last halftime is over.");
                     StartButtonDisabled = false;
                     PrepareHalftimeButtonDisabled = false;
                     CloseMatchButtonDisabled = true;
                 }
                 else
                 {
+                    Logger.Debug("Last halftime is over.");
                     StartButtonDisabled = true;
                     PrepareHalftimeButtonDisabled = true;
                     CloseMatchButtonDisabled = false;
@@ -632,6 +656,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+        Logger.Trace("Reloading the page.");
         await LoadMatch();
 
         if (!tmrMatchtime.Enabled)
@@ -642,12 +667,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Logger.Trace("Initializing the page");
         if (SelectedMatchId == null)
         {
+            Logger.Debug("No match selected.");
             await LoadMatchList();
         }
         else
         {
+            Logger.Debug("Match {0} selected.", SelectedMatchId);
             await LoadMatch();
         }
 
@@ -665,9 +693,12 @@ else
 
     private async Task LoadMatchList()
     {
+        Logger.Trace("Loading MatchList");
         var matchList = await Api.GetMatchListAsync();
         if (matchList.Count == 0)
         {
+            Logger.Debug("No matches in matchlist");
+
             //Create emtpy list
             MatchList = new List<DtoMatch>();
             return;
@@ -678,7 +709,12 @@ else
     private async Task LoadMatch()
     {
         if (SelectedMatchId == null)
+        {
+            Logger.Debug("No match selected to load.");
             return;
+        }
+
+        Logger.Debug("Loading match {0}", SelectedMatchId);
 
         Match = (await Api.GetMatchFullAsync(SelectedMatchId.Value)) ?? new DtoMatch() { Id = 0 };
         if (Match.Id == 0)
@@ -702,7 +738,12 @@ else
     private async Task LoadMatchEvents()
     {
         if (SelectedMatchId == null)
+        {
+            Logger.Debug("No match selected to load match events for.");
             return;
+        }
+
+        Logger.Debug("Loading match events for {0}.", SelectedMatchId);
 
         MatchEventList = await Api.GetMatchEvents(SelectedMatchId.Value);
 
@@ -714,6 +755,8 @@ else
     /// </summary>
     private async Task PrepareHalftime()
     {
+        Logger.Trace("PrepareHalftime clicked.");
+
         if (Match == null)
             return;
 
@@ -723,6 +766,7 @@ else
         // only if the current halftime is over
         if (Match.TimeLeftSeconds != 0)
         {
+            Logger.Warn("Current hafttime is not over.");
             PrepareHalftimeButtonDisabled = true;
             return;
         }
@@ -744,6 +788,8 @@ else
     /// </summary>
     private async Task CloseMatch()
     {
+        Logger.Trace("CloseMatch clicked");
+
         if (Match == null)
             return;
 

@@ -4,6 +4,8 @@ namespace LeDi.Shared
 {
     public class Helper
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Helper method to get the Json Serializer settings
         /// </summary>
@@ -87,7 +89,7 @@ namespace LeDi.Shared
 
             if (requestMessage.Content == null)
             {
-                Console.WriteLine("No content set. Not setting content type header...");
+                Logger.Trace("No content set. Not setting content type header...");
             }
             else
             {
@@ -104,7 +106,7 @@ namespace LeDi.Shared
             }
             else
             {
-                Console.WriteLine("Failed to PUT {0}", url);
+                Logger.Error("Failed to PUT {0}", url);
                 return null;
             }
         }
@@ -124,7 +126,7 @@ namespace LeDi.Shared
 
             if (body == null)
             {
-                Console.WriteLine("No content set. Not setting content type header...");
+                Logger.Trace("No content set. Not setting content type header...");
                 requestMessage = GetRequestMessage("DELETE", url);
             }
             else
@@ -144,7 +146,7 @@ namespace LeDi.Shared
             }
             else
             {
-                Console.WriteLine("Failed to DELETE {0}", url);
+                Logger.Error("Failed to DELETE {0}", url);
                 return null;
             }
         }
@@ -165,7 +167,7 @@ namespace LeDi.Shared
 
             if (requestMessage.Content == null)
             {
-                Console.WriteLine("No content set. Not setting content type header...");
+                Logger.Trace("No content set. Not setting content type header...");
             }
             else
             {
@@ -182,7 +184,7 @@ namespace LeDi.Shared
             }
             else
             {
-                Console.WriteLine("Failed to POST {0}", url);
+                Logger.Error("Failed to POST {0}", url);
                 return null;
             }
         }

@@ -27,6 +27,7 @@ else
     [Parameter]
     public string Id { get; set; } = "";
 
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private DtoDevice ToDeleteDevice = new DtoDevice("", "", "");
 
     protected override async Task OnInitializedAsync()
@@ -40,11 +41,13 @@ else
 
     private void CancelDelete()
     {
+        Logger.Trace("Cancel clicked.");
         NavigationManager.NavigateTo("/settings");
     }
 
     private async void ConfirmDelete()
     {
+        Logger.Trace("Confirm clicked");
         await Api.DeleteDeviceAsync(Id);
 
         NavigationManager.NavigateTo("/settings");

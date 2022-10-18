@@ -11,16 +11,18 @@ namespace LeDi.Shared
 {
     public class Api
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public string ServerBaseUrl { get; set; } = "https://localhost:7077/api/";
 
         public Api()
         {
-            Console.WriteLine("Using Serverbase URL " + ServerBaseUrl);
+            Logger.Info("Using Serverbase URL " + ServerBaseUrl);
         }
         public Api(string serverUrl)
         {
             ServerBaseUrl = serverUrl; 
-            Console.WriteLine("Using Serverbase URL " + ServerBaseUrl);
+            Logger.Info("Using Serverbase URL " + ServerBaseUrl);
         }
 
 
@@ -34,8 +36,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device");
             if (json == null)
+            {
+                Logger.Error("Failed to get devicelist.");
                 return null;
+            }
 
+            Logger.Trace("Got devicelist: {0}", json);
             var setting = JsonConvert.DeserializeObject<List<DtoDevice>?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -48,8 +54,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId);
             if (json == null)
+            {
+                Logger.Error("Failed to get device {0}", deviceId);
                 return null;
+            }
 
+            Logger.Trace("Got device {0}: {1}", deviceId, json);
             var setting = JsonConvert.DeserializeObject<DtoDevice?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -61,9 +71,11 @@ namespace LeDi.Shared
         /// <returns></returns>
         public async Task<string?> RegisterDevice(string json)
         {
-            Console.WriteLine("Registering Device...");
+            Logger.Info("Registering Device using {0}...", json);
 
             var responseBody = await Helper.ApiRequestPost(ServerBaseUrl + "Device", json);
+
+            Logger.Trace("Got register device response {0}", responseBody);
 
             return responseBody;
         }
@@ -80,7 +92,7 @@ namespace LeDi.Shared
         /// <returns></returns>
         public async Task SetDeviceCommand(string deviceId, string command, string parameter)
         {
-            Console.WriteLine("Sending Device Command {0} to device {1} with parameter {2}...", command, deviceId, parameter);
+            Logger.Debug("Sending Device Command {0} to device {1} with parameter {2}...", command, deviceId, parameter);
             var obj = new DtoDeviceCommand()
             {
                 DeviceId = deviceId,
@@ -88,6 +100,7 @@ namespace LeDi.Shared
                 Parameter = parameter
             };
             var json = Helper.SerializeObject(obj);
+            Logger.Trace("Got set device command response for device {0} with command {1} and parameter {2}: {3}", deviceId, command, parameter, json);
             await Helper.ApiRequestPost(ServerBaseUrl + "DeviceCommand", json);
 
         }
@@ -100,8 +113,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "DeviceCommand/" + deviceId);
             if (json == null)
+            {
+                Logger.Error("Failed to get device command {0}", deviceId);
                 return new List<DtoDeviceCommand>();
+            }
 
+            Logger.Trace("Got device command(s) for device {0}: {1}", deviceId, json);
             var command = JsonConvert.DeserializeObject<List<DtoDeviceCommand>?>(json, Helper.GetJsonSerializer());
             return command ?? new List<DtoDeviceCommand>();
         }
@@ -112,7 +129,7 @@ namespace LeDi.Shared
         /// <returns></returns>
         public async Task RemoveDeviceCommand(DtoDeviceCommand command)
         {
-            Console.WriteLine("Sending Remove DeviceCommand for command {0} to device {1}...", command.Id, command.DeviceId);
+            Logger.Debug("Sending Remove DeviceCommand for command {0} to device {1}...", command.Id, command.DeviceId);
             var json = Helper.SerializeObject(command);
             await Helper.ApiRequestDelete(ServerBaseUrl + "DeviceCommand", json);
         }
@@ -129,8 +146,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId);
             if (json == null)
+            {
+                Logger.Error("Failed to get device settings for device {0}", deviceId);
                 return null;
+            }
 
+            Logger.Trace("Got device settings for device {0}: {1}", deviceId, json);
             var setting = JsonConvert.DeserializeObject<List<DtoDeviceSetting>?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -144,8 +165,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId + "/" + settingName);
             if (json == null)
+            {
+                Logger.Error("Failed to get device setting {0} for device {1}.", settingName, deviceId);
                 return null;
+            }
 
+            Logger.Trace("Got device setting {0} for device {1}: {2}", settingName, deviceId, json);
             var setting = JsonConvert.DeserializeObject<DtoDeviceSetting?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -162,7 +187,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set device setting {0} for deviceId {1}", setting.Name, deviceId);
+                Logger.Error("Failed to set device setting {0} for deviceId {1}", setting.Name, deviceId);
+            }
+            else
+            {
+                Logger.Trace("Set device setting {0} for device {1}.", setting.Name, deviceId);
             }
         }
 
@@ -171,8 +200,9 @@ namespace LeDi.Shared
         /// </summary>
         /// <param name="setting"></param>
         public async Task DeleteDeviceSettingAsync(string deviceId, string settingName)
-        {
+        {            
             await Helper.ApiRequestDelete(ServerBaseUrl + "Device/" + deviceId + "/" + settingName);
+            Logger.Trace("Deleted device setting {0} for deviceId {1}.", settingName, deviceId);
         }
 
         #endregion
@@ -185,6 +215,7 @@ namespace LeDi.Shared
         public async Task DeleteDeviceAsync(string deviceId)
         {
             await Helper.ApiRequestDelete(ServerBaseUrl + "Device/" + deviceId);
+            Logger.Trace("Deleted device {0}", deviceId);
         }
 
         /// <summary>
@@ -195,8 +226,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Setting");
             if (json == null)
+            {
+                Logger.Error("Failed to get settings.");
                 return null;
+            }
 
+            Logger.Trace("Got system settings: {0}", json);
             var setting = JsonConvert.DeserializeObject<List<DtoSetting>?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -210,8 +245,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Setting/" + settingName);
             if (json == null)
+            {
+                Logger.Error("Failed to get setting {0}.", settingName);
                 return null;
+            }
 
+            Logger.Trace("Got setting {0}: {1}", settingName, json);
             var setting = JsonConvert.DeserializeObject<DtoSetting?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -228,7 +267,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set setting {0}", setting.Name);
+                Logger.Error("Failed to set setting {0}", setting.Name);
+            }
+            else
+            {
+                Logger.Trace("Set setting {0}.", setting.Name);
             }
         }
 
@@ -244,8 +287,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId);
             if (json == null)
+            {
+                Logger.Error("Failed to get match {0}.", matchId);
                 return null;
+            }
 
+            Logger.Trace("Got match {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<DtoMatch?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -259,8 +306,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/full");
             if (json == null)
+            {
+                Logger.Error("Failed to get full match details for match {0}.", matchId);
                 return null;
+            }
 
+            Logger.Trace("Got full match {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<DtoMatch?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -274,8 +325,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/time");
             if (json == null)
+            {
+                Logger.Error("Failed to get match time for match {0}.", matchId);
                 return -1;
+            }
 
+            Logger.Trace("Got match time for {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<int?>(json, Helper.GetJsonSerializer());
             return setting ?? -1;
         }
@@ -289,8 +344,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/core");
             if (json == null)
+            {
+                Logger.Error("Failed to get match core for {0}.", matchId);
                 return null;
+            }
 
+            Logger.Trace("Got match core for {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<DtoMatchCore?>(json, Helper.GetJsonSerializer());
             return setting;
         }
@@ -303,8 +362,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match");
             if (json == null)
+            {
+                Logger.Error("Failed to get match list.");
                 return new List<DtoMatch>();
+            }
 
+            Logger.Trace("Got match list: {0}", json);
             var setting = JsonConvert.DeserializeObject<List<DtoMatch>>(json, Helper.GetJsonSerializer());
             return setting ?? new List<DtoMatch>();
         }
@@ -316,37 +379,17 @@ namespace LeDi.Shared
         /// <param name="match"></param>
         public async Task<DtoMatch?> NewMatchAsync(DtoMatch match)
         {
-            var json = JsonConvert.SerializeObject(match, Helper.GetJsonSerializer());
+            var json = await Helper.ApiRequestPost(ServerBaseUrl + "Match", JsonConvert.SerializeObject(match, Helper.GetJsonSerializer()));
 
-            //Allow untrusted certificates
-            var handler = new HttpClientHandler() { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
-            HttpClient client = new HttpClient(handler);
-
-            var requestMessage = Helper.GetRequestMessage("POST", ServerBaseUrl + "Match", json);
-            if (requestMessage.Content == null)
+            if (json == null)
             {
-                Console.WriteLine("No content set. Not setting content type...");
-            }
-            else
-            {
-                requestMessage.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                Logger.Error("Failed to create new match {0}.", match.Team1Name + " vs. " + match.Team2Name);
+                return new DtoMatch();
             }
 
-            var response = await client.SendAsync(requestMessage);
-            if (!response.IsSuccessStatusCode)
-            {
-                var responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Failed to add new match. Error: " + responseBody);
-                return null;
-            }
-            else //It is successful and contains the newMatch DTO Object
-            {
-                var newMatch = await response.Content.ReadAsStringAsync();
-                if (newMatch == null)
-                    return null;
-
-                return JsonConvert.DeserializeObject<DtoMatch>(newMatch, Helper.GetJsonSerializer());
-            }
+            Logger.Trace("Got new match: {0}", json);
+            var newMatch = JsonConvert.DeserializeObject<DtoMatch>(json, Helper.GetJsonSerializer());
+            return newMatch ?? new DtoMatch();
         }
 
         /// <summary>
@@ -360,7 +403,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set match {0}", match.Id);
+                Logger.Error("Failed to set match {0}", match.Id);
+            }
+            else
+            {
+                Logger.Trace("Set match for match {0}.", match.Id);
             }
         }
 
@@ -373,7 +420,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set match {0}", matchId);
+                Logger.Error("Failed to set match {0}", matchId);
+            }
+            else
+            {
+                Logger.Trace("Sent control command for match {0}: {1}", matchId, command);
             }
         }
 
@@ -390,7 +441,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set match goal for {0} and team {1} amount {2}", matchId, teamId, amount);
+                Logger.Error("Failed to set match goal for {0} and team {1} amount {2}", matchId, teamId, amount);
+            }
+            else
+            {
+                Logger.Trace("Sent match amout for match {0}, team {1}: {2}", matchId, teamId, amount);
             }
         }
 
@@ -406,7 +461,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set match status for {0} and status {1}", matchId, newMatchStatus);
+                Logger.Error("Failed to set match status for {0} and status {1}", matchId, newMatchStatus);
+            }
+            else
+            {
+                Logger.Trace("Sent new match status for {0}: {1}", matchId, newMatchStatus);
             }
         }
 
@@ -430,8 +489,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/events");
             if (json == null)
+            {
+                Logger.Error("Failed to get match events for {0}", matchId);
                 return new List<DtoMatchEvent>();
+            }
 
+            Logger.Trace("Got match events for {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<List<DtoMatchEvent>>(json, Helper.GetJsonSerializer());
             return setting ?? new List<DtoMatchEvent>();
         }
@@ -447,7 +510,11 @@ namespace LeDi.Shared
 
             if (response == null)
             {
-                Console.WriteLine("Failed to set next halftime for matchId {0}", matchId);
+                Logger.Error("Failed to set next halftime for matchId {0}", matchId);
+            }
+            else
+            {
+                Logger.Trace("Set next halftime for match {0}", matchId);
             }
         }
 
@@ -459,8 +526,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Match/" + matchId + "/penalty");
             if (json == null)
+            {
+                Logger.Error("Failed to get match penalties for match {0}", matchId);
                 return new List<DtoMatchPenalty>();
+            }
 
+            Logger.Trace("Got match penalties for match {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<List<DtoMatchPenalty>>(json, Helper.GetJsonSerializer());
             return setting ?? new List<DtoMatchPenalty>();
         }
@@ -475,8 +546,12 @@ namespace LeDi.Shared
 
             var json = await Helper.ApiRequestPost(ServerBaseUrl + "Match/" + matchId + "/penalty", jsonIn);
             if (json == null)
+            {
+                Logger.Error("Failed to add match penalty using {0} for {1}.", jsonIn, matchId);
                 return new DtoMatchPenalty();
+            }
 
+            Logger.Trace("Got match penalty for match {0}: {1}", matchId, json);
             var setting = JsonConvert.DeserializeObject<DtoMatchPenalty>(json, Helper.GetJsonSerializer());
             return setting ?? new DtoMatchPenalty();
         }
@@ -489,8 +564,12 @@ namespace LeDi.Shared
         {            
             var json = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/penalty/" + penaltyId, System.Text.Json.JsonEncodedText.Encode(revokeNote).ToString());
             if (json == null)
+            {
+                Logger.Error("Failed to revoke match penalty {0} for match {1} with note {2}.",penaltyId, matchId, revokeNote);
                 return new DtoMatchPenalty();
+            }
 
+            Logger.Trace("Revoked match penalty {0} for match {1}: {2}", penaltyId, matchId, json);
             var setting = JsonConvert.DeserializeObject<DtoMatchPenalty>(json, Helper.GetJsonSerializer());
             return setting ?? new DtoMatchPenalty();
         }
@@ -506,8 +585,12 @@ namespace LeDi.Shared
         {
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Rule/rules");
             if (json == null)
+            {
+                Logger.Error("Failed to get rule list.");
                 return null;
+            }
 
+            Logger.Trace("Got rules: {0}", json);
             var rules = JsonConvert.DeserializeObject<DtoRuleBody?>(json, Helper.GetJsonSerializer());
             return rules;
         }

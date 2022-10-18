@@ -79,6 +79,7 @@ else
 }
 
 @code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private List<DtoMatch> MatchList = new List<DtoMatch>();
 
     protected override async Task OnInitializedAsync()

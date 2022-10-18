@@ -87,6 +87,7 @@ else
 }
 
 @code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private List<DtoSetting>? SettingList;
     private List<DtoDevice>? DeviceList;
 
@@ -95,19 +96,23 @@ else
         SettingList = await Api.GetSettingAsync();
         DeviceList = await Api.GetDeviceAsync();
     }
-    
+
     private async void SaveSettings()
     {
+        Logger.Trace("Saving settings...");
+
         if (SettingList == null) 
-        {   
+        {
+            Logger.Warn("No settings to save.");
             await JSRuntime.InvokeVoidAsync("alert", "No Settings to save.");
             return;
         }
-        
+
         // Get the current serversettings to check which settings changed
         var currentServerSettings = await Api.GetSettingAsync();
         if (currentServerSettings == null)
         {
+            Logger.Warn("Cannot get current settings from server.");
             await JSRuntime.InvokeVoidAsync("alert", "Cannot get current settings from server.");
             return;
         }

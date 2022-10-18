@@ -80,6 +80,7 @@ else
 }
 
 @code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private DtoMatch? Match = null;
     private bool EditCollapsed = true;
 
@@ -100,7 +101,7 @@ else
             Match.MatchStatus = (int)value;
         }
     }
-    
+
     private int TimeLeftMinutesProxy
     {
         get
@@ -114,7 +115,7 @@ else
         {
             if (Match == null)
                 return;
-            
+
             Match.TimeLeftSeconds = value * 60 + TimeLeftSecondsProxy;
         }
     }
@@ -132,7 +133,7 @@ else
         {
             if (Match == null)
                 return;
-            
+
             Match.TimeLeftSeconds = TimeLeftMinutesProxy + value;
         }
     }
@@ -140,7 +141,10 @@ else
     protected override async Task OnInitializedAsync()
     {
         if (Id == null)
+        {
+            Logger.Warn("Cannot load match. No Id given.");
             return;
+        }
 
         Match = await Api.GetMatchAsync(Id.Value);
 
@@ -148,9 +152,14 @@ else
     }
 
     private async void SaveMatch()
-    {
+    {   
         if (Match == null)
+        {
+            Logger.Warn("Cannot save match. It is null.");
             return;
+        }
+
+        Logger.Debug("Saving match...");
 
         await Api.SetMatchAsync(Match);
     }
