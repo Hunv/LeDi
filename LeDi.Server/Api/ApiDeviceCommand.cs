@@ -11,18 +11,27 @@ namespace LeDi.Server.Api
 {
     public static class ApiDeviceCommand
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Get all Device commands of a device
         /// </summary>
         public static string? GetDeviceCommands(string deviceId)
         {
+            Logger.Trace("Executing GetDeviceCommands for deviceId {0}...", deviceId);
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.DeviceCommands != null)
             {
-                List<DtoDeviceCommand>? dto = dbContext.DeviceCommands.Select(aDevice => aDevice.ToDto()).ToList();
-                return JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                List<DtoDeviceCommand>? dto = dbContext.DeviceCommands.Where(x => x.DeviceId == deviceId).Select(aDevice => aDevice.ToDto()).ToList();
+
+                var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                Logger.Debug("GetDeviceCommands got the follwoing results: {0}", json);
+                return json;
             }
+
+            Logger.Debug("GetDeviceCommands returns an empty response.");
             return null;
         }
 
@@ -31,9 +40,11 @@ namespace LeDi.Server.Api
         /// </summary>
         public static async Task SetDeviceCommand(DtoDeviceCommand command)
         {
+            Logger.Trace("Executing SetDeviceCommand...");
+
             if (string.IsNullOrWhiteSpace(command.DeviceId) || string.IsNullOrWhiteSpace(command.Command))
             {
-                Console.WriteLine("SetDeviceCommand is missing deviceId or Command.");
+                Logger.Warn("SetDeviceCommand is missing deviceId or Command.");
                 return;
             }
 
@@ -43,6 +54,8 @@ namespace LeDi.Server.Api
             {
                 set.Add(new DeviceCommand(command.DeviceId, command.Command, command.Parameter ?? ""));
                 await dbContext.SaveChangesAsync();
+
+                Logger.Debug("SetDeviceCommand \"{0}\" for Device {1} with Parameter \"{2}\" set", command.Command, command.DeviceId, command.Parameter);
             }
         }
 
@@ -52,9 +65,11 @@ namespace LeDi.Server.Api
         /// </summary>
         public static async Task DeleteDeviceCommand(int id, string deviceId)
         {
+            Logger.Trace("Executing DeleteDeviceCommand...");
+
             if (string.IsNullOrWhiteSpace(deviceId))
             {
-                Console.WriteLine("Cannot remove DeviceCommand because deviceId is missing");
+                Logger.Warn("Cannot remove DeviceCommand because deviceId is missing");
                 return;
             }
 
@@ -66,8 +81,10 @@ namespace LeDi.Server.Api
                 if (tm != null)
                 {
                     set.Remove(tm);
+                    await dbContext.SaveChangesAsync();
+
+                    Logger.Debug("Removed device command {0} for device {1}", id, deviceId);
                 }
-                await dbContext.SaveChangesAsync();
             }
         }
     }

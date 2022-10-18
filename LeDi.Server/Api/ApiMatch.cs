@@ -14,53 +14,72 @@ namespace LeDi.Server.Api
 {
     public static class ApiMatch
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Gets a List of all Matches as JSON
         /// </summary>
         /// <returns>List of all Matches as JSON</returns>
         public static string GetMatchList()
         {
+            Logger.Trace("Executing GetMatchList...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
             {
                 List<DtoMatch>? dto = dbContext.Matches.Select(aMatch => aMatch.ToDto()).ToList();
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                Logger.Debug("GetMatchList returns the following result: {0}", json);
                 return json;
             }
+
+            Logger.Debug("GetMatchList returns an empty response.");
             return "";
         }
 
         /// <summary>
         /// Gets a specific match as JSON
         /// </summary>
-        /// <param name="id">ID of the Match</param>
+        /// <param name="matchId">ID of the Match</param>
         /// <returns>Specific match details as JSON</returns>
-        public static string GetMatch(int id)
+        public static string GetMatch(int matchId)
         {
+            Logger.Trace("Executing GetMatch...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
             {
                 Match? dto = dbContext.Matches
                     .Include("MatchPenalties")
-                    .SingleOrDefault(x => x.Id == id);
+                    .SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
-                    return JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                {
+                    var json = JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                    Logger.Debug("GetMatch for match {0} returns the follwing result: {1}", matchId, json);
+                    return json;
+                }
                 else
+                {
+                    Logger.Debug("GetMatch for match {0} returns an empty response.", matchId);
                     return "";
+                }
             }
 
+            Logger.Debug("GetMatch for match {0} returns an empty response.", matchId);
             return "";
         }
 
         /// <summary>
         /// Gets a specific match as JSON including ALL properties (incl. subtrees)
         /// </summary>
-        /// <param name="id">ID of the Match</param>
+        /// <param name="matchId">ID of the Match</param>
         /// <returns>Specific match details as JSON</returns>
-        public static string GetMatchFull(int id)
+        public static string GetMatchFull(int matchId)
         {
+            Logger.Trace("Executing GetMatchFull...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
@@ -71,13 +90,21 @@ namespace LeDi.Server.Api
                     .Include("MatchReferees")
                     .Include("RulePenaltyList")
                     .Include("RulePenaltyList.Display")
-                    .SingleOrDefault(x => x.Id == id);
+                    .SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
-                    return JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                {
+                    var json = JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                    Logger.Debug("GetMatchFull for match {0} returns the following result: {1}", matchId, json);
+                    return json;
+                }
                 else
+                {
+                    Logger.Debug("GetMatchFull for match {0} returns an empty response.", matchId);
                     return "";
+                }
             }
 
+            Logger.Debug("GetMatchFull for match {0} returns an empty response.", matchId);
             return "";
         }
 
@@ -88,6 +115,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public async static Task SetMatch(DtoMatch match, int matchId)
         {
+            Logger.Trace("Executing SetMatch...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
@@ -128,6 +157,7 @@ namespace LeDi.Server.Api
                     if (match.HalftimeCurrent >= 0)
                         dbMatch.CurrentHalftime = match.HalftimeCurrent;
 
+                    Logger.Debug("SetMatch for match {0} executed.", matchId);
                     await dbContext.SaveChangesAsync();
                 }
             }
@@ -140,6 +170,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public async static Task<DtoMatch?> NewMatch(DtoMatch match)
         {
+            Logger.Trace("Executing NewMatch...");
+
             using var dbContext = new TwDbContext();
 
             var newMatch = new Match();
@@ -153,8 +185,9 @@ namespace LeDi.Server.Api
             //This adds the ID to the newMatch variable
             await dbContext.SaveChangesAsync();
 
-
-            return newMatch.ToDto();
+            var json = newMatch.ToDto();
+            Logger.Debug("NewMatch returns the following result: {0}", json);
+            return json;
         }
 
         /// <summary>
@@ -164,16 +197,27 @@ namespace LeDi.Server.Api
         /// <returns>The time left in seconds as a string</returns>
         public static string GetMatchTime(int matchId)
         {
+            Logger.Trace("Executing GetMatchTime...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
             {
                 var dto = dbContext.Matches.SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
-                    return JsonConvert.SerializeObject(dto.CurrentTimeLeft, Helper.GetJsonSerializer());
+                {
+                    var json = JsonConvert.SerializeObject(dto.CurrentTimeLeft, Helper.GetJsonSerializer());
+                    Logger.Debug("GetMatchTime for match {0} returns the following result: {1}", matchId, json);
+                    return json;
+                }
                 else
+                {
+                    Logger.Debug("GetMatchTime for match {0} returns an empty response.", matchId);
                     return "";
+                }
             }
+
+            Logger.Debug("GetMatchTime for match {0} returns an empty response.", matchId);
             return "";
         }
 
@@ -184,6 +228,8 @@ namespace LeDi.Server.Api
         /// <returns>The JSON with the current time left and a hash over all other properties relevant for a live match.</returns>
         public static async Task<string> GetMatchCore(int matchId)
         {
+            Logger.Trace("Executing GetMatchCore...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
@@ -198,13 +244,18 @@ namespace LeDi.Server.Api
                     var dto = new DtoMatchCore() { TimeLeftSeconds = match.CurrentTimeLeft, PropertyHash = propHash };
 
                     var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                    Logger.Debug("GetMatchCore for match {0} returns the following result: {1}", matchId, json);
                     return json;
                 }
                 else
+                {
+                    Logger.Debug("GetMatchCore for match {0} returns an empty response.", matchId);
                     return "";
+                }
             }
-            return "";
 
+            Logger.Debug("GetMatchCore for match {0} returns an empty response.", matchId);
+            return "";
         }
 
         /// <summary>
@@ -215,6 +266,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public static async Task SetMatchStatus(int matchId, int newStatus)
         {
+            Logger.Trace("Executing SetMatchStatus...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
@@ -226,6 +279,8 @@ namespace LeDi.Server.Api
 
                     await dbContext.SaveChangesAsync();
                     await RunMatchStatusChangeActions(dbMatch, newStatus);
+
+                    Logger.Debug("Set match status for {0} to {1}.", matchId, newStatus);
                 }
             }
 
@@ -239,6 +294,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public static async Task SetMatchTime(int matchId, int timeleft)
         {
+            Logger.Trace("Executing SetMatchTime...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
@@ -248,6 +305,8 @@ namespace LeDi.Server.Api
                 {
                     dto.CurrentTimeLeft = timeleft;
                     await dbContext.SaveChangesAsync();
+
+                    Logger.Debug("Set match time for {0} to {1}.", matchId, timeleft);
                 }
             }
         }
@@ -259,18 +318,21 @@ namespace LeDi.Server.Api
         /// <param name="matchId">The match ID of the match to start the time for</param>
         public static async Task StartMatchtime(int matchId)
         {
+            Logger.Trace("Executing StartMatchtime...");
+
             //If match not already exist, create a new one
             if (!MatchEngine.OngoingMatches.Any(x => x.MatchId == matchId))
             {
                 MatchEngine.AddOngoingMatch(new MatchHandler(matchId));
             }
 
-            
+            // Get the match object
             var match = MatchEngine.OngoingMatches.Single(x => x.MatchId == matchId);
 
             // Create the match event
             using var dbContext = new TwDbContext();
 
+            // Add the mathc event
             if (dbContext.Matches != null)
             {
                 var matchDb = dbContext.Matches.Include("MatchEvents").SingleOrDefault(x => x.Id == matchId);
@@ -298,6 +360,8 @@ namespace LeDi.Server.Api
         /// <param name="id">The match ID of the match to pause the time for</param>
         public static async Task PauseMatchtime(int matchId)
         {
+            Logger.Trace("Executing PauseMatchtime...");
+
             var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
             if (matchHandler != null)
             {
@@ -314,6 +378,8 @@ namespace LeDi.Server.Api
         /// <param name="matchId">The match ID of the match to end</param>
         public static async Task EndMatch(int matchId)
         {
+            Logger.Trace("Executing EndMatch...");
+
             var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
             if (matchHandler != null)
             {
@@ -331,6 +397,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public static async Task NextHalftime(int matchId)
         {
+            Logger.Trace("Executing NextHalftime for matchId {0}...", matchId);
+
             var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
             if (matchHandler != null)
             {
@@ -350,6 +418,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         private static async Task LogEvent(int matchId, MatchEventEnum matchEvent, string matchText)
         {
+            Logger.Trace("Logging new matchevent {0} for match {1} with text {2}...", (int)matchEvent, matchId, matchText);
+
             using var dbContext = new TwDbContext();
             if (dbContext.Matches != null)
             {
@@ -387,6 +457,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public static async Task SetMatchGoal(int matchId, int teamId, int amount)
         {
+            Logger.Trace("Executing SetMatchGoal...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null)
@@ -410,6 +482,7 @@ namespace LeDi.Server.Api
                     }
 
                     await dbContext.SaveChangesAsync();
+                    Logger.Debug("SetMatchGoal added {0} scores for team {1} to match {2}", amount, teamId, matchId);
                 }
             }
 
@@ -421,6 +494,8 @@ namespace LeDi.Server.Api
         /// <returns>JSON string with the list of all mathces that are currently loaded on the cache, so they are prepared, running or recently finished.</returns>
         public static string GetLiveMatchList()
         {
+            Logger.Trace("Executing GetLiveMatchList...");
+
             using var dbContext = new TwDbContext();
 
             var ongoingMatchIds = MatchEngine.OngoingMatches.Select(x => x.MatchId);
@@ -432,10 +507,12 @@ namespace LeDi.Server.Api
                     dto.Add(aMatch.ToDto());
 
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                Logger.Debug("GetLiveMatchList returns the following result: {0}", json);
                 return json;
             }
             else
             {
+                Logger.Debug("GetLiveMatchList returns an empty result. No match seem to be running.");
                 return "{}";
             }
         }
@@ -446,6 +523,8 @@ namespace LeDi.Server.Api
         /// <returns>JSON string with the list of all match events</returns>
         public static string GetMatchEvents(int matchId)
         {
+            Logger.Trace("Executing GetMatchEvents...");
+
             using var dbContext = new TwDbContext();
 
             var dto = new List<DtoMatchEvent>();
@@ -464,10 +543,12 @@ namespace LeDi.Server.Api
                     dto.Add(aEvent.ToDto());
 
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                Logger.Debug("GetMatchEvents for match {0} returns the following result: {1}", matchId, json);
                 return json;
             }
             else
             {
+                Logger.Debug("GetLiveMatchList returns an empty result. No match event for {0} available.", matchId);
                 return "{}";
             }
         }
@@ -479,6 +560,8 @@ namespace LeDi.Server.Api
         /// <param name="newMatchStatus">the new match status</param>
         private async static Task RunMatchStatusChangeActions(Match dto, int newMatchStatus)
         {
+            Logger.Trace("Executing RunMatchStatusChangeActions...");
+
             int[] stopTimeStatus = new int[] { (int)MatchStatusEnum.Canceled, (int)MatchStatusEnum.Closed, (int)MatchStatusEnum.Ended, (int)MatchStatusEnum.Planned, (int)MatchStatusEnum.ReadyToStart, (int)MatchStatusEnum.Stopped };
             int[] startTimeStatus = new int[] { (int)MatchStatusEnum.Running };
 
@@ -510,6 +593,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public async static Task<string> NewMatchPenalty(int matchId, DtoMatchPenalty dto)
         {
+            Logger.Trace("Executing NewMatchPenalty...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null && dbContext.MatchPenalties != null)
@@ -560,10 +645,11 @@ namespace LeDi.Server.Api
 
                 dto.Id = pen.Id;
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
-
+                Logger.Debug("NewMatchPenalty for match {0} returns the following result: {1}", matchId, json);
                 return json;
             }
 
+            Logger.Debug("NewMatchPenalty for match {0} returns an empty result.", matchId);
             return "";
         }
 
@@ -573,6 +659,8 @@ namespace LeDi.Server.Api
         /// <returns>JSON string with the list of all match penaties for a match</returns>
         public static string GetMatchPenalties(int matchId)
         {
+            Logger.Trace("Executing GetMatchPenalties...");
+
             using var dbContext = new TwDbContext();
 
             var dto = new List<DtoMatchPenalty>();
@@ -591,10 +679,12 @@ namespace LeDi.Server.Api
                     dto.Add(aPenalty.ToDto());
 
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
+                Logger.Debug("GetMatchPenalties for match {0} returns the following result: {1}", matchId, json);
                 return json;
             }
             else
             {
+                Logger.Debug("GetMatchPenalties for match {0} returns an empty result. No match penalties available.", matchId);
                 return "{}";
             }
         }
@@ -607,6 +697,8 @@ namespace LeDi.Server.Api
         /// <returns></returns>
         public async static Task<string> RevokeMatchPenalty(int matchId, int penaltyId, string revokeNote)
         {
+            Logger.Trace("Executing RevokeMatchPenalty...");
+
             using var dbContext = new TwDbContext();
 
             if (dbContext.Matches != null && dbContext.MatchPenalties != null)
@@ -639,6 +731,7 @@ namespace LeDi.Server.Api
                     return "";
 
                 var json = JsonConvert.SerializeObject(dto.ToDto(), Helper.GetJsonSerializer());
+                Logger.Debug("RevokeMatchPenalty for penalty {0} for match {1} with note {2} returns the following result: {3}", penaltyId, matchId, revokeNote, json);
                 return json;
             }
             return "";

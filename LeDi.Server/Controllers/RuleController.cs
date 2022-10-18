@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using LeDi.Server.DatabaseModel;
-using LeDi.Server.Classes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace LeDi.Server.Controllers
 {
@@ -15,13 +11,8 @@ namespace LeDi.Server.Controllers
     [Route("api/[controller]")]
     public class RuleController : ControllerBase
     {
-        private readonly ILogger<SettingController> _logger;
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public RuleController(ILogger<SettingController> logger)
-        {
-            _logger = logger;
-        }
-        
         /// <summary>
         /// Gets the rules for all game types
         /// </summary>
@@ -29,12 +20,12 @@ namespace LeDi.Server.Controllers
         [HttpGet("rules")]
         public async Task<IActionResult> GetRules()
         {
-            _logger.LogDebug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
+            _logger.Debug("{0}: Get Rules", Request.HttpContext.Connection.RemoteIpAddress);
 
             var json = await Api.ApiRule.GetRules();
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            _logger.Debug("{0}: Got Rules. JSON {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
             return result;
         }
     }

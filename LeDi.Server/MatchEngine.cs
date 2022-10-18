@@ -8,8 +8,12 @@ namespace LeDi.Server
     {
         public static List<MatchHandler> OngoingMatches { get; private set; } = new List<MatchHandler>();
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public static void AddOngoingMatch(MatchHandler matchHandler)
         {
+            Logger.Trace("Adding match {0} to cached ongoing matches.", matchHandler.MatchId);
+
             matchHandler.DisposeMatchHandler += MatchHandler_DisposeMatchHandler;
             OngoingMatches.Add(matchHandler);
         }
@@ -25,26 +29,34 @@ namespace LeDi.Server
         /// </summary>
         public static void LoadRunningMatches()
         {
-            // Create the match event
-            using var dbContext = new TwDbContext();
-
-            if (dbContext.Matches != null)
+            Logger.Debug("Caching unfinished matches...");
+            try
             {
-                foreach(var aMatch in dbContext.Matches)
-                {
-                    if (aMatch.MatchStatus == (int)MatchStatusEnum.Canceled ||
-                        aMatch.MatchStatus == (int)MatchStatusEnum.Closed ||
-                        aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
-                        continue;
+                // Create the match event
+                using var dbContext = new TwDbContext();
 
-                    //If match not already loaded, create a new one
-                    if (!MatchEngine.OngoingMatches.Any(x => x.MatchId == aMatch.Id))
+                if (dbContext.Matches != null)
+                {
+                    foreach (var aMatch in dbContext.Matches)
                     {
-                        MatchEngine.AddOngoingMatch(new MatchHandler(aMatch.Id, false));
+                        if (aMatch.MatchStatus == (int)MatchStatusEnum.Canceled ||
+                            aMatch.MatchStatus == (int)MatchStatusEnum.Closed ||
+                            aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
+                            continue;
+
+                        //If match not already loaded, create a new one
+                        if (!MatchEngine.OngoingMatches.Any(x => x.MatchId == aMatch.Id))
+                        {
+                            MatchEngine.AddOngoingMatch(new MatchHandler(aMatch.Id, false));
+                        }
                     }
                 }
+                Logger.Trace("Cached unfinished matches.");
             }
-
+            catch(Exception ex)
+            {
+                Logger.Error(ex, "Failed to cache unfinished matches.");
+            }
         }
     }
 }

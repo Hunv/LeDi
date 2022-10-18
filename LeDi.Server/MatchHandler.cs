@@ -14,10 +14,13 @@ namespace LeDi.Server
         private bool IsInitialized = false;
         private MatchStatusEnum MatchStatus = MatchStatusEnum.Undefined;
         public int MatchId { get; set; }
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public MatchHandler(int matchId, bool setPlannedStatus = true)
         {
-            MatchId = matchId;            
+            _logger.Debug("Initializing new MatchHandler for match {0}", matchId);
+
+            MatchId = matchId;
 
             if (setPlannedStatus)
                 Task.Run(async () => await SetMatchStatus(MatchStatusEnum.Planned, MatchId)).Wait();
@@ -25,6 +28,7 @@ namespace LeDi.Server
 
         private async void TmrMatchtimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            _logger.Trace("tmrMatchtimer elapsed");
             await UpdateMatchtimer();
         }
 
@@ -34,17 +38,27 @@ namespace LeDi.Server
         /// <returns></returns>
         private async Task UpdateMatchtimer()
         {
+            _logger.Trace("UpdateMatchtimer called.");
+
             //If not initialized, cancel
             if (ReferenceSystemTime == null)
+            {
+                _logger.Warn("ReferenceSystemTime not set.");
                 return;
+            }
 
-            //If a second of over
+            //If a second is over
             if (ReferenceSecond != DateTime.Now.Second)
             {
+                _logger.Trace("A Second is over.");
+
                 //Get the difference of the seconds. In case of high load or hickup, it may be more than one
                 var diff = DateTime.Now.Second - ReferenceSecond;
                 if (diff < 0)
+                {
+                    _logger.Debug("Correcting the reference setting due to possible high load or hickup.");
                     diff += 60;
+                }
 
                 //Set the new reference value
                 ReferenceSecond = DateTime.Now.Second;
@@ -64,9 +78,9 @@ namespace LeDi.Server
                         Stop();
                     }
                     else
-                    {
+                    {                        
                         dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft -= diff;
-                        Console.WriteLine("{2} Timeleft: {0}, (-{1}) ", dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft, diff, MatchId);
+                        _logger.Debug("Setting new time left {0} (-{1}) for match {2}", dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft, diff, MatchId);
                         await dbContext.SaveChangesAsync();
                     }
                 }
@@ -75,13 +89,17 @@ namespace LeDi.Server
 
         public async Task Start()
         {
+            _logger.Info("Starting match timer for match {0}...", MatchId);
+
             if (!IsInitialized)
             {
+                _logger.Debug("Handler is not initialized. Initializing...");
+
                 tmrMatchtimer.Elapsed += TmrMatchtimer_Elapsed;
                 tmrDisposeTimer.Elapsed += TmrDisposetimer_Elapsed;
                 IsInitialized = true;
 
-                // Load the Match rules
+                // Load the Match
                 using var dbContext = new TwDbContext();
                 if (dbContext.Matches != null)
                 {
@@ -93,6 +111,7 @@ namespace LeDi.Server
                             await MatchRules.LoadRules(match.GameName);
                         }
 
+                        // If the match was not already running, run it by increasing the halftime to 1.
                         if (match.CurrentHalftime == 0)
                             match.CurrentHalftime++;
 
@@ -103,6 +122,10 @@ namespace LeDi.Server
 
             ReferenceSystemTime = DateTime.Now;
             ReferenceSecond = DateTime.Now.Second == 0 ? 59 : DateTime.Now.Second - 1;
+
+            _logger.Debug("ReferenceSystemTime is {0}", ReferenceSystemTime);
+            _logger.Debug("ReferenceSecond is {0}", ReferenceSecond);
+
             tmrMatchtimer.Start();
             await UpdateMatchtimer();
             await SetMatchStatus(MatchStatusEnum.Running, MatchId);
@@ -114,6 +137,7 @@ namespace LeDi.Server
         /// <returns></returns>
         public void Stop()
         {
+            _logger.Info("Stopping matchtimer for match {0}...", MatchId);
             tmrMatchtimer.Stop();
         }
 
@@ -122,6 +146,7 @@ namespace LeDi.Server
         /// </summary>
         public async Task Finish()
         {
+            _logger.Info("Finishing match {0}...", MatchId);
             tmrMatchtimer.Stop();
             ReferenceSystemTime = null;
             await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
@@ -134,6 +159,7 @@ namespace LeDi.Server
         /// </summary>
         public async Task NextHalftime()
         {
+            _logger.Info("Preparing next Halftime for match {0}...", MatchId);
             using var dbContext = new TwDbContext();
             if (dbContext.Matches != null)
             {
@@ -158,6 +184,8 @@ namespace LeDi.Server
         /// <param name="matchId"></param>
         private async Task SetMatchStatus(MatchStatusEnum status, int matchId)
         {
+            _logger.Trace("Executing SetMatchStatus...");
+
             // Set the cached status
             MatchStatus = status;
 
@@ -172,6 +200,8 @@ namespace LeDi.Server
                     // Set the match status in DB
                     match.MatchStatus = (int)status;
                     await dbContext.SaveChangesAsync();
+
+                    _logger.Info("Set status for match {0} to {1}.", MatchId, (int)status);
                 }
             }
         }
@@ -183,6 +213,7 @@ namespace LeDi.Server
         /// <param name="e"></param>
         private async void TmrDisposetimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            _logger.Trace("Disposetimer elapsed...");
             await SetMatchStatus(MatchStatusEnum.Ended, MatchId);
             OnDisposeMatchhandler(new EventArgs());
         }
@@ -201,8 +232,10 @@ namespace LeDi.Server
         /// <param name="matchEvent"></param>
         /// <param name="matchText"></param>
         /// <returns></returns>
-        private static async Task LogEvent(int matchId, MatchEventEnum matchEvent, string matchText)
+        private async Task LogEvent(int matchId, MatchEventEnum matchEvent, string matchText)
         {
+            _logger.Trace("Logging new matchevent {0} for match {1} with text {2}...", (int)matchEvent, matchId, matchText);
+
             using var dbContext = new TwDbContext();
             if (dbContext.Matches != null)
             {

@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using LeDi.Server.DatabaseModel;
-using LeDi.Server.Classes;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using LeDi.Shared.DtoModel;
 
 namespace LeDi.Server.Controllers
@@ -16,12 +12,7 @@ namespace LeDi.Server.Controllers
     [Route("api/[controller]")]
     public class DeviceController : ControllerBase
     {
-        private readonly ILogger<SettingController> _logger;
-
-        public DeviceController(ILogger<SettingController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Gets all devices
@@ -30,12 +21,12 @@ namespace LeDi.Server.Controllers
         [HttpGet]
         public IActionResult GetDeviceList()
         {
-            _logger.LogDebug("{0}: Get Device List", Request.HttpContext.Connection.RemoteIpAddress);
+            _logger.Debug("{0}: Get Device List", Request.HttpContext.Connection.RemoteIpAddress);
 
             var json = Api.ApiDevice.GetDeviceList();
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Devicelist. {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
+            _logger.Debug("{0}: Got Devicelist. {1}", Request.HttpContext.Connection.RemoteIpAddress, json);
             return result;
         }
 
@@ -48,12 +39,12 @@ namespace LeDi.Server.Controllers
             string deviceId
             )
         {
-            _logger.LogDebug("{0}: Get Device settings for {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
+            _logger.Debug("{0}: Get Device settings for {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
 
             var json = Api.ApiDevice.GetDeviceSettings(deviceId);
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Device settings for {1}. {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, json);
+            _logger.Debug("{0}: Got Device settings for {1}. {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, json);
             return result;
         }
 
@@ -67,12 +58,12 @@ namespace LeDi.Server.Controllers
             string settingName
             )
         {
-            _logger.LogDebug("{0}: Get Device Setting {1} for {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, deviceId);
+            _logger.Debug("{0}: Get Device Setting {1} for {2}", Request.HttpContext.Connection.RemoteIpAddress, settingName, deviceId);
 
             var json = Api.ApiDevice.GetDeviceSetting(deviceId, settingName);
             var result = new OkObjectResult(json);
 
-            _logger.LogDebug("{0}: Got Setting {1} for {2} JSON {3}", Request.HttpContext.Connection.RemoteIpAddress, settingName, deviceId, json);
+            _logger.Debug("{0}: Got Setting {1} for {2} JSON {3}", Request.HttpContext.Connection.RemoteIpAddress, settingName, deviceId, json);
             return result;
         }
 
@@ -85,11 +76,11 @@ namespace LeDi.Server.Controllers
             [FromBody] DtoDeviceSetting setting
             )
         {
-            _logger.LogDebug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
+            _logger.Debug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
 
             await Api.ApiDevice.SetDeviceSetting(setting.DeviceId, setting.Name, setting.Value);
 
-            _logger.LogDebug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
+            _logger.Debug("{0}: Set Setting for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, setting.DeviceId, setting.Name, setting.Value);
             return new OkResult(); ;
         }
 
@@ -103,11 +94,11 @@ namespace LeDi.Server.Controllers
             [FromRoute] string settingName
             )
         {
-            _logger.LogDebug("{0}: Delete Setting for {1} from {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, settingName);
+            _logger.Debug("{0}: Delete Setting for {1} from {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, settingName);
 
             await Api.ApiDevice.DeleteDeviceSetting(deviceId, settingName);
 
-            _logger.LogDebug("{0}: Delete Setting for {1} from {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, settingName);
+            _logger.Debug("{0}: Delete Setting for {1} from {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, settingName);
             return new OkResult(); ;
         }
 
@@ -122,13 +113,13 @@ namespace LeDi.Server.Controllers
             )
         {
             if (string.IsNullOrEmpty(device.DeviceId))
-                _logger.LogDebug("{0}: Creating a new device... Model: {1}, Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
+                _logger.Debug("{0}: Creating a new device... Model: {1}, Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
             else
-                _logger.LogDebug("{0}: Verifing device... ID: {1}, Model: {2}, Type: {3}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceId, device.DeviceModel, device.DeviceType);
+                _logger.Debug("{0}: Verifing device... ID: {1}, Model: {2}, Type: {3}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceId, device.DeviceModel, device.DeviceType);
 
             var json = await Api.ApiDevice.NewDevice(device);
 
-            _logger.LogDebug("{0}: Created/Verified Device. Model: {1} Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
+            _logger.Debug("{0}: Created/Verified Device. Model: {1} Type: {2}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceModel, device.DeviceType);
             return new OkObjectResult(json); ;
         }
 
@@ -141,11 +132,11 @@ namespace LeDi.Server.Controllers
             [FromRoute] string deviceId
             )
         {
-            _logger.LogDebug("{0}: Delete Device {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
+            _logger.Debug("{0}: Delete Device {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
 
             await Api.ApiDevice.DeleteDevice(deviceId);
 
-            _logger.LogDebug("{0}: Deleted Device {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
+            _logger.Debug("{0}: Deleted Device {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
             return new OkResult(); ;
         }
 
