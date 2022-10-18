@@ -71,10 +71,10 @@ namespace LeDi.Server
                     //If time is over and there is no overtime, stop the time
                     //otherwise, reduce the time
                     if (dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft <= 0 &&
-                        (MatchRules.Rules == null || MatchRules.Rules.RuleHalftimeOvertime == false)
+                        (MatchRules.Rules == null || MatchRules.Rules.RulePeriodOvertime == false)
                         )
                     {
-                        await LogEvent(MatchId, MatchEventEnum.HalftimeEnd, "Halftime over.");
+                        await LogEvent(MatchId, MatchEventEnum.PeriodEnd, "Period over.");
                         Stop();
                     }
                     else
@@ -111,9 +111,9 @@ namespace LeDi.Server
                             await MatchRules.LoadRules(match.GameName);
                         }
 
-                        // If the match was not already running, run it by increasing the halftime to 1.
-                        if (match.CurrentHalftime == 0)
-                            match.CurrentHalftime++;
+                        // If the match was not already running, run it by increasing the period to 1.
+                        if (match.CurrentPeriod == 0)
+                            match.CurrentPeriod++;
 
                     }
                     await dbContext.SaveChangesAsync();
@@ -155,21 +155,21 @@ namespace LeDi.Server
         }
 
         /// <summary>
-        /// Load the next halftime after another halftime ended (increase halftime counter and reset the halftime length)
+        /// Load the next period after another period ended (increase period counter and reset the period length)
         /// </summary>
-        public async Task NextHalftime()
+        public async Task NextPeriod()
         {
-            _logger.Info("Preparing next Halftime for match {0}...", MatchId);
+            _logger.Info("Preparing next period for match {0}...", MatchId);
             using var dbContext = new TwDbContext();
             if (dbContext.Matches != null)
             {
                 var match = dbContext.Matches.SingleOrDefault(x => x.Id == MatchId);
                 if (match != null)
                 {
-                    if (match.CurrentHalftime < match.RuleHalftimeCount && match.CurrentTimeLeft == 0)
+                    if (match.CurrentPeriod < match.RulePeriodCount && match.CurrentTimeLeft == 0)
                     {
-                        match.CurrentHalftime++;
-                        match.CurrentTimeLeft = match.RuleHalftimeLength;
+                        match.CurrentPeriod++;
+                        match.CurrentTimeLeft = match.RulePeriodLength;
                     }
 
                     await dbContext.SaveChangesAsync();
@@ -247,7 +247,7 @@ namespace LeDi.Server
 
                     if (match.MatchEvents != null)
                     {
-                        var timeSinceStart = match.RuleHalftimeLength - match.CurrentTimeLeft + (match.CurrentHalftime - 1) * match.RuleHalftimeLength;
+                        var timeSinceStart = match.RulePeriodLength - match.CurrentTimeLeft + (match.CurrentPeriod - 1) * match.RulePeriodLength;
                         if (timeSinceStart < 0)
                             timeSinceStart = 0;
 

@@ -26,8 +26,8 @@ else
         <ValidationMessage For="@(() => Match.Team2Name)" />
         <br />
         
-        <a>Halftime count</a>
-        <InputNumber id="txtHalftimeCount" class="form-control" type="text" @bind-Value="Match.RuleHalftimeCount" />
+        <a>Periods count</a>
+        <InputNumber id="txtPeriodCount" class="form-control" type="text" @bind-Value="Match.RulePeriodCount" />
         <br />
 
         <a>Scheduled Start Time</a>
@@ -68,8 +68,8 @@ else
                 </div>
                 <br /> 
 
-                <a>Current Halftime (0 = Not started)</a>
-                <InputNumber id="txtHalftimeCurrent" class="form-control" type="text" @bind-Value="Match.HalftimeCurrent" />
+                <a>Current Period (0 = Not started)</a>
+                <InputNumber id="txtPeriodCurrent" class="form-control" type="text" @bind-Value="Match.PeriodCurrent" />
                 <br />
             </div>
         </div>

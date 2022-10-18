@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Classes\**" />
+    <Content Remove="Data\Classes\**" />
+    <EmbeddedResource Remove="Data\Classes\**" />
+    <None Remove="Data\Classes\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorInputMask" Version="1.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
@@ -27,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Classes\" />
     <Folder Include="Resources\Components\" />
     <Folder Include="Resources\Shared\" />
   </ItemGroup>

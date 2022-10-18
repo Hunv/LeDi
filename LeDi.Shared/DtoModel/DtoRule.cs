@@ -13,37 +13,37 @@ namespace LeDi.Shared.DtoModel
 
 
         /// <summary>
-        /// Number of "halftimes" in a match
+        /// Number of periods in a match
         /// </summary>
-        [Range(1, int.MaxValue, ErrorMessage = "The number of halftime must be greater than 0.")]
+        [Range(1, int.MaxValue, ErrorMessage = "The number of period must be greater than 0.")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public int? RuleHalftimeCount { get; set; }
+        public int? RulePeriodCount { get; set; }
 
         /// <summary>
-        /// Length of the Halftime
+        /// Length of the periods
         /// </summary>
-        [Range(10, int.MaxValue, ErrorMessage = "Length of a halftime must be at least 10 seconds.")]
+        [Range(10, int.MaxValue, ErrorMessage = "Length of a period must be at least 10 seconds.")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public int? RuleHalftimeLength { get; set; }
+        public int? RulePeriodLength { get; set; }
 
         /// <summary>
-        /// Does a halftime have (optional) overtime?
+        /// Does a periods have (optional) overtime?
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool RuleHalftimeOvertime { get; set; }
+        public bool RulePeriodOvertime { get; set; }
 
         /// <summary>
-        /// Does the time pauses in the last halftime in case an event happens, that breaks the game (except on goal)?
+        /// Does the time pauses in the last period in case an event happens, that breaks the game (except on goal)?
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool RuleHalftimeLastPauseTimeOnEvent { get; set; }
+        public bool RulePeriodLastPauseTimeOnEvent { get; set; }
 
         /// <summary>
-        /// If the time pauses at the end of the last halftime, how much seconds until the end of the last halftime this rule applies?
+        /// If the time pauses at the end of the last period, how much seconds until the end of the last period this rule applies?
         /// </summary>
         [Range(0, int.MaxValue, ErrorMessage = "The time the time pauses before the end of the match must be 0 or positive.")]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
-        public int? RuleHalftimeLastPauseTimeOnEventSeconds { get; set; }
+        public int? RulePeriodLastPauseTimeOnEventSeconds { get; set; }
 
 
 

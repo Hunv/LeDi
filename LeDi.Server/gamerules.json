@@ -3,11 +3,11 @@
     {
       "Gamename": "Other",
 
-      "RuleHalftimeCount": 2,
-      "RuleHalftimeLength": 1800,
-      "RuleHalftimeOvertime": true,
-      "RuleHalftimeLastPauseTimeOnEvent": true,
-      "RuleHalftimeLastPauseTimeOnEventSeconds": 120,
+      "RulePeriodCount": 2,
+      "RulePeriodLength": 1800,
+      "RulePeriodOvertime": true,
+      "RulePeriodLastPauseTimeOnEvent": true,
+      "RulePeriodLastPauseTimeOnEventSeconds": 120,
 
       "RuleMatchExtensionOnDraw": true,
 
@@ -74,11 +74,11 @@
     {
       "Gamename": "Underwaterhockey",
 
-      "RuleHalftimeCount": 2,
-      "RuleHalftimeLength": 900,
-      "RuleHalftimeOvertime": false,
-      "RuleHalftimeLastPauseTimeOnEvent": true,
-      "RuleHalftimeLastPauseTimeOnEventSeconds": 120,
+      "RulePeriodCount": 2,
+      "RulePeriodLength": 900,
+      "RulePeriodOvertime": false,
+      "RulePeriodLastPauseTimeOnEvent": true,
+      "RulePeriodLastPauseTimeOnEventSeconds": 120,
 
       "RuleMatchExtensionOnDraw": false,
 
@@ -285,9 +285,9 @@
     {
       "Gamename": "Soccer",
 
-      "RuleHalftimeCount": 2,
-      "RuleHalftimeLength": 2700,
-      "RuleHalftimeOvertime": true,
+      "RulePeriodCount": 2,
+      "RulePeriodLength": 2700,
+      "RulePeriodOvertime": true,
 
       "RuleMatchExtensionOnDraw": true,
 

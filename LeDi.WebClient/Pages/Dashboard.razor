@@ -25,8 +25,8 @@
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <div>
                             <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Halftime:</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.HalftimeCurrent of @Match.RuleHalftimeCount</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                                 {
                                     if (aPenalty.PenaltyTime > 0)
                                     {
-                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent -1)) ;
 
                                         if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                         {
@@ -85,7 +85,7 @@
                                 {
                                     if (aPenalty.PenaltyTime > 0)
                                     {
-                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent -1)) ;
 
                                         if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                         {

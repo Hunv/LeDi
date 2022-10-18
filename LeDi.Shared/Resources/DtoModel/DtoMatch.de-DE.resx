@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CurrentHalftimeMoreThanZero" xml:space="preserve">
-    <value>Die aktuelle Halbzeit muss größer als 0 sein.</value>
+  <data name="CurrentSpielzeitMoreThanZero" xml:space="preserve">
+    <value>Die aktuelle Spielzeit muss größer als 0 sein.</value>
   </data>
   <data name="NameFormatError" xml:space="preserve">
     <value>Der Name kann nur aus Buchstaben, Zahlen, Bindestrichen, Punkten und Leerzeichen bestehen.</value>

@@ -50,21 +50,21 @@ else
             />
         <br /> 
 
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeCount"))">Number of halftimes</a>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodCount"))">Number of periods</a>
         <InputNumber 
-            id="txtHalftimeCount" 
+            id="txtPeriodCount" 
             class="form-control" 
             type="text" 
-            hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeCount"))" 
+            hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodCount"))" 
             min="1"
-            @bind-Value="@NewMatch.RuleHalftimeCount"
+            @bind-Value="@NewMatch.RulePeriodCount"
             />
         <br /> 
 
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeLength"))">Length of a halftime (minutes : seconds)</a>
-        <div id="txtHalftimeLength" class="input-group" hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimeLength"))">
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodLength"))">Length of a period (minutes : seconds)</a>
+        <div id="txtPeriodLength" class="input-group" hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodLength"))">
             <input 
-                id="txtHalftimeLengthMin" 
+                id="txtPeriodLengthMin" 
                 type="number" 
                 class="form-control" 
                 style="max-width:100px; min-width:50px" 
@@ -75,7 +75,7 @@ else
                 />
             <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
             <input 
-                id="txtHalftimeLengthSec" 
+                id="txtPeriodLengthSec" 
                 type="number" 
                 class="form-control" 
                 style="max-width:100px; min-width:50px" 
@@ -98,27 +98,27 @@ else
         <br /> 
                 
         <InputCheckbox 
-            id="chkHalftimeOvertime" 
-            @bind-Value="NewMatch.RuleHalftimeOvertime" 
-            hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimeOvertime"))"
+            id="chkPeriodOvertime" 
+            @bind-Value="NewMatch.RulePeriodOvertime" 
+            hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodOvertime"))"
             />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimeOvertime"))">Match has overtime</a>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodOvertime"))">Match has overtime</a>
         <br />
 
         <InputCheckbox 
-            id="chkHalftimePauseNearEnd" 
-            @bind-Value="NewMatch.RuleHalftimeLastPauseTimeOnEvent" 
-            hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimePauseNearEnd"))"
+            id="chkPeriodPauseNearEnd" 
+            @bind-Value="NewMatch.RulePeriodLastPauseTimeOnEvent" 
+            hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodPauseNearEnd"))"
             />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("chkHalftimePauseNearEnd"))">Match pauses in case of interruptions near end of match</a>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodPauseNearEnd"))">Match pauses in case of interruptions near end of match</a>
         <br /><br />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimePauseNearEndSec")|| NewMatch.RuleHalftimeLastPauseTimeOnEvent == false)">Number of seconds near end the time will be stopped?</a>
+        <a hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodPauseNearEndSec")|| NewMatch.RulePeriodLastPauseTimeOnEvent == false)">Number of seconds near end the time will be stopped?</a>
         <InputNumber 
-            id="txtHalftimePauseNearEndSec" 
+            id="txtPeriodPauseNearEndSec" 
             class="form-control" 
             type="text" 
-            @bind-Value="@NewMatch.RuleHalftimeLastPauseTimeOnEventSeconds"
-            hidden="@(!FieldList[SelectedGamename].Contains("txtHalftimePauseNearEndSec") || NewMatch.RuleHalftimeLastPauseTimeOnEvent == false)" 
+            @bind-Value="@NewMatch.RulePeriodLastPauseTimeOnEventSeconds"
+            hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodPauseNearEndSec") || NewMatch.RulePeriodLastPauseTimeOnEvent == false)" 
             />
         <br /> 
 
@@ -146,7 +146,7 @@ else
             Gamename = "",
             Team1Name = "Team1",
             Team2Name = "Team2",
-            RuleHalftimeCount = 2,
+            RulePeriodCount = 2,
             TimeLeftSeconds = 600,
             ScheduledTime = DateTime.Now,
             MatchStatus = (int)LeDi.Shared.Enum.MatchStatusEnum.Planned
@@ -187,7 +187,7 @@ else
                 return;
 
             NewMatch.TimeLeftSeconds = value * 60 + TimeLeftSecondsProxy;
-            NewMatch.RuleHalftimeLength = NewMatch.TimeLeftSeconds;
+            NewMatch.RulePeriodLength = NewMatch.TimeLeftSeconds;
         }
     }
 
@@ -209,7 +209,7 @@ else
                 return;
 
             NewMatch.TimeLeftSeconds = TimeLeftMinutesProxy + value;
-            NewMatch.RuleHalftimeLength = NewMatch.TimeLeftSeconds;
+            NewMatch.RulePeriodLength = NewMatch.TimeLeftSeconds;
         }
     }
 
@@ -227,11 +227,11 @@ else
             {
                 "txtTeamName1", 
                 "txtTeamName2",
-                "txtHalftimeCount", 
-                "txtHalftimeLength",
+                "txtPeriodCount", 
+                "txtPeriodLength",
                 "dtScheduledTime",
-                "chkHalftimePauseNearEnd",
-                "txtHalftimePauseNearEndSec",
+                "chkPeriodPauseNearEnd",
+                "txtPeriodPauseNearEndSec",
                 "chkMatchExtensionOnDraw"
             }
         },
@@ -240,8 +240,8 @@ else
             {
                 "txtTeamName1", 
                 "txtTeamName2",
-                "txtHalftimeCount", 
-                "txtHalftimeLength",
+                "txtPeriodCount", 
+                "txtPeriodLength",
                 "dtScheduledTime",
                 "chkMatchExtensionOnDraw"
             }
@@ -251,10 +251,10 @@ else
             {
                 "txtTeamName1", 
                 "txtTeamName2",
-                "txtHalftimeCount", 
-                "txtHalftimeLength",
+                "txtPeriodCount", 
+                "txtPeriodLength",
                 "dtScheduledTime",
-                "chkHalftimeOvertime",
+                "chkPeriodOvertime",
                 "chkMatchExtensionOnDraw"
             }
         },
@@ -263,12 +263,12 @@ else
             {
                 "txtTeamName1", 
                 "txtTeamName2",
-                "txtHalftimeCount", 
-                "txtHalftimeLength",
+                "txtPeriodCount", 
+                "txtPeriodLength",
                 "dtScheduledTime",
-                "chkHalftimeOvertime",
-                "chkHalftimePauseNearEnd",
-                "txtHalftimePauseNearEndSec",
+                "chkPeriodOvertime",
+                "chkPeriodPauseNearEnd",
+                "txtPeriodPauseNearEndSec",
                 "chkMatchExtensionOnDraw"
             }
         },
@@ -301,17 +301,17 @@ else
                 Team1Name = "Team1",
                 Team2Name = "Team2"
         };
-        NewMatch.RuleHalftimeCount = matchRules.RuleHalftimeCount ?? 2;
-        NewMatch.RuleHalftimeLastPauseTimeOnEvent = matchRules.RuleHalftimeLastPauseTimeOnEvent;
-        NewMatch.RuleHalftimeLastPauseTimeOnEventSeconds = matchRules.RuleHalftimeLastPauseTimeOnEventSeconds ?? 0;
-        NewMatch.RuleHalftimeLength = matchRules.RuleHalftimeLength;
-        NewMatch.RuleHalftimeOvertime = matchRules.RuleHalftimeOvertime;
+        NewMatch.RulePeriodCount = matchRules.RulePeriodCount ?? 2;
+        NewMatch.RulePeriodLastPauseTimeOnEvent = matchRules.RulePeriodLastPauseTimeOnEvent;
+        NewMatch.RulePeriodLastPauseTimeOnEventSeconds = matchRules.RulePeriodLastPauseTimeOnEventSeconds ?? 0;
+        NewMatch.RulePeriodLength = matchRules.RulePeriodLength;
+        NewMatch.RulePeriodOvertime = matchRules.RulePeriodOvertime;
         NewMatch.RuleMatchExtensionOnDraw = matchRules.RuleMatchExtensionOnDraw;
         NewMatch.RulePenaltyList = matchRules.RulePenaltyList;
 
         // Set Default values based on rules
-        NewMatch.RuleHalftimeCount = NewMatch.RuleHalftimeCount ?? 2; //Note: RuleHalftimeCount cannot be null here because it is already set to 2 in case it is null above
-        NewMatch.TimeLeftSeconds = NewMatch.RuleHalftimeLength ?? 600;
+        NewMatch.RulePeriodCount = NewMatch.RulePeriodCount ?? 2; //Note: RulePeriodCount cannot be null here because it is already set to 2 in case it is null above
+        NewMatch.TimeLeftSeconds = NewMatch.RulePeriodLength ?? 600;
         NewMatch.ScheduledTime = DateTime.Now;
 
         await InvokeAsync(() => { StateHasChanged(); });
@@ -333,7 +333,7 @@ else
                 Team1Name = "Team1",
                 Team2Name = "Team2",
                 TimeLeftSeconds = 10,
-                RuleHalftimeCount = 2,
+                RulePeriodCount = 2,
                 ScheduledTime = DateTime.Now
             };
         return newMatch;

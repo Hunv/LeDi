@@ -69,8 +69,8 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <div>
                             <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Halftime:</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.HalftimeCurrent of @Match.RuleHalftimeCount</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@ else if (SelectedMatchId != null)
                                 {
                                     if (aPenalty.PenaltyTime > 0)
                                     {
-                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent -1)) ;
 
                                         if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                         {
@@ -147,7 +147,7 @@ else if (SelectedMatchId != null)
                                 {
                                     if (aPenalty.PenaltyTime > 0)
                                     {
-                                        var timeleft = Match.TimeLeftSeconds - (Match.RuleHalftimeLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RuleHalftimeLength ?? 0) * (Match.HalftimeCurrent -1)) ;
+                                        var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent -1)) ;
 
                                         if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                         {
@@ -207,14 +207,14 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@StartMatchClicked"
                             disabled="@StartButtonDisabled" 
-                            hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
+                            hidden="@(!PreparePeriodButtonDisabled || !CloseMatchButtonDisabled)"
                             >
                             Start/Continue
                         </a>                        
                         <a 
                             style="display:block; width:100%; min-height:6%; display:flex; align-items:center; justify-content:center;"
                             disabled="@StartButtonDisabled" 
-                            hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
+                            hidden="@(!PreparePeriodButtonDisabled || !CloseMatchButtonDisabled)"
                             >
                         </a>
                         <a 
@@ -224,21 +224,21 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@PauseMatchClicked"
                             disabled="@StartButtonDisabled" 
-                            hidden="@(!PrepareHalftimeButtonDisabled || !CloseMatchButtonDisabled)"
+                            hidden="@(!PreparePeriodButtonDisabled || !CloseMatchButtonDisabled)"
                             >
                             Pause
                         </a>
 
                         <a 
-                            id="btnPrepareHalftime"
+                            id="btnPreparePeriod"
                             class="btn btn-secondary fs-3" 
                             style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@PrepareHalftime"
-                            disabled="@PrepareHalftimeButtonDisabled" 
-                            hidden="@PrepareHalftimeButtonDisabled"
+                            @onclick="@PreparePeriod"
+                            disabled="@PreparePeriodButtonDisabled" 
+                            hidden="@PreparePeriodButtonDisabled"
                             >
-                            Prepare next halftime
+                            Prepare next period
                         </a>
 
                         <a 
@@ -371,7 +371,7 @@ else
     List<DtoMatchEvent>? MatchEventList = null; //List of all match events
     List<DtoMatch>? MatchList = null; // List of all not finished matches
     bool StartButtonDisabled = false; //Is the Start button disabled?
-    bool PrepareHalftimeButtonDisabled = true; //Is the Prepare Halftime button disabled?
+    bool PreparePeriodButtonDisabled = true; //Is the Prepare period button disabled?
     bool CloseMatchButtonDisabled = true; //The close button is disabled and invisible?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
     bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered?    
@@ -596,8 +596,8 @@ else
                 Logger.Debug("Updated Match infos.");
 
                 // Update only the fields but not the whole Match object to do not flush the rules
-                Match.HalftimeCurrent = newMatchInfo.HalftimeCurrent;
-                Match.RuleHalftimeCount = newMatchInfo.RuleHalftimeCount;
+                Match.PeriodCurrent = newMatchInfo.PeriodCurrent;
+                Match.RulePeriodCount = newMatchInfo.RulePeriodCount;
                 Match.MatchStatus = newMatchInfo.MatchStatus;
                 Match.TimeLeftSeconds = newMatchInfo.TimeLeftSeconds;
 
@@ -618,19 +618,19 @@ else
                 Logger.Info("Time of match {0} is over.", Match.Id);
                 tmrMatchtime.Stop();
 
-                // If this is not the last halftime, show the start button to start the next halftime
-                if (Match.HalftimeCurrent != Match.RuleHalftimeCount)
+                // If this is not the last period, show the start button to start the next period
+                if (Match.PeriodCurrent != Match.RulePeriodCount)
                 {
-                    Logger.Debug("Not-the-last halftime is over.");
+                    Logger.Debug("Not-the-last period is over.");
                     StartButtonDisabled = false;
-                    PrepareHalftimeButtonDisabled = false;
+                    PreparePeriodButtonDisabled = false;
                     CloseMatchButtonDisabled = true;
                 }
                 else
                 {
-                    Logger.Debug("Last halftime is over.");
+                    Logger.Debug("Last period is over.");
                     StartButtonDisabled = true;
-                    PrepareHalftimeButtonDisabled = true;
+                    PreparePeriodButtonDisabled = true;
                     CloseMatchButtonDisabled = false;
                 }
 
@@ -751,11 +751,11 @@ else
     }
 
     /// <summary>
-    /// Executed, when the prepare halftime button is clicked.
+    /// Executed, when the prepare period button is clicked.
     /// </summary>
-    private async Task PrepareHalftime()
+    private async Task PreparePeriod()
     {
-        Logger.Trace("PrepareHalftime clicked.");
+        Logger.Trace("PreparePeriod clicked.");
 
         if (Match == null)
             return;
@@ -763,20 +763,20 @@ else
         if (SelectedMatchId == null)
             return;
 
-        // only if the current halftime is over
+        // only if the current period is over
         if (Match.TimeLeftSeconds != 0)
         {
-            Logger.Warn("Current hafttime is not over.");
-            PrepareHalftimeButtonDisabled = true;
+            Logger.Warn("Current period is not over.");
+            PreparePeriodButtonDisabled = true;
             return;
         }
 
-        //Check if there is another halftime
-        if (Match.HalftimeCurrent < Match.RuleHalftimeCount)
+        //Check if there is another period
+        if (Match.PeriodCurrent < Match.RulePeriodCount)
         {
-            PrepareHalftimeButtonDisabled = true;
+            PreparePeriodButtonDisabled = true;
 
-            await Api.SetMatchHalftimeNext(SelectedMatchId.Value);
+            await Api.SetMatchPeriodNext(SelectedMatchId.Value);
             await LoadMatch();
 
             await InvokeAsync(() => { StateHasChanged(); });
@@ -796,8 +796,8 @@ else
         if (SelectedMatchId == null)
             return;
 
-        // The last halftime must be over
-        if (Match.HalftimeCurrent != Match.RuleHalftimeCount && Match.TimeLeftSeconds == 0)
+        // The last period must be over
+        if (Match.PeriodCurrent != Match.RulePeriodCount && Match.TimeLeftSeconds == 0)
             return;
 
         await Api.SetMatchStatusAsync(Match.Id, (int)MatchStatusEnum.Closed);

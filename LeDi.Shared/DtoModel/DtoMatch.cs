@@ -73,10 +73,10 @@ namespace LeDi.Shared.DtoModel
         public List<int>? Team2PlayerIds { get; set; }
 
         /// <summary>
-        /// Current number of Halftime
+        /// Current number of Period
         /// </summary>
-        [Range(0, int.MaxValue, ErrorMessageResourceName = "CurrentHalftimeMoreThanZero", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
-        public int HalftimeCurrent { get; set; }
+        [Range(0, int.MaxValue, ErrorMessageResourceName = "CurrentPeriodMoreThanZero", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
+        public int PeriodCurrent { get; set; }
         
         /// <summary>
         /// List of referees for this match
@@ -91,14 +91,14 @@ namespace LeDi.Shared.DtoModel
         public List<DtoMatchPenalty> Penalties { get; set; } = new List<DtoMatchPenalty>();
 
         /// <summary>
-        /// Contains the current match minute. Calculated by halftimelength, timeleft and current halftime
+        /// Contains the current match minute. Calculated by periodlength, timeleft and current period
         /// </summary>
         [JsonIgnore]
         public int MatchMinute
         {
             get
             {
-                return (RuleHalftimeLength ?? 0) - TimeLeftSeconds + ((HalftimeCurrent - 1) * (RuleHalftimeLength ?? 0));
+                return (RulePeriodLength ?? 0) - TimeLeftSeconds + ((PeriodCurrent - 1) * (RulePeriodLength ?? 0));
             }
         }
     }

@@ -12,27 +12,27 @@
         /// <summary>
         /// Number of "halftimes" in a match
         /// </summary>
-        public int RuleHalftimeCount { get; set; }
+        public int RulePeriodCount { get; set; }
 
         /// <summary>
         /// Length of the Halftime
         /// </summary>
-        public int RuleHalftimeLength { get; set; }
+        public int RulePeriodLength { get; set; }
 
         /// <summary>
         /// Does a halftime have (optional) overtime?
         /// </summary>
-        public bool RuleHalftimeOvertime { get; set; }
+        public bool RulePeriodOvertime { get; set; }
 
         /// <summary>
         /// Does the time pauses in the last halftime in case an event happens, that breaks the game (except on goal)?
         /// </summary>
-        public bool RuleHalftimeLastPauseTimeOnEvent { get; set; }
+        public bool RulePeriodLastPauseTimeOnEvent { get; set; }
 
         /// <summary>
         /// If the time pauses at the end of the last halftime, how much seconds until the end of the last halftime this rule applies?
         /// </summary>
-        public int RuleHalftimeLastPauseTimeOnEventSeconds { get; set; }
+        public int RulePeriodLastPauseTimeOnEventSeconds { get; set; }
 
         /// <summary>
         /// Does the match automatically extend if there is a draw at the end of the last regular halftime

@@ -68,10 +68,10 @@ namespace LeDi.Server.DatabaseModel
         public int CurrentTimeLeft { get; set; }
 
         /// <summary>
-        /// The current halftime; 0 = match not started
+        /// The current period; 0 = match not started
         /// </summary>
         [Required]
-        public int CurrentHalftime { get; set; }
+        public int CurrentPeriod { get; set; }
 
         /// <summary>
         /// The Status of the Match
@@ -113,17 +113,17 @@ namespace LeDi.Server.DatabaseModel
                 Team1Name = Team1Name,
                 Team2Name = Team2Name,
                 TimeLeftSeconds = CurrentTimeLeft,
-                HalftimeCurrent = CurrentHalftime,
+                PeriodCurrent = CurrentPeriod,
                 MatchStatus = MatchStatus,
                 ScheduledTime = ScheduledTime,
                 Team1PlayerIds = Team1PlayerIds,
                 Team2PlayerIds = Team2PlayerIds,
 
-                RuleHalftimeCount = RuleHalftimeCount,
-                RuleHalftimeLength = RuleHalftimeLength,
-                RuleHalftimeLastPauseTimeOnEvent = RuleHalftimeLastPauseTimeOnEvent,
-                RuleHalftimeLastPauseTimeOnEventSeconds = RuleHalftimeLastPauseTimeOnEventSeconds,
-                RuleHalftimeOvertime = RuleHalftimeOvertime,
+                RulePeriodCount = RulePeriodCount,
+                RulePeriodLength = RulePeriodLength,
+                RulePeriodLastPauseTimeOnEvent = RulePeriodLastPauseTimeOnEvent,
+                RulePeriodLastPauseTimeOnEventSeconds = RulePeriodLastPauseTimeOnEventSeconds,
+                RulePeriodOvertime = RulePeriodOvertime,
                 RuleMatchExtensionOnDraw = RuleMatchExtensionOnDraw
                 
             };
@@ -211,18 +211,18 @@ namespace LeDi.Server.DatabaseModel
             Team1Name = dto.Team1Name;
             Team2Name = dto.Team2Name;
             CurrentTimeLeft = dto.TimeLeftSeconds;
-            CurrentHalftime = dto.HalftimeCurrent;
+            CurrentPeriod = dto.PeriodCurrent;
             MatchStatus = dto.MatchStatus;
             ScheduledTime = dto.ScheduledTime;
             GameName = dto.Gamename;
-            if (dto.RuleHalftimeLength.HasValue) 
-                RuleHalftimeLength = dto.RuleHalftimeLength.Value;            
-            if (dto.RuleHalftimeCount.HasValue) 
-                RuleHalftimeCount = dto.RuleHalftimeCount.Value;
-            RuleHalftimeLastPauseTimeOnEvent = dto.RuleHalftimeLastPauseTimeOnEvent;
-            if (dto.RuleHalftimeLastPauseTimeOnEventSeconds.HasValue)
-                RuleHalftimeLastPauseTimeOnEventSeconds = dto.RuleHalftimeLastPauseTimeOnEventSeconds.Value;
-            RuleHalftimeOvertime = dto.RuleHalftimeOvertime;
+            if (dto.RulePeriodLength.HasValue) 
+                RulePeriodLength = dto.RulePeriodLength.Value;            
+            if (dto.RulePeriodCount.HasValue) 
+                RulePeriodCount = dto.RulePeriodCount.Value;
+            RulePeriodLastPauseTimeOnEvent = dto.RulePeriodLastPauseTimeOnEvent;
+            if (dto.RulePeriodLastPauseTimeOnEventSeconds.HasValue)
+                RulePeriodLastPauseTimeOnEventSeconds = dto.RulePeriodLastPauseTimeOnEventSeconds.Value;
+            RulePeriodOvertime = dto.RulePeriodOvertime;
             RuleMatchExtensionOnDraw = dto.RuleMatchExtensionOnDraw;
 
 

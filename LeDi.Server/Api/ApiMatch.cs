@@ -151,11 +151,11 @@ namespace LeDi.Server.Api
                     if (match.ScheduledTime.HasValue)
                         dbMatch.ScheduledTime = match.ScheduledTime;
 
-                    if (match.RuleHalftimeCount >= 0)
-                        dbMatch.RuleHalftimeCount = match.RuleHalftimeCount ?? 2;
+                    if (match.RulePeriodCount >= 0)
+                        dbMatch.RulePeriodCount = match.RulePeriodCount ?? 2;
 
-                    if (match.HalftimeCurrent >= 0)
-                        dbMatch.CurrentHalftime = match.HalftimeCurrent;
+                    if (match.PeriodCurrent >= 0)
+                        dbMatch.CurrentPeriod = match.PeriodCurrent;
 
                     Logger.Debug("SetMatch for match {0} executed.", matchId);
                     await dbContext.SaveChangesAsync();
@@ -238,7 +238,7 @@ namespace LeDi.Server.Api
                 if (match != null)
                 {
                     // Create a hash of match values that might change
-                    var propHash = (match.CurrentHalftime + "@@@" + string.Join(',', match.MatchEvents.Select(x => x.Id)) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score).GetHashCode();
+                    var propHash = (match.CurrentPeriod + "@@@" + string.Join(',', match.MatchEvents.Select(x => x.Id)) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score).GetHashCode();
 
                     // Create the DtoMatchCore object
                     var dto = new DtoMatchCore() { TimeLeftSeconds = match.CurrentTimeLeft, PropertyHash = propHash };
@@ -391,21 +391,21 @@ namespace LeDi.Server.Api
         }
 
         /// <summary>
-        /// Loads the next match halfitme
+        /// Loads the next match period
         /// </summary>
         /// <param name="matchId"></param>
         /// <returns></returns>
-        public static async Task NextHalftime(int matchId)
+        public static async Task NextPeriod(int matchId)
         {
-            Logger.Trace("Executing NextHalftime for matchId {0}...", matchId);
+            Logger.Trace("Executing NextPeriod for matchId {0}...", matchId);
 
             var matchHandler = MatchEngine.OngoingMatches.SingleOrDefault(x => x.MatchId == matchId);
             if (matchHandler != null)
             {
-                await matchHandler.NextHalftime();
+                await matchHandler.NextPeriod();
 
                 // Create the match event
-                //await LogEvent(matchId, MatchEventEnum., "Match halftime loaded.");
+                //await LogEvent(matchId, MatchEventEnum., "Match period loaded.");
             }
         }
 
@@ -431,7 +431,7 @@ namespace LeDi.Server.Api
 
                     if (match.MatchEvents != null)
                     {
-                        var timeSinceStart = match.RuleHalftimeLength - match.CurrentTimeLeft + (match.CurrentHalftime -1) * match.RuleHalftimeLength;
+                        var timeSinceStart = match.RulePeriodLength - match.CurrentTimeLeft + (match.CurrentPeriod -1) * match.RulePeriodLength;
                         if (timeSinceStart < 0)
                             timeSinceStart = 0;
 

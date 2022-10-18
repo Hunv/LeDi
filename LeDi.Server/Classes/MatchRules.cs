@@ -33,11 +33,11 @@ namespace LeDi.Server.Classes
                     return;
                                 
                 Rules.GameName = rl.Gamename;
-                Rules.RuleHalftimeCount = rl.RuleHalftimeCount ?? 2;
-                Rules.RuleHalftimeLastPauseTimeOnEvent = rl.RuleHalftimeLastPauseTimeOnEvent;
-                Rules.RuleHalftimeLastPauseTimeOnEventSeconds = rl.RuleHalftimeLastPauseTimeOnEventSeconds ?? 0;
-                Rules.RuleHalftimeLength = rl.RuleHalftimeLength ?? 10;
-                Rules.RuleHalftimeOvertime = rl.RuleHalftimeOvertime;
+                Rules.RulePeriodCount = rl.RulePeriodCount ?? 2;
+                Rules.RulePeriodLastPauseTimeOnEvent = rl.RulePeriodLastPauseTimeOnEvent;
+                Rules.RulePeriodLastPauseTimeOnEventSeconds = rl.RulePeriodLastPauseTimeOnEventSeconds ?? 0;
+                Rules.RulePeriodLength = rl.RulePeriodLength ?? 10;
+                Rules.RulePeriodOvertime = rl.RulePeriodOvertime;
                 Rules.RuleMatchExtensionOnDraw = rl.RuleMatchExtensionOnDraw;
 
                 Rules.RulePenaltyList = new List<MatchRuleSetPenalty>();

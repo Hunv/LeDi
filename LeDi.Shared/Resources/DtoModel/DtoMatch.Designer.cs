@@ -61,11 +61,11 @@ namespace LeDi.Shared.Resources.DtoModel {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The current halftime must be 0 or more.
+        ///   Looks up a localized string similar to The current period must be 0 or more.
         /// </summary>
-        public static string CurrentHalftimeMoreThanZero {
+        public static string CurrentPeriodMoreThanZero {
             get {
-                return ResourceManager.GetString("CurrentHalftimeMoreThanZero", resourceCulture);
+                return ResourceManager.GetString("CurrentPeriodMoreThanZero", resourceCulture);
             }
         }
         

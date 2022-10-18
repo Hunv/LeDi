@@ -500,21 +500,21 @@ namespace LeDi.Shared
         }
 
         /// <summary>
-        /// Sets the next match halftime
+        /// Sets the next match period
         /// </summary>
         /// <param name="matchId">The match ID for the match</param>
         /// <returns></returns>
-        public async Task SetMatchHalftimeNext(int matchId)
+        public async Task SetMatchPeriodNext(int matchId)
         {
             var response = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/next", "");
 
             if (response == null)
             {
-                Logger.Error("Failed to set next halftime for matchId {0}", matchId);
+                Logger.Error("Failed to set next period for matchId {0}", matchId);
             }
             else
             {
-                Logger.Trace("Set next halftime for match {0}", matchId);
+                Logger.Trace("Set next period for match {0}", matchId);
             }
         }
 

@@ -144,17 +144,17 @@ namespace LeDi.Server.Controllers
         }
 
         /// <summary>
-        /// Load the next halftime after another halftime ended
+        /// Load the next period after another period ended
         /// </summary>
         /// <returns></returns>
         [HttpPut("{matchId}/next")]
-        public async Task<IActionResult> SetMatchHalftime(int matchId)
+        public async Task<IActionResult> SetMatchPeriod(int matchId)
         {
-            _logger.Debug("{0}: Set next Match halftime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            _logger.Debug("{0}: Set next Match period {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
 
-            await Api.ApiMatch.NextHalftime(matchId);
+            await Api.ApiMatch.NextPeriod(matchId);
 
-            _logger.Debug("{0}: Set next Match halftime {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
+            _logger.Debug("{0}: Set next Match period {1}", Request.HttpContext.Connection.RemoteIpAddress, matchId);
             return new OkResult();
         }
 
