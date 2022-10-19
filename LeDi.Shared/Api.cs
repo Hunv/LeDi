@@ -561,11 +561,13 @@ namespace LeDi.Shared
         /// </summary>
         /// <returns>the revoked match penalty</returns>
         public async Task<DtoMatchPenalty> RevokeMatchPenalty(int matchId, int penaltyId, string revokeNote)
-        {            
-            var json = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/penalty/" + penaltyId, System.Text.Json.JsonEncodedText.Encode(revokeNote).ToString());
+        {
+            var jsonIn = JsonConvert.SerializeObject(revokeNote, Helper.GetJsonSerializer());
+            var json = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/penalty/" + penaltyId, jsonIn);
+            //var json = await Helper.ApiRequestPut(ServerBaseUrl + "Match/" + matchId + "/penalty/" + penaltyId, System.Text.Json.JsonEncodedText.Encode(revokeNote).ToString());
             if (json == null)
             {
-                Logger.Error("Failed to revoke match penalty {0} for match {1} with note {2}.",penaltyId, matchId, revokeNote);
+                Logger.Error("Failed to revoke match penalty {0} for match {1} with note {2}.", penaltyId, matchId, revokeNote);
                 return new DtoMatchPenalty();
             }
 

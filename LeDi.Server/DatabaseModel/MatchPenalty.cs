@@ -96,7 +96,9 @@ namespace LeDi.Server.DatabaseModel
                 PenaltyTimeStart = PenaltyTimeStart,
                 PenaltyTime = PenaltyTime,
                 TeamId = TeamId,
-                PenaltyName = PenaltyName
+                PenaltyName = PenaltyName,
+                Revoked = Revoked,
+                RevokeNote = RevokeNote
             };
 
             return dto;
@@ -119,6 +121,8 @@ namespace LeDi.Server.DatabaseModel
             PenaltyTime = dto.PenaltyTime;
             TeamId = dto.TeamId;
             PenaltyName = dto.PenaltyName;
+            Revoked = dto.Revoked;
+            RevokeNote = dto.RevokeNote;
         }
     }
 }

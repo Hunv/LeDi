@@ -125,37 +125,73 @@ namespace LeDi.Server.Api
                 if (dbMatch != null)
                 {
                     // Perform actions that need to be done on Status change
-                    if (match.MatchStatus != 0 && match.MatchStatus != dbMatch.MatchStatus)
+                    if (match.MatchStatus.HasValue && match.MatchStatus != dbMatch.MatchStatus)
                     {
-                        await RunMatchStatusChangeActions(dbMatch, match.MatchStatus);
+                        await RunMatchStatusChangeActions(dbMatch, match.MatchStatus.Value);
                     }
 
                     if (match.Team1Score.HasValue)
+                    {
                         dbMatch.Team1Score = match.Team1Score.Value;
+                        await LogEvent(matchId, MatchEventEnum.ScoreTeam1, string.Format("{0} score was set to {1}", dbMatch.Team1Name, match.Team1Score.Value));
+                        Logger.Debug("Team1Score was set to {0} for {1}", dbMatch.Team1Score, matchId);
+                    }
 
                     if (match.Team2Score.HasValue)
+                    {
                         dbMatch.Team2Score = match.Team2Score.Value;
+                        await LogEvent(matchId, MatchEventEnum.ScoreTeam1, string.Format("{0} score was set to {1}", dbMatch.Team2Name, match.Team2Score.Value));
+                        Logger.Debug("Team2Score was set to {0} for {1}", dbMatch.Team2Score, matchId);
+                    }
 
                     if (!string.IsNullOrEmpty(match.Team1Name))
+                    {
                         dbMatch.Team1Name = match.Team1Name;
+                        Logger.Debug("Team1Name was set to {0} for {1}", dbMatch.Team1Name, matchId);
+                    }
 
                     if (!string.IsNullOrEmpty(match.Team2Name))
+                    {
                         dbMatch.Team2Name = match.Team2Name;
+                        Logger.Debug("Team2Name was set to {0} for {1}", dbMatch.Team2Name, matchId);
+                    }
 
-                    if (match.TimeLeftSeconds >= 0)
-                        dbMatch.CurrentTimeLeft = match.TimeLeftSeconds;
+                    if (match.TimeLeftSeconds.HasValue)
+                    {
+                        dbMatch.CurrentTimeLeft = match.TimeLeftSeconds.Value;
+                        await LogEvent(matchId, MatchEventEnum.Undefined, string.Format("Time left was set to {0}", match.TimeLeftSeconds.Value));
+                        Logger.Debug("CurrentTimeLeft was set to {0} for {1}", dbMatch.CurrentTimeLeft, matchId);
+                    }
 
-                    if (match.MatchStatus != 0)
-                        dbMatch.MatchStatus = match.MatchStatus;
+                    if (match.MatchStatus.HasValue)
+                    {
+                        //Check if a restart of the match was performed. The current status must be something that is "running" or later and the new status must be "ready to start".
+                        if ((dbMatch.MatchStatus != (int)MatchStatusEnum.Planned && dbMatch.MatchStatus != (int)MatchStatusEnum.ReadyToStart && dbMatch.MatchStatus != (int)MatchStatusEnum.Undefined) &&
+                            match.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                        {
+                            await LogEvent(matchId, MatchEventEnum.MatchRestarted, "Match restarted.");
+                        }
+                        dbMatch.MatchStatus = match.MatchStatus.Value;
+                        Logger.Debug("MatchStatus was set to {0} for {1}", dbMatch.MatchStatus, matchId);
+                    }
 
                     if (match.ScheduledTime.HasValue)
+                    {
                         dbMatch.ScheduledTime = match.ScheduledTime;
+                        Logger.Debug("ScheduledTime was set to {0} for {1}", dbMatch.ScheduledTime, matchId);
+                    }
 
-                    if (match.RulePeriodCount >= 0)
-                        dbMatch.RulePeriodCount = match.RulePeriodCount ?? 2;
+                    if (match.RulePeriodCount.HasValue)
+                    {
+                        dbMatch.RulePeriodCount = match.RulePeriodCount.Value;
+                        Logger.Debug("RulePeriodCount was set to {0} for {1}", dbMatch.RulePeriodCount, matchId);
+                    }
 
-                    if (match.PeriodCurrent >= 0)
-                        dbMatch.CurrentPeriod = match.PeriodCurrent;
+                    if (match.PeriodCurrent.HasValue)
+                    {
+                        dbMatch.CurrentPeriod = match.PeriodCurrent.Value;
+                        Logger.Debug("CurrentPeriod was set to {0} for {1}", dbMatch.CurrentPeriod, matchId);
+                    }
 
                     Logger.Debug("SetMatch for match {0} executed.", matchId);
                     await dbContext.SaveChangesAsync();
@@ -244,7 +280,7 @@ namespace LeDi.Server.Api
                     var dto = new DtoMatchCore() { TimeLeftSeconds = match.CurrentTimeLeft, PropertyHash = propHash };
 
                     var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
-                    Logger.Debug("GetMatchCore for match {0} returns the following result: {1}", matchId, json);
+                    Logger.Trace("GetMatchCore for match {0} returns the following result: {1}", matchId, json);
                     return json;
                 }
                 else
@@ -281,6 +317,11 @@ namespace LeDi.Server.Api
                     await RunMatchStatusChangeActions(dbMatch, newStatus);
 
                     Logger.Debug("Set match status for {0} to {1}.", matchId, newStatus);
+
+                    if (newStatus == (int)MatchStatusEnum.Canceled)
+                    {
+                        await LogEvent(matchId, MatchEventEnum.MatchCancel, "Match canceled.");
+                    }
                 }
             }
 
@@ -722,9 +763,9 @@ namespace LeDi.Server.Api
 
                 // Create the match event
                 if (pen.PlayerNumber != 0)
-                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("{0} for Player {1} ({2}) revoked.", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, string.Format("Revoked {0} for Player #{1} ({2}).", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
                 else
-                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("{0} for Team ({1}) revoked.", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, string.Format("Revoked {0} for Team ({1}).", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
 
                 var dto = penalties.SingleOrDefault(x => x.Id == penaltyId);
                 if (dto == null)

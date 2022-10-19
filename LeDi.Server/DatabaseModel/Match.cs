@@ -176,20 +176,7 @@ namespace LeDi.Server.DatabaseModel
                 dto.Penalties = new List<DtoMatchPenalty>();
                 foreach(var aMatchPenalty in MatchPenalties)
                 {
-                    var newDtoMp = new DtoMatchPenalty()
-                    {
-                        Id = aMatchPenalty.Id,
-                        Note = aMatchPenalty.Note,
-                        PenaltyTime = aMatchPenalty.PenaltyTime,
-                        PenaltyTimeStart = aMatchPenalty.PenaltyTimeStart,
-                        PlayerId = aMatchPenalty.PlayerId,
-                        PlayerName = aMatchPenalty.PlayerName,
-                        PlayerNumber = aMatchPenalty.PlayerNumber,
-                        Source = aMatchPenalty.Source,
-                        Timestamp = aMatchPenalty.Timestamp,
-                        TeamId = aMatchPenalty.TeamId,
-                        PenaltyName = aMatchPenalty.PenaltyName
-                    };
+                    var newDtoMp = aMatchPenalty.ToDto();
                     dto.Penalties.Add(newDtoMp);
                 }
             }
@@ -204,25 +191,43 @@ namespace LeDi.Server.DatabaseModel
         public void FromDto(DtoMatch dto)
         {
             Id = dto.Id;
+
             if (dto.Team1Score.HasValue)
                 Team1Score = dto.Team1Score.Value;
+
             if (dto.Team2Score.HasValue)
                 Team2Score = dto.Team2Score.Value;
+
             Team1Name = dto.Team1Name;
+            
             Team2Name = dto.Team2Name;
-            CurrentTimeLeft = dto.TimeLeftSeconds;
-            CurrentPeriod = dto.PeriodCurrent;
-            MatchStatus = dto.MatchStatus;
+            
+            if (dto.TimeLeftSeconds.HasValue)
+                CurrentTimeLeft = dto.TimeLeftSeconds.Value;
+            
+            if (dto.PeriodCurrent.HasValue)
+                CurrentPeriod = dto.PeriodCurrent.Value;
+            
+            if (dto.MatchStatus.HasValue)
+                MatchStatus = dto.MatchStatus.Value;
+            
             ScheduledTime = dto.ScheduledTime;
+            
             GameName = dto.Gamename;
+            
             if (dto.RulePeriodLength.HasValue) 
                 RulePeriodLength = dto.RulePeriodLength.Value;            
+            
             if (dto.RulePeriodCount.HasValue) 
                 RulePeriodCount = dto.RulePeriodCount.Value;
+            
             RulePeriodLastPauseTimeOnEvent = dto.RulePeriodLastPauseTimeOnEvent;
+            
             if (dto.RulePeriodLastPauseTimeOnEventSeconds.HasValue)
                 RulePeriodLastPauseTimeOnEventSeconds = dto.RulePeriodLastPauseTimeOnEventSeconds.Value;
+            
             RulePeriodOvertime = dto.RulePeriodOvertime;
+            
             RuleMatchExtensionOnDraw = dto.RuleMatchExtensionOnDraw;
 
 

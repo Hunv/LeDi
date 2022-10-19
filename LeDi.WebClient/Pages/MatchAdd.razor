@@ -179,7 +179,7 @@ else
             if (NewMatch == null)
                 return 0;
 
-            return (int)(NewMatch.TimeLeftSeconds / 60);
+            return (int)((NewMatch.TimeLeftSeconds ?? 0) / 60);
         }
         set
         {
@@ -201,7 +201,7 @@ else
             if (NewMatch == null)
                 return 0;
 
-            return (int)(NewMatch.TimeLeftSeconds % 60);
+            return (int)((NewMatch.TimeLeftSeconds ?? 0) % 60);
         }
         set
         {
@@ -299,7 +299,9 @@ else
         NewMatch = new DtoMatch(){
                 Gamename = SelectedGamename,
                 Team1Name = "Team1",
-                Team2Name = "Team2"
+                Team2Name = "Team2",
+                MatchStatus = (int)LeDi.Shared.Enum.MatchStatusEnum.Planned,
+                ScheduledTime = DateTime.Now
         };
         NewMatch.RulePeriodCount = matchRules.RulePeriodCount ?? 2;
         NewMatch.RulePeriodLastPauseTimeOnEvent = matchRules.RulePeriodLastPauseTimeOnEvent;
@@ -312,7 +314,6 @@ else
         // Set Default values based on rules
         NewMatch.RulePeriodCount = NewMatch.RulePeriodCount ?? 2; //Note: RulePeriodCount cannot be null here because it is already set to 2 in case it is null above
         NewMatch.TimeLeftSeconds = NewMatch.RulePeriodLength ?? 600;
-        NewMatch.ScheduledTime = DateTime.Now;
 
         await InvokeAsync(() => { StateHasChanged(); });
     }

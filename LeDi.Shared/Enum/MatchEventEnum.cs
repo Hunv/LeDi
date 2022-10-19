@@ -12,6 +12,7 @@
         MatchEnd = 5,
         MatchOvertimeStart = 6,
         MatchExtentionStart = 7,
+        MatchRestarted = 8,
         PeriodEnd = 10,
         HalftimeStart = 11,
         TimeoutTeam1 = 20,

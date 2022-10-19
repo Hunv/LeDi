@@ -1,8 +1,7 @@
 ﻿@page "/test"
 
 <PageTitle>LeDi - Testpage</PageTitle>
-
-<p role="status">Current count: @currentCount</p>
+@*https://demos.getblazorbootstrap.com/buttons*@
 
 <a>Button styles:</a><br />
 <button class="btn btn-primary" @onclick="IncrementCount">Primary</button><br />
@@ -39,6 +38,9 @@
 <a class="fs-6">fs6</a><br />
 <a class="fs-italic">fs-italic</a><br />
 <a class="fs-normal">fs-normal</a><br />
+
+Pulsing Circle:
+<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
 
 @code {
     private int currentCount = 0;

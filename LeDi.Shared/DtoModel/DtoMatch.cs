@@ -48,11 +48,11 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [Range(0,int.MaxValue, ErrorMessageResourceName = "TimeMoreThanZero", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
         
-        public int TimeLeftSeconds { get; set; }
+        public int? TimeLeftSeconds { get; set; }
         /// <summary>
         /// Only for Livematches: The current status of the Match (see EnumMatchStatus for ID resolution)
         /// </summary>
-        public int MatchStatus { get; set; }
+        public int? MatchStatus { get; set; }
 
         /// <summary>
         /// The Scheduled time when the match should start
@@ -76,7 +76,7 @@ namespace LeDi.Shared.DtoModel
         /// Current number of Period
         /// </summary>
         [Range(0, int.MaxValue, ErrorMessageResourceName = "CurrentPeriodMoreThanZero", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoMatch))]
-        public int PeriodCurrent { get; set; }
+        public int? PeriodCurrent { get; set; }
         
         /// <summary>
         /// List of referees for this match
@@ -98,7 +98,13 @@ namespace LeDi.Shared.DtoModel
         {
             get
             {
-                return (RulePeriodLength ?? 0) - TimeLeftSeconds + ((PeriodCurrent - 1) * (RulePeriodLength ?? 0));
+                if (TimeLeftSeconds.HasValue && PeriodCurrent.HasValue)
+                    return (RulePeriodLength ?? 0) - TimeLeftSeconds.Value + ((PeriodCurrent.Value - 1) * (RulePeriodLength ?? 0));
+                else
+                {
+                    return -1;
+                    //throw new Exception("Some values are missing to access MatchMinute");
+                }
             }
         }
     }

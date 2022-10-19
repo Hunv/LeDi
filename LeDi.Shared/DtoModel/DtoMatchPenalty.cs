@@ -62,6 +62,17 @@ namespace LeDi.Shared.DtoModel
         /// The name of the penalty. Always English
         /// </summary>
         public string PenaltyName { get; set; } = "";
+
+        /// <summary>
+        /// Is this penalty revoked?
+        /// </summary>
+        public bool Revoked { get; set; }
+
+        /// <summary>
+        /// Note to the revocation
+        /// </summary>
+        public string? RevokeNote { get; set; }
+
     }
 }
 
