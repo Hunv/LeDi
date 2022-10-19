@@ -763,9 +763,9 @@ namespace LeDi.Server.Api
 
                 // Create the match event
                 if (pen.PlayerNumber != 0)
-                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("{0} for Player {1} ({2}) revoked.", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, string.Format("Revoked {0} for Player #{1} ({2}).", pen.PenaltyName, pen.PlayerNumber, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
                 else
-                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, String.Format("{0} for Team ({1}) revoked.", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
+                    await LogEvent(matchId, pen.TeamId == 0 ? MatchEventEnum.PenaltyTeam1Revoke : MatchEventEnum.PenaltyTeam2Revoke, string.Format("Revoked {0} for Team ({1}).", pen.PenaltyName, (pen.TeamId == 0 ? match.Team1Name : match.Team2Name)));
 
                 var dto = penalties.SingleOrDefault(x => x.Id == penaltyId);
                 if (dto == null)

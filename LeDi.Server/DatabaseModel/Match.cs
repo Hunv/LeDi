@@ -176,20 +176,7 @@ namespace LeDi.Server.DatabaseModel
                 dto.Penalties = new List<DtoMatchPenalty>();
                 foreach(var aMatchPenalty in MatchPenalties)
                 {
-                    var newDtoMp = new DtoMatchPenalty()
-                    {
-                        Id = aMatchPenalty.Id,
-                        Note = aMatchPenalty.Note,
-                        PenaltyTime = aMatchPenalty.PenaltyTime,
-                        PenaltyTimeStart = aMatchPenalty.PenaltyTimeStart,
-                        PlayerId = aMatchPenalty.PlayerId,
-                        PlayerName = aMatchPenalty.PlayerName,
-                        PlayerNumber = aMatchPenalty.PlayerNumber,
-                        Source = aMatchPenalty.Source,
-                        Timestamp = aMatchPenalty.Timestamp,
-                        TeamId = aMatchPenalty.TeamId,
-                        PenaltyName = aMatchPenalty.PenaltyName
-                    };
+                    var newDtoMp = aMatchPenalty.ToDto();
                     dto.Penalties.Add(newDtoMp);
                 }
             }
