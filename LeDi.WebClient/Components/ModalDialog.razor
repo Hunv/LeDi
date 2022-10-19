@@ -10,7 +10,11 @@
                 <p>@Text</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" @onclick=@ModalOk>OK</button>
+                @if (!string.IsNullOrEmpty(ButtonCancelText))
+                {
+                    <button type="button" class="btn @ButtonCancelClass" @onclick=@ModalCancel>@ButtonCancelText</button>
+                }                
+                <button type="button" class="btn @ButtonOKClass" @onclick=@ModalOk>@ButtonOKText</button>
             </div>
         </div>
     </div>
@@ -22,6 +26,18 @@
 
     [Parameter]
     public string? Text { get; set; }
+
+    [Parameter]
+    public string ButtonOKText { get; set; } = "OK";
+    
+    [Parameter]
+    public string ButtonOKClass { get; set; } = "btn-primary";
+
+    [Parameter]
+    public string ButtonCancelText { get; set; } = "";
+
+    [Parameter]
+    public string ButtonCancelClass { get; set; } = "btn-secondary";
 
     [Parameter]
     public EventCallback<bool> OnClose { get; set; }

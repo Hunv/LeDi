@@ -146,7 +146,15 @@ namespace LeDi.Server.Api
                         dbMatch.CurrentTimeLeft = match.TimeLeftSeconds;
 
                     if (match.MatchStatus != 0)
+                    {
+                        //Check if a restart of the match was performed. The current status must be something that is "running" or later and the new status must be "ready to start".
+                        if ((dbMatch.MatchStatus != (int)MatchStatusEnum.Planned && dbMatch.MatchStatus != (int)MatchStatusEnum.ReadyToStart && dbMatch.MatchStatus != (int)MatchStatusEnum.Undefined) &&
+                            match.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                        {
+                            await LogEvent(matchId, MatchEventEnum.MatchRestarted, "Match restarted.");
+                        }
                         dbMatch.MatchStatus = match.MatchStatus;
+                    }
 
                     if (match.ScheduledTime.HasValue)
                         dbMatch.ScheduledTime = match.ScheduledTime;

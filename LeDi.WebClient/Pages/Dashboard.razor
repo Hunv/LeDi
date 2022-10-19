@@ -24,9 +24,20 @@
                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <div>
-                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
+                            @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
+                            {
+                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Canceled</a>
+                            }
+                            else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+                            {
+                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Match ended</a>
+                            }
+                            else 
+                            {
+                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
+                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
+                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
+                            }
                         </div>
                     </div>
                 </div>

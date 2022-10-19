@@ -68,9 +68,20 @@ else if (SelectedMatchId != null)
                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <div>
-                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
+                            @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
+                            {
+                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Canceled</a>
+                            }
+                            else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+                            {
+                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Match ended</a>
+                            }
+                            else 
+                            {
+                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@((Match.TimeLeftSeconds % 60).ToString().PadLeft(2,'0'))</a>
+                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
+                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
+                            }
                         </div>
                     </div>
                 </div>
@@ -90,10 +101,10 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <a 
                             id="btnPenaltyTeam1"
-                            class="btn btn-danger fs-3" 
+                            class="btn btn-danger fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@PenaltyTeam1Clicked"
+                            @onclick="@PenaltyTeam1Clicked"                            
                             >
                             Log Penalty
                         </a>
@@ -134,7 +145,7 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <a 
                             id="btnPenaltyTeam2"
-                            class="btn btn-danger fs-3" 
+                            class="btn btn-danger fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@PenaltyTeam2Clicked"
@@ -177,7 +188,7 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <a 
                             id="btnScoreTeam1"
-                            class="btn btn-primary fs-3" 
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:75%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@IncrementCountTeam1Clicked"
@@ -189,7 +200,7 @@ else if (SelectedMatchId != null)
                         </a>
                         <a 
                             id="btnRevokeTeam1"
-                            class="btn btn-secondary fs-3" 
+                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@DecreaseCountTeam1Clicked"
@@ -202,53 +213,53 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">
                         <a 
                             id="btnStart"
-                            class="btn btn-primary fs-3" 
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:47%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@StartMatchClicked"
-                            disabled="@StartButtonDisabled" 
-                            hidden="@(!PreparePeriodButtonDisabled || !CloseMatchButtonDisabled)"
+                            @onclick="@MatchStartClicked"
+                            disabled="@ButtonDisableStart" 
+                            hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)"
                             >
                             Start/Continue
                         </a>                        
                         <a 
                             style="display:block; width:100%; min-height:6%; display:flex; align-items:center; justify-content:center;"
-                            disabled="@StartButtonDisabled" 
-                            hidden="@(!PreparePeriodButtonDisabled || !CloseMatchButtonDisabled)"
+                            disabled="@ButtonDisableStart" 
+                            hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)"
                             >
                         </a>
                         <a 
                             id="btnPause"
-                            class="btn btn-outline-primary fs-3" 
+                            class="btn btn-outline-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:47%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@PauseMatchClicked"
-                            disabled="@StartButtonDisabled" 
-                            hidden="@(!PreparePeriodButtonDisabled || !CloseMatchButtonDisabled)"
+                            @onclick="@MatchPauseClicked"
+                            disabled="@ButtonDisableStart" 
+                            hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)"
                             >
                             Pause
                         </a>
 
                         <a 
                             id="btnPreparePeriod"
-                            class="btn btn-secondary fs-3" 
+                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@PreparePeriod"
-                            disabled="@PreparePeriodButtonDisabled" 
-                            hidden="@PreparePeriodButtonDisabled"
+                            @onclick="@MatchPreparePeriodClicked"
+                            disabled="@ButtonPreparePeriodDisabled" 
+                            hidden="@ButtonPreparePeriodDisabled"
                             >
                             Prepare next period
                         </a>
 
                         <a 
                             id="btnCloseMatch"
-                            class="btn btn-dark fs-3" 
+                            class="btn btn-dark fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@CloseMatch"
-                            disabled="@CloseMatchButtonDisabled" 
-                            hidden="@CloseMatchButtonDisabled"
+                            @onclick="@MatchCloseClicked"
+                            disabled="@ButtonCloseMatchDisabled" 
+                            hidden="@ButtonCloseMatchDisabled"
                             >
                             Close match
                         </a>
@@ -258,7 +269,7 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">                                                
                         <a 
                             id="btnScoreTeam2"
-                            class="btn btn-primary fs-3" 
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:75%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@IncrementCountTeam2Clicked"
@@ -270,7 +281,7 @@ else if (SelectedMatchId != null)
                         </a>
                         <a 
                             id="btnRevokeTeam2"
-                            class="btn btn-secondary fs-3" 
+                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
                             @onclick="@DecreaseCountTeam2Clicked"
@@ -298,15 +309,15 @@ else if (SelectedMatchId != null)
                 </div>
             </div>
             
-            <div class="row align-items-start" hidden="@HideAdvancedControls">
+            <div class="row align-items-start @(ButtonAllDisabled ? "disabled": "")" hidden="@HideAdvancedControls">
                  <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1">                        
                         <a 
                             id="btnCancelMatch"
-                            class="btn btn-primary fs-3" 
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@IncrementCountTeam1Clicked"
+                            @onclick="@MatchCancelClicked"
                             >
                             Cancel Match
                         </a>  
@@ -314,10 +325,10 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">                        
                         <a 
                             id="btnRestartMatch"
-                            class="btn btn-primary fs-3" 
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@IncrementCountTeam1Clicked"
+                            @onclick="@MatchRestartClicked"
                             >
                             Restart Match
                         </a>  
@@ -327,12 +338,25 @@ else if (SelectedMatchId != null)
                     <div style="height:100%; min-height:100%;" class="p-1">                        
                         <a 
                             id="btnSetTime"
-                            class="btn btn-primary fs-3" 
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
                             style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
                             role="button" 
-                            @onclick="@IncrementCountTeam1Clicked"
+                            @onclick="@MatchSetTimeClicked"
                             >
                             Set match time
+                        </a>  
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                        <a 
+                            id="btnRevokePenalty"
+                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                            role="button" 
+                            @onclick="@MatchSetTimeClicked"
+                            >
+                            Revoke Penalty
                         </a>  
                     </div>
                 </div>
@@ -395,7 +419,7 @@ else
     <p><em>Unable to load Match or Matches...</em></p>
 }
 
-@if (PenaltyPlayerDialogOpen)
+@if (DialogPenaltyPlayerShow)
 {
     <ModalPlayernumberDialog 
         Title="Select playernumber"
@@ -407,7 +431,7 @@ else
     </ModalPlayernumberDialog>
 }
 
-@if (PenaltyPenaltyDialogOpen)
+@if (DialogPenaltyPenaltyShow)
 {
     <ModalPenaltyDialog 
         Title="Select the penalty"
@@ -418,6 +442,18 @@ else
     </ModalPenaltyDialog>
 }
 
+@if (DialogYesNoDangerShow)
+{
+    <ModalDialog
+        Title="Are you sure?"
+        Text="Do you really want to perfom that action?"
+        OnClose="@OnYesNoClose"
+        ButtonOKText="Yes"
+        ButtonCancelText="No"
+        ButtonOKClass="btn-danger"
+        >
+    </ModalDialog>
+}
 
 
 @code{
@@ -426,15 +462,17 @@ else
     DtoMatch Match = new DtoMatch(); // currently selected match
     List<DtoMatchEvent>? MatchEventList = null; //List of all match events
     List<DtoMatch>? MatchList = null; // List of all not finished matches
-    bool StartButtonDisabled = false; //Is the Start button disabled?
-    bool PreparePeriodButtonDisabled = true; //Is the Prepare period button disabled?
-    bool CloseMatchButtonDisabled = true; //The close button is disabled and invisible?
+    bool ButtonDisableStart = false; //Is the Start button disabled?
+    bool ButtonPreparePeriodDisabled = true; //Is the Prepare period button disabled?
+    bool ButtonCloseMatchDisabled = true; //The close button is disabled and invisible?
+    bool ButtonAllDisabled = false; //All buttons are disabled (i.e. when match ended or canceled.)
     bool HideAdvancedControls = true; //Are the advanced control buttons visible?
     int LastKnownMatchHash = 0; // Contains a hash of all match values, that can change (except time).
-    bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered?    
-
-    bool PenaltyPlayerDialogOpen = false; // Is the modal dialog for playernumber for penalties of team 1 opened?
-    bool PenaltyPenaltyDialogOpen = false; //Is the modal dialog for the penalty for penalties of team 1 opened?
+    bool tmrMatchtimeElapsedRegistered = false; //Is the Elapsed Event of tmrMatchtime already registered?
+    string DialogYesNoDangerAction = ""; //This defines what should be executed, after the danger dialog closes.
+    bool DialogYesNoDangerShow = false; //Is the modal dialog for a yes/no question shown?
+    bool DialogPenaltyPlayerShow = false; // Is the modal dialog for playernumber for penalties of team 1 opened?
+    bool DialogPenaltyPenaltyShow = false; //Is the modal dialog for the penalty for penalties of team 1 opened?
     int PenaltyTeamId = -1; //The ID (0 = Team 1, 1 = Team 2) of the team the currently selecting penalty is for.
     int PenaltyPlayerNumber = -1; //The Playernumber that get the penalty
     List<int> PenaltyPlayerNumbers = new List<int>(); // The playernumbers of a team. Null or empty in case the number should be entered in the modal dialog.
@@ -474,7 +512,7 @@ else
         Logger.Trace("PenaltyTeam1Clicked");
         PenaltyTeamId = 0;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
-        PenaltyPlayerDialogOpen = true;
+        DialogPenaltyPlayerShow = true;
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
@@ -483,7 +521,7 @@ else
         Logger.Trace("PenaltyTeam2Clicked");
         PenaltyTeamId = 1;
         //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
-        PenaltyPlayerDialogOpen = true;
+        DialogPenaltyPlayerShow = true;
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
@@ -496,7 +534,7 @@ else
 
     private async void OnPenaltyPlayerClose(int playerId)
     {
-        PenaltyPlayerDialogOpen = false;
+        DialogPenaltyPlayerShow = false;
 
         if (playerId >= 0)
         {
@@ -512,7 +550,7 @@ else
 
 
             //Ask for the penalty
-            PenaltyPenaltyDialogOpen = true;
+            DialogPenaltyPenaltyShow = true;
         }
         else
         {
@@ -579,22 +617,99 @@ else
         // Reset all values and hide dialog
         PenaltyPlayerNumber = -1;
         PenaltyTeamId = -1; 
-        PenaltyPenaltyDialogOpen = false;
+        DialogPenaltyPenaltyShow = false;
 
         // Reload match details (and UI)
         await LoadMatch();
     }
 
     /// <summary>
+    /// Executed when the yes/no modal dialog closes
+    /// </summary>
+    /// <param name="result"></param>
+    private async void OnYesNoClose(bool result)
+    {
+        if (result)
+        {
+            switch (DialogYesNoDangerAction)
+            {
+                case "CancelMatch":
+                    Logger.Info("Running action CancelMatch after confirmation dialog was confirmed.");
+
+                    Logger.Info("Canceling match...");
+
+                    await Api.ControlMatchtimeAsync(Match.Id, "stop");
+                    await Api.SetMatchStatusAsync(Match.Id, MatchStatusEnum.Canceled);
+
+                    // Show/hide buttons
+                    ButtonDisableStart = true;
+                    ButtonCloseMatchDisabled = true;
+                    ButtonPreparePeriodDisabled = true;
+                    DialogYesNoDangerShow = false;
+                    DialogYesNoDangerAction = "";
+                    ButtonAllDisabled = true;
+
+                    await InvokeAsync(() => { StateHasChanged(); });
+                    break;
+                case "RestartMatch":
+                    Logger.Info("Running action RestartMatch after confirmation dialog was confirmed.");
+                    Logger.Info("Restarting match...");
+
+                    await Api.ControlMatchtimeAsync(Match.Id, "stop");
+                    await Api.SetMatchStatusAsync(Match.Id, MatchStatusEnum.Stopped);
+
+                    if (Match.RulePeriodLength.HasValue)
+                        Match.TimeLeftSeconds = Match.RulePeriodLength.Value;
+                    Match.PeriodCurrent = 1;
+                    Match.Penalties = new List<DtoMatchPenalty>();
+                    Match.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
+                    await Api.SetMatchAsync(Match);
+                    var resettedMatch = await Api.GetMatchFullAsync(Match.Id);
+                    if (resettedMatch == null)
+                    {
+                        Logger.Warn("Failed to reset the match! Cancelling the match...");
+                        await Api.SetMatchStatusAsync(Match.Id, MatchStatusEnum.Canceled);
+
+                        ButtonDisableStart = true;
+                        ButtonCloseMatchDisabled = true;
+                        ButtonPreparePeriodDisabled = true;
+                        DialogYesNoDangerShow = false;
+                        DialogYesNoDangerAction = "";
+                        ButtonAllDisabled = true;
+
+                        await InvokeAsync(() => { StateHasChanged(); });
+                        return;
+                    }
+                    Match = resettedMatch;
+
+                    // Show/hide buttons
+                    ButtonDisableStart = false;
+                    ButtonCloseMatchDisabled = true;
+                    ButtonPreparePeriodDisabled = true;
+                    DialogYesNoDangerShow = false;
+                    DialogYesNoDangerAction = "";
+
+                    await InvokeAsync(() => { StateHasChanged(); });
+                    break;
+                default:
+                    Logger.Warn("The action {0} is not know to be executed after yes/no danger dialog closes.", DialogYesNoDangerAction);
+                    break;
+            }
+
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+    /// <summary>
     /// Executed when the Pause button was clicked
     /// </summary>
-    private async void PauseMatchClicked()
+    private async void MatchPauseClicked()
     {
         Logger.Trace("PauseMatchClicked");
         await Api.ControlMatchtimeAsync(Match.Id, "stop");
 
         // Show/hide buttons
-        StartButtonDisabled = false;
+        ButtonDisableStart = false;
 
         await LoadMatchEvents();
     }
@@ -602,11 +717,11 @@ else
     /// <summary>
     /// Executed when the Start button was clicked
     /// </summary>
-    private async void StartMatchClicked()
+    private async void MatchStartClicked()
     {
         Logger.Trace("StartMatchClicked");
         // Show/hide buttons
-        StartButtonDisabled = true;
+        ButtonDisableStart = true;
 
         // Update match object to the current status
         Match = await Api.GetMatchFullAsync(Match.Id) ?? Match;
@@ -630,6 +745,27 @@ else
         // Reload match details
         await LoadMatch();
     }
+
+    private void MatchCancelClicked()
+    {
+        Logger.Trace("MatchCancelClicked");
+
+        DialogYesNoDangerAction = "CancelMatch";
+        DialogYesNoDangerShow = true;
+    }
+
+    private void MatchRestartClicked()
+    {
+        Logger.Trace("MatchCancelClicked");
+
+        DialogYesNoDangerAction = "RestartMatch";
+        DialogYesNoDangerShow = true;
+    }
+
+    private async void MatchSetTimeClicked()
+    {
+        await InvokeAsync(() => { StateHasChanged(); });
+    }    
 
     private async void tmrMatchtime_Elapsed(object? sender, EventArgs e)
     {
@@ -686,16 +822,16 @@ else
                 if (Match.PeriodCurrent != Match.RulePeriodCount)
                 {
                     Logger.Debug("Not-the-last period is over.");
-                    StartButtonDisabled = false;
-                    PreparePeriodButtonDisabled = false;
-                    CloseMatchButtonDisabled = true;
+                    ButtonDisableStart = false;
+                    ButtonPreparePeriodDisabled = false;
+                    ButtonCloseMatchDisabled = true;
                 }
                 else
                 {
                     Logger.Debug("Last period is over.");
-                    StartButtonDisabled = true;
-                    PreparePeriodButtonDisabled = true;
-                    CloseMatchButtonDisabled = false;
+                    ButtonDisableStart = true;
+                    ButtonPreparePeriodDisabled = true;
+                    ButtonCloseMatchDisabled = false;
                 }
 
                 await LoadMatchEvents();
@@ -723,8 +859,14 @@ else
         Logger.Trace("Reloading the page.");
         await LoadMatch();
 
-        if (!tmrMatchtime.Enabled)
-            tmrMatchtime.Start();
+        if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended ||Match.MatchStatus == (int)MatchStatusEnum.Closed)
+        {
+            ButtonAllDisabled = true;
+        }
+        else {
+            if (!tmrMatchtime.Enabled)
+                tmrMatchtime.Start();
+        }
 
         await base.OnParametersSetAsync();
     }
@@ -741,6 +883,12 @@ else
         {
             Logger.Debug("Match {0} selected.", SelectedMatchId);
             await LoadMatch();
+
+            if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended ||Match.MatchStatus == (int)MatchStatusEnum.Closed)
+            {
+                ButtonAllDisabled = true;
+                return;
+            }
         }
 
         // Needs to be initialized at the load of the page to also show running matches
@@ -786,11 +934,11 @@ else
 
         if (Match.MatchStatus >= (int)LeDi.Shared.Enum.MatchStatusEnum.Running)
         {
-            StartButtonDisabled = true;
+            ButtonDisableStart = true;
         }
         else
         {
-            StartButtonDisabled = false;
+            ButtonDisableStart = false;
         }
 
         // Update the Match Events
@@ -817,7 +965,7 @@ else
     /// <summary>
     /// Executed, when the prepare period button is clicked.
     /// </summary>
-    private async Task PreparePeriod()
+    private async Task MatchPreparePeriodClicked()
     {
         Logger.Trace("PreparePeriod clicked.");
 
@@ -831,14 +979,14 @@ else
         if (Match.TimeLeftSeconds != 0)
         {
             Logger.Warn("Current period is not over.");
-            PreparePeriodButtonDisabled = true;
+            ButtonPreparePeriodDisabled = true;
             return;
         }
 
         //Check if there is another period
         if (Match.PeriodCurrent < Match.RulePeriodCount)
         {
-            PreparePeriodButtonDisabled = true;
+            ButtonPreparePeriodDisabled = true;
 
             await Api.SetMatchPeriodNext(SelectedMatchId.Value);
             await LoadMatch();
@@ -850,7 +998,7 @@ else
     /// <summary>
     /// Executed when the close button is clicked
     /// </summary>
-    private async Task CloseMatch()
+    private async Task MatchCloseClicked()
     {
         Logger.Trace("CloseMatch clicked");
 
@@ -865,7 +1013,8 @@ else
             return;
 
         await Api.SetMatchStatusAsync(Match.Id, (int)MatchStatusEnum.Closed);
-        CloseMatchButtonDisabled = true;
+        ButtonCloseMatchDisabled = true;
+        ButtonAllDisabled = true;
 
         // Go back to the match control page
         SelectedMatchId = null;
