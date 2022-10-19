@@ -1,0 +1,170 @@
+﻿@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Text</p>
+                
+                <div class="container">
+
+                    @*Show Inputfield*@
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <div class="btn-group btn-group-lg btn-group-justified" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;">
+                                    <a class="btn @(TimeAddMode ? "btn-primary" : "btn-secondary") fs-1" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" role="button" @onclick="@(() => TimeAddMode = true)">time +</a>
+                                    <a class="btn @(!TimeAddMode ? "btn-primary" : "btn-secondary") fs-1" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" role="button" @onclick="@(() => TimeAddMode = false)">time -</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(1))" role="button">1<br />Sec</a>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(5))" role="button">5<br />Sec</a>
+                            </div>
+
+                        </div>
+                        <div class="col-4">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(10))" role="button">10<br />Sec</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(60))" role="button">1<br />Min</a>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(300))" role="button">5<br />Min</a>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(600))" role="button">10<br />Min</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ResetTime())" role="button">period length</a>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetTime(0))" role="button">0:00</a>
+                            </div>
+                        </div>
+                    </div>                    
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <EditForm Model="TimeLeftMinutesProxy">
+                                    <a class="fs-3 text-decoration-none text-reset">New time left:</a>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control fs-1" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
+                                        <span class="input-group-addon mt-1 fs-1" style="top:0px;">&nbsp;:&nbsp;</span>
+                                        <input type="number" class="form-control fs-1" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
+                                    </div>
+                                    <br />
+                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>OK</button>                                        
+                                    <br /><br />
+                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">Cancel</button>
+                                </EditForm>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public int TimeLeftSeconds{ get; set; }
+
+    [Parameter]
+    public int DefaultTimeSeconds{ get; set; }
+
+    [Parameter]
+    public EventCallback<int?> OnClose { get; set; }
+
+    private bool TimeAddMode { get; set; } = true;
+    private int TimeLeftModification { get; set; } 
+
+    private int TimeLeftMinutesProxy
+    {
+        get
+        {
+            return (int)((TimeLeftModification + TimeLeftSeconds) / 60);
+        }
+        set
+        {
+            SetTime(value * 60 + TimeLeftSecondsProxy);
+        }
+    }
+
+    private int TimeLeftSecondsProxy
+    {
+        get
+        {
+            return (int)((TimeLeftModification + TimeLeftSeconds) % 60);
+        }
+        set
+        {
+            SetTime(TimeLeftMinutesProxy + value);
+        }
+    }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(null);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(TimeLeftModification);
+    }
+
+    private void ChangeTime(int seconds)
+    {
+        if (TimeAddMode)
+            TimeLeftModification += seconds;
+        else
+            TimeLeftModification -= seconds;
+
+        StateHasChanged();
+    }
+
+    private void SetTime(int seconds)
+    {
+        TimeLeftModification = TimeLeftSeconds * -1 + seconds;
+        StateHasChanged();
+    }
+
+    private void ResetTime()
+    {
+        TimeLeftModification = DefaultTimeSeconds - TimeLeftSeconds;
+        StateHasChanged();
+    }
+}

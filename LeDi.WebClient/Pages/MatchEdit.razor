@@ -91,7 +91,7 @@ else
     {
         get
         { 
-            return Match == null ? MatchStatusEnum.Undefined : (MatchStatusEnum)Match.MatchStatus;
+            return (Match == null || !Match.MatchStatus.HasValue) ? MatchStatusEnum.Undefined : (MatchStatusEnum)Match.MatchStatus.Value;
         }
         set 
         {
@@ -109,7 +109,7 @@ else
             if (Match == null)
                 return 0;
 
-            return (int)(Match.TimeLeftSeconds / 60);
+            return (int)((Match.TimeLeftSeconds ?? 0) / 60);
         }
         set
         {
@@ -127,7 +127,7 @@ else
             if (Match == null)
                 return 0;
 
-            return (int)(Match.TimeLeftSeconds % 60);
+            return (int)((Match.TimeLeftSeconds ?? 0) % 60);
         }
         set
         {
