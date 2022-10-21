@@ -118,9 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeviceIdFormatError" xml:space="preserve">
-    <value>The Device Id GUID is not in the correct format. It must have hex characters lower case and the following format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</value>
+    <value>The device id GUID is not in the correct format. It must have hex characters lower case and the following format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</value>
   </data>
   <data name="DeviceSettingFormatError" xml:space="preserve">
-    <value>The setting name needs to be set.</value>
+    <value>The setting name needs to be set or setting name contains invalid characters. Allowed characters: A-Z, a-z, 0-9, dash (-), dot (.) and underscore (_).</value>
   </data>
 </root>

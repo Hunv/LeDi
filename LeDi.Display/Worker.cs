@@ -29,7 +29,7 @@ namespace LeDi.Display
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                Logger.Info("Worker running at: {time}", DateTimeOffset.Now);
+                Logger.Trace("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(1000, stoppingToken);
             }
         }

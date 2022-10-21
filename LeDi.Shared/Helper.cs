@@ -106,7 +106,7 @@ namespace LeDi.Shared
             }
             else
             {
-                Logger.Error("Failed to PUT {0}", url);
+                Logger.Error("Failed to PUT {0}. Statuscode: {1}. Response: {2}", url, response.StatusCode, await response.Content.ReadAsStringAsync());
                 return null;
             }
         }

@@ -31,6 +31,12 @@ namespace LeDi.Display.Display
             _Connector = connector;
             _TmrMisc.Elapsed += _TmrMisc_Elapsed;
             _TmrMisc.Start();
+
+            //Set the first row of LEDs to green
+            for (int i = 0; i < Display.X; i++)
+            {
+                Display.SetLed(i, Color.Green);
+            }
         }
 
         private async void _TmrMisc_Elapsed(object? sender, ElapsedEventArgs e)
@@ -49,7 +55,7 @@ namespace LeDi.Display.Display
             if (commands == null || commands.Count == 0)
             {
                 _MiscRunning = false;
-                Logger.Debug("No commands to execute.");
+                Logger.Trace("No commands to execute.");
                 return;
             }
 

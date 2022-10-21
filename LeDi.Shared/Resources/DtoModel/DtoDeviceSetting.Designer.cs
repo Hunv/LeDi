@@ -61,7 +61,7 @@ namespace LeDi.Shared.Resources.DtoModel {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Device Id GUID is not in the correct format. It must have hex characters lower case and the following format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+        ///   Looks up a localized string similar to The device id GUID is not in the correct format. It must have hex characters lower case and the following format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
         /// </summary>
         internal static string DeviceIdFormatError {
             get {
@@ -70,7 +70,7 @@ namespace LeDi.Shared.Resources.DtoModel {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The setting name needs to be set..
+        ///   Looks up a localized string similar to The setting name needs to be set or setting name contains invalid characters. Allowed characters: A-Z, a-z, 0-9, dash (-), dot (.) and underscore (_)..
         /// </summary>
         internal static string DeviceSettingFormatError {
             get {

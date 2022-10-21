@@ -608,7 +608,7 @@ namespace LeDi.Display.Display
             if (HasAlternatingRows && matrixY % 2 != 0)
             {
                 calculatedX = X - 1 - matrixX;
-                //Console.WriteLine("Alternating Row. X is now {0}", calculatedX);
+                //Logger.Trace("Alternating Row. X is now {0}", calculatedX);
             }
 
             //If the LED #1 is at the bottom, switch Y axis
@@ -616,7 +616,7 @@ namespace LeDi.Display.Display
             {
                 calculatedY = Y - 1 - matrixY;
                 // calculatedX = X - 1 - calculatedX;
-                //Console.WriteLine("Switched Y={0} to Y={1}", matrixY, calculatedY);
+                //Logger.Trace("Switched Y={0} to Y={1}", matrixY, calculatedY);
             }
 
             //Switch the order from left to right in case the first LED is on the right

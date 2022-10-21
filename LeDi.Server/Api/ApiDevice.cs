@@ -207,8 +207,8 @@ namespace LeDi.Server.Api
                 // Add default settings
                 if (dbContext.DeviceSettings != null)
                 {
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "width", "0"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "height", "0"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "width", "1"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "height", "1"));
                     dbContext.DeviceSettings.Add(new DeviceSetting(devId, "brightness", "50"));
                     dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_toptobottom", "true"));
                     dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_alternatingrows", "true"));

@@ -24,7 +24,7 @@ namespace LeDi.Shared.DtoModel
         /// <summary>
         /// The name of the setting
         /// </summary>
-        [RegularExpression(@"^[A-Za-z0-9]+$", ErrorMessageResourceName = "SettingNameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoDeviceSetting))]
+        [RegularExpression(@"^[A-Za-z0-9_\-\.]+$", ErrorMessageResourceName = "DeviceSettingFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoDeviceSetting))]
         public string Name { get; set; }
 
         /// <summary>

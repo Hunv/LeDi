@@ -38,7 +38,7 @@ else
                             @*<ValidationMessage For="@(() => aSetting.Name)" />*@
                         </td>
                         <td>
-                            <InputText id="txtSetting@aSetting.Value" type="text" class="form-control" @bind-Value="@aSetting.Value" />                        
+                            <InputText id="txtSetting" type="text" class="form-control" @bind-Value="@aSetting.Value" />                        
                             @*<ValidationMessage For="@(() => aSetting.Value)" />*@
                         </td>
                         <td>
@@ -129,6 +129,8 @@ else
         foreach(var aServerSet in currentServerSettings)
         {
             var locSet = DeviceSettingList.SingleOrDefault(x => x.Name == aServerSet.Name);
+            
+            Logger.Debug("Check changed setting {0} to value {1}", locSet == null ? "NULL" : locSet.Name, locSet == null ? "NULL" : locSet.Value);
 
             if (locSet == null)
                 continue;
