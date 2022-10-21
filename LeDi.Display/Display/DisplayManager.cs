@@ -5,6 +5,7 @@ using System.Text;
 using System.Timers;
 using LeDi.Display.Effects;
 using LeDi.Shared;
+using LeDi.Shared.DtoModel;
 
 namespace LeDi.Display.Display
 {
@@ -13,14 +14,29 @@ namespace LeDi.Display.Display
         /// <summary>
         /// Is the DisplayManager initalized?
         /// </summary>
-        public bool IsInitialized { get { return Display.LayoutConfig == null ? false : true; } }
+        public static bool IsInitialized { get { return Display.LayoutConfig != null; } }
+
+        /// <summary>
+        /// Contains a hash of all match values, that can change (except time).
+        /// </summary>
+        int LastKnownMatchHash = 0;
+
+        /// <summary>
+        /// This match, that is currently shown on this device
+        /// </summary>
+        public DtoMatch? Match { get; set; }
+
+        /// <summary>
+        /// The action, that is currently shown on the display. i.e. "match", "time", "text"
+        /// </summary>
+        public DisplayActionEnum CurrentAction { get; set; } = DisplayActionEnum.None;
 
         /// <summary>
         /// Timer to query commands from server
         /// </summary>
-        private readonly System.Timers.Timer _TmrMisc = new(2000);
-        private Api Api = new Api();
-        private Connector _Connector;
+        private readonly System.Timers.Timer _TmrMisc = new(1000);
+        private readonly Api Api = new Api();
+        private readonly Connector _Connector;
         private bool _MiscRunning = false;
         private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -37,6 +53,7 @@ namespace LeDi.Display.Display
             {
                 Display.SetLed(i, Color.Green);
             }
+            Display.Render();
         }
 
         private async void _TmrMisc_Elapsed(object? sender, ElapsedEventArgs e)
@@ -51,6 +68,13 @@ namespace LeDi.Display.Display
 
             _MiscRunning = true;
 
+            // Update match data in case some data should be shown:
+            if (Match != null && CurrentAction == DisplayActionEnum.Match)
+            {
+                await ShowMatch();
+            }
+
+            // Check for new commands
             var commands = await _Connector.GetDeviceCommands();
             if (commands == null || commands.Count == 0)
             {
@@ -64,6 +88,44 @@ namespace LeDi.Display.Display
                 IEffect effect = new NoEffect();
                 switch (aCmd.Command)
                 {
+                    case "loadmatch":
+                        Logger.Info("Running command \"loadmatch\"...");
+                        if (_Connector.DeviceId == null)
+                        {
+                            Logger.Warn("Cannot load match. DeviceId is not set.");
+                        }
+                        else
+                        {
+                            var devSet = await Api.GetDeviceSettingAsync(_Connector.DeviceId, "matchid");
+                            if (devSet == null)
+                            {
+                                Logger.Warn("No match to show. matchid setting is not set.");
+                                Display.ShowString("No Match");
+                                Display.Render();
+                            }
+                            else 
+                            {
+                                Match = await Api.GetMatchFullAsync(Convert.ToInt32(devSet.Value));
+
+                                if (Match == null)
+                                {
+                                    Logger.Error("Failed to update match.");
+                                }
+                                else
+                                {
+                                    CurrentAction = DisplayActionEnum.Match;
+                                    Logger.Debug("Match set to match ID {0}", Match.Id);
+                                    Display.SetAll(Color.Black);
+                                    Display.ShowString(Match.Team1Name ?? "Team1", "team1name");
+                                    Display.ShowString(Match.Team2Name ?? "Team2", "team2name");
+                                    Display.ShowString((Match.Team1Score ?? 0).ToString(), "team1goals");
+                                    Display.ShowString((Match.Team2Score ?? 0).ToString(), "team2goals");
+                                    Display.ShowString(":", "goaldivider");
+                                    await ShowMatch();
+                                }
+                            }
+                        }
+                        break;
                     case "showareas":
                         Logger.Info("Running command \"showareas\"...");
                         effect = new TestArea();
@@ -161,7 +223,7 @@ namespace LeDi.Display.Display
                             Logger.Error("Failed to run command. Error: " + ea.ToString());
                         }
 
-                break;
+                        break;
                     case "shutdown":
                         Logger.Info("Running command \"shutdown\"...");
                         Display.SetAll(Color.Black);
@@ -212,6 +274,99 @@ namespace LeDi.Display.Display
             
             _MiscRunning = false;
             
+        }
+
+        /// <summary>
+        /// Shows the status of a match
+        /// </summary>
+        private async Task ShowMatch()
+        {
+            if (Match == null)
+            {
+                Logger.Debug("ShowMatch was called but no match was configured.");
+                return;
+            }
+
+            // Get the time left and the hash of all match properties
+            var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+
+            // If the core value query failed, cancel.
+            if (matchCore == null)
+            {
+                Logger.Error("Failed to get MatchCore");
+                return;
+            }
+
+            // Update match object in case the hash is different
+            if (LastKnownMatchHash != matchCore.PropertyHash)
+            {
+                Logger.Info("New Hash is different. Refreshing Match infos...");
+                var newMatchInfo = await Api.GetMatchAsync(Match.Id);
+                if (newMatchInfo != null)
+                {
+                    Logger.Debug("Updated Match infos.");
+
+                    // Update only the fields but not the whole Match object to do not flush the rules
+                    Match.PeriodCurrent = newMatchInfo.PeriodCurrent;
+                    Match.RulePeriodCount = newMatchInfo.RulePeriodCount;
+                    Match.MatchStatus = newMatchInfo.MatchStatus;
+                    Match.TimeLeftSeconds = newMatchInfo.TimeLeftSeconds;
+                    Match.Team1Score = newMatchInfo.Team1Score;
+                    Match.Team2Score = newMatchInfo.Team2Score;
+
+                    // Update LEDs
+                    Display.ShowString(Match.Team1Name ?? "Team1", "team1name");
+                    Display.ShowString(Match.Team2Name ?? "Team2", "team2name");
+                    Display.ShowString((Match.Team1Score ?? 0).ToString(), "team1goals");
+                    Display.ShowString((Match.Team2Score ?? 0).ToString(), "team2goals");
+                    Display.ShowString(":", "goaldivider");
+
+
+                    LastKnownMatchHash = matchCore.PropertyHash;
+                }
+            }
+
+            // If local timer says, time is over check verify before stopping
+            if (Match.TimeLeftSeconds == 0)
+            {
+                // Set the current time left to the server data
+                Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
+
+                // Stop Timer only if the Server based timer is done.
+                if (Match.TimeLeftSeconds == 0)
+                {
+                    Logger.Info("Time of match {0} is over.", Match.Id);
+                    //tmrMatchtime.Stop();
+
+                    // If this is not the last period, show the start button to start the next period
+                    if (Match.PeriodCurrent != Match.RulePeriodCount)
+                    {
+                        Logger.Debug("Not-the-last period is over.");
+                    }
+                    else
+                    {
+                        Logger.Debug("Last period is over.");
+                    }
+                }
+            }
+            else // update local timer
+            {
+                //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
+                var serverTimeLeft = matchCore.TimeLeftSeconds;
+                if (Match.TimeLeftSeconds - serverTimeLeft > 1 ||
+                    Match.TimeLeftSeconds - serverTimeLeft < 1)
+                {
+                    Match.TimeLeftSeconds = serverTimeLeft;
+                }
+                else if (Match.TimeLeftSeconds > 0)
+                {
+                    Match.TimeLeftSeconds--;
+                }
+
+                var timeString = string.Format("{0}:{1}", (Match.TimeLeftSeconds / 60), ((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2, '0'));
+                Display.ShowString(timeString, "time");
+            }
+            Display.Render();
         }
 
         /// <summary>

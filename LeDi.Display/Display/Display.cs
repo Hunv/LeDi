@@ -298,6 +298,11 @@ namespace LeDi.Display.Display
                 Logger.Error("Controller is null. Not setting all LEDs.");
                 return;
             }
+            if (LedNumber >= Controller.LEDCount)
+            {
+                Logger.Error("LED {0} cannot being set because the display just has {1} LEDs.", LedNumber, Controller.LEDCount);
+                return;
+            }
 
             Controller.SetLED(LedNumber, color);
         }
@@ -352,10 +357,44 @@ namespace LeDi.Display.Display
             if (LayoutConfig.AreaList == null)
                 return;
 
+            if (!LayoutConfig.AreaList.Select(x => x.Name).Contains(areaName))
+            {
+                Logger.Warn("Area {0} not found to show string {1}.", areaName, text);
+                return;
+            }
+
+            // Get the area details
             var area = areaName == null ? new Area() { Width = X, Height = Y } : LayoutConfig.AreaList.Single(x => x.Name == areaName);
 
-            var matchingCharSets = CharacterSets.Where(x => x.Name == (characterSet ?? CharacterSet));
-            matchingCharSets = matchingCharSets.Where(x => x.Height <= area.Height && x.Height <= maxHeight && x.Width <= maxWidth).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
+            // Get the CharacterSet Sizes
+            var allCharSets = CharacterSets.Where(x => x.Name == (characterSet ?? CharacterSet));
+            var matchingCharSets = allCharSets;
+
+            // Automatically detect best size
+            if (area.MaxCharSize == null)
+            {
+                Logger.Trace("Getting best Charsize by height and textlength.");
+                // Get best charset that fits into the height and to total text length fits into the width of the area
+                matchingCharSets = allCharSets
+                    .Where(x => x.Height <= area.Height && area.Width <= text.Length * x.Width && x.Height <= maxHeight && x.Width <= maxWidth)
+                    .OrderByDescending(x => x.Height)
+                    .ThenByDescending(x => x.Width);
+            }
+            else // Get the best mating char size but respect the configured limit of the area
+            {
+                Logger.Trace("Get charset with maxcharsize (max: {0},{1})", area.MaxCharSize[0], area.MaxCharSize[1]);
+                matchingCharSets = allCharSets.Where(x => x.Width <= area.MaxCharSize[0] && x.Height <= area.MaxCharSize[1]).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
+            }
+            Logger.Trace("Found {0} matching charsets");
+
+            // Get best matching charset, but there will be problems fit them into the area or fulfill other requirements.
+            if (!matchingCharSets.Any())
+            {
+                matchingCharSets = allCharSets.Where(x => x.Height <= area.Height).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
+                Logger.Warn("Using fallback charset, that does not fulfill all requirements...");
+            }
+
+            // Get the best matching set
             var charSet = matchingCharSets.First();
 
             Logger.Debug("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
@@ -399,10 +438,20 @@ namespace LeDi.Display.Display
                         {
                             //If the Area Borders are hard and content should be cut off, don't show pixels out of area.
                             if (LayoutConfig.HardAreaBorders && (posX + x > area.Width + area.PositionX || posY + y > area.Height + area.PositionY || posX + x < area.PositionX || posY + y < area.PositionY))
+                            {
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of area with hard borders {3}/{4}", posX + x, posY + y, area.Name, area.PositionX, area.PositionY);
                                 continue;
+                            }
+
+                            //Check if coordinate is out of boundries
+                            if (posX + x >= X || posY + y >= Y)
+                            {
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of boundries {3}/{4}", posX + x, posY + y, area.Name, X, Y);
+                                continue;
+                            }
 
                             var ledNum = GetLedNumber(posX + x, posY + y);
-                            //Console.WriteLine("Setting X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
+                            //Console.WriteLine("Setting left X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
 
                             var brightnessfactor = charObj.Pixels[x, y].A / 255;
                             var color = Color.FromArgb(r * brightnessfactor, g * brightnessfactor, b * brightnessfactor);
@@ -469,10 +518,20 @@ namespace LeDi.Display.Display
                         {
                             //If the Area Borders are hard and content should be cut off, don't show pixels out of area.
                             if (LayoutConfig.HardAreaBorders && (posX + centerOffsetX + x > area.Width + area.PositionX || posY + y > area.Height + area.PositionY || posX + centerOffsetX + x < area.PositionX || posY + y < area.PositionY))
+                            {
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of area with hard borders {3}/{4}", posX + centerOffsetX + x, posY + y, area.Name, area.PositionX, area.PositionY);
                                 continue;
+                            }
+
+                            //Check if coordinate is out of boundries
+                            if (posX + centerOffsetX + x >= X || posY + y >= Y)
+                            {
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of boundries {3}/{4}", posX + centerOffsetX + x, posY + y, area.Name, X, Y);
+                                continue;
+                            }
 
                             var ledNum = GetLedNumber(posX + x + centerOffsetX, posY + y);
-                            //Console.WriteLine("Setting X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
+                            //Console.WriteLine("Setting center X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
 
                             var brightnessfactor = charObj.Pixels[x, y].A / 255;
                             var color = Color.FromArgb(r * brightnessfactor, g * brightnessfactor, b * brightnessfactor);
@@ -508,7 +567,6 @@ namespace LeDi.Display.Display
                         continue;
                     }
 
-                    //for (int x = charObj.Width-1; x >= 0; x--)
                     for (int x = 0; x < charObj.Width; x++)
                     {
                         for (int y = 0; y < charObj.Height; y++)
@@ -516,11 +574,21 @@ namespace LeDi.Display.Display
                             //Console.WriteLine("    Setting X={0}/{1} and Y={2}/{3}", posX, x, posY, y);
 
                             //If the Area Borders are hard and content should be cut off, don't show pixels out of area.
-                            if (LayoutConfig.HardAreaBorders && (posX - x > area.Width + area.PositionX || posY + y > area.Height + area.PositionY || posX + x < area.PositionX || posY + y < area.PositionY))
+                            if (LayoutConfig.HardAreaBorders && (posX - charObj.Width + x > area.Width + area.PositionX || posY + y > area.Height + area.PositionY || posX - charObj.Width + x < area.PositionX || posY + y < area.PositionY))
+                            {
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of area with hard borders {3}/{4}", posX - charObj.Width + x, posY + y, area.Name, area.PositionX, area.PositionY);
                                 continue;
+                            }
 
-                            var ledNum = GetLedNumber(posX - x, posY + y);
-                            //Console.WriteLine("Setting X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
+                            //Check if coordinate is out of boundries
+                            if (posX - charObj.Width + x >= X || posY + y >= Y)
+                            {
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of boundries {3}/{4}", posX - charObj.Width + x, posY + y, area.Name, X, Y);
+                                continue;
+                            }
+
+                            var ledNum = GetLedNumber(posX - charObj.Width + x, posY + y);
+                            //Console.WriteLine("Setting right X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
                             var brightnessfactor = charObj.Pixels[x, y].A / 255;
                             var color = Color.FromArgb(r * brightnessfactor, g * brightnessfactor, b * brightnessfactor);
                             SetLed(ledNum, color);
@@ -608,7 +676,7 @@ namespace LeDi.Display.Display
             if (HasAlternatingRows && matrixY % 2 != 0)
             {
                 calculatedX = X - 1 - matrixX;
-                //Logger.Trace("Alternating Row. X is now {0}", calculatedX);
+                Logger.Trace("Alternating Row. X is now {0}", calculatedX);
             }
 
             //If the LED #1 is at the bottom, switch Y axis
@@ -616,7 +684,7 @@ namespace LeDi.Display.Display
             {
                 calculatedY = Y - 1 - matrixY;
                 // calculatedX = X - 1 - calculatedX;
-                //Logger.Trace("Switched Y={0} to Y={1}", matrixY, calculatedY);
+                Logger.Trace("Switched Y={0} to Y={1}", matrixY, calculatedY);
             }
 
             //Switch the order from left to right in case the first LED is on the right
@@ -625,7 +693,7 @@ namespace LeDi.Display.Display
                 calculatedX = X - 1 - calculatedX;
             }
 
-            //Console.WriteLine("LED Number is {0}", calculatedX + X * matrixY);
+            Logger.Trace("LED Number is {0}", calculatedX + X * matrixY);
             return calculatedX + X * calculatedY;
         }
 

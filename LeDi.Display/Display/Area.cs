@@ -13,6 +13,7 @@ namespace LeDi.Display.Display
         public int Height { get; set; }
         public string Align { get; set; } = "left";
         public string Color { get; set; } = "FFFFFF";
+        public int[]? MaxCharSize { get; set; }
     }
 
 
@@ -27,6 +28,5 @@ namespace LeDi.Display.Display
         Team2Penalties,
         Text,
         Time
-
     }
 }

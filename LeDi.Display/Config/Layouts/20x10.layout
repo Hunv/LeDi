@@ -12,15 +12,15 @@
 			"positionY": 0,
 			"width": 8,
 			"height": 5,
-			"align": "left"
+			"align": "right"
 		},
 		{
 			"name": "team2goals",
-			"positionX": 12,
+			"positionX": 11,
 			"positionY": 0,
 			"width": 8,
 			"height": 5,
-			"align": "right"
+			"align": "left"
 		},
 		{
 			"name": "goaldivider",
@@ -36,7 +36,8 @@
 			"positionY": 5,
 			"width": 20,
 			"height": 5,
-			"align": "center"
+			"align": "center",
+			"maxcharsize": [3,5]
 		}
 	],
 
