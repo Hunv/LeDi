@@ -12,6 +12,8 @@ namespace LeDi.Display.Display
         Match,
         Time,
         Text,
-        Countdown
+        Countdown        
     }
+
+    //More Ideas: Stopwatch, Multistopwatch, Text+Time, Text+Countdown
 }

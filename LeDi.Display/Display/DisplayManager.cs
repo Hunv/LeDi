@@ -32,6 +32,11 @@ namespace LeDi.Display.Display
         public DisplayActionEnum CurrentAction { get; set; } = DisplayActionEnum.None;
 
         /// <summary>
+        /// action parameter (i.e. the text to show, start time of the countdown, ...)
+        /// </summary>
+        public object? ActionParameter { get; set; }
+
+        /// <summary>
         /// Timer to query commands from server
         /// </summary>
         private readonly System.Timers.Timer _TmrMisc = new(1000);
@@ -68,10 +73,25 @@ namespace LeDi.Display.Display
 
             _MiscRunning = true;
 
-            // Update match data in case some data should be shown:
-            if (Match != null && CurrentAction == DisplayActionEnum.Match)
+            // Check the current action of the display
+            switch (CurrentAction)
             {
-                await ShowMatch();
+                default:
+                case DisplayActionEnum.None:
+                    break;
+                case DisplayActionEnum.Match:
+                    if (Match != null)
+                        await ShowMatch();
+                    break;
+                case DisplayActionEnum.Time:
+                    ShowTime();
+                    break;
+                case DisplayActionEnum.Text:
+                    ShowText();
+                    break;
+                case DisplayActionEnum.Countdown:
+                    ShowCountdown();
+                    break;
             }
 
             // Check for new commands
@@ -83,11 +103,26 @@ namespace LeDi.Display.Display
                 return;
             }
 
+            // Run the new commands
             foreach(var aCmd in commands)
             {
                 IEffect effect = new NoEffect();
                 switch (aCmd.Command)
                 {
+                    case "showtime":
+                        Logger.Info("Running command \"showtime\"...");
+                        CurrentAction = DisplayActionEnum.Time;
+                        break;
+                    case "showtext":
+                        Logger.Info("Running command \"showtext\"...");
+                        CurrentAction = DisplayActionEnum.Text;
+                        ActionParameter = aCmd.Parameter;
+                        break;
+                    case "showcountdown":
+                        Logger.Info("Running command \"showcountdown\"...");
+                        CurrentAction = DisplayActionEnum.Countdown;
+                        ActionParameter = aCmd.Parameter;
+                        break;
                     case "loadmatch":
                         Logger.Info("Running command \"loadmatch\"...");
                         if (_Connector.DeviceId == null)
@@ -276,6 +311,46 @@ namespace LeDi.Display.Display
             
         }
 
+        private void ShowCountdown()
+        {
+            if (ActionParameter != null && ActionParameter.GetType() == typeof(int))
+            {
+                var countdown = (int)ActionParameter;
+                Display.ShowString(countdown.ToString());
+                countdown--;
+                ActionParameter = countdown;
+            }
+            else
+            {
+                Logger.Warn("Cannot show countdown, because ActionParameter is not set.");
+            }
+        }
+
+        private void ShowText()
+        {
+            if (ActionParameter != null && ActionParameter.GetType() == typeof(string))
+            {
+#pragma warning disable CS8604 // Possible null reference argument.
+                Display.ShowString(ActionParameter.ToString());
+#pragma warning restore CS8604 // Possible null reference argument.
+                Display.Render();
+            }
+            else
+            {
+                Logger.Warn("Cannot show text, because ActionParameter is not set.");
+            }
+        }
+
+        /// <summary>
+        /// Shows the current time on the display
+        /// </summary>
+        /// <returns></returns>
+        private void ShowTime()
+        {
+            var timeString = DateTime.Now.ToString("HH:mm");
+            Display.ShowString(timeString);
+        }
+
         /// <summary>
         /// Shows the status of a match
         /// </summary>
@@ -313,6 +388,7 @@ namespace LeDi.Display.Display
                     Match.TimeLeftSeconds = newMatchInfo.TimeLeftSeconds;
                     Match.Team1Score = newMatchInfo.Team1Score;
                     Match.Team2Score = newMatchInfo.Team2Score;
+                    Match.Penalties = newMatchInfo.Penalties;
 
                     // Update LEDs
                     Display.ShowString(Match.Team1Name ?? "Team1", "team1name");
@@ -321,6 +397,32 @@ namespace LeDi.Display.Display
                     Display.ShowString((Match.Team2Score ?? 0).ToString(), "team2goals");
                     Display.ShowString(":", "goaldivider");
 
+                    var pent1 = "";
+                    var pent2 = "";
+                    // Get Penalties
+                    foreach (var aPen in Match.Penalties)
+                    {
+                        if (aPen.PenaltyTime > 0)
+                        {
+                            var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPen.PenaltyTimeStart - aPen.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent - 1));
+
+                            if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                            {
+                                if (timeleft < 0)
+                                    timeleft = 0;
+
+                                if (aPen.TeamId == 0)
+                                    pent1 += (timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2, '0') + "#" + aPen.PlayerNumber + "(" + @aPen.PenaltyName + ")\n";
+                                else
+                                    pent2 += (timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2, '0') + "#" + aPen.PlayerNumber + "(" + @aPen.PenaltyName + ")\n";
+                            }
+                        }
+                    }
+
+                    if (pent1 != "")
+                        Display.ShowString(pent1, "team1penalties");
+                    if (pent2 != "")
+                        Display.ShowString(pent2, "team2penalties");
 
                     LastKnownMatchHash = matchCore.PropertyHash;
                 }
