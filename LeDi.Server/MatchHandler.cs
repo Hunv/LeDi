@@ -70,15 +70,20 @@ namespace LeDi.Server
                 {
                     //If time is over and there is no overtime, stop the time
                     //otherwise, reduce the time
-                    if (dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft <= 0 &&
+                    var match = dbContext.Matches.Single(x => x.Id == MatchId);
+                    if (match.CurrentTimeLeft <= 0 &&
                         (MatchRules.Rules == null || MatchRules.Rules.RulePeriodOvertime == false)
                         )
                     {
                         await LogEvent(MatchId, MatchEventEnum.PeriodEnd, "Period over.");
+                        if (match.RulePeriodCount == match.CurrentPeriod)
+                        {
+                            await LogEvent(MatchId, MatchEventEnum.MatchEnd, "Match over.");
+                        }
                         Stop();
                     }
                     else
-                    {                        
+                    {
                         dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft -= diff;
                         _logger.Debug("Setting new time left {0} (-{1}) for match {2}", dbContext.Matches.Single(x => x.Id == MatchId).CurrentTimeLeft, diff, MatchId);
                         await dbContext.SaveChangesAsync();

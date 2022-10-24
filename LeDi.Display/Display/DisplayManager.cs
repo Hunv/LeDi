@@ -6,6 +6,7 @@ using System.Timers;
 using LeDi.Display.Effects;
 using LeDi.Shared;
 using LeDi.Shared.DtoModel;
+using LeDi.Shared.Enum;
 
 namespace LeDi.Display.Display
 {
@@ -362,111 +363,169 @@ namespace LeDi.Display.Display
                 return;
             }
 
-            // Get the time left and the hash of all match properties
-            var matchCore = await Api.GetMatchCoreAsync(Match.Id);
-
-            // If the core value query failed, cancel.
-            if (matchCore == null)
+            if (_Connector.DeviceId == null)
             {
-                Logger.Error("Failed to get MatchCore");
+                Logger.Error("No DeviceId set to show match information.");
                 return;
             }
 
-            // Update match object in case the hash is different
-            if (LastKnownMatchHash != matchCore.PropertyHash)
-            {
-                Logger.Info("New Hash is different. Refreshing Match infos...");
-                var newMatchInfo = await Api.GetMatchAsync(Match.Id);
-                if (newMatchInfo != null)
+            // Get the mode setting
+            var ModeSetting = await Api.GetDeviceSettingAsync(_Connector.DeviceId, "mode");
+            var Mode = "none";
+            if (ModeSetting != null)
+                Mode = ModeSetting.Value.ToLower();
+
+            //In case it is required, update the Match variable to the next match
+            if (Match.TimeLeftSeconds <= 0 && Mode == "tournament") {
+                var matchEvents = await Api.GetMatchEvents(Match.Id);
+                var matchLastEndEvent = matchEvents.LastOrDefault(x => x.Event == (int)MatchEventEnum.MatchEnd);
+                if (matchLastEndEvent == null)
                 {
-                    Logger.Debug("Updated Match infos.");
+                    Logger.Trace("The current match haven't ended yet. Not loading next match.");
+                }
+                else
+                {
+                    var matchEndedTime = matchLastEndEvent.Timestamp;
 
-                    // Update only the fields but not the whole Match object to do not flush the rules
-                    Match.PeriodCurrent = newMatchInfo.PeriodCurrent;
-                    Match.RulePeriodCount = newMatchInfo.RulePeriodCount;
-                    Match.MatchStatus = newMatchInfo.MatchStatus;
-                    Match.TimeLeftSeconds = newMatchInfo.TimeLeftSeconds;
-                    Match.Team1Score = newMatchInfo.Team1Score;
-                    Match.Team2Score = newMatchInfo.Team2Score;
-                    Match.Penalties = newMatchInfo.Penalties;
-
-                    // Update LEDs
-                    Display.ShowString(Match.Team1Name ?? "Team1", "team1name");
-                    Display.ShowString(Match.Team2Name ?? "Team2", "team2name");
-                    Display.ShowString((Match.Team1Score ?? 0).ToString(), "team1goals");
-                    Display.ShowString((Match.Team2Score ?? 0).ToString(), "team2goals");
-                    Display.ShowString(":", "goaldivider");
-
-                    var pent1 = "";
-                    var pent2 = "";
-                    // Get Penalties
-                    foreach (var aPen in Match.Penalties)
+                    // If the matchEnded event is more than x Seconds old, update the Match variable to the next match
+                    if (DateTime.Now.Subtract(matchEndedTime).TotalSeconds > 60)
                     {
-                        if (aPen.PenaltyTime > 0)
+                        Logger.Trace("Last match is more than {0} seconds over. Loading next match...", 60);
+                        var matchList = await Api.GetMatchListAsync();
+                        Match = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed && x.MatchStatus != (int)MatchStatusEnum.Stopped && x.MatchStatus != (int)MatchStatusEnum.Ended && x.MatchStatus != (int)MatchStatusEnum.Undefined)
+                            .OrderBy(x => x.ScheduledTime)
+                            .FirstOrDefault();
+                        Logger.Debug("Match is now ID {0}.", Match.Id);
+                        if (Match == null)
                         {
-                            var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPen.PenaltyTimeStart - aPen.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent - 1));
-
-                            if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
-                            {
-                                if (timeleft < 0)
-                                    timeleft = 0;
-
-                                if (aPen.TeamId == 0)
-                                    pent1 += (timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2, '0') + "#" + aPen.PlayerNumber + "(" + @aPen.PenaltyName + ")\n";
-                                else
-                                    pent2 += (timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2, '0') + "#" + aPen.PlayerNumber + "(" + @aPen.PenaltyName + ")\n";
-                            }
+                            Logger.Error("Failed to get next match. Maybe no more match in the schedule? Showing current time now.");
+                            CurrentAction = DisplayActionEnum.Time;
+                            Display.Render();
+                            return;
                         }
                     }
-
-                    if (pent1 != "")
-                        Display.ShowString(pent1, "team1penalties");
-                    if (pent2 != "")
-                        Display.ShowString(pent2, "team2penalties");
-
-                    LastKnownMatchHash = matchCore.PropertyHash;
                 }
             }
 
-            // If local timer says, time is over check verify before stopping
-            if (Match.TimeLeftSeconds == 0)
-            {
-                // Set the current time left to the server data
-                Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
 
-                // Stop Timer only if the Server based timer is done.
+            //Show the countdown to the selected match until start
+            if ((Mode == "tournament" || Mode == "matchcountdown") && Match.ScheduledTime != null && Match.ScheduledTime.Value.Subtract(DateTime.Now).TotalMinutes > 1) 
+            {
+                var timeToStart = Match.ScheduledTime.Value.Subtract(DateTime.Now);
+                Display.ShowString(((int)timeToStart.TotalMinutes).ToString() + ":" + timeToStart.Seconds.ToString().PadLeft(2, '0'));
+            }            
+            else // Show the selected match
+            {
+                // Get the time left and the hash of all match properties
+                var matchCore = await Api.GetMatchCoreAsync(Match.Id);
+
+                // If the core value query failed, cancel.
+                if (matchCore == null)
+                {
+                    Logger.Error("Failed to get MatchCore");
+                    return;
+                }
+
+                // Update match object in case the hash is different
+                if (LastKnownMatchHash != matchCore.PropertyHash)
+                {
+                    Logger.Info("New Hash is different. Refreshing Match infos...");
+                    var newMatchInfo = await Api.GetMatchAsync(Match.Id);
+                    if (newMatchInfo != null)
+                    {
+                        Logger.Debug("Updated Match infos.");
+
+                        // Update only the fields but not the whole Match object to do not flush the rules
+                        Match.PeriodCurrent = newMatchInfo.PeriodCurrent;
+                        Match.RulePeriodCount = newMatchInfo.RulePeriodCount;
+                        Match.MatchStatus = newMatchInfo.MatchStatus;
+                        Match.TimeLeftSeconds = newMatchInfo.TimeLeftSeconds;
+                        Match.Team1Score = newMatchInfo.Team1Score;
+                        Match.Team2Score = newMatchInfo.Team2Score;
+                        Match.Penalties = newMatchInfo.Penalties;
+
+                        // Update LEDs
+                        Display.ShowString(Match.Team1Name ?? "Team1", "team1name");
+                        Display.ShowString(Match.Team2Name ?? "Team2", "team2name");
+                        Display.ShowString((Match.Team1Score ?? 0).ToString(), "team1goals");
+                        Display.ShowString((Match.Team2Score ?? 0).ToString(), "team2goals");
+                        Display.ShowString(":", "goaldivider");
+
+                        var pent1 = "";
+                        var pent2 = "";
+                        // Get Penalties
+                        foreach (var aPen in Match.Penalties)
+                        {
+                            if (aPen.PenaltyTime > 0)
+                            {
+                                var timeleft = Match.TimeLeftSeconds - (Match.RulePeriodLength - aPen.PenaltyTimeStart - aPen.PenaltyTime) - ((Match.RulePeriodLength ?? 0) * (Match.PeriodCurrent - 1));
+
+                                if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                {
+                                    if (timeleft < 0)
+                                        timeleft = 0;
+
+                                    if (aPen.TeamId == 0)
+                                        pent1 += (timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2, '0') + "#" + aPen.PlayerNumber + "(" + @aPen.PenaltyName + ")\n";
+                                    else
+                                        pent2 += (timeleft / 60).ToString() + ":" + (timeleft.Value % 60).ToString().PadLeft(2, '0') + "#" + aPen.PlayerNumber + "(" + @aPen.PenaltyName + ")\n";
+                                }
+                            }
+                        }
+
+                        if (pent1 != "")
+                            Display.ShowString(pent1, "team1penalties");
+                        if (pent2 != "")
+                            Display.ShowString(pent2, "team2penalties");
+
+                        LastKnownMatchHash = matchCore.PropertyHash;
+                    }
+                }
+
+                // If local timer says, time is over check verify before stopping
                 if (Match.TimeLeftSeconds == 0)
                 {
-                    Logger.Info("Time of match {0} is over.", Match.Id);
-                    //tmrMatchtime.Stop();
+                    // Set the current time left to the server data
+                    Match.TimeLeftSeconds = matchCore.TimeLeftSeconds;
 
-                    // If this is not the last period, show the start button to start the next period
-                    if (Match.PeriodCurrent != Match.RulePeriodCount)
+                    // Stop Timer only if the Server based timer is done.
+                    if (Match.TimeLeftSeconds == 0)
                     {
-                        Logger.Debug("Not-the-last period is over.");
+                        Logger.Info("Time of match {0} is over.", Match.Id);
+                        //tmrMatchtime.Stop();
+
+                        // If this is not the last period, show the start button to start the next period
+                        if (Match.PeriodCurrent != Match.RulePeriodCount)
+                        {
+                            Logger.Debug("Not-the-last period is over.");
+                        }
+                        else
+                        {
+                            Logger.Debug("Last period is over.");
+                        }
+                    }
+                }
+                else // update local timer
+                {
+                    //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
+                    var serverTimeLeft = matchCore.TimeLeftSeconds;
+                    if (Match.TimeLeftSeconds - serverTimeLeft > 1 ||
+                        Match.TimeLeftSeconds - serverTimeLeft < 1)
+                    {
+                        Match.TimeLeftSeconds = serverTimeLeft;
+                    }
+                    else if (Match.TimeLeftSeconds > 0)
+                    {
+                        Match.TimeLeftSeconds--;
+                        var timeString = string.Format("{0}:{1}", (Match.TimeLeftSeconds / 60), ((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2, '0'));
+                        Display.ShowString(timeString, "time");
                     }
                     else
                     {
-                        Logger.Debug("Last period is over.");
+                        Logger.Debug("Time over.");
+                        Display.ShowString("Time over", "time");
                     }
                 }
-            }
-            else // update local timer
-            {
-                //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
-                var serverTimeLeft = matchCore.TimeLeftSeconds;
-                if (Match.TimeLeftSeconds - serverTimeLeft > 1 ||
-                    Match.TimeLeftSeconds - serverTimeLeft < 1)
-                {
-                    Match.TimeLeftSeconds = serverTimeLeft;
-                }
-                else if (Match.TimeLeftSeconds > 0)
-                {
-                    Match.TimeLeftSeconds--;
-                }
-
-                var timeString = string.Format("{0}:{1}", (Match.TimeLeftSeconds / 60), ((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2, '0'));
-                Display.ShowString(timeString, "time");
             }
             Display.Render();
         }

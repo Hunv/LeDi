@@ -213,6 +213,7 @@ namespace LeDi.Server.Api
                     dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_toptobottom", "true"));
                     dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_alternatingrows", "true"));
                     dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_firstledleft", "true"));
+                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "mode", "none"));
                 }
 
                 await dbContext.SaveChangesAsync();

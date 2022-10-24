@@ -274,7 +274,7 @@ namespace LeDi.Server.Api
                 if (match != null)
                 {
                     // Create a hash of match values that might change
-                    var propHash = (match.CurrentPeriod + "@@@" + string.Join(',', match.MatchEvents.Select(x => x.Id)) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score).GetHashCode();
+                    var propHash = (match.CurrentPeriod + "@@@" + string.Join(',', match.MatchEvents.Select(x => x.Id)) + "@@@" + match.MatchStatus + "@@@" + match.Team1Score + "@@@" + match.Team2Score + "@@@" + match.ScheduledTime).GetHashCode();
 
                     // Create the DtoMatchCore object
                     var dto = new DtoMatchCore() { TimeLeftSeconds = match.CurrentTimeLeft, PropertyHash = propHash };

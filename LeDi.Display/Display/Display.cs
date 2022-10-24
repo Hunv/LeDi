@@ -357,7 +357,7 @@ namespace LeDi.Display.Display
             if (LayoutConfig.AreaList == null)
                 return;
 
-            if (!LayoutConfig.AreaList.Select(x => x.Name).Contains(areaName))
+            if (!LayoutConfig.AreaList.Select(x => x.Name).Contains(areaName) && areaName != null)
             {
                 Logger.Warn("Area {0} not found to show string {1}.", areaName, text);
                 return;
