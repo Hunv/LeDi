@@ -346,7 +346,7 @@ namespace LeDi.Display.Display
             Logger.Trace(" Done ({0}ms)", DateTime.Now.Subtract(start).TotalMilliseconds);
         }
 
-        public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false, int maxHeight = int.MaxValue, int maxWidth = int.MaxValue)
+        public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false, int maxHeight = int.MaxValue, int maxWidth = int.MaxValue, string align = "default")
         {
             if (LayoutConfig == null || CharacterSets == null)
             {
@@ -366,6 +366,12 @@ namespace LeDi.Display.Display
             // Get the area details
             var area = areaName == null ? new Area() { Width = X, Height = Y } : LayoutConfig.AreaList.Single(x => x.Name == areaName);
 
+            // Set the alignment in case an area was defined;
+            if (areaName != null && align == "default")
+            {
+                align = area.Align;
+            }
+
             // Get the CharacterSet Sizes
             var allCharSets = CharacterSets.Where(x => x.Name == (characterSet ?? CharacterSet));
             var matchingCharSets = allCharSets;
@@ -376,16 +382,16 @@ namespace LeDi.Display.Display
                 Logger.Trace("Getting best Charsize by height and textlength.");
                 // Get best charset that fits into the height and to total text length fits into the width of the area
                 matchingCharSets = allCharSets
-                    .Where(x => x.Height <= area.Height && area.Width <= text.Length * x.Width && x.Height <= maxHeight && x.Width <= maxWidth)
-                    .OrderByDescending(x => x.Height)
-                    .ThenByDescending(x => x.Width);
+                    .Where(z => z.Height <= area.Height && text.Length * z.Width <= area.Width && z.Height <= maxHeight && z.Width <= maxWidth)
+                    .OrderByDescending(z => z.Height)
+                    .ThenByDescending(z => z.Width);
             }
-            else // Get the best mating char size but respect the configured limit of the area
+            else // Get the best matching char size but respect the configured limit of the area
             {
                 Logger.Trace("Get charset with maxcharsize (max: {0},{1})", area.MaxCharSize[0], area.MaxCharSize[1]);
                 matchingCharSets = allCharSets.Where(x => x.Width <= area.MaxCharSize[0] && x.Height <= area.MaxCharSize[1]).OrderByDescending(x => x.Height).ThenByDescending(x => x.Width);
             }
-            Logger.Trace("Found {0} matching charsets");
+            Logger.Trace("Found {0} matching charsets", matchingCharSets.Count());
 
             // Get best matching charset, but there will be problems fit them into the area or fulfill other requirements.
             if (!matchingCharSets.Any())
@@ -409,7 +415,7 @@ namespace LeDi.Display.Display
             }
 
             //Set the new text
-            if (area.Align == "left")
+            if (align == "left")
             {
                 var posX = area.PositionX;
                 var posY = area.PositionY;
@@ -462,7 +468,7 @@ namespace LeDi.Display.Display
                     posX += charObj.Width + 1;
                 }
             }
-            else if (area.Align == "center")
+            else if (align == "center" || align == "default")
             {
                 //Get the width of the string
                 var textWidth = 0;
@@ -542,7 +548,7 @@ namespace LeDi.Display.Display
                     posX += charObj.Width + 1;
                 }
             }
-            else if (area.Align == "right")
+            else if (align == "right")
             {
                 var posX = area.PositionX + area.Width;
                 var posY = area.PositionY;
@@ -574,20 +580,20 @@ namespace LeDi.Display.Display
                             //Console.WriteLine("    Setting X={0}/{1} and Y={2}/{3}", posX, x, posY, y);
 
                             //If the Area Borders are hard and content should be cut off, don't show pixels out of area.
-                            if (LayoutConfig.HardAreaBorders && (posX - charObj.Width + x > area.Width + area.PositionX || posY + y > area.Height + area.PositionY || posX - charObj.Width + x < area.PositionX || posY + y < area.PositionY))
+                            if (LayoutConfig.HardAreaBorders && (posX - charObj.Width + x +1 > area.Width + area.PositionX || posY + y > area.Height + area.PositionY || posX - charObj.Width + x < area.PositionX || posY + y < area.PositionY))
                             {
-                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of area with hard borders {3}/{4}", posX - charObj.Width + x, posY + y, area.Name, area.PositionX, area.PositionY);
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of area with hard borders {3}/{4}", posX - charObj.Width + x+1, posY + y, area.Name, area.PositionX, area.PositionY);
                                 continue;
                             }
 
                             //Check if coordinate is out of boundries
                             if (posX - charObj.Width + x >= X || posY + y >= Y)
                             {
-                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of boundries {3}/{4}", posX - charObj.Width + x, posY + y, area.Name, X, Y);
+                                Logger.Warn("Skipping pixel {0}/{1} for area {2} because it is out of boundries {3}/{4}", posX - charObj.Width + x +1, posY + y, area.Name, X, Y);
                                 continue;
                             }
 
-                            var ledNum = GetLedNumber(posX - charObj.Width + x, posY + y);
+                            var ledNum = GetLedNumber(posX - charObj.Width + x + 1, posY + y);
                             //Console.WriteLine("Setting right X={0}/{1} and Y={2}/{3} with LED Number {4}", area.PositionX, x, area.PositionY, y, ledNum);
                             var brightnessfactor = charObj.Pixels[x, y].A / 255;
                             var color = Color.FromArgb(r * brightnessfactor, g * brightnessfactor, b * brightnessfactor);

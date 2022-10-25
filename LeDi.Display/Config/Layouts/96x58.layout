@@ -145,6 +145,151 @@
 			"name": "Space",
 			"char": " ",
 			"file": "space.char"
+		},
+		{
+			"name": "Dot",
+			"char": ".",
+			"file": "dot.char"
+		},
+		{
+			"name": "Comma",
+			"char": ",",
+			"file": "comma.char"
+		},
+		{
+			"name": "Dash",
+			"char": "-",
+			"file": "dash.char"
+		},
+		{
+			"name": "A",
+			"char": "A",
+			"file": "A.char"
+		},
+		{
+			"name": "B",
+			"char": "B",
+			"file": "B.char"
+		},
+		{
+			"name": "C",
+			"char": "C",
+			"file": "C.char"
+		},
+		{
+			"name": "D",
+			"char": "D",
+			"file": "D.char"
+		},
+		{
+			"name": "E",
+			"char": "E",
+			"file": "E.char"
+		},
+		{
+			"name": "F",
+			"char": "F",
+			"file": "F.char"
+		},
+		{
+			"name": "G",
+			"char": "G",
+			"file": "G.char"
+		},
+		{
+			"name": "H",
+			"char": "H",
+			"file": "H.char"
+		},
+		{
+			"name": "I",
+			"char": "I",
+			"file": "I.char"
+		},
+		{
+			"name": "J",
+			"char": "J",
+			"file": "J.char"
+		},
+		{
+			"name": "K",
+			"char": "K",
+			"file": "K.char"
+		},
+		{
+			"name": "L",
+			"char": "L",
+			"file": "L.char"
+		},
+		{
+			"name": "M",
+			"char": "M",
+			"file": "M.char"
+		},
+		{
+			"name": "N",
+			"char": "N",
+			"file": "N.char"
+		},
+		{
+			"name": "O",
+			"char": "O",
+			"file": "O.char"
+		},
+		{
+			"name": "P",
+			"char": "P",
+			"file": "P.char"
+		},
+		{
+			"name": "Q",
+			"char": "Q",
+			"file": "Q.char"
+		},
+		{
+			"name": "R",
+			"char": "R",
+			"file": "R.char"
+		},
+		{
+			"name": "S",
+			"char": "S",
+			"file": "S.char"
+		},
+		{
+			"name": "T",
+			"char": "T",
+			"file": "T.char"
+		},
+		{
+			"name": "U",
+			"char": "U",
+			"file": "U.char"
+		},
+		{
+			"name": "V",
+			"char": "V",
+			"file": "V.char"
+		},
+		{
+			"name": "W",
+			"char": "W",
+			"file": "W.char"
+		},
+		{
+			"name": "X",
+			"char": "X",
+			"file": "X.char"
+		},
+		{
+			"name": "Y",
+			"char": "Y",
+			"file": "Y.char"
+		},
+		{
+			"name": "Z",
+			"char": "Z",
+			"file": "Z.char"
 		}
 	]
 }

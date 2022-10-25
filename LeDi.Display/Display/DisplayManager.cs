@@ -395,7 +395,9 @@ namespace LeDi.Display.Display
                         Match = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed && x.MatchStatus != (int)MatchStatusEnum.Stopped && x.MatchStatus != (int)MatchStatusEnum.Ended && x.MatchStatus != (int)MatchStatusEnum.Undefined)
                             .OrderBy(x => x.ScheduledTime)
                             .FirstOrDefault();
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                         Logger.Debug("Match is now ID {0}.", Match.Id);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                         if (Match == null)
                         {
                             Logger.Error("Failed to get next match. Maybe no more match in the schedule? Showing current time now.");
@@ -480,6 +482,11 @@ namespace LeDi.Display.Display
 
                         LastKnownMatchHash = matchCore.PropertyHash;
                     }
+
+                    if (Match.MatchStatus != (int)MatchStatusEnum.Running)
+                    {
+                        Display.Render();
+                    }
                 }
 
                 // If local timer says, time is over check verify before stopping
@@ -492,20 +499,21 @@ namespace LeDi.Display.Display
                     if (Match.TimeLeftSeconds == 0)
                     {
                         Logger.Info("Time of match {0} is over.", Match.Id);
-                        //tmrMatchtime.Stop();
-
+                        
                         // If this is not the last period, show the start button to start the next period
                         if (Match.PeriodCurrent != Match.RulePeriodCount)
                         {
                             Logger.Debug("Not-the-last period is over.");
+                            Display.ShowString("0:00", "time");
                         }
                         else
                         {
                             Logger.Debug("Last period is over.");
+                            Display.ShowString("END", "time");
                         }
                     }
                 }
-                else // update local timer
+                else // update local timer; Only executed if the time is not over. Otherwise the if above applies
                 {
                     //To count the seconds more smoothly, only correct the seconds, if the diff is more than 1 second
                     var serverTimeLeft = matchCore.TimeLeftSeconds;
@@ -517,14 +525,9 @@ namespace LeDi.Display.Display
                     else if (Match.TimeLeftSeconds > 0)
                     {
                         Match.TimeLeftSeconds--;
-                        var timeString = string.Format("{0}:{1}", (Match.TimeLeftSeconds / 60), ((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2, '0'));
-                        Display.ShowString(timeString, "time");
                     }
-                    else
-                    {
-                        Logger.Debug("Time over.");
-                        Display.ShowString("Time over", "time");
-                    }
+                    var timeString = string.Format("{0}:{1}", (Match.TimeLeftSeconds / 60), ((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2, '0'));
+                    Display.ShowString(timeString, "time");
                 }
             }
             Display.Render();
