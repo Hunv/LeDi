@@ -6,11 +6,12 @@
 @using LeDi.Shared.DtoModel
 @using LeDi.Shared.Enum
 @using LeDi.WebClient.Components
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchControl> Localizer
 
-<PageTitle>LeDi - Referee Match</PageTitle>
+<PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
 @if (MatchList == null && SelectedMatchId == null)
 {
-    <p><em>Loading Matches...</em></p>
+    <p><em>@Localizer["LoadingMatches"]</em></p>
 }
 else if (SelectedMatchId == null && MatchList != null && MatchList.Count == 0)
 {
@@ -26,31 +27,31 @@ else if (SelectedMatchId == null && MatchList != null)
                 <div class="col-12">
                     @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
                     {
-                        <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                        <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                     }
                     else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
                     {
-                        <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                        <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                     }
                     else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
                     {
-                        <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                        <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                     }
                     else {
-                        <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name vs. @aMatch.Team2Name</a>
+                        <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                     }
                     <br />
                 </div>
             </div>
         }    
-        <a>Legend: Green = Running Match, Gray = Finished Match, Blue = Ready to Start, Other = White</a>
+        <a>@Localizer["Legend"]</a>
     </div>
 }
 else if (SelectedMatchId != null)
 {
     @if (Match == null)
     {
-        <p><em>Loading Match...</em></p>
+        <p><em>@Localizer["LoadingMatch"]</em></p>
     }
     else
     {
@@ -70,16 +71,16 @@ else if (SelectedMatchId != null)
                         <div>
                             @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
                             {
-                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Canceled</a>
+                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["Canceled"]</a>
                             }
                             else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
                             {
-                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Match ended</a>
+                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["MatchEnded"]</a>
                             }
                             else 
                             {
                                 <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@(((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2,'0'))</a>
-                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
+                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
                                 <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
                             }
                         </div>
@@ -106,7 +107,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@PenaltyTeam1Clicked"                            
                             >
-                            Log Penalty
+                            @Localizer["LogPenalty"]
                         </a>
                         <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
                             <div class="container">                                
@@ -150,7 +151,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@PenaltyTeam2Clicked"
                             >
-                            Log Penalty
+                            @Localizer["LogPenalty"]
                         </a>                        
                         <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
                             <div class="container">                                
@@ -193,7 +194,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@IncrementCountTeam1Clicked"
                             >
-                            Score
+                            @Localizer["Score"]
                         </a>                        
                         <a 
                             style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
@@ -205,7 +206,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@DecreaseCountTeam1Clicked"
                             >
-                            Revoke Score
+                            @Localizer["RevokeScore"]
                         </a>
                     </div>
                 </div>
@@ -220,7 +221,7 @@ else if (SelectedMatchId != null)
                             disabled="@ButtonDisableStart" 
                             hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)"
                             >
-                            Start/Continue
+                            @Localizer["Start/Continue"]
                         </a>                        
                         <a 
                             style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;"
@@ -237,7 +238,7 @@ else if (SelectedMatchId != null)
                             disabled="@ButtonDisableStart" 
                             hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)"
                             >
-                            Pause
+                            @Localizer["Pause"]
                         </a>
 
                         <a 
@@ -249,7 +250,7 @@ else if (SelectedMatchId != null)
                             disabled="@ButtonPreparePeriodDisabled" 
                             hidden="@ButtonPreparePeriodDisabled"
                             >
-                            Prepare next period
+                            @Localizer["PrepareNextPeriod"]
                         </a>
 
                         <a 
@@ -261,7 +262,7 @@ else if (SelectedMatchId != null)
                             disabled="@ButtonCloseMatchDisabled" 
                             hidden="@ButtonCloseMatchDisabled"
                             >
-                            Close match
+                            @Localizer["CloseMatch"]
                         </a>
                     </div>
                 </div>
@@ -274,7 +275,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@IncrementCountTeam2Clicked"
                             >
-                            Score
+                            @Localizer["Score"]
                         </a>
                         <a 
                             style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
@@ -286,7 +287,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@DecreaseCountTeam2Clicked"
                             >
-                            Revoke Score
+                            @Localizer["RevokeScore"]
                         </a>
                     </div>
                 </div>
@@ -303,7 +304,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@ExpandAdvancedControls"
                             >
-                            <span class="oi @(this.HideAdvancedControls ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideAdvancedControls ? " Show advanced controls" : " Hide advanced controls")
+                            <span class="oi @(this.HideAdvancedControls ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideAdvancedControls ? Localizer["ShowControls"] : Localizer["HideControls"])
                         </a>
                     </div>
                 </div>
@@ -319,7 +320,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@MatchCancelClicked"
                             >
-                            Cancel Match
+                            @Localizer["CancelMatch"]
                         </a>  
                     </div>
                     <div style="height:100%; min-height:100%;" class="p-1">                        
@@ -330,7 +331,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@MatchRestartClicked"
                             >
-                            Restart Match
+                            @Localizer["RestartMatch"]
                         </a>  
                     </div>
                 </div>
@@ -343,7 +344,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@MatchSetTimeClicked"
                             >
-                            Set match time
+                            @Localizer["SetMatchTime"]
                         </a>  
                     </div>
                     <div style="height:100%; min-height:100%;" class="p-1">                        
@@ -354,7 +355,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@SetDisplayClicked"
                             >
-                            Show on display
+                            @Localizer["ShowOnDisplay"]
                         </a>  
                     </div>
                 </div>
@@ -367,7 +368,7 @@ else if (SelectedMatchId != null)
                             role="button" 
                             @onclick="@RevokePenaltyClicked"
                             >
-                            Revoke Penalty
+                            @Localizer["RevokePenalty"]
                         </a>  
                     </div>
                 </div>
@@ -380,7 +381,9 @@ else if (SelectedMatchId != null)
                         <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
                         @if(MatchEventList == null) 
                         {
-                            <a>No match events available.</a><br />
+                            <a>@Localizer["NoMatchEventsAvailable"]</a>
+
+                            <br />
                         }
                         else
                         {
@@ -390,13 +393,13 @@ else if (SelectedMatchId != null)
                                         <b>#</b>
                                     </div>*@
                                     <div class="col-1 text-nowrap">
-                                        <b>Time</b>
+                                        <b>@Localizer["Time"]</b>
                                     </div>@*
                                     <div class="col-1 text-nowrap">
                                         <b>Creator</b>
                                     </div>*@
                                     <div class="col-auto">
-                                        <b>Note</b>
+                                        <b>@Localizer["Note"]</b>
                                     </div>
                                 </div>
          
@@ -426,15 +429,15 @@ else if (SelectedMatchId != null)
     }
 }
 else
-{   
-    <p><em>Unable to load Match or Matches...</em></p>
+{
+    <p><em>@Localizer["UnableToLoadMatch"]</em></p>
 }
 
 @if (DialogPenaltyPlayerShow)
 {
     <ModalPlayernumberDialog 
-        Title="Select playernumber"
-        Text="Select playernumber the penalty applies to"
+        Title="@Localizer["SelectPlayernumber"]"
+        Text="@Localizer["SelectPlayernumberAppliesTo"]"
         PlayerNumbers=@PenaltyPlayerNumbers
         OnClose="@OnPenaltyPlayerClose"
         ShowTeamButton=true
@@ -445,8 +448,8 @@ else
 @if (DialogPenaltyPenaltyShow)
 {
     <ModalPenaltyDialog 
-        Title="Select the penalty"
-        Text="Select the penalty for the selected player."
+        Title="@Localizer["SelectPenalty"]"
+        Text="@Localizer["SelectPenaltyPlayer."]"
         PenaltyList=@PenaltyList
         OnClose="@OnPenaltyPenaltyClose"
         >
@@ -456,8 +459,8 @@ else
 @if (DialogYesNoDangerShow)
 {
     <ModalDialog
-        Title="Are you sure?"
-        Text="Do you really want to perfom that action?"
+        Title="@Localizer["AreYouSure"]"
+        Text="@Localizer["PerfomThatAction"]"
         OnClose="@OnYesNoClose"
         ButtonOKText="Yes"
         ButtonCancelText="No"
@@ -468,9 +471,9 @@ else
 
 @if (DialogTimeShow)
 {
-    <ModalTimeDialog
-        Title="Set match time left"
-        Text="Set the time to the time left for the current match. Pause the match to stop the time from keep running before setting the time."
+    <ModalTimeDialog 
+        Title="@Localizer["MatchTimeLeft"]"
+        Text="@Localizer["SetMatchTimeLeft"]"
         OnClose="@OnTimeClose"
         DefaultTimeSeconds="@(Match == null ? 600 : (Match.RulePeriodLength ?? 600))"        
         TimeLeftSeconds="@(Match == null ? 0 : (Match.TimeLeftSeconds ?? 0))"
@@ -480,9 +483,9 @@ else
 
 @if (DialogPenaltyRevokeShow)
 {
-    <ModalPenaltyRevokeDialog
-        Title="Select penalty to revoke"
-        Text="Which penalty should be revoked?"
+    <ModalPenaltyRevokeDialog 
+        Title="@Localizer["PenaltyRevoke"]"
+        Text="@Localizer["WhichPenaltyRevoke"]"
         OnClose="@OnPenaltyRevokeClose"
         PenaltyList="@(Match == null ? new List<DtoMatchPenalty>() : Match.Penalties.Where(x => x.Revoked == false).ToList())"
         >

@@ -45,6 +45,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>MatchAdd.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Pages\MatchControl.de-DE.Designer.cs">
+      <DependentUpon>MatchControl.de-DE.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Pages\MatchControl.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MatchControl.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +72,14 @@
     <EmbeddedResource Update="Resources\Pages\MatchAdd.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MatchAdd.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Pages\MatchControl.de-DE.resx">
+      <LastGenOutput>MatchControl.de-DE.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Pages\MatchControl.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MatchControl.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
