@@ -382,7 +382,7 @@ namespace LeDi.Display.Display
                 Logger.Trace("Getting best Charsize by height and textlength.");
                 // Get best charset that fits into the height and to total text length fits into the width of the area
                 matchingCharSets = allCharSets
-                    .Where(z => z.Height <= area.Height && text.Length * z.Width <= area.Width && z.Height <= maxHeight && z.Width <= maxWidth)
+                    .Where(z => z.Height <= area.Height && text.Length * (z.Width +1) <= area.Width && z.Height <= maxHeight && (z.Width +1) <= maxWidth) //z.Width+1 because there is one column of free pixels between the characters.
                     .OrderByDescending(z => z.Height)
                     .ThenByDescending(z => z.Width);
             }
@@ -403,7 +403,7 @@ namespace LeDi.Display.Display
             // Get the best matching set
             var charSet = matchingCharSets.First();
 
-            Logger.Debug("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
+            Logger.Trace("Writing string {0} in area {1} using charSet {2}", text, area.Name, charSet.Name + "(" + charSet.Width + "x" + charSet.Height + ")");
 
             //Flush Area
             for (int x = area.PositionX; x < area.PositionX + area.Width; x++)

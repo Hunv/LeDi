@@ -27,7 +27,7 @@ namespace LeDi.Server.Api
                 List<DtoDeviceCommand>? dto = dbContext.DeviceCommands.Where(x => x.DeviceId == deviceId).Select(aDevice => aDevice.ToDto()).ToList();
 
                 var json = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
-                Logger.Debug("GetDeviceCommands got the follwoing results: {0}", json);
+                Logger.Trace("GetDeviceCommands got the follwoing results: {0}", json);
                 return json;
             }
 

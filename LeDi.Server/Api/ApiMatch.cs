@@ -90,6 +90,7 @@ namespace LeDi.Server.Api
                     .Include("MatchReferees")
                     .Include("RulePenaltyList")
                     .Include("RulePenaltyList.Display")
+                    .Include("Devices")
                     .SingleOrDefault(x => x.Id == matchId);
                 if (dto != null)
                 {

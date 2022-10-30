@@ -47,11 +47,12 @@ namespace LeDi.Shared
         }
 
         /// <summary>
-        /// Gets all devices
+        /// Gets a device
         /// </summary>
         /// <returns></returns>
         public async Task<DtoDevice?> GetDeviceAsync(string deviceId)
         {
+            throw new Exception("not available atm. See #42");
             var json = await Helper.ApiRequestGet(ServerBaseUrl + "Device/" + deviceId);
             if (json == null)
             {
@@ -78,6 +79,20 @@ namespace LeDi.Shared
             Logger.Trace("Got register device response {0}", responseBody);
 
             return responseBody;
+        }
+
+        /// <summary>
+        /// Sends a command request to the database to tell a device to run a command
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public async Task SetDevice(DtoDevice device)
+        {
+            Logger.Debug("Setting device properties of device {0}", device.DeviceId);
+
+            var json = JsonConvert.SerializeObject(device, Helper.GetJsonSerializer());
+
+            await Helper.ApiRequestPut(ServerBaseUrl + "Device/" + device.DeviceId, json);
         }
 
         #endregion

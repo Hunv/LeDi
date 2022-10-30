@@ -184,7 +184,7 @@ namespace LeDi.Shared
             }
             else
             {
-                Logger.Error("Failed to POST {0}", url);
+                Logger.Error("Failed to POST {0}. Statuscode: {1}. Response: {2}", url, response.StatusCode, await response.Content.ReadAsStringAsync());
                 return null;
             }
         }

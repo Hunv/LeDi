@@ -19,6 +19,7 @@ namespace LeDi.Server.DatabaseModel
         public DbSet<DeviceCommand>? DeviceCommands { get; set; }
         public DbSet<Player>? Players { get; set; }
         public DbSet<Player2Match>? Player2Matches { get; set; }
+        public DbSet<Device2Match>? Device2Matches { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -38,6 +39,16 @@ namespace LeDi.Server.DatabaseModel
             {
                 entity.HasKey(e => new { e.PlayerId, e.MatchId });
                 entity.HasOne(e => e.Player)
+                    .WithMany(e => e.MatchList);
+            });
+
+
+            // Devices to Matches
+            modelBuilder.Entity<Device2Match>().ToTable("Device2Matches");
+            modelBuilder.Entity<Device2Match>(entity =>
+            {
+                entity.HasKey(e => new { e.DeviceId, e.MatchId });
+                entity.HasOne(e => e.Device)
                     .WithMany(e => e.MatchList);
             });
 

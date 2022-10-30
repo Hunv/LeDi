@@ -492,6 +492,18 @@ else
     </ModalPenaltyRevokeDialog>
 }
 
+
+@if (DialogDeviceShow)
+{
+    <ModalDisplayDialog 
+        Title="@Localizer["SelectDevice"]"
+        Text="@Localizer["WhichDevice"]"
+        OnClose="@OnDisplayClose"
+        Devices="@DeviceList"
+        >
+    </ModalDisplayDialog>
+}
+
 @code{
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     System.Timers.Timer tmrMatchtime = new System.Timers.Timer();
@@ -511,11 +523,12 @@ else
     bool DialogPenaltyPenaltyShow = false; //Is the modal dialog for the penalty for penalties of team 1 opened?
     bool DialogTimeShow = false; //Is the modal dialog for setting the time opened?
     bool DialogPenaltyRevokeShow = false; //Is the modal dialog for revoke penalty opened?
-    bool DialogYesNoShow = false; //Show the yesno dialog
+    bool DialogDeviceShow = false; //Is the modal dialog for device selection opened?
     int PenaltyTeamId = -1; //The ID (0 = Team 1, 1 = Team 2) of the team the currently selecting penalty is for.
     int PenaltyPlayerNumber = -1; //The Playernumber that get the penalty
     List<int> PenaltyPlayerNumbers = new List<int>(); // The playernumbers of a team. Null or empty in case the number should be entered in the modal dialog.
     List<string> PenaltyList = new List<string>(); // The list of penalties the referee can choose for the previously selected player (or team)
+    List<DtoDevice>DeviceList = new List<DtoDevice>(); //The list of devices. Only filled when the Set-Display button was clicked.
 
     [Parameter]
     public int? SelectedMatchId { get; set; }
@@ -1004,7 +1017,28 @@ else
         }
 
         tmrMatchtime.Start();
+
         await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+
+    /// <summary>
+    /// Checks if the current match should be shown on a display and sets the setting
+    /// </summary>
+    private async Task InitializeDisplay()
+    {
+        //Check if the current match has display(s) to show the match on
+        if (Match.DeviceIds.Count > 0)
+        {
+            foreach (var aDev in Match.DeviceIds)
+            {
+                Logger.Debug("Setting display {0} to show match id {1} because it is listed as the display device.", aDev, SelectedMatchId);
+                var devSet = new DtoDeviceSetting(aDev, "matchid", (SelectedMatchId ?? 0).ToString());
+                await Api.SetDeviceSettingAsync(aDev, devSet);
+
+                await Api.SetDeviceCommand(aDev, "loadmatch", "");
+            }
+        }
     }
 
     private async Task LoadMatchList()
@@ -1047,6 +1081,9 @@ else
 
         // Update the Match Events
         await LoadMatchEvents();
+
+        // Set the Displays, that should show the Match
+        await InitializeDisplay();
 
         await InvokeAsync(() => { StateHasChanged(); });
     }
@@ -1143,18 +1180,29 @@ else
                 return;
             }
 
-            foreach(var aDev in deviceList)
-            {
-                Logger.Debug("Setting display {0} to show match id {1}", aDev.DeviceId, SelectedMatchId);
-                var devSet = new DtoDeviceSetting(aDev.DeviceId, "matchid", (SelectedMatchId ?? 0).ToString());
-                await Api.SetDeviceSettingAsync(aDev.DeviceId, devSet);
-
-                await Api.SetDeviceCommand(aDev.DeviceId, "loadmatch", "");
-            }
+            DeviceList = deviceList;
+            DialogDeviceShow = true;
         }
         else
         {
             Logger.Warn("No match selected");
         }
+    }
+
+    /// <summary>
+    /// Executed after the DeviceDialog closes
+    /// </summary>
+    /// <param name="dev"></param>
+    /// <returns></returns>
+    private async Task OnDisplayClose(DtoDevice dev)
+    {
+        DialogDeviceShow = false;
+        await InvokeAsync(() => { StateHasChanged(); });
+
+        Logger.Debug("Setting display {0} to show match id {1}", dev.DeviceId, SelectedMatchId);
+        var devSet = new DtoDeviceSetting(dev.DeviceId, "matchid", (SelectedMatchId ?? 0).ToString());
+        await Api.SetDeviceSettingAsync(dev.DeviceId, devSet);
+
+        await Api.SetDeviceCommand(dev.DeviceId, "loadmatch", "");
     }
 }

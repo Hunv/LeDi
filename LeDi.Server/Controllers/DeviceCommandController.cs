@@ -21,12 +21,12 @@ namespace LeDi.Server.Controllers
         [HttpGet("{deviceId}")]
         public IActionResult GetDeviceCommand(string deviceId)
         {
-            _logger.Debug("{0}: Get DeviceCommands for {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
+            _logger.Trace("{0}: Get DeviceCommands for {1}", Request.HttpContext.Connection.RemoteIpAddress, deviceId);
 
             var json = Api.ApiDeviceCommand.GetDeviceCommands(deviceId);
             var result = new OkObjectResult(json);
 
-            _logger.Debug("{0}: Got DeviceCommands for {1}. JSON: {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, json);
+            _logger.Trace("{0}: Got DeviceCommands for {1}. JSON: {2}", Request.HttpContext.Connection.RemoteIpAddress, deviceId, json);
             return result;
         }
 

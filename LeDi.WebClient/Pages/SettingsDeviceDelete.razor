@@ -28,7 +28,7 @@ else
     public string Id { get; set; } = "";
 
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-    private DtoDevice ToDeleteDevice = new DtoDevice("", "", "");
+    private DtoDevice ToDeleteDevice = new DtoDevice("", "", "", "");
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,7 +36,7 @@ else
         if (devices == null || devices.Count == 0)
             return;
 
-        ToDeleteDevice = devices.SingleOrDefault(x => x.DeviceId == Id) ?? new DtoDevice("","","");
+        ToDeleteDevice = devices.SingleOrDefault(x => x.DeviceId == Id) ?? new DtoDevice("","","", "");
     }
 
     private void CancelDelete()

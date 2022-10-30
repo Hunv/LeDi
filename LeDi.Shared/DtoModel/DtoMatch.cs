@@ -91,6 +91,11 @@ namespace LeDi.Shared.DtoModel
         public List<DtoMatchPenalty> Penalties { get; set; } = new List<DtoMatchPenalty>();
 
         /// <summary>
+        /// List of device ids, that will show the match when it is loaded
+        /// </summary>
+        public List<string> DeviceIds { get; set; } = new List<string>();
+
+        /// <summary>
         /// Contains the current match minute. Calculated by periodlength, timeleft and current period
         /// </summary>
         [JsonIgnore]

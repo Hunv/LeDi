@@ -186,6 +186,9 @@
   <data name="Score" xml:space="preserve">
     <value>Tor</value>
   </data>
+  <data name="SelectDevice" xml:space="preserve">
+    <value>Anzeige auswählen</value>
+  </data>
   <data name="SelectPenalty" xml:space="preserve">
     <value>Wählen Sie die Strafe</value>
   </data>
@@ -221,6 +224,9 @@
   </data>
   <data name="vs" xml:space="preserve">
     <value>vs.</value>
+  </data>
+  <data name="WhichDevice" xml:space="preserve">
+    <value>Wähle die Anzeige aus, auf der das Spiel angezeigt werden soll.</value>
   </data>
   <data name="WhichPenaltyRevoke" xml:space="preserve">
     <value>Which penalty should be revoked?</value>

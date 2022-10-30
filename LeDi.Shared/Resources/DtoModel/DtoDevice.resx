@@ -121,9 +121,12 @@
     <value>The Device Id GUID is not in the correct format. It must have hex characters lower case and the following format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</value>
   </data>
   <data name="DeviceModelFormatError" xml:space="preserve">
-    <value>The Device Model needs to be set.</value>
+    <value>The Device Model needs to be set. Avoid special characters.</value>
+  </data>
+  <data name="DeviceNameFormatError" xml:space="preserve">
+    <value>The Device Name needs to be set. Avoid special characters.</value>
   </data>
   <data name="DeviceTypeFormatError" xml:space="preserve">
-    <value>The Device Type needs to be set.</value>
+    <value>The Device Type needs to be set. Avoid special characters.</value>
   </data>
 </root>

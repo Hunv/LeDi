@@ -191,7 +191,10 @@ namespace LeDi.Server.Api
                     {
                         //DeviceID exists
                         Logger.Debug("Verified Device {0}", device.DeviceId);
-                        var dtoExists = new DtoDevice(device.DeviceId, device.DeviceModel, device.DeviceType);
+                        var dtoExists = new DtoDevice(device.DeviceId, device.DeviceModel, device.DeviceType, device.DeviceName) 
+                        {
+                            Default = device.Default, Enabled = device.Enabled 
+                        };
 
                         var json1 = JsonConvert.SerializeObject(dtoExists, Helper.GetJsonSerializer());
                         Logger.Debug("NewDevice returns the following result: {0}", json1);
@@ -201,7 +204,10 @@ namespace LeDi.Server.Api
 
                 //Create a new device ID
                 var devId = Guid.NewGuid().ToString();
-                var newDevice = new Device(devId, device.DeviceModel, device.DeviceType);
+                var newDevice = new Device(devId, device.DeviceModel, device.DeviceType, device.DeviceName) 
+                {
+                    Default = device.Default, Enabled = device.Enabled 
+                };
                 dev.Add(newDevice);
 
                 // Add default settings
@@ -219,7 +225,11 @@ namespace LeDi.Server.Api
                 await dbContext.SaveChangesAsync();
                 Logger.Info("Created new Device with GUID {0}, Type {1} and Model {2}", devId, device.DeviceType, device.DeviceModel);
 
-                var dto = new DtoDevice(newDevice.DeviceId, newDevice.DeviceModel, newDevice.DeviceType);
+                var dto = new DtoDevice(newDevice.DeviceId, newDevice.DeviceModel, newDevice.DeviceType, newDevice.DeviceName)
+                {
+                    Enabled = newDevice.Enabled,
+                    Default = newDevice.Default
+                };
 
                 var json2 = JsonConvert.SerializeObject(dto, Helper.GetJsonSerializer());
                 Logger.Debug("NewDevice got the following result: {0}", json2);
@@ -228,6 +238,45 @@ namespace LeDi.Server.Api
 
             Logger.Debug("NewDevice returns an empty response.");
             return null;
+        }
+
+        /// <summary>
+        /// Sets properties (not settings) of a device
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        public static async Task SetDevice(DtoDevice device)
+        {
+            Logger.Trace("Executing SetDevice...");
+
+            using var dbContext = new TwDbContext();
+
+            if (dbContext.Device != null)
+            {
+                var dev = dbContext.Device.SingleOrDefault(x => x.DeviceId == device.DeviceId);
+
+                //Check if device ID exists
+                if (dev == null)
+                {
+                    Logger.Error("Cannot find device ID {0}", device.DeviceId);
+                    return;
+                }
+
+                // Set the properties
+                dev.Default = device.Default;
+                dev.Enabled = device.Enabled;
+                dev.DeviceType = device.DeviceType;
+                dev.DeviceModel = device.DeviceModel;
+                dev.DeviceName = device.DeviceName;
+
+                await dbContext.SaveChangesAsync();
+                Logger.Info("Updated device {0}.", device.DeviceId);
+
+            }
+            else
+            {
+                Logger.Warn("SetDevice cannot find device {0}", device.DeviceId);
+            }
         }
 
         /// <summary>

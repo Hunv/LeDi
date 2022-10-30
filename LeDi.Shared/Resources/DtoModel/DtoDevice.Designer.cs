@@ -70,7 +70,7 @@ namespace LeDi.Shared.Resources.DtoModel {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Device Model needs to be set..
+        ///   Looks up a localized string similar to The Device Model needs to be set. Avoid special characters..
         /// </summary>
         internal static string DeviceModelFormatError {
             get {
@@ -79,7 +79,16 @@ namespace LeDi.Shared.Resources.DtoModel {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Device Type needs to be set..
+        ///   Looks up a localized string similar to The Device Name needs to be set. Avoid special characters..
+        /// </summary>
+        internal static string DeviceNameFormatError {
+            get {
+                return ResourceManager.GetString("DeviceNameFormatError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Device Type needs to be set. Avoid special characters..
         /// </summary>
         internal static string DeviceTypeFormatError {
             get {

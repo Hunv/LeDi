@@ -64,9 +64,11 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Device ID</th>
+                <th>Device Name</th>
                 <th>Device Model</th>
                 <th>Device Type</th>
+                <th>Enabled</th>
+                <th>Default</th>
                 <th></th>
                 <th></th>
             </tr>
@@ -75,15 +77,17 @@ else
             @foreach(var aDevice in DeviceList)
             {
                 <tr>
-                    <td><p>@aDevice.DeviceId</p></td>
+                    <td><p>@(string.IsNullOrWhiteSpace(aDevice.DeviceName) ? aDevice.DeviceId : aDevice.DeviceName)</p></td>
                     <td><p>@aDevice.DeviceModel</p></td>
                     <td><p>@aDevice.DeviceType</p></td>
+                    <td><p>@aDevice.Enabled</p></td>
+                    <td><p>@aDevice.Default</p></td>
                     <td><a href="/SettingsDevice/@aDevice.DeviceId" class="text-decoration-none">🔧</a></td>
                     <td><a href="/SettingsDeviceDelete/@aDevice.DeviceId" class="text-decoration-none">🗑</a></td>
                 </tr>
             }      
         </tbody>
-    </table>    
+    </table> 
 }
 
 @code {
@@ -121,7 +125,7 @@ else
         foreach(var aServerSet in currentServerSettings)
         {
             var locSet = SettingList.SingleOrDefault(x => x.Name == aServerSet.Name);
-            
+
             if (locSet == null)
                 continue;
 
@@ -131,7 +135,7 @@ else
             }
         }
 
-        //Reload Device settings
+        // reload settings
         SettingList = await Api.GetSettingAsync();
         await InvokeAsync(() => { StateHasChanged(); });
     }

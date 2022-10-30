@@ -18,8 +18,9 @@ namespace LeDi.Display
 
         public string? Layout { get; set; }
         public string? DeviceId { get; set; }
-        public string DeviceModel = "LeDiDisplay";
+        public string DeviceModel = "LeDi Display";
         public string DeviceType = "LED Screen";
+        public string DeviceName = "LeDi";
         private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
 
@@ -88,11 +89,11 @@ namespace LeDi.Display
         {
             Logger.Trace("RegisterDevice executed.");
 
-            var json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"\"}";
+            var json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"\", \"DeviceName\":\"" + DeviceName + "\"}";
             if (DeviceId != null)
             {
                 Logger.Debug("No registration required. Device already has Device ID {0}. Checking if Server knows the device.", DeviceId);
-                json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"" + DeviceId + "\"}";
+                json = "{\"DeviceType\":\"" + DeviceType + "\",\"DeviceModel\":\"" + DeviceModel + "\",\"DeviceId\":\"" + DeviceId + "\", \"DeviceName\":\"" + DeviceName + "\"}";
             }
             else
             {
@@ -103,68 +104,75 @@ namespace LeDi.Display
 
             if (responseBody != null)
             {
-                Logger.Info("Device registered.");
+                try
+                {
+                    Logger.Info("Device registered.");
 
-                if (responseBody == null)
-                {
-                    Logger.Debug("No response body received.");
-                    return;
-                }
-
-                //Convert response to object
-                var deviceObj = (DtoDevice?)JsonConvert.DeserializeObject(responseBody, typeof(DtoDevice), Helper.GetJsonSerializer());
-
-                if (deviceObj == null)
-                {
-                    Logger.Warn("Device Object answer is null.");
-                    return;
-                }
-
-                Logger.Info("Device ID: {0}", deviceObj.DeviceId);
-                if (deviceObj.DeviceId == DeviceId)
-                {
-                    Logger.Debug("Device ID confirmed.");
-                    return;
-                }
-                else if (!string.IsNullOrEmpty(DeviceId))
-                {
-                    Logger.Info("Device ID changed. New Device ID: {0}", deviceObj.DeviceId);
-                }
-                DeviceId = deviceObj.DeviceId;
-                
-                //Save received deviceId to config file
-                var sR = new StreamReader(ConfigFilename);
-                var config = (await sR.ReadToEndAsync()).Split('\n');
-                sR.Close();
-                var deviceIdSet = false;
-                for (int i = 0; i < config.Length; i++) 
-                {
-                    //Setting exists but was not properly set (otherwise this function should not be called...)
-                    if (config[i].ToLower().StartsWith("deviceid"))
+                    if (responseBody == null)
                     {
-                        config[i] = deviceObj.DeviceId;
-                        deviceIdSet = true;
+                        Logger.Debug("No response body received.");
+                        return;
+                    }
 
-                        //Write new config file
-                        var sW = new StreamWriter(ConfigFilename, false);
-                        foreach (var aLine in config)
+                    //Convert response to object
+                    var deviceObj = (DtoDevice?)JsonConvert.DeserializeObject(responseBody, typeof(DtoDevice), Helper.GetJsonSerializer());
+
+                    if (deviceObj == null)
+                    {
+                        Logger.Warn("Device Object answer is null.");
+                        return;
+                    }
+
+                    Logger.Info("Device ID: {0}", deviceObj.DeviceId);
+                    if (deviceObj.DeviceId == DeviceId)
+                    {
+                        Logger.Debug("Device ID confirmed.");
+                        return;
+                    }
+                    else if (!string.IsNullOrEmpty(DeviceId))
+                    {
+                        Logger.Info("Device ID changed. New Device ID: {0}", deviceObj.DeviceId);
+                    }
+                    DeviceId = deviceObj.DeviceId;
+
+                    //Save received deviceId to config file
+                    var sR = new StreamReader(ConfigFilename);
+                    var config = (await sR.ReadToEndAsync()).Split('\n');
+                    sR.Close();
+                    var deviceIdSet = false;
+                    for (int i = 0; i < config.Length; i++)
+                    {
+                        //Setting exists but was not properly set (otherwise this function should not be called...)
+                        if (config[i].ToLower().StartsWith("deviceid"))
                         {
-                            await sW.WriteLineAsync(aLine);
+                            config[i] = deviceObj.DeviceId;
+                            deviceIdSet = true;
+
+                            //Write new config file
+                            var sW = new StreamWriter(ConfigFilename, false);
+                            foreach (var aLine in config)
+                            {
+                                await sW.WriteLineAsync(aLine);
+                            }
+                            sW.Close();
+                            Logger.Debug("Updated deviceid in config file");
+                            break;
                         }
+                    }
+
+                    // Setting didn't exist in the config file. Add it to the config file
+                    if (!deviceIdSet)
+                    {
+                        var sW = new StreamWriter(ConfigFilename, true);
+                        await sW.WriteLineAsync("\nDeviceId:" + deviceObj.DeviceId);
                         sW.Close();
-                        Logger.Debug("Updated deviceid in config file");
-                        break;
+
+                        Logger.Debug("Wrote deviceid to config file.");
                     }
                 }
-
-                // Setting didn't exist in the config file. Add it to the config file
-                if (!deviceIdSet)
+                catch (Exception ea)
                 {
-                    var sW = new StreamWriter(ConfigFilename,true);
-                    await sW.WriteLineAsync("\nDeviceId:" + deviceObj.DeviceId);
-                    sW.Close();
-
-                    Logger.Debug("Wrote deviceid to config file.");
+                    Logger.Error(ea, "An error occured on register device.");
                 }
             }
             else

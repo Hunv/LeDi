@@ -30,106 +30,127 @@ else
         </InputSelect>
         <br /> 
 
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName1"))">Team 1</a>
-        <InputText 
-            id="txtTeamName1" 
-            class="form-control" 
-            type="text" 
-            hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName1"))" 
-            @bind-Value="@NewMatch.Team1Name"
-            />
-        <br /> 
-
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName2"))">Team 2</a>
-        <InputText 
-            id="txtTeamName2" 
-            class="form-control" 
-            type="text" 
-            hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName2"))" 
-            @bind-Value="@NewMatch.Team2Name"
-            />
-        <br /> 
-
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodCount"))">Number of periods</a>
-        <InputNumber 
-            id="txtPeriodCount" 
-            class="form-control" 
-            type="text" 
-            hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodCount"))" 
-            min="1"
-            @bind-Value="@NewMatch.RulePeriodCount"
-            />
-        <br /> 
-
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodLength"))">Length of a period (minutes : seconds)</a>
-        <div id="txtPeriodLength" class="input-group" hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodLength"))">
-            <input 
-                id="txtPeriodLengthMin" 
-                type="number" 
-                class="form-control" 
-                style="max-width:100px; min-width:50px" 
-                placeholder="Minutes" 
-                min="0" 
-                max="99999" 
-                @bind-value="TimeLeftMinutesProxy"
-                />
-            <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
-            <input 
-                id="txtPeriodLengthSec" 
-                type="number" 
-                class="form-control" 
-                style="max-width:100px; min-width:50px" 
-                placeholder="Seconds" 
-                min="0" 
-                max="59" 
-                @bind-value="TimeLeftSecondsProxy"
-                />
+        <div hidden="@(!FieldList[SelectedGamename].Contains("displaylist"))">
+            <a>Show on display:</a>
+            <br />
+            @foreach(var aDisplay in DisplayList)
+            {
+                var value = aDisplay;
+                <input type="checkbox" checked="@aDisplay.Enabled" @onchange="eventArgs => {DisplayClicked(value,(bool)(eventArgs.Value ?? false));}"> @aDisplay.DeviceName
+            }  
+            <br /><br />
         </div>
-        <br />
+
+        <div hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName1"))">
+            <a>Team 1</a>
+            <InputText 
+                id="txtTeamName1" 
+                class="form-control" 
+                type="text" 
+                @bind-Value="@NewMatch.Team1Name"
+                />
+            <br /> 
+        </div>
+
+        <div hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName2"))" >
+            <a>Team 2</a>
+            <InputText 
+                id="txtTeamName2" 
+                class="form-control" 
+                type="text" 
+                @bind-Value="@NewMatch.Team2Name"
+                />
+            <br/> 
+        </div>
+
+        <div hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodCount"))">
+            <a>Number of periods</a>
+            <InputNumber 
+                id="txtPeriodCount" 
+                class="form-control" 
+                type="text" 
+                min="1"
+                @bind-Value="@NewMatch.RulePeriodCount"
+                />
+            <br/> 
+        </div>
+
+        <div hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodLength"))">
+            <a>Length of a period (minutes : seconds)</a>
+            <div id="txtPeriodLength" class="input-group">
+                <input 
+                    id="txtPeriodLengthMin" 
+                    type="number" 
+                    class="form-control" 
+                    style="max-width:100px; min-width:50px" 
+                    placeholder="Minutes" 
+                    min="0" 
+                    max="99999" 
+                    @bind-value="TimeLeftMinutesProxy"
+                    />
+                <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
+                <input 
+                    id="txtPeriodLengthSec" 
+                    type="number" 
+                    class="form-control" 
+                    style="max-width:100px; min-width:50px" 
+                    placeholder="Seconds" 
+                    min="0" 
+                    max="59" 
+                    @bind-value="TimeLeftSecondsProxy"
+                    />
+            </div>
+            <br />
+        </div>
    
-        <a hidden="@(!FieldList[SelectedGamename].Contains("dtScheduledTime"))">Scheduled Start Date and Time</a>
-        <input 
-            id="dtScheduledTime" 
-            hidden="@(!FieldList[SelectedGamename].Contains("dtScheduledTime"))" 
-            type="datetime" 
-            class="form-control" 
-            @bind-value="NewMatch.ScheduledTime"
-            />
-        <br /> 
+        <div hidden="@(!FieldList[SelectedGamename].Contains("dtScheduledTime"))">
+            <a>Scheduled Start Date and Time</a>
+            <input 
+                id="dtScheduledTime" 
+                type="datetime" 
+                class="form-control" 
+                @bind-value="NewMatch.ScheduledTime"
+                />
+            <br /> 
+        </div>
                 
-        <InputCheckbox 
-            id="chkPeriodOvertime" 
-            @bind-Value="NewMatch.RulePeriodOvertime" 
-            hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodOvertime"))"
-            />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodOvertime"))">Match has overtime</a>
-        <br />
+        <div hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodOvertime"))">
+            <InputCheckbox 
+                id="chkPeriodOvertime" 
+                @bind-Value="NewMatch.RulePeriodOvertime" 
+                />
+            <a>Match has overtime</a>
+            <br />
+        </div>
 
-        <InputCheckbox 
-            id="chkPeriodPauseNearEnd" 
-            @bind-Value="NewMatch.RulePeriodLastPauseTimeOnEvent" 
-            hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodPauseNearEnd"))"
-            />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodPauseNearEnd"))">Match pauses in case of interruptions near end of match</a>
-        <br /><br />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodPauseNearEndSec")|| NewMatch.RulePeriodLastPauseTimeOnEvent == false)">Number of seconds near end the time will be stopped?</a>
-        <InputNumber 
-            id="txtPeriodPauseNearEndSec" 
-            class="form-control" 
-            type="text" 
-            @bind-Value="@NewMatch.RulePeriodLastPauseTimeOnEventSeconds"
-            hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodPauseNearEndSec") || NewMatch.RulePeriodLastPauseTimeOnEvent == false)" 
-            />
-        <br /> 
+        <div hidden="@(!FieldList[SelectedGamename].Contains("chkPeriodPauseNearEnd"))">
+            <InputCheckbox 
+                id="chkPeriodPauseNearEnd" 
+                @bind-Value="NewMatch.RulePeriodLastPauseTimeOnEvent" 
+                />
+            <a>Match pauses in case of interruptions near end of match</a>
+            <br /><br />
+        </div>
 
-        <InputCheckbox 
-            id="chkMatchExtensionOnDraw" 
-            @bind-Value="NewMatch.RuleMatchExtensionOnDraw" 
-            hidden="@(!FieldList[SelectedGamename].Contains("chkMatchExtensionOnDraw"))"
-            />
-        <a hidden="@(!FieldList[SelectedGamename].Contains("chkMatchExtensionOnDraw"))">Extend match in case of draw after regular play time</a>
-        <br />
+        <div hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodPauseNearEndSec")|| NewMatch.RulePeriodLastPauseTimeOnEvent == false)">
+            <a>Number of seconds near end the time will be stopped?</a>
+            <InputNumber 
+                id="txtPeriodPauseNearEndSec" 
+                class="form-control" 
+                type="text" 
+                @bind-Value="@NewMatch.RulePeriodLastPauseTimeOnEventSeconds"
+                />
+            <br /> 
+        </div>
 
+        <div hidden="@(!FieldList[SelectedGamename].Contains("chkMatchExtensionOnDraw"))">
+            <InputCheckbox 
+                id="chkMatchExtensionOnDraw" 
+                @bind-Value="NewMatch.RuleMatchExtensionOnDraw" 
+                />
+            <a>Extend match in case of draw after regular play time</a>
+            <br />
+        </div>
 
         <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
         <button class="btn btn-primary" type="submit">Save</button>
@@ -140,6 +161,8 @@ else
 
 @code{
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private int SelectedDisplay { get; set; }
+    private List<DtoDevice> DisplayList { get; set; } = new List<DtoDevice>();
 
     DtoMatch NewMatch = new DtoMatch()
         {
@@ -225,6 +248,7 @@ else
         {
             "Underwaterhockey", new List<string>
             {
+                "displaylist",
                 "txtTeamName1", 
                 "txtTeamName2",
                 "txtPeriodCount", 
@@ -238,6 +262,7 @@ else
         {
             "Handball", new List<string>
             {
+                "displaylist",
                 "txtTeamName1", 
                 "txtTeamName2",
                 "txtPeriodCount", 
@@ -249,6 +274,7 @@ else
         {
             "Soccer", new List<string>
             {
+                "displaylist",
                 "txtTeamName1", 
                 "txtTeamName2",
                 "txtPeriodCount", 
@@ -261,6 +287,7 @@ else
         {
             "Other", new List<string>
             {
+                "displaylist",
                 "txtTeamName1", 
                 "txtTeamName2",
                 "txtPeriodCount", 
@@ -315,6 +342,13 @@ else
         NewMatch.RulePeriodCount = NewMatch.RulePeriodCount ?? 2; //Note: RulePeriodCount cannot be null here because it is already set to 2 in case it is null above
         NewMatch.TimeLeftSeconds = NewMatch.RulePeriodLength ?? 600;
 
+        // Set the selected displays to the match
+        foreach(var aDisplay in DisplayList) {
+            if (aDisplay.Default)
+                NewMatch.DeviceIds.Add(aDisplay.DeviceId);
+        }
+
+
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
@@ -354,5 +388,34 @@ else
             await Api.SetMatchStatusAsync(newMatch.Id, LeDi.Shared.Enum.MatchStatusEnum.ReadyToStart);            
             NavigationManager.NavigateTo("/matchcontrol/" + newMatch.Id);
         }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.Trace("Initializing the page");
+
+        DisplayList = await Api.GetDeviceAsync() ?? new List<DtoDevice>();
+        DisplayList = DisplayList.Where(x => x.Enabled).ToList();
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    /// <summary>
+    /// Executed when a device in the device list is (un)checked
+    /// </summary>
+    /// <param name="device"></param>
+    /// <param name="isChecked"></param>
+    private void DisplayClicked(DtoDevice device, bool isChecked)
+    {
+        // The enabled property is not saved back to the server. So it is used here to save the check state
+        DisplayList.Single(x => x.DeviceId == device.DeviceId).Enabled = isChecked;
+
+        // Add the device to the match object
+        if (isChecked)
+            NewMatch.DeviceIds.Add(device.DeviceId);
+        else
+            NewMatch.DeviceIds.Remove(device.DeviceId);
+
     }
 }

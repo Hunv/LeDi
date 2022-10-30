@@ -68,8 +68,9 @@ namespace LeDi.Display.Display
 
             if (_MiscRunning)
             {
-                Logger.Debug("TmrMisc skipped due to previous run is still running");
-                return;
+                Logger.Warn("Loop executed while previous loop still running.");
+                //Logger.Warn("TmrMisc skipped due to previous run is still running");
+                //return;
             }
 
             _MiscRunning = true;
@@ -390,7 +391,7 @@ namespace LeDi.Display.Display
                     // If the matchEnded event is more than x Seconds old, update the Match variable to the next match
                     if (DateTime.Now.Subtract(matchEndedTime).TotalSeconds > 60)
                     {
-                        Logger.Trace("Last match is more than {0} seconds over. Loading next match...", 60);
+                        Logger.Info("Last match is more than {0} seconds over. Loading next match...", 60);
                         var matchList = await Api.GetMatchListAsync();
                         Match = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed && x.MatchStatus != (int)MatchStatusEnum.Stopped && x.MatchStatus != (int)MatchStatusEnum.Ended && x.MatchStatus != (int)MatchStatusEnum.Undefined)
                             .OrderBy(x => x.ScheduledTime)
@@ -435,7 +436,7 @@ namespace LeDi.Display.Display
                     var newMatchInfo = await Api.GetMatchAsync(Match.Id);
                     if (newMatchInfo != null)
                     {
-                        Logger.Debug("Updated Match infos.");
+                        Logger.Debug("Updated Match infos for match {0}.", Match.Id);
 
                         // Update only the fields but not the whole Match object to do not flush the rules
                         Match.PeriodCurrent = newMatchInfo.PeriodCurrent;

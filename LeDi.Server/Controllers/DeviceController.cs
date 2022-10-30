@@ -31,6 +31,24 @@ namespace LeDi.Server.Controllers
         }
 
         /// <summary>
+        /// Modify a device
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{deviceId}")]
+        public async Task<IActionResult> SetDevice(
+            string deviceId,
+            [FromBody] DtoDevice device
+            )
+        {
+            _logger.Debug("{0}: Set device for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceId);
+
+            await Api.ApiDevice.SetDevice(device);
+
+            _logger.Debug("{0}: Set device for {1} from {2} to {3}", Request.HttpContext.Connection.RemoteIpAddress, device.DeviceId);
+            return new OkResult(); ;
+        }
+
+        /// <summary>
         /// Gets all Settings of a Device
         /// </summary>
         /// <returns></returns>

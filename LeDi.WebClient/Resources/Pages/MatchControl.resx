@@ -186,6 +186,9 @@
   <data name="Score" xml:space="preserve">
     <value>Score</value>
   </data>
+  <data name="SelectDevice" xml:space="preserve">
+    <value>Select device</value>
+  </data>
   <data name="SelectPenalty" xml:space="preserve">
     <value>Select the penalty</value>
   </data>
@@ -221,6 +224,9 @@
   </data>
   <data name="vs" xml:space="preserve">
     <value>vs.</value>
+  </data>
+  <data name="WhichDevice" xml:space="preserve">
+    <value>Select the device the match should be shown at.</value>
   </data>
   <data name="WhichPenaltyRevoke" xml:space="preserve">
     <value>Which penalty should be revoked?</value>

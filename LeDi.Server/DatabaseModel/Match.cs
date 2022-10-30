@@ -100,6 +100,11 @@ namespace LeDi.Server.DatabaseModel
         public List<MatchPenalty> MatchPenalties { get; set; } = new List<MatchPenalty>();
 
         /// <summary>
+        /// The Devices, that will show this match by default
+        /// </summary>
+        public List<Device2Match> Devices { get; set; } = new List<Device2Match>();
+
+        /// <summary>
         /// Converts the object to a DTO object
         /// </summary>
         /// <returns></returns>
@@ -178,6 +183,29 @@ namespace LeDi.Server.DatabaseModel
                 {
                     var newDtoMp = aMatchPenalty.ToDto();
                     dto.Penalties.Add(newDtoMp);
+                }
+            }
+
+            // Set Devices
+            if (Devices != null && Devices.Count > 0)
+            {
+                dto.DeviceIds = new List<string>();
+                foreach (var aDevice in Devices)
+                {
+                    if (aDevice.Device != null)
+                    {
+                        dto.DeviceIds.Add(aDevice.Device.DeviceId);
+                    }
+                    else
+                    {
+                        using var dbContext = new TwDbContext();
+                        if (dbContext.Device != null)
+                        {
+                            var device = dbContext.Device.SingleOrDefault(x => x.Id == aDevice.DeviceId);
+                            if (device != null)
+                                dto.DeviceIds.Add(device.DeviceId);
+                        }
+                    }
                 }
             }
 
@@ -335,6 +363,24 @@ namespace LeDi.Server.DatabaseModel
                     dbPen.PenaltyName = aPenalty.PenaltyName;
                                         
                     MatchPenalties.Add(dbPen);
+                }
+            }
+
+            // Get Devices
+            if (dto.DeviceIds != null && dto.DeviceIds.Count > 0)
+            {
+                using var dbContext = new TwDbContext();
+                if (dbContext.Device != null)
+                {
+                    Devices = new List<Device2Match>();
+                    foreach (var deviceId in dto.DeviceIds)
+                    {
+                        var dev = dbContext.Device.SingleOrDefault(x => x.DeviceId == deviceId);
+                        if (dev != null)
+                        {
+                            Devices.Add(new Device2Match() {DeviceId = dev.Id, MatchId = Id });
+                        }
+                    }
                 }
             }
         }

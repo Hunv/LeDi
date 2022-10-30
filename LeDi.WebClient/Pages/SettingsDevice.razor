@@ -9,13 +9,78 @@
 
 <h1>Device Settings</h1>
 
-@if (DeviceSettingList == null)
+@if (DeviceSettingList == null || Device == null)
 {
     <p><em>Loading Device Settings...</em></p>
 }
 else
 {
-    <p>The following settings are configured for device @Id:</p>
+    <p>The properties are set for device @Device.DeviceName (@Id):</p>
+    <EditForm Model="@Device" OnValidSubmit="@SaveProperties">
+        @*<DataAnnotationsValidator />
+        <ValidationSummary />*@
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <a>Device Name</a>
+                    </td>
+                    <td>
+                        <InputText type="text" class="form-control" @bind-Value="Device.DeviceName" />                        
+                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a>Device Model</a>
+                    </td>
+                    <td>
+                        <InputText type="text" class="form-control" @bind-Value="Device.DeviceModel" />                        
+                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a>Device Type</a>
+                    </td>
+                    <td>
+                        <InputText type="text" class="form-control" @bind-Value="Device.DeviceType" />                        
+                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a>Enabled</a>
+                    </td>
+                    <td>
+                        <InputCheckbox @bind-Value="Device.Enabled" />                        
+                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a>Default</a>
+                    </td>
+                    <td>
+                        <InputCheckbox @bind-Value="Device.Default" />                        
+                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                    </td>
+                </tr>
+            </tbody>
+        </table>    
+        
+        <button class="btn btn-primary" type="submit">Save Properties</button>
+    </EditForm>
+    <br /><br />
+
+    <p>The following settings are configured for device @Device.DeviceName (@Id):</p>
     <EditForm Model="@DeviceSettingList" OnValidSubmit="@SaveSettings">
         @*<DataAnnotationsValidator />
         <ValidationSummary />*@
@@ -38,7 +103,7 @@ else
                             @*<ValidationMessage For="@(() => aSetting.Name)" />*@
                         </td>
                         <td>
-                            <InputText id="txtSetting" type="text" class="form-control" @bind-Value="@aSetting.Value" />                        
+                            <InputText type="text" class="form-control" @bind-Value="@aSetting.Value" />                        
                             @*<ValidationMessage For="@(() => aSetting.Value)" />*@
                         </td>
                         <td>
@@ -49,7 +114,7 @@ else
             </tbody>
         </table>    
         
-        <button class="btn btn-primary" type="submit">Save Changes</button>
+        <button class="btn btn-primary" type="submit">Save Settings</button>
     </EditForm>
     <br /><br />
     <h3>Add a new setting:</h3>
@@ -98,11 +163,26 @@ else
 
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private List<DtoDeviceSetting>? DeviceSettingList;
+    private DtoDevice Device { get; set; } = new DtoDevice("", "", "", "");
     private DtoDeviceSetting NewSetting = new DtoDeviceSetting("", "", "");
     private string selectedDeviceCommand = "";
 
     protected override async Task OnInitializedAsync()
     {
+        var dev = await Api.GetDeviceAsync();
+        if (dev == null)
+        {
+            Logger.Error("No devices found.");
+            return;
+        }
+        Device = dev.SingleOrDefault(x => x.DeviceId == Id) ?? new DtoDevice("","","","");
+        
+        if (Device == null || Device.DeviceId == "")
+        {
+            Logger.Error("No device with ID {0} found.", Id);
+            return;
+        }
+
         DeviceSettingList = await Api.GetDeviceSettingsAsync(Id);
         NewSetting = new DtoDeviceSetting(Id, "", "");
     }
@@ -129,7 +209,7 @@ else
         foreach(var aServerSet in currentServerSettings)
         {
             var locSet = DeviceSettingList.SingleOrDefault(x => x.Name == aServerSet.Name);
-            
+
             Logger.Debug("Check changed setting {0} to value {1}", locSet == null ? "NULL" : locSet.Name, locSet == null ? "NULL" : locSet.Value);
 
             if (locSet == null)
@@ -166,5 +246,10 @@ else
         selectedDeviceCommand = "";
 
         await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void SaveProperties()
+    {
+        await Api.SetDevice(Device);
     }
 }

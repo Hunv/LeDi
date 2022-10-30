@@ -1,0 +1,75 @@
+﻿@using LeDi.Shared.DtoModel
+@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+                <button type="button" class="btn btn-close" @onclick="@ModalCancel"></button>
+            </div>
+            <div class="modal-body">
+                <p>@Text</p>
+                
+                <div class="container">
+                    @if (DeviceList.Count > 0) 
+                    {   
+                        @foreach(var aDevice in DeviceList)
+                        {
+                            var dev = aDevice;
+                            <div class="row">
+                                <div class="col-12">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetDevice(dev))" role="button">@dev.DeviceName</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public string ButtonOKText { get; set; } = "OK";
+
+    [Parameter]
+    public string ButtonOKClass { get; set; } = "btn-primary";
+
+    [Parameter]
+    public string ButtonCancelText { get; set; } = "";
+
+    [Parameter]
+    public string ButtonCancelClass { get; set; } = "btn-secondary";
+
+    [Parameter]
+    public List<DtoDevice> DeviceList { get; set; } = new List<DtoDevice>();
+
+    [Parameter]
+    public EventCallback<DtoDevice?> OnClose { get; set; }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(null);
+    }
+
+    private Task SetDevice(DtoDevice dev)
+    {
+        return OnClose.InvokeAsync(dev);
+    }
+}

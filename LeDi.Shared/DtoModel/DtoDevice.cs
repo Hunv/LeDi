@@ -10,11 +10,12 @@ namespace LeDi.Shared.DtoModel
         /// <summary>
         /// Create a new instance of Device
         /// </summary>
-        public DtoDevice(string deviceId, string deviceModel, string deviceType)
+        public DtoDevice(string deviceId, string deviceModel, string deviceType, string deviceName)
         {
             DeviceId = deviceId;
             DeviceModel = deviceModel;
             DeviceType = deviceType;
+            DeviceName = deviceName;
         }
 
 
@@ -37,5 +38,21 @@ namespace LeDi.Shared.DtoModel
         /// </summary>
         [RegularExpression(@"^[A-Za-z0-9\s,.-_]+$", ErrorMessageResourceName = "DeviceTypeFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoDevice))]
         public string DeviceType { get; set; }
+
+        /// <summary>
+        /// An alias for the device
+        /// </summary>
+        [RegularExpression(@"^[A-Za-z0-9\s,.-_]+$", ErrorMessageResourceName = "DeviceNameFormatError", ErrorMessageResourceType = typeof(Resources.DtoModel.DtoDevice))]
+        public string DeviceName { get; set; }
+
+        /// <summary>
+        /// Is this device enabled?
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+        
+        /// <summary>
+        /// Is this device the default device?
+        /// </summary>
+        public bool Default { get; set; }
     }
 }
