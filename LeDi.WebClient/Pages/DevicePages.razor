@@ -1,0 +1,136 @@
+﻿@page "/devicepages"
+@using LeDi.Shared.DtoModel
+@inject LeDi.Shared.Api Api
+
+<PageTitle>LeDi - Device Pages</PageTitle>
+
+@if (DeviceList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="@SelectedDevice" OnValidSubmit="@ShowPage">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <p>Select device</p>
+        <InputSelect class="form-control" @bind-Value="SelectedDevice">
+            @foreach(var aDevice in DeviceList)
+            {
+                var dev = aDevice;
+                <option value="@dev.DeviceId">@dev.DeviceName</option>
+            }    
+        </InputSelect>
+        <br /><br />
+
+        <p>Select page</p>
+        <InputSelect class="form-control" @bind-Value="SelectedPage">
+            <option value=""></option>
+            <option value="match">Match</option>
+            <option value="tournament">Tournament</option>
+            <option value="countdown">Countdown</option>
+            <option value="text">Text</option>
+        </InputSelect>
+    
+        <br /><br />
+
+        <div hidden="@(!(SelectedPage == ""))">
+        </div>
+
+        <div hidden="@(!(SelectedPage == "match"))">
+            <p>Select the match, you want to show on the display. You can also set this page on the referee page.</p>
+            <p>Match to show</p>
+            <InputSelect class="form-control" @bind-Value="SelectedMatch">
+                <option value=""></option>
+                @foreach(var aMatch in MatchList)
+                {
+                    <option value="@aMatch.Id">@aMatch.Team1Name - @aMatch.Team2Name (@aMatch.Team1Score:@aMatch.Team2Score)</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div hidden="@(!(SelectedPage == "tournament"))">
+            <p>If you select this mode, the display will always show the currently running match, that is configured to show the match on this display. After a match is finished and closed, the countdown to the next match regarding the scheduled time will be shown. The countdown stop 60 seconds before the start and will show the start page of the match on the display (period length and 0:0 scores). If the next match should already being started, it is shown directly.</p>
+        </div>
+
+        <div hidden="@(!(SelectedPage == "countdown"))">
+            <p>This page will show a countdown and optionally an additional text.</p>
+
+            <p>Optionally a text to show above the countdown. On tight displays, leave this empty to fit the countdown to the display hight.</p>
+            <InputText class="form-control" @bind-Value="CountdownText"/>
+            
+            <p>Number of seconds to count down</p>
+            <input 
+                type="number" 
+                class="form-control" 
+                placeholder="Seconds" 
+                min="0" 
+                max="99999" 
+                @bind-value="CountdownSeconds"
+                />
+        </div>
+
+        <div hidden="@(!(SelectedPage == "text"))">            
+            <p>Text to show on display.</p>
+            <InputTextArea class="form-control" @bind-Value="TextContent"/>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Show Page</button>
+    </EditForm>
+}
+
+@code {
+    private List<DtoDevice>? DeviceList = null;
+    private string SelectedDevice = "";
+    private List<DtoMatch> MatchList = new List<DtoMatch>();
+    private DtoMatch SelectedMatch = new DtoMatch();
+    private string CountdownText = "";
+    private int CountdownSeconds = 0;
+    private string TextContent = "";
+
+    private string _SelectedPage = "";
+    private string SelectedPage {
+        get
+        {
+            return _SelectedPage;
+        }
+        set
+        {
+            _SelectedPage = value;
+            SelectedPageChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        DeviceList = (await Api.GetDeviceAsync()) ?? new List<DtoDevice>() ;
+    }
+
+    private async Task SelectedPageChanged()
+    {
+        switch (SelectedPage)
+        {
+            case "match":
+                MatchList = await Api.GetMatchListAsync();
+                break;
+        }
+        
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private void ShowPage()
+    {   
+        switch (SelectedPage)
+        {
+            case "match":
+                break;
+            case "tournament":
+                break;
+            case "countdown":
+                break;
+            case "text":
+                break;
+        }
+    }
+}
