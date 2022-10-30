@@ -124,6 +124,7 @@ namespace LeDi.Server.DatabaseModel
                 Team1PlayerIds = Team1PlayerIds,
                 Team2PlayerIds = Team2PlayerIds,
 
+                Gamename = GameName,
                 RulePeriodCount = RulePeriodCount,
                 RulePeriodLength = RulePeriodLength,
                 RulePeriodLastPauseTimeOnEvent = RulePeriodLastPauseTimeOnEvent,

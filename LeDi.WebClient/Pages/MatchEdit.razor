@@ -15,33 +15,93 @@ else
     <EditForm Model="@Match" OnValidSubmit="@SaveMatch">
         <DataAnnotationsValidator />
         <ValidationSummary />
-
-        <a>Team 1 Name</a>
-        <InputText id="txtTeam1Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team1Name" />
-        <ValidationMessage For="@(() => Match.Team1Name)" />
-        <br />
-
-        <a>Team 2 Name</a>                
-        <InputText id="txtTeam2Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team2Name" />
-        <ValidationMessage For="@(() => Match.Team2Name)" />
-        <br />
         
-        <a>Periods count</a>
-        <InputNumber id="txtPeriodCount" class="form-control" type="text" @bind-Value="Match.RulePeriodCount" />
-        <br />
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtTeamName1"))">
+            <a>Team 1 Name</a>
+            <InputText id="txtTeam1Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team1Name" />
+            <ValidationMessage For="@(() => Match.Team1Name)" />
+            <br />
+        </div>
 
-        <a>Scheduled Start Time</a>
-        @*<input id="txtScheduledTime" class="form-control" width="150" type="time" @bind="Match.ScheduledTime" />*@        
-        <input id="txtScheduledTime" type="datetime" class="form-control" @bind-value="Match.ScheduledTime"/>
-        <br />
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtTeamName2"))" >
+            <a>Team 2 Name</a>                
+            <InputText id="txtTeam2Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team2Name" />
+            <ValidationMessage For="@(() => Match.Team2Name)" />
+            <br />
+        </div>
 
-        <a>Match Status</a>
-        <InputSelect @bind-Value="MatchStatus" id="cmbMatchStatus" class="form-control" width="150">
-            @foreach (var value in Enum.GetValues(typeof(MatchStatusEnum)))
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodCount"))">        
+            <a>Periods count</a>
+            <InputNumber id="txtPeriodCount" class="form-control" type="text" @bind-Value="Match.RulePeriodCount" />
+            <br />
+        </div>
+   
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("dtScheduledTime"))">
+            <a>Scheduled Start Time</a>
+            @*<input id="txtScheduledTime" class="form-control" width="150" type="time" @bind="Match.ScheduledTime" />*@        
+            <input id="txtScheduledTime" type="datetime" class="form-control" @bind-value="Match.ScheduledTime"/>
+            <br />
+        </div>
+                
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("cmbMatchStatus"))">
+            <a>Match Status</a>
+            <InputSelect @bind-Value="MatchStatus" id="cmbMatchStatus" class="form-control" width="150">
+                @foreach (var value in Enum.GetValues(typeof(MatchStatusEnum)))
+                {
+                    <option>@value</option>
+                }
+            </InputSelect>
+        </div>        
+                
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("chkPeriodOvertime"))">
+            <InputCheckbox 
+                id="chkPeriodOvertime" 
+                @bind-Value="Match.RulePeriodOvertime" 
+                />
+            <a>Match has overtime</a>
+            <br />
+        </div>
+
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("chkPeriodPauseNearEnd"))">
+            <InputCheckbox 
+                id="chkPeriodPauseNearEnd" 
+                @bind-Value="Match.RulePeriodLastPauseTimeOnEvent" 
+                />
+            <a>Match pauses in case of interruptions near end of match</a>
+            <br />
+        </div>
+
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodPauseNearEndSec")|| Match.RulePeriodLastPauseTimeOnEvent == false)">
+            <a>Number of seconds near end the time will be stopped?</a>
+            <InputNumber 
+                id="txtPeriodPauseNearEndSec" 
+                class="form-control" 
+                type="text" 
+                @bind-Value="@Match.RulePeriodLastPauseTimeOnEventSeconds"
+                />
+            <br /> 
+        </div>
+
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("chkMatchExtensionOnDraw"))">
+            <InputCheckbox 
+                id="chkMatchExtensionOnDraw" 
+                @bind-Value="Match.RuleMatchExtensionOnDraw" 
+                />
+            <a>Extend match in case of draw after regular play time</a>
+            <br />
+        </div>
+        
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("displaylist"))">
+            <br />
+            <a>Show on display:</a>
+            <br />
+            @foreach(var aDisplay in DisplayList)
             {
-                <option>@value</option>
-            }
-        </InputSelect>
+                var value = aDisplay;
+                <input type="checkbox" checked="@aDisplay.Enabled" @onchange="eventArgs => {DisplayClicked(value,(bool)(eventArgs.Value ?? false));}"> @aDisplay.DeviceName
+            }  
+            <br /><br />
+        </div>
         <br />
 
 
@@ -52,25 +112,36 @@ else
 
             <div class="panel @(EditCollapsed?"collapse":"")">
                 
-                <a>Team 1 Score</a>
-                <InputNumber id="txtScoreTeam1" class="form-control" type="text" @bind-Value="Match.Team1Score" />
-                <br />
-
-                <a>Team 2 Score</a>
-                <InputNumber id="txtScoreTeam2" class="form-control" type="text" @bind-Value="Match.Team2Score" />
-                <br />  
-                
-                <label>Time left (Minutes : Seconds)</label>
-                <div class="input-group">
-                    <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
-                    <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
-                    <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
+                <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtScoreTeam1"))">
+                    <a>Team 1 Score</a>
+                    <InputNumber id="txtScoreTeam1" class="form-control" type="text" @bind-Value="Match.Team1Score" />
+                    <br />
                 </div>
-                <br /> 
 
-                <a>Current Period (0 = Not started)</a>
-                <InputNumber id="txtPeriodCurrent" class="form-control" type="text" @bind-Value="Match.PeriodCurrent" />
-                <br />
+                
+                <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtScoreTeam2"))">
+                    <a>Team 2 Score</a>
+                    <InputNumber id="txtScoreTeam2" class="form-control" type="text" @bind-Value="Match.Team2Score" />
+                    <br />  
+                </div>
+
+                
+                <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtTimeLeft"))">
+                    <label>Time left (Minutes : Seconds)</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
+                        <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
+                        <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
+                    </div>
+                    <br /> 
+                </div>
+
+                
+                <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodCount"))">
+                    <a>Current Period (0 = Not started)</a>
+                    <InputNumber id="txtPeriodCurrent" class="form-control" type="text" @bind-Value="Match.PeriodCurrent" />
+                    <br />
+                </div>
             </div>
         </div>
         <br />
@@ -83,9 +154,81 @@ else
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private DtoMatch? Match = null;
     private bool EditCollapsed = true;
+    List<DtoDevice>DisplayList = new List<DtoDevice>(); //The list of devices
 
     [Parameter]
     public int? Id { get; set; }
+
+    //Dictionary that defines the fields that are shown when SelectedGamename has the value of that match type.
+    public Dictionary<string, List<string>> FieldList = new Dictionary<string, List<string>>
+    {
+        {
+            "", new List<string>
+            {
+
+            }
+        },
+        {
+            "Underwaterhockey", new List<string>
+            {
+                "displaylist",
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtScoreTeam1",
+                "txtScoreTeam2",
+                "txtPeriodCount", 
+                "txtTimeLeft",
+                "dtScheduledTime",
+                "chkPeriodPauseNearEnd",
+                "txtPeriodPauseNearEndSec",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+        {
+            "Handball", new List<string>
+            {
+                "displaylist",
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtScoreTeam1",
+                "txtScoreTeam2",
+                "txtPeriodCount", 
+                "txtTimeLeft",
+                "dtScheduledTime",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+        {
+            "Soccer", new List<string>
+            {
+                "displaylist",
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtScoreTeam1",
+                "txtScoreTeam2",
+                "txtPeriodCount", 
+                "txtTimeLeft",
+                "dtScheduledTime",
+                "chkPeriodOvertime",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+        {
+            "Other", new List<string>
+            {
+                "displaylist",
+                "txtTeamName1", 
+                "txtTeamName2",
+                "txtPeriodCount", 
+                "txtTimeLeft",
+                "dtScheduledTime",
+                "chkPeriodOvertime",
+                "chkPeriodPauseNearEnd",
+                "txtPeriodPauseNearEndSec",
+                "chkMatchExtensionOnDraw"
+            }
+        },
+    };
 
     private MatchStatusEnum MatchStatus
     {
@@ -146,7 +289,23 @@ else
             return;
         }
 
-        Match = await Api.GetMatchAsync(Id.Value);
+        Match = await Api.GetMatchFullAsync(Id.Value);
+
+        if (Match == null)
+        {
+            Logger.Warn("Cannot load Match ID {0}", Id.Value);
+            return;
+        }
+
+        DisplayList = await Api.GetDeviceAsync() ?? new List<DtoDevice>();
+        DisplayList = DisplayList.Where(x => x.Enabled).ToList();
+        foreach(var aDev in DisplayList)
+        {
+            if (!Match.DeviceIds.Contains(aDev.DeviceId))
+            {
+                aDev.Enabled = false; //After loading enabled reflects the selection state of the device
+            }
+        }
 
         await InvokeAsync(() => { StateHasChanged(); });
     }
@@ -164,4 +323,27 @@ else
         await Api.SetMatchAsync(Match);
     }
 
+    /// <summary>
+    /// Executed when a device in the device list is (un)checked
+    /// </summary>
+    /// <param name="device"></param>
+    /// <param name="isChecked"></param>
+    private void DisplayClicked(DtoDevice device, bool isChecked)
+    {
+        if (Match == null)
+        {
+            Logger.Warn("Cannot change devices. Match is null.");
+            return;
+        }
+
+        // The enabled property is not saved back to the server. So it is used here to save the check state
+        DisplayList.Single(x => x.DeviceId == device.DeviceId).Enabled = isChecked;
+
+        // Add the device to the match object
+        if (isChecked)
+            Match.DeviceIds.Add(device.DeviceId);
+        else
+            Match.DeviceIds.Remove(device.DeviceId);
+
+    }
 }
