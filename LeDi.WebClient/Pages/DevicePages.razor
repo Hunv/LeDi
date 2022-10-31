@@ -1,5 +1,6 @@
 ﻿@page "/devicepages"
 @using LeDi.Shared.DtoModel
+@using LeDi.Shared.Enum
 @inject LeDi.Shared.Api Api
 
 <PageTitle>LeDi - Device Pages</PageTitle>
@@ -25,7 +26,7 @@ else
         <br /><br />
 
         <p>Select page</p>
-        <InputSelect class="form-control" @bind-Value="SelectedPage">
+        <InputSelect class="form-control" @bind-Value="SelectedPage" @onselectionchange="SelectedPageChanged">
             <option value=""></option>
             <option value="match">Match</option>
             <option value="tournament">Tournament</option>
@@ -41,13 +42,19 @@ else
         <div hidden="@(!(SelectedPage == "match"))">
             <p>Select the match, you want to show on the display. You can also set this page on the referee page.</p>
             <p>Match to show</p>
-            <InputSelect class="form-control" @bind-Value="SelectedMatch">
-                <option value=""></option>
-                @foreach(var aMatch in MatchList)
-                {
-                    <option value="@aMatch.Id">@aMatch.Team1Name - @aMatch.Team2Name (@aMatch.Team1Score:@aMatch.Team2Score)</option>
-                }
-            </InputSelect>
+            @if(MatchList == null || MatchList.Count == 0)
+            {
+                <p><em>No matches available.</em></p>
+            }
+            else
+            {
+                <InputSelect class="form-control" @bind-Value="SelectedMatchId">
+                    @foreach(var aMatch in MatchList)
+                    {
+                        <option value="@aMatch.Id">@aMatch.Team1Name - @aMatch.Team2Name (@aMatch.Team1Score:@aMatch.Team2Score)</option>
+                    }
+                </InputSelect>
+            }
         </div>
 
         <div hidden="@(!(SelectedPage == "tournament"))">
@@ -98,7 +105,21 @@ else
         set
         {
             _SelectedPage = value;
+            #pragma warning disable CS4014
             SelectedPageChanged();
+            #pragma warning restore CS4014
+        }
+    }
+
+    private int SelectedMatchId
+    {
+        get
+        {
+            return SelectedMatch.Id;
+        }
+        set
+        {
+            SelectedMatch = MatchList.Single(x => x.Id == value);
         }
     }
 
@@ -112,24 +133,31 @@ else
         switch (SelectedPage)
         {
             case "match":
-                MatchList = await Api.GetMatchListAsync();
+                MatchList = (await Api.GetMatchListAsync()).Where(x => x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed && x.MatchStatus != (int)MatchStatusEnum.Ended && x.MatchStatus != (int)MatchStatusEnum.Stopped).ToList();
                 break;
         }
-        
+
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
-    private void ShowPage()
+    private async Task ShowPage()
     {   
         switch (SelectedPage)
         {
+            case "":
+                await Api.SetDeviceSettingAsync(SelectedDevice, new DtoDeviceSetting(SelectedDevice, "mode", "none"));
+                break;
             case "match":
+                await Api.SetDeviceSettingAsync(SelectedDevice, new DtoDeviceSetting(SelectedDevice, "mode", "match"));
                 break;
             case "tournament":
+                await Api.SetDeviceSettingAsync(SelectedDevice, new DtoDeviceSetting(SelectedDevice, "mode", "tournament"));
                 break;
             case "countdown":
+                await Api.SetDeviceCommand(SelectedDevice, "countdown", CountdownSeconds.ToString());
                 break;
             case "text":
+                await Api.SetDeviceCommand(SelectedDevice, "text", TextContent);
                 break;
         }
     }
