@@ -1,4 +1,5 @@
 ﻿using LeDi.Display.Effects;
+using LeDi.Shared;
 using Newtonsoft.Json;
 using rpi_ws281x;
 using System;
@@ -95,6 +96,7 @@ namespace LeDi.Display.Display
         private static double fPS;
         private static string characterSetName = "Default";
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly string ConfigFilename = "config.conf";
 
         public static void Calibrate()
         {
@@ -149,11 +151,73 @@ namespace LeDi.Display.Display
                 return;
             }
 
-            Logger.Info("Initializing Controller for {0} with {1} LEDs on PWM0, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency);
+            // Load Config
+            Logger.Trace("Loading local device config...");
+
+            if (!File.Exists(ConfigFilename))
+            {
+                Logger.Fatal("Unable to load config " + ConfigFilename);
+                return;
+            }
+
+            // Define variables from config file
+            int gpiopin = 18; //Default is GPIO 18 which is physical pin 12
+            int pwmchannel = 0; //Raspberry Pi has 2 channels. PWM0 and PWM1
+
+
+            // Read the config file
+            var sR = new StreamReader(ConfigFilename);
+            while (sR.Peek() >= 0)
+            {
+                var line = sR.ReadLine();
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#") || !line.Contains(':'))
+                    continue;
+
+                var lineSplit = line.Split(new char[] { ':' }, 2);
+                switch (lineSplit[0].ToLower())
+                {
+                    case "gpiopin":
+                        gpiopin = Convert.ToInt16(lineSplit[1]);
+                        break;
+                    case "pwmchannel":
+                        pwmchannel = Convert.ToInt16(lineSplit[1]);
+                        break;;
+                }
+
+            }
+            sR.Close();
+            Logger.Info("Config {0} loaded.", ConfigFilename);            
+
+            Logger.Info("Initializing Controller for {0} with {1} LEDs on PWM{4} on GPIO{5}, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency, pwmchannel, gpiopin);
 
             //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10
             ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why
-            Controller = ControllerSettings.AddController(LedCount, StripType.WS2812_STRIP, ControllerType.PWM0, Brightness, false);
+
+            // Set the pin object
+            var pin = Pin.Gpio12;
+            switch(gpiopin)
+            {
+                case 18:
+                    pin = Pin.Gpio18;
+                    break;
+                case 12:
+                    pin = Pin.Gpio12;
+                    break;
+                case 13:
+                    pin = Pin.Gpio13;
+                    break;
+                case 19:
+                    pin = Pin.Gpio19;
+                    break;
+
+            }
+
+            // Set the PWM object
+            var pwmChannel = ControllerType.PWM0;
+            if (pwmchannel == 1)
+                pwmChannel = ControllerType.PWM1;
+
+            Controller = ControllerSettings.AddController(LedCount, pin, StripType.WS2812_STRIP, pwmChannel, Brightness, false);
             WS281X = new WS281x(ControllerSettings);
 
             SetAll(Color.Black);

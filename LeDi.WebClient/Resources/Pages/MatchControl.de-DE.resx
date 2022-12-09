@@ -121,7 +121,7 @@
     <value>Sind Sie sicher?</value>
   </data>
   <data name="Canceled" xml:space="preserve">
-    <value>Canceled</value>
+    <value>Abgebrochen</value>
   </data>
   <data name="CancelMatch" xml:space="preserve">
     <value>Spiel abbrechen</value>
@@ -133,7 +133,7 @@
     <value>Erweiterte Eigenschaften verstecken</value>
   </data>
   <data name="Legend" xml:space="preserve">
-    <value>Legend: Green = Running Match, Gray = Finished Match, Blue = Ready to Start, Other = White</value>
+    <value>Legende: Grün = Laufend, Grau = Beendet, Blau = Fertig zum Start, Weiß = Anderes</value>
   </data>
   <data name="LoadingMatch" xml:space="preserve">
     <value>Spiel wird geladen...</value>
@@ -148,22 +148,22 @@
     <value>Spiel beendet</value>
   </data>
   <data name="MatchTimeLeft" xml:space="preserve">
-    <value>Set match time left</value>
+    <value>Setze Restspielzeit</value>
   </data>
   <data name="NoMatchEventsAvailable." xml:space="preserve">
     <value>Keine Spiele verfügbar</value>
   </data>
   <data name="Note" xml:space="preserve">
-    <value>Note</value>
+    <value>Bemerkungen</value>
   </data>
   <data name="PageTitle" xml:space="preserve">
-    <value>Referee Match</value>
+    <value>Spielverwaltung</value>
   </data>
   <data name="Pause" xml:space="preserve">
     <value>Pause</value>
   </data>
   <data name="PenaltyRevoke" xml:space="preserve">
-    <value>Select penalty to revoke</value>
+    <value>Strafe zum Zurücknehmen auswählen</value>
   </data>
   <data name="PerfomThatAction" xml:space="preserve">
     <value>Wollen Sie diese Aktion wirklich durchführen?</value>
@@ -196,31 +196,31 @@
     <value>Strafe für den ausgewählten Spieler wählen</value>
   </data>
   <data name="SelectPlayernumber" xml:space="preserve">
-    <value>Select playernumber</value>
+    <value>Wähle Spielernummer</value>
   </data>
   <data name="SelectPlayernumberAppliesTo" xml:space="preserve">
-    <value>Select playernumber the penalty applies to</value>
+    <value>Wähle Spielernummer für die Strafe</value>
   </data>
   <data name="SetMatchTime" xml:space="preserve">
-    <value>Set match time</value>
+    <value>Setze Spielzeit</value>
   </data>
   <data name="SetMatchTimeLeft" xml:space="preserve">
-    <value>Set the time to the time left for the current match. Pause the match to stop the time from keep running before setting the time.</value>
+    <value>Setze die Zeit für die aktuelle Restspielzeit. Pausiere das Spiel um die Zeit nicht weiterlaufen zu lassen bevor die Spielzeit neu gesetzt wird.</value>
   </data>
   <data name="ShowControls" xml:space="preserve">
-    <value> Show advanced controls</value>
+    <value> Zeige erweiterte Steuerung</value>
   </data>
   <data name="ShowOnDisplay" xml:space="preserve">
-    <value>Show on display</value>
+    <value>Zeige auf Display</value>
   </data>
   <data name="Start/Continue" xml:space="preserve">
-    <value>Start/Continue</value>
+    <value>Start/Fortfahren</value>
   </data>
   <data name="Time" xml:space="preserve">
-    <value>Time</value>
+    <value>Zeit</value>
   </data>
   <data name="UnableToLoadMatch" xml:space="preserve">
-    <value>Unable to load Match or Matches...</value>
+    <value>Laden des Spiels/der Spiele nicht möglich...</value>
   </data>
   <data name="vs" xml:space="preserve">
     <value>vs.</value>
@@ -229,6 +229,6 @@
     <value>Wähle die Anzeige aus, auf der das Spiel angezeigt werden soll.</value>
   </data>
   <data name="WhichPenaltyRevoke" xml:space="preserve">
-    <value>Which penalty should be revoked?</value>
+    <value>Welche Strafe soll zurückgenommen werden?</value>
   </data>
 </root>

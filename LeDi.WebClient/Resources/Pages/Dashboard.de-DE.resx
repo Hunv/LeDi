@@ -118,39 +118,39 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Canceled" xml:space="preserve">
-    <value>Canceled</value>
+    <value>Abgebrochen</value>
   </data>
   <data name="CurrentlyNoMatch" xml:space="preserve">
-    <value>Currently no match events.</value>
+    <value>Noch keine Ereignisse</value>
   </data>
   <data name="MatchEnded" xml:space="preserve">
-    <value>Match ended</value>
+    <value>Spiel beendet</value>
   </data>
   <data name="Note" xml:space="preserve">
-    <value>Note</value>
+    <value>Bemerkungen</value>
   </data>
   <data name="OngoingMatches" xml:space="preserve">
-    <value>Currently ongoing matches:</value>
+    <value>Aktuell laufende Spiele:</value>
   </data>
   <data name="Period" xml:space="preserve">
-    <value>Period:</value>
+    <value>Durchgang:</value>
   </data>
   <data name="Team1" xml:space="preserve">
     <value>Team1</value>
   </data>
   <data name="Team1Score" xml:space="preserve">
-    <value>Team1 Score</value>
+    <value>Team1 Punkte</value>
   </data>
   <data name="Team2" xml:space="preserve">
     <value>Team2</value>
   </data>
   <data name="Team2Score" xml:space="preserve">
-    <value>Team2 Score</value>
+    <value>Team2 Punkte</value>
   </data>
   <data name="Time" xml:space="preserve">
-    <value>Time</value>
+    <value>Zeit</value>
   </data>
   <data name="TimeLeft" xml:space="preserve">
-    <value>Time left</value>
+    <value>Restzeit:</value>
   </data>
 </root>

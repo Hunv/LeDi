@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddNewMatch" xml:space="preserve">
-    <value>Add new Match</value>
+    <value>Add new match</value>
   </data>
   <data name="AktuellGeplanteSpiele" xml:space="preserve">
-    <value>Aktuell geplante Spiele:</value>
+    <value>Currently planned matches:</value>
   </data>
   <data name="AlteSpiele" xml:space="preserve">
-    <value>Alte Spiele:</value>
+    <value>Old matches:</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>

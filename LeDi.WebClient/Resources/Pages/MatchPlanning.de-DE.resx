@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddNewMatch" xml:space="preserve">
-    <value>Add new Match</value>
+    <value>Neues Spiel hinzufügen</value>
   </data>
   <data name="AktuellGeplanteSpiele" xml:space="preserve">
     <value>Aktuell geplante Spiele:</value>
@@ -127,19 +127,19 @@
     <value>Alte Spiele:</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>Edit</value>
+    <value>Bearbeiten</value>
   </data>
   <data name="Loading" xml:space="preserve">
-    <value>Loading...</value>
+    <value>Lade...</value>
   </data>
   <data name="MatchPlanning" xml:space="preserve">
-    <value>Match Planning</value>
+    <value>Spielplanung</value>
   </data>
   <data name="ScheduledTime" xml:space="preserve">
-    <value>Scheduled Time</value>
+    <value>Geplante Zeit</value>
   </data>
   <data name="Score" xml:space="preserve">
-    <value>Score</value>
+    <value>Punkte</value>
   </data>
   <data name="Status" xml:space="preserve">
     <value>Status</value>

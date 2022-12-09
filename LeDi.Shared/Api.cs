@@ -13,7 +13,7 @@ namespace LeDi.Shared
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public string ServerBaseUrl { get; set; } = "https://localhost:7077/api/";
+        public string ServerBaseUrl { get; set; } = "https://localhost:5001/api/";
 
         public Api()
         {

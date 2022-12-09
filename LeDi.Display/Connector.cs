@@ -106,7 +106,7 @@ namespace LeDi.Display
             {
                 try
                 {
-                    Logger.Info("Device registered.");
+                    Logger.Info("Device connected.");
 
                     if (responseBody == null)
                     {
@@ -210,9 +210,11 @@ namespace LeDi.Display
                 {
                     case "width":
                         layout.Width = Convert.ToInt32(aSetting.Value);
+                        Logger.Info("Loaded width of {0}", layout.Width);
                         break;
                     case "height":
                         layout.Height = Convert.ToInt32(aSetting.Value);
+                        Logger.Info("Loaded height of {0}", layout.Height);
                         break;
                     case "brightness":
                         layout.Brightness = Convert.ToByte(aSetting.Value);
@@ -247,6 +249,8 @@ namespace LeDi.Display
             //Set the layout name in case it was not set before manually
             if (layout.Name == null)
                 layout.Name = layout.Width + "x" + layout.Height;
+
+            Logger.Info("Layout to use: {0}", layout.Name);
 
             // currently unhandled settings
             //    layout.CharacterList
