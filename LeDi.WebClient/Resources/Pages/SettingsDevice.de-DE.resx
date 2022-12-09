@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddNewSetting" xml:space="preserve">
+    <value>Eine neue Einstellung hinzufügen:</value>
+  </data>
+  <data name="BrightnessTest" xml:space="preserve">
+    <value>Helligkeitstest</value>
+  </data>
+  <data name="CalibrationTest" xml:space="preserve">
+    <value>Kalibrierungstest (~10s)</value>
+  </data>
+  <data name="DANGERZONE" xml:space="preserve">
+    <value>GEFAHRENZONE:</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Voreinstellung</value>
+  </data>
+  <data name="DeviceModel" xml:space="preserve">
+    <value>Geräte Model</value>
+  </data>
+  <data name="DeviceName" xml:space="preserve">
+    <value>Geräte Name</value>
+  </data>
+  <data name="DeviceSettings" xml:space="preserve">
+    <value>Geräte Einstellung</value>
+  </data>
+  <data name="DeviceType" xml:space="preserve">
+    <value>Geräte Typ</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>aktiviert</value>
+  </data>
+  <data name="LoadingDeviceSettings" xml:space="preserve">
+    <value>Laden der Geräteeinstellung...</value>
+  </data>
+  <data name="PropertiesSetForDevice" xml:space="preserve">
+    <value>Die Einstellungen sind für das Gerät gesetzt</value>
+  </data>
+  <data name="Property" xml:space="preserve">
+    <value>Einstellung</value>
+  </data>
+  <data name="ReloadDisplaySettings" xml:space="preserve">
+    <value>Geräteeinstellung neu laden</value>
+  </data>
+  <data name="RestartDisplayService" xml:space="preserve">
+    <value>Anzeigedienst neustarten</value>
+  </data>
+  <data name="RestartHardware" xml:space="preserve">
+    <value>Hardware neustarten (Wenn Server und Webclient auf dem selben Gerät laufen, kann es Beide beeinflussen)</value>
+    <comment>Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</comment>
+  </data>
+  <data name="SaveProperties" xml:space="preserve">
+    <value>Einstellungen speichern</value>
+  </data>
+  <data name="SendCommand" xml:space="preserve">
+    <value>Befehl übermitteln</value>
+  </data>
+  <data name="SendCommandDevice" xml:space="preserve">
+    <value>Befehl an Gerät übermitteln:</value>
+  </data>
+  <data name="Setting" xml:space="preserve">
+    <value>Einstellung</value>
+  </data>
+  <data name="SettingName" xml:space="preserve">
+    <value>Namen einstellen</value>
+  </data>
+  <data name="SettingsConfiguredForDevice" xml:space="preserve">
+    <value>Die folgenden Einstellungen sind für das Gerät konfiguriert</value>
+    <comment>The following settings are configured for device</comment>
+  </data>
+  <data name="SettingValue" xml:space="preserve">
+    <value>Wert einstellen</value>
+  </data>
+  <data name="ShowAreas" xml:space="preserve">
+    <value>Bereiche anzeigen</value>
+  </data>
+  <data name="ShowColortest" xml:space="preserve">
+    <value>Farbtest anzeigen (60s)</value>
+  </data>
+  <data name="ShowCurrentTime" xml:space="preserve">
+    <value>Aktuelle Zeit anzeigen</value>
+  </data>
+  <data name="ShowFullcolortest" xml:space="preserve">
+    <value>Vollständigen Farbtest anzeigen (60s)</value>
+  </data>
+  <data name="ShowIdlebar" xml:space="preserve">
+    <value>Show Idlebar</value>
+  </data>
+  <data name="ShowTestpattern" xml:space="preserve">
+    <value>Testmuster anzeigen</value>
+  </data>
+  <data name="ShutdownHardware" xml:space="preserve">
+    <value>Hardware herunterfahren (Wenn Server und Webclient auf dem selben Gerät laufen, kann es Beide beeinflussen)</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+</root>

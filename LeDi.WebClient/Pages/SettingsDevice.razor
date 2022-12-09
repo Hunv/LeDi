@@ -5,18 +5,18 @@
 @inject IJSRuntime JSRuntime
 @inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - Device Settings</PageTitle>
+<PageTitle>LeDi - @Localizer["DeviceSettings"]</PageTitle>
 
 
-<h1>Device Settings</h1>
+<h1>@Localizer["DeviceSettings"]</h1>
 
 @if (DeviceSettingList == null || Device == null)
 {
-    <p><em>Loading Device Settings...</em></p>
+    <p><em>@Localizer["LoadingDeviceSettings"]</em></p>
 }
 else
 {
-    <p>The properties are set for device @Device.DeviceName (@Id):</p>
+    <p>@Localizer["PropertiesSetForDevice"]@Device.DeviceName (@Id):</p>
     <EditForm Model="@Device" OnValidSubmit="@SaveProperties">
         @*<DataAnnotationsValidator />
         <ValidationSummary />*@
@@ -24,14 +24,14 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Property</th>
-                    <th>Value</th>
+                    <th>@Localizer["Property"]</th>
+                    <th>@Localizer["Value"]</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>
-                        <a>Device Name</a>
+                        <a>@Localizer["DeviceName"]</a>
                     </td>
                     <td>
                         <InputText type="text" class="form-control" @bind-Value="Device.DeviceName" />                        
@@ -40,7 +40,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <a>Device Model</a>
+                        <a>@Localizer["DeviceModel"]</a>
                     </td>
                     <td>
                         <InputText type="text" class="form-control" @bind-Value="Device.DeviceModel" />                        
@@ -49,7 +49,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <a>Device Type</a>
+                        <a>@Localizer["DeviceType"]</a>
                     </td>
                     <td>
                         <InputText type="text" class="form-control" @bind-Value="Device.DeviceType" />                        
@@ -58,7 +58,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <a>Enabled</a>
+                        <a>@Localizer["Enabled"]</a>
                     </td>
                     <td>
                         <InputCheckbox @bind-Value="Device.Enabled" />                        
@@ -67,7 +67,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <a>Default</a>
+                        <a>@Localizer["Default"]</a>
                     </td>
                     <td>
                         <InputCheckbox @bind-Value="Device.Default" />                        
@@ -75,13 +75,13 @@ else
                     </td>
                 </tr>
             </tbody>
-        </table>    
-        
-        <button class="btn btn-primary" type="submit">Save Properties</button>
+        </table>
+
+        <button class="btn btn-primary" type="submit">@Localizer["SaveProperties"]</button>
     </EditForm>
     <br /><br />
 
-    <p>The following settings are configured for device @Device.DeviceName (@Id):</p>
+    <p>@Localizer["SettingsConfiguredForDevice"]@Device.DeviceName (@Id):</p>
     <EditForm Model="@DeviceSettingList" OnValidSubmit="@SaveSettings">
         @*<DataAnnotationsValidator />
         <ValidationSummary />*@
@@ -89,8 +89,8 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Setting</th>
-                    <th>Value</th>
+                    <th>@Localizer["Setting"]</th>
+                    <th>@Localizer["Value"]</th>
                     <th></th>
                 </tr>
             </thead>
@@ -118,17 +118,17 @@ else
         <button class="btn btn-primary" type="submit">Save Settings</button>
     </EditForm>
     <br /><br />
-    <h3>Add a new setting:</h3>
+    <h3>@Localizer["AddNewSetting"]</h3>
     <EditForm Model="@NewSetting" OnValidSubmit="@SaveNewSetting">
         @*<DataAnnotationsValidator />
         <ValidationSummary />*@
 
-        <a>Setting Name</a>
+        <a>@Localizer["SettingName"]</a>
         <InputText id="txtNewSettingName" type="text" class="form-control" @bind-Value="@NewSetting.Name" />
         @*<ValidationMessage For="@(() => aSetting.Name)" />*@
         <br />
 
-        <a>Setting Value</a>
+        <a>@Localizer["SettingValue"]</a>
         <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.Value" />
         @*<ValidationMessage For="@(() => aSetting.Value)" />*@
         <br />
@@ -136,25 +136,25 @@ else
         <button class="btn btn-primary" type="submit">Add Setting</button>
     </EditForm>
     <br /><br />
-    <h3>Send command to device:</h3>
+    <h3>@Localizer["SendCommandDevice"]</h3>
     <EditForm Model="@selectedDeviceCommand" OnValidSubmit="@ExecuteDeviceCommand">
         <InputSelect @bind-Value="selectedDeviceCommand" class="form-control">
-            <option value="showareas">Show Areas</option>
-            <option value="showtestpattern">Show Testpattern</option>            
-            <option value="showcolortest">Show Colortest (60s)</option>
-            <option value="showfullcolortest">Show Fullcolortest (60s)</option>
-            <option value="showclock">Show current Time</option>
-            <option value="idlebar">Show Idlebar</option>
-            <option value="calibratefps">Calibration Test (~10s)</option>
-            <option value="calibratebrightness">Brightness Test</option>
-            <option value="reload">Reload Display Settings</option>
+            <option value="showareas">@Localizer["ShowAreas"]</option>
+            <option value="showtestpattern">@Localizer["ShowTestpattern"]</option>
+            <option value="showcolortest">@Localizer["ShowColortest"]</option>
+            <option value="showfullcolortest">@Localizer["ShowFullcolortest"]</option>
+            <option value="showclock">@Localizer["ShowCurrentTime"]</option>
+            <option value="idlebar">@Localizer["ShowIdlebar"]</option>
+            <option value="calibratefps">@Localizer["CalibrationTest"]</option>
+            <option value="calibratebrightness">@Localizer["BrightnessTest"]</option>
+            <option value="reload">@Localizer["ReloadDisplaySettings"]</option>
             <option value=""></option>
-            <option value="">DANGER ZONE:</option>
-            <option value="restartsoft">Restart Display Service</option>
-            <option value="restarthard">Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</option>
-            <option value="shutdown">Shutdown Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</option>
+            <option value="">@Localizer["DANGERZONE"]</option>
+            <option value="restartsoft">@Localizer["RestartDisplayService"]</option>
+            <option value="restarthard">@Localizer["RestartHardware"]</option>
+            <option value="shutdown">@Localizer["ShutdownHardware"]</option>
         </InputSelect>
-        <button class="btn btn-primary" type="submit">Send Command</button>
+        <button class="btn btn-primary" type="submit">@Localizer["SendCommand"]</button>
     </EditForm>
 }
 

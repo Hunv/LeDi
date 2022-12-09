@@ -1,6 +1,7 @@
 ﻿@page "/Start"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Start> Localizer
 
-<PageTitle>LeDi - Tablet Start Page</PageTitle>
+<PageTitle>LeDi - @Localizer["TabletStartPage"]</PageTitle>
 
 @*Column examples*@
 @*https://getbootstrap.com/docs/5.0/layout/columns/*@
@@ -8,46 +9,46 @@
     <div class="row align-items-start" style="height:30vh; min-height:30vh;">
         <div class="col-8 p-0 m-0" style="height:100%; min-height:100%;">
             <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-primary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchcontrol" role="button"><span class="oi oi-target" aria-hidden="true"/> Referee Match</a>
+                <a class="btn btn-primary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchcontrol" role="button"><span class="oi oi-target" aria-hidden="true" /> @Localizer["RefereeMatch"]</a>
             </div>
         </div>
         <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
             <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="dashboard" role="button"><span class="oi oi-dashboard" aria-hidden="true" /> Dashboard</a>
-            </div>
-        </div>
-    </div>
-    <div class="row align-items-start" style="height:30vh; min-height:30vh;">
-        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-            <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchadd" role="button"><span class="oi oi-plus" aria-hidden="true" /> New Match</a>
-            </div>
-        </div>
-        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-            <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchprepare" role="button"><span class="oi oi-task" aria-hidden="true"/> Prepare Match</a>
-            </div>
-        </div>
-        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-            <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchplanning" role="button"><span class="oi oi-list" aria-hidden="true"/> Match List</a>
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="dashboard" role="button"><span class="oi oi-dashboard" aria-hidden="true" /> @Localizer["Dashboard"]</a>
             </div>
         </div>
     </div>
     <div class="row align-items-start" style="height:30vh; min-height:30vh;">
         <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
             <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="PlayerManage" role="button"><span class="oi oi-people" aria-hidden="true" /> Manage Players</a>
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchadd" role="button"><span class="oi oi-plus" aria-hidden="true" /> @Localizer["NewMatch"]</a>
             </div>
         </div>
         <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
             <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchsummary" role="button"><span class="oi oi-pencil" aria-hidden="true"/> Match Summary</a>
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchprepare" role="button"><span class="oi oi-task" aria-hidden="true"/> @Localizer["PrepareMatch"]</a>
             </div>
         </div>
         <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
             <div style="height:100%; min-height:100%;" class="p-1">
-                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="settings" role="button"><span class="oi oi-cog" aria-hidden="true"/> Settings</a>
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchplanning" role="button"><span class="oi oi-list" aria-hidden="true" /> @Localizer["MatchList"]</a>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+            <div style="height:100%; min-height:100%;" class="p-1">
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="PlayerManage" role="button"><span class="oi oi-people" aria-hidden="true" /> @Localizer["ManagePlayers"]</a>
+            </div>
+        </div>
+        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+            <div style="height:100%; min-height:100%;" class="p-1">
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="matchsummary" role="button"><span class="oi oi-pencil" aria-hidden="true" /> @Localizer["MatchSummary"]</a>
+            </div>
+        </div>
+        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+            <div style="height:100%; min-height:100%;" class="p-1">
+                <a class="btn btn-secondary fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="settings" role="button"><span class="oi oi-cog" aria-hidden="true" /> @Localizer["Settings"]</a>
             </div>
         </div>
     </div>

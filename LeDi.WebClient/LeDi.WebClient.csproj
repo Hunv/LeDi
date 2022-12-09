@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Components\" />
     <Folder Include="Resources\Shared\" />
   </ItemGroup>
 

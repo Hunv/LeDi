@@ -1,4 +1,5 @@
 ﻿@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ModalTimeDialog> Localizer
 <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -15,8 +16,8 @@
                         <div class="col-12">
                             <div style="height:100%; min-height:100%;" class="p-1">
                                 <div class="btn-group btn-group-lg btn-group-justified" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;">
-                                    <a class="btn @(TimeAddMode ? "btn-primary" : "btn-secondary") fs-1" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" role="button" @onclick="@(() => TimeAddMode = true)">time +</a>
-                                    <a class="btn @(!TimeAddMode ? "btn-primary" : "btn-secondary") fs-1" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" role="button" @onclick="@(() => TimeAddMode = false)">time -</a>
+                                    <a class="btn @(TimeAddMode ? "btn-primary" : "btn-secondary") fs-1" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" role="button" @onclick="@(() => TimeAddMode = true)">@Localizer["time+"]</a>
+                                    <a class="btn @(!TimeAddMode ? "btn-primary" : "btn-secondary") fs-1" style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" role="button" @onclick="@(() => TimeAddMode = false)">@Localizer["time-"]</a>
                                 </div>
                             </div>
                         </div>
@@ -24,42 +25,42 @@
                     <div class="row">
                         <div class="col-4">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(1))" role="button">1<br />Sec</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(1))" role="button">1<br />@Localizer["Sec"]</a>
                             </div>
                         </div>
                         <div class="col-4">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(5))" role="button">5<br />Sec</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(5))" role="button">5<br />@Localizer["Sec"]</a>
                             </div>
 
                         </div>
                         <div class="col-4">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(10))" role="button">10<br />Sec</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(10))" role="button">10<br />@Localizer["Sec"]</a>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-4">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(60))" role="button">1<br />Min</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(60))" role="button">1<br />@Localizer["Min"]</a>
                             </div>
                         </div>
                         <div class="col-4">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(300))" role="button">5<br />Min</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(300))" role="button">5<br />@Localizer["Min"]</a>
                             </div>
                         </div>
                         <div class="col-4">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(600))" role="button">10<br />Min</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ChangeTime(600))" role="button">10<br />@Localizer["Min"]</a>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ResetTime())" role="button">period length</a>
+                                <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => ResetTime())" role="button">@Localizer["PeriodLength"]</a>
                             </div>
                         </div>
                         <div class="col-6">
@@ -73,16 +74,16 @@
                         <div class="col-12">
                             <div style="height:100%; min-height:100%;" class="p-1">
                                 <EditForm Model="TimeLeftMinutesProxy">
-                                    <a class="fs-3 text-decoration-none text-reset">New time left:</a>
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["NewTimeLeft"]</a>
                                     <div class="input-group">
                                         <input type="number" class="form-control fs-1" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
                                         <span class="input-group-addon mt-1 fs-1" style="top:0px;">&nbsp;:&nbsp;</span>
                                         <input type="number" class="form-control fs-1" style="max-width:100px; min-width:50px" placeholder="Seconds" min="0" max="59" @bind-value="TimeLeftSecondsProxy"/>
                                     </div>
                                     <br />
-                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>OK</button>                                        
+                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>@Localizer["OK"]</button>
                                     <br /><br />
-                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">Cancel</button>
+                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">@Localizer["Cancel"]</button>
                                 </EditForm>
                             </div>
                         </div>

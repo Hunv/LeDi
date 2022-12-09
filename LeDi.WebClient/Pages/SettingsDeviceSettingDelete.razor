@@ -3,23 +3,24 @@
 @using LeDi.WebClient.Data
 @inject LeDi.Shared.Api Api
 @inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - Confirm Deletion of Device</PageTitle>
+<PageTitle>LeDi - @Localizer["ConfirmDeletionDevice"]</PageTitle>
 
 
-<h1>Confirm Deletion of Device Setting</h1>
+<h1>@Localizer["ConfirmDeletionDeviceSetting"]</h1>
 
 @if (ToDeleteDeviceSetting == null)
 {
-    <p><em>Loading Device...</em></p>
+    <p><em>@Localizer["LoadingDevice"]</em></p>
 }
 else
 {
-    <p>Confirm the deletion of device setting @settingName:</p>
-    <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">       
-        
-        <button class="btn btn-warning" type="submit">Confirm Delete</button>
-        <button class="btn btn-danger" type="button" @onclick="CancelDelete">Cancel Delete</button>
+    <p>@Localizer["ConfirmTheDeletionDeviceSetting"]@settingName:</p>
+    <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">
+
+        <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
+        <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
     </EditForm>
 }
 

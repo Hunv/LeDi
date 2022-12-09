@@ -1,4 +1,6 @@
 ﻿@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ModalPenaltyDialog> Localizer
+
 <div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -27,12 +29,12 @@
                         <div class="col-12">
                             <div style="height:100%; min-height:100%;" class="p-1">
                                 <EditForm Model="SelectedPenalty">
-                                    <a class="fs-3 text-decoration-none text-reset">Custom Penalty Text:</a>
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["CustomPenaltyText"]</a>
                                     <InputText id="txtPenalty" class="form-control" @bind-Value="@SelectedPenalty" />
                                     <br />
-                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>OK</button>                                        
+                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>@Localizer["OK"]</button>
                                     <br /><br />
-                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">Cancel</button>
+                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">@Localizer["Cancel"]</button>
                                 </EditForm>
                             </div>
                         </div>
