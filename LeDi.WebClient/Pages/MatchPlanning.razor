@@ -1,27 +1,28 @@
 ﻿@page "/matchplanning"
 @using LeDi.Shared.DtoModel
 @inject LeDi.Shared.Api Api
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - Match Planning</PageTitle>
+<PageTitle>LeDi - @Localizer["MatchPlanning"]</PageTitle>
 
 
 @if (MatchList == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <h1>Aktuell geplante Spiele:</h1>
-    <a href="/matchadd">Add new Match</a>
+    <h1>@Localizer["AktuellGeplanteSpiele"]</h1>
+    <a href="/matchadd">@Localizer["AddNewMatch"]</a>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Team1</th>
-                <th>Team2</th>
-                <th>Score</th>
-                <th>Scheduled Time</th>
-                <th>Status</th>
+                <th>@Localizer["Team1"]</th>
+                <th>@Localizer["Team2"]</th>
+                <th>@Localizer["Score"]</th>
+                <th>@Localizer["ScheduledTime"]</th>
+                <th>@Localizer["Status"]</th>
                 <th></th>
             </tr>
         </thead>
@@ -38,23 +39,23 @@ else
                     <td>@match.Team1Score:@match.Team2Score</td>
                     <td>@match.ScheduledTime</td>
                     <td>@(Enum.GetName(typeof(LeDi.Shared.Enum.MatchStatusEnum), (match.MatchStatus.HasValue ? match.MatchStatus.Value : 0)))</td>
-                    <td><a href="/match/@match.Id">Edit</a></td>
+                    <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
                 </tr>
             }
         </tbody>
     </table>
 
     <br /><br /><br />
-    <h1>Alte Spiele:</h1>
+    <h1>@Localizer["AlteSpiele"]</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Team1</th>
-                <th>Team2</th>
-                <th>Score</th>
-                <th>Scheduled Time</th>
-                <th>Status</th>
+                <th>@Localizer["Team1"]</th>
+                <th>@Localizer["Team2"]</th>
+                <th>@Localizer["Score"]</th>
+                <th>@Localizer["ScheduledTime"]</th>
+                <th>@Localizer["Status"]</th>
                 <th></th>
             </tr>
         </thead>
@@ -71,7 +72,7 @@ else
                     <td>@match.Team1Score:@match.Team2Score</td>
                     <td>@match.ScheduledTime</td>
                     <td>@(Enum.GetName(typeof(LeDi.Shared.Enum.MatchStatusEnum), (match.MatchStatus.HasValue ? match.MatchStatus.Value : 0)))</td>
-                    <td><a href="/match/@match.Id">Edit</a></td>
+                    <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
                 </tr>
             }
         </tbody>

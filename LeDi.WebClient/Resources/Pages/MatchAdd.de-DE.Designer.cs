@@ -22,14 +22,14 @@ namespace LeDi.WebClient.Resources.Pages {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class MatchAdd {
+    public class MatchAdd___Kopieren {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal MatchAdd() {
+        internal MatchAdd___Kopieren() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace LeDi.WebClient.Resources.Pages {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LeDi.WebClient.Resources.Pages.MatchAdd", typeof(MatchAdd).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LeDi.WebClient.Resources.Pages.MatchAdd - Kopieren", typeof(MatchAdd___Kopieren).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -111,15 +111,6 @@ namespace LeDi.WebClient.Resources.Pages {
         public static string MatchOvertime {
             get {
                 return ResourceManager.GetString("MatchOvertime", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die New match ähnelt.
-        /// </summary>
-        public static string NewMatch {
-            get {
-                return ResourceManager.GetString("NewMatch", resourceCulture);
             }
         }
         

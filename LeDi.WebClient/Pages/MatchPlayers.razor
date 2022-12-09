@@ -1,12 +1,13 @@
 ﻿@page "/matchplayers"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - Player Management</PageTitle>
+<PageTitle>LeDi - @Localizer["PlayerManagement"]</PageTitle>
 
-<h1>Counter</h1>
+<h1>@Localizer["Counter"]</h1>
 
-<p role="status">Current count: @currentCount</p>
+<p role="status">@Localizer["CurrentCount"] @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="IncrementCount">@Localizer["ClickMe"]</button>
 
 @code {
     private int currentCount = 0;

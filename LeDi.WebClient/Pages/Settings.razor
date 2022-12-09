@@ -3,22 +3,23 @@
 @using LeDi.WebClient.Data
 @inject LeDi.Shared.Api Api
 @inject IJSRuntime JSRuntime
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - Settings</PageTitle>
+<PageTitle>LeDi - @Localizer["Settings"]</PageTitle>
 
 
-<h1>Settings</h1>
+<h1>@Localizer["Settings"]</h1>
 
-<a href="administration">User administration</a>
+<a href="administration">@Localizer["UserAdministration"]</a>
 <br />
 
 @if (SettingList == null)
 {
-    <p><em>Loading Settinglist...</em></p>
+    <p><em>@Localizer["LoadingSettinglist"]</em></p>
 }
 else
 {
-    <p>The following settings are configured:</p>
+    <p>@Localizer["FollowingSettingsConfigured"]</p>
     <EditForm Model="@SettingList" OnValidSubmit="@SaveSettings">
         @*<DataAnnotationsValidator />
         <ValidationSummary />*@
@@ -26,8 +27,8 @@ else
         <table class="table">
             <thead>
                 <tr>
-                    <th>Setting</th>
-                    <th>Value</th>
+                    <th>@Localizer["Setting"]</th>
+                    <th>@Localizer["Value"]</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,30 +46,30 @@ else
                     </tr>
                 }      
             </tbody>
-        </table>    
-        
-        <button class="btn btn-primary" type="submit">Save Changes</button>
+        </table>
+
+        <button class="btn btn-primary" type="submit">@Localizer["SaveChanges"]</button>
     </EditForm>
 }
 <br /><br />
-<h1>Devices</h1>
+<h1>@Localizer["Devices"]</h1>
 
 @if (DeviceList == null)
 {
-    <p><em>Loading Devicelist...</em></p>
+    <p><em>@Localizer["LoadingDevicelist"]</em></p>
 }
 else
 {
-    <p>The following devices are known:</p>
+    <p>@Localizer["DevicesKnown"]</p>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Device Name</th>
-                <th>Device Model</th>
-                <th>Device Type</th>
-                <th>Enabled</th>
-                <th>Default</th>
+                <th>@Localizer["DeviceName"]</th>
+                <th>@Localizer["DeviceModel"]</th>
+                <th>@Localizer["DeviceType"]</th>
+                <th>@Localizer["Enabled"]</th>
+                <th>@Localizer["Default"]</th>
                 <th></th>
                 <th></th>
             </tr>

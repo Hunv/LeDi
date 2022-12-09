@@ -117,59 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ExtendMatch" xml:space="preserve">
-    <value>Spiel weiterführen bei Gleichstand nach abgelaufener Spielzeit</value>
+  <data name="AssignPlayers" xml:space="preserve">
+    <value>Spieler dem Team zuweisen:</value>
   </data>
-  <data name="Handball" xml:space="preserve">
-    <value>Handball</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
   </data>
-  <data name="LengthPeriod" xml:space="preserve">
-    <value>Halbzeitlänge (Minuten : Sekunden)</value>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
   </data>
-  <data name="LoadingData" xml:space="preserve">
-    <value>Daten werden geladen...</value>
+  <data name="MainRefereeName" xml:space="preserve">
+    <value>Name des Hauptschiedsrichters:</value>
   </data>
-  <data name="MatchInterruptions" xml:space="preserve">
-    <value>Das Spiel bei Unterberechungen pausieren, wenn das Spiel fast beendet ist</value>
+  <data name="Prepare Match" xml:space="preserve">
+    <value>Spielvorbereitung</value>
   </data>
-  <data name="MatchOvertime" xml:space="preserve">
-    <value>Spielverlängerung</value>
+  <data name="PrepareMatchText" xml:space="preserve">
+    <value>Vorbereitung des Spiels</value>
   </data>
-  <data name="NumberOfSeconds" xml:space="preserve">
-    <value>Restzeit (Sekunden) vor Ende des Spiels, ab der das Speil unterbrochen werden soll</value>
+  <data name="PreperationDone" xml:space="preserve">
+    <value>Vorbereitung erledigt</value>
   </data>
-  <data name="NumberPeriods" xml:space="preserve">
-    <value>Anzahl der Halbzeiten</value>
+  <data name="ScheduledFor" xml:space="preserve">
+    <value>angesetzt für</value>
   </data>
-  <data name="OnDisplay" xml:space="preserve">
-    <value>Auf dem Display anzeigen:</value>
+  <data name="TimeKeeperName" xml:space="preserve">
+    <value>Name des Zeitnehmers:</value>
   </data>
-  <data name="Other" xml:space="preserve">
-    <value>Andere</value>
+  <data name="Todo" xml:space="preserve">
+    <value>Todo</value>
   </data>
-  <data name="Save" xml:space="preserve">
-    <value>Speichern</value>
+  <data name="vs" xml:space="preserve">
+    <value>vs.</value>
   </data>
-  <data name="SaveStart" xml:space="preserve">
-    <value>Speichern und Starten</value>
-  </data>
-  <data name="ScheduledDateTime" xml:space="preserve">
-    <value>Scheduled Start Date and Time</value>
-    <comment>Scheduled Start Date and Time</comment>
-  </data>
-  <data name="SelectSport" xml:space="preserve">
-    <value>Sportart wählen</value>
-  </data>
-  <data name="Soccer" xml:space="preserve">
-    <value>Fußball</value>
-  </data>
-  <data name="Team1" xml:space="preserve">
-    <value>Team 1</value>
-  </data>
-  <data name="Team2" xml:space="preserve">
-    <value>Team 2</value>
-  </data>
-  <data name="Underwaterhockey" xml:space="preserve">
-    <value>Unterwasserhockey</value>
+  <data name="WaterRefereeName" xml:space="preserve">
+    <value>Name des Wasserschiedsrichters:</value>
   </data>
 </root>

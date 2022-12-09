@@ -40,6 +40,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Resources\Pages\MatchAdd.de-DE.Designer.cs">
+      <DependentUpon>MatchAdd.de-DE.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Resources\Pages\MatchAdd.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -67,6 +72,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Resources\Pages\MatchAdd.de-DE.resx">
+      <LastGenOutput>MatchAdd.de-DE.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Pages\MatchAdd.resx">

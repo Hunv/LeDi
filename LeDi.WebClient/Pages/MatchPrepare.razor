@@ -3,43 +3,44 @@
 @using LeDi.Shared.Enum
 @using LeDi.WebClient.Components
 @inject LeDi.Shared.Api Api
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - Prepare Match</PageTitle>
+<PageTitle>LeDi - @Localizer["PrepareMatch"]</PageTitle>
 
 @if (Match == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
     <EditForm Model="@Match" OnValidSubmit="@SaveMatch">
-        <a>Prepare match @Match.Team1Name vs. @Match.Team2Name scheduled for @Match.ScheduledTime.</a><br />
+        <a>@Localizer["PrepareMatchText"] @Match.Team1Name @Localizer["vs"] @Match.Team2Name @Localizer["ScheduledFor"] @Match.ScheduledTime.</a><br />
         <br />
-        <a>Assign Players to the teams:</a><br />
-        <a>Todo</a><br />
+        <a>@Localizer["AssignPlayers"]</a><br />
+        <a>@Localizer["Todo"]</a><br />
         <br />
         <br />
-        <a>Main Referee Name:</a><br />
+        <a>@Localizer["MainRefereeName"]</a><br />
         <InputText id="txtReferee1" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee1Name" />
         <br />
-        <a>Water Referee Name:</a><br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
         <InputText id="txtReferee2" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee2Name" />
         <br />
-        <a>Water Referee Name:</a><br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
         <InputText id="txtReferee3" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee3Name" />
         <br />
-        <a>Water Referee Name:</a><br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
         <InputText id="txtReferee4" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee4Name" />
         <br />
-        <a>Water Referee Name:</a><br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
         <InputText id="txtReferee5" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee5Name" />
         <br />
-        <a>Time Keeper Name:</a><br />
+        <a>@Localizer["TimeKeeperName"]</a><br />
         <InputText id="txtTimeKeeper" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="TimeKeeperName" />
         <br />
 
-        <button class="btn btn-primary" type="submit">Preperation done</button>
-        <a class="btn btn-danger" href="matchplanning" role="button">Cancel</a>
+        <button class="btn btn-primary" type="submit">@Localizer["PreperationDone"]</button>
+        <a class="btn btn-danger" href="matchplanning" role="button">@Localizer["Cancel"]</a>
     </EditForm>
 }
 

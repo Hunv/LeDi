@@ -117,59 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ExtendMatch" xml:space="preserve">
-    <value>Spiel weiterführen bei Gleichstand nach abgelaufener Spielzeit</value>
+  <data name="Canceled" xml:space="preserve">
+    <value>Canceled</value>
   </data>
-  <data name="Handball" xml:space="preserve">
-    <value>Handball</value>
+  <data name="CurrentlyNoMatch" xml:space="preserve">
+    <value>Currently no match events.</value>
   </data>
-  <data name="LengthPeriod" xml:space="preserve">
-    <value>Halbzeitlänge (Minuten : Sekunden)</value>
+  <data name="MatchEnded" xml:space="preserve">
+    <value>Match ended</value>
   </data>
-  <data name="LoadingData" xml:space="preserve">
-    <value>Daten werden geladen...</value>
+  <data name="Note" xml:space="preserve">
+    <value>Note</value>
   </data>
-  <data name="MatchInterruptions" xml:space="preserve">
-    <value>Das Spiel bei Unterberechungen pausieren, wenn das Spiel fast beendet ist</value>
+  <data name="OngoingMatches" xml:space="preserve">
+    <value>Currently ongoing matches:</value>
   </data>
-  <data name="MatchOvertime" xml:space="preserve">
-    <value>Spielverlängerung</value>
-  </data>
-  <data name="NumberOfSeconds" xml:space="preserve">
-    <value>Restzeit (Sekunden) vor Ende des Spiels, ab der das Speil unterbrochen werden soll</value>
-  </data>
-  <data name="NumberPeriods" xml:space="preserve">
-    <value>Anzahl der Halbzeiten</value>
-  </data>
-  <data name="OnDisplay" xml:space="preserve">
-    <value>Auf dem Display anzeigen:</value>
-  </data>
-  <data name="Other" xml:space="preserve">
-    <value>Andere</value>
-  </data>
-  <data name="Save" xml:space="preserve">
-    <value>Speichern</value>
-  </data>
-  <data name="SaveStart" xml:space="preserve">
-    <value>Speichern und Starten</value>
-  </data>
-  <data name="ScheduledDateTime" xml:space="preserve">
-    <value>Scheduled Start Date and Time</value>
-    <comment>Scheduled Start Date and Time</comment>
-  </data>
-  <data name="SelectSport" xml:space="preserve">
-    <value>Sportart wählen</value>
-  </data>
-  <data name="Soccer" xml:space="preserve">
-    <value>Fußball</value>
+  <data name="Period" xml:space="preserve">
+    <value>Period:</value>
   </data>
   <data name="Team1" xml:space="preserve">
-    <value>Team 1</value>
+    <value>Team1</value>
+  </data>
+  <data name="Team1Score" xml:space="preserve">
+    <value>Team1 Score</value>
   </data>
   <data name="Team2" xml:space="preserve">
-    <value>Team 2</value>
+    <value>Team2</value>
   </data>
-  <data name="Underwaterhockey" xml:space="preserve">
-    <value>Unterwasserhockey</value>
+  <data name="Team2Score" xml:space="preserve">
+    <value>Team2 Score</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="TimeLeft" xml:space="preserve">
+    <value>Time left</value>
   </data>
 </root>

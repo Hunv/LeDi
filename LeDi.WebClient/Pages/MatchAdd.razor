@@ -4,10 +4,10 @@
 @inject NavigationManager NavigationManager
 @inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
-<PageTitle>LeDi - New match</PageTitle>
+<PageTitle>LeDi - @Localizer["NewNatch"]</PageTitle>
 @if (NewMatch == null)
 {
-    <p><em>Loading Data...</em></p>
+    <p><em>@Localizer["LoadingData"]</em></p>
 }
 else
 {
@@ -15,23 +15,23 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <a>Select type of sport</a>
+        <a>@Localizer["SelectSport"]</a>
         <InputSelect id="cmbGamename" class="form-control" @bind-Value="SelectedGamename">
             <option value=""> </option>
-            <option value="Underwaterhockey">Underwaterhockey</option>
-            <option value="Handball">Handball</option>
-            <option value="Soccer">Soccer</option>
+            <option value="Underwaterhockey">@Localizer["Underwaterhockey"]</option>
+            <option value="Handball">@Localizer["Handball"]</option>
+            <option value="Soccer">@Localizer["Soccer"]</option>
 @*            <option value="Baseball">Baseball</option>
             <option value="Hockey">Hockey</option>
             <option value="Football">Football</option>
             <option value="Basketball">Basketball</option>
             <option value="Tennis">Tennis</option>*@
-            <option value="Other">Other</option>
+            <option value="Other">@Localizer["Other"]</option>
         </InputSelect>
         <br /> 
 
         <div hidden="@(!FieldList[SelectedGamename].Contains("displaylist"))">
-            <a>Show on display:</a>
+            <a>@Localizer["OnDisplay"]</a>
             <br />
             @foreach(var aDisplay in DisplayList)
             {
@@ -42,7 +42,7 @@ else
         </div>
 
         <div hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName1"))">
-            <a>Team 1</a>
+            <a>@Localizer["Team1"]</a>
             <InputText 
                 id="txtTeamName1" 
                 class="form-control" 
@@ -53,7 +53,7 @@ else
         </div>
 
         <div hidden="@(!FieldList[SelectedGamename].Contains("txtTeamName2"))" >
-            <a>Team 2</a>
+            <a>@Localizer["Team2"]</a>
             <InputText 
                 id="txtTeamName2" 
                 class="form-control" 
@@ -64,7 +64,7 @@ else
         </div>
 
         <div hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodCount"))">
-            <a>Number of periods</a>
+            <a>@Localizer["NumberPeriods"]</a>
             <InputNumber 
                 id="txtPeriodCount" 
                 class="form-control" 
@@ -76,7 +76,7 @@ else
         </div>
 
         <div hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodLength"))">
-            <a>Length of a period (minutes : seconds)</a>
+            <a>@Localizer["LengthPeriod"]</a>
             <div id="txtPeriodLength" class="input-group">
                 <input 
                     id="txtPeriodLengthMin" 
@@ -104,7 +104,7 @@ else
         </div>
    
         <div hidden="@(!FieldList[SelectedGamename].Contains("dtScheduledTime"))">
-            <a>Scheduled Start Date and Time</a>
+            <a>@Localizer["ScheduledDateTime"]</a>
             <input 
                 id="dtScheduledTime" 
                 type="datetime" 
@@ -119,7 +119,7 @@ else
                 id="chkPeriodOvertime" 
                 @bind-Value="NewMatch.RulePeriodOvertime" 
                 />
-            <a>Match has overtime</a>
+            <a>@Localizer["MatchOvertime"]</a>
             <br />
         </div>
 
@@ -128,12 +128,12 @@ else
                 id="chkPeriodPauseNearEnd" 
                 @bind-Value="NewMatch.RulePeriodLastPauseTimeOnEvent" 
                 />
-            <a>Match pauses in case of interruptions near end of match</a>
+            <a>@Localizer["MatchInterruptions"]</a>
             <br /><br />
         </div>
 
         <div hidden="@(!FieldList[SelectedGamename].Contains("txtPeriodPauseNearEndSec")|| NewMatch.RulePeriodLastPauseTimeOnEvent == false)">
-            <a>Number of seconds near end the time will be stopped?</a>
+            <a>@Localizer["NumberOfSeconds"]</a>
             <InputNumber 
                 id="txtPeriodPauseNearEndSec" 
                 class="form-control" 
@@ -148,12 +148,12 @@ else
                 id="chkMatchExtensionOnDraw" 
                 @bind-Value="NewMatch.RuleMatchExtensionOnDraw" 
                 />
-            <a>Extend match in case of draw after regular play time</a>
+            <a>@Localizer["ExtendMatch"]</a>
             <br />
         </div>
 
-        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">Save and Start</button>
-        <button class="btn btn-primary" type="submit">Save</button>
+        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch">@Localizer["SaveStart"]</button>
+        <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
 
     
     </EditForm>

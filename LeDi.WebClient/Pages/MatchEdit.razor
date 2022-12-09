@@ -3,12 +3,13 @@
 @using LeDi.Shared.Enum
 @using LeDi.WebClient.Components
 @inject LeDi.Shared.Api Api
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
 
 <PageTitle>LeDi - Edit Match</PageTitle>
 
 @if (Match == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {   
@@ -17,34 +18,34 @@ else
         <ValidationSummary />
         
         <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtTeamName1"))">
-            <a>Team 1 Name</a>
+            <a>@Localizer["Team1Name"]</a>
             <InputText id="txtTeam1Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team1Name" />
             <ValidationMessage For="@(() => Match.Team1Name)" />
             <br />
         </div>
 
         <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtTeamName2"))" >
-            <a>Team 2 Name</a>                
+            <a>@Localizer["Team2Name"]</a>
             <InputText id="txtTeam2Name" type="text" class="form-control" placeholder="Teamname" @bind-Value="Match.Team2Name" />
             <ValidationMessage For="@(() => Match.Team2Name)" />
             <br />
         </div>
 
-        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodCount"))">        
-            <a>Periods count</a>
+        <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodCount"))">
+            <a>@Localizer["PeriodsCount"]</a>
             <InputNumber id="txtPeriodCount" class="form-control" type="text" @bind-Value="Match.RulePeriodCount" />
             <br />
         </div>
    
         <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("dtScheduledTime"))">
-            <a>Scheduled Start Time</a>
+            <a>@Localizer["ScheduledStartTime"]</a>
             @*<input id="txtScheduledTime" class="form-control" width="150" type="time" @bind="Match.ScheduledTime" />*@        
             <input id="txtScheduledTime" type="datetime" class="form-control" @bind-value="Match.ScheduledTime"/>
             <br />
         </div>
                 
         <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("cmbMatchStatus"))">
-            <a>Match Status</a>
+            <a>@Localizer["MatchStatus"]</a>
             <InputSelect @bind-Value="MatchStatus" id="cmbMatchStatus" class="form-control" width="150">
                 @foreach (var value in Enum.GetValues(typeof(MatchStatusEnum)))
                 {
@@ -58,7 +59,7 @@ else
                 id="chkPeriodOvertime" 
                 @bind-Value="Match.RulePeriodOvertime" 
                 />
-            <a>Match has overtime</a>
+            <a>@Localizer["MatchOvertime"]</a>
             <br />
         </div>
 
@@ -67,12 +68,12 @@ else
                 id="chkPeriodPauseNearEnd" 
                 @bind-Value="Match.RulePeriodLastPauseTimeOnEvent" 
                 />
-            <a>Match pauses in case of interruptions near end of match</a>
+            <a>@Localizer["MatchPauses"]</a>
             <br />
         </div>
 
         <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodPauseNearEndSec")|| Match.RulePeriodLastPauseTimeOnEvent == false)">
-            <a>Number of seconds near end the time will be stopped?</a>
+            <a>@Localizer["NumberOfSeconds"]</a>
             <InputNumber 
                 id="txtPeriodPauseNearEndSec" 
                 class="form-control" 
@@ -87,13 +88,13 @@ else
                 id="chkMatchExtensionOnDraw" 
                 @bind-Value="Match.RuleMatchExtensionOnDraw" 
                 />
-            <a>Extend match in case of draw after regular play time</a>
+            <a>@Localizer["ExtendMatch"]</a>
             <br />
         </div>
         
         <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("displaylist"))">
             <br />
-            <a>Show on display:</a>
+            <a>@Localizer["ShowOnDisplay"]</a>
             <br />
             @foreach(var aDisplay in DisplayList)
             {
@@ -113,21 +114,21 @@ else
             <div class="panel @(EditCollapsed?"collapse":"")">
                 
                 <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtScoreTeam1"))">
-                    <a>Team 1 Score</a>
+                    <a>@Localizer["Team1Score"]</a>
                     <InputNumber id="txtScoreTeam1" class="form-control" type="text" @bind-Value="Match.Team1Score" />
                     <br />
                 </div>
 
                 
                 <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtScoreTeam2"))">
-                    <a>Team 2 Score</a>
+                    <a>@Localizer["Team2Score"]</a>
                     <InputNumber id="txtScoreTeam2" class="form-control" type="text" @bind-Value="Match.Team2Score" />
                     <br />  
                 </div>
 
                 
                 <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtTimeLeft"))">
-                    <label>Time left (Minutes : Seconds)</label>
+                    <label>@Localizer["TimeLeft"]</label>
                     <div class="input-group">
                         <input type="number" class="form-control" style="max-width:100px; min-width:50px" placeholder="Minutes" min="0" max="99999" @bind-value="TimeLeftMinutesProxy"/>
                         <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
@@ -138,7 +139,7 @@ else
 
                 
                 <div hidden="@(!FieldList[Match.Gamename ?? ""].Contains("txtPeriodCount"))">
-                    <a>Current Period (0 = Not started)</a>
+                    <a>@Localizer["CurrentPeriod"]</a>
                     <InputNumber id="txtPeriodCurrent" class="form-control" type="text" @bind-Value="Match.PeriodCurrent" />
                     <br />
                 </div>

@@ -5,6 +5,7 @@
 @using LeDi.WebClient.Components
 @inject LeDi.Shared.Api Api
 @inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchControl> Localizer
 
 <PageTitle>LeDi - Dashboard</PageTitle>
 
@@ -26,16 +27,16 @@
                         <div>
                             @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
                             {
-                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Canceled</a>
+                            <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["Canceled"]</a>
                             }
                             else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
                             {
-                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />Match ended</a>
+                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["MatchEnded"]</a>
                             }
                             else 
                             {
                                 <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.TimeLeftSeconds / 60):@(((Match.TimeLeftSeconds ?? 0) % 60).ToString().PadLeft(2,'0'))</a>
-                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">Period:</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
                                 <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.PeriodCurrent of @Match.RulePeriodCount</a>
                             }
                         </div>
@@ -127,7 +128,9 @@
                         <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
                         @if (MatchEventList == null || MatchEventList.Count == 0) 
                         {
-                            <a>Currently no match events.</a><br />
+                            <a>@Localizer["CurrentlyNoMatch"]</a>
+
+                        <br />
                         }
                         else
                         {
@@ -137,13 +140,13 @@
                                         <b>#</b>
                                     </div>*@
                                     <div class="col-1 text-nowrap" style="min-width:100px;">
-                                        <b>Time</b>
+                                        <b>@Localizer["Time"]</b>
                                     </div>@*
                                     <div class="col-1 text-nowrap">
                                         <b>Creator</b>
                                     </div>*@
                                     <div class="col-auto">
-                                        <b>Note</b>
+                                        <b>@Localizer["Note"]</b>
                                     </div>
                                 </div>
          
@@ -173,17 +176,17 @@
 }
 else if (LiveMatchList != null)
 {
-    <p>Currently ongoing matches:</p>
+    <p>@Localizer["OngoingMatches"]</p>
 
     <table class="table">
         <thead>
             <tr>
                 <th></th>
-                <th>Team1</th>
-                <th>Team2</th>
-                <th>Time left</th>
-                <th>Team1 Score</th>
-                <th>Team2 Score</th>
+                <th>@Localizer["Team1"]</th>
+                <th>@Localizer["Team2"]</th>
+                <th>@Localizer["TimeLeft"]</th>
+                <th>@Localizer["Team1Score"]</th>
+                <th>@Localizer["Team2Score"]</th>
             </tr>
         </thead>
         <tbody>
@@ -213,7 +216,7 @@ else if (LiveMatchList != null)
     </table>
 }
 else {
-    <a>Currently no ongoing matches</a>
+    <a>@Localizer["NoOngoingMatches"]</a>
 }
 
 @code {
