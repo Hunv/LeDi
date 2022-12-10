@@ -117,37 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddNewMatch" xml:space="preserve">
-    <value>Add new match</value>
+  <data name="AboutLedi" xml:space="preserve">
+    <value>About LeDi</value>
   </data>
-  <data name="CurrentlyPlannedMatches" xml:space="preserve">
-    <value>Currently planned matches:</value>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
   </data>
-  <data name="Edit" xml:space="preserve">
-    <value>Edit</value>
+  <data name="Devices" xml:space="preserve">
+    <value>Devices</value>
   </data>
-  <data name="FinishedMatches" xml:space="preserve">
-    <value>Finished matches:</value>
-  </data>
-  <data name="Loading" xml:space="preserve">
-    <value>Loading...</value>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
   </data>
   <data name="MatchPlanning" xml:space="preserve">
     <value>Match Planning</value>
   </data>
-  <data name="ScheduledTime" xml:space="preserve">
-    <value>Scheduled Time</value>
+  <data name="RefereeMatch" xml:space="preserve">
+    <value>Referee Match</value>
   </data>
-  <data name="Score" xml:space="preserve">
-    <value>Score</value>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
   </data>
-  <data name="Status" xml:space="preserve">
-    <value>Status</value>
-  </data>
-  <data name="Team1" xml:space="preserve">
-    <value>Team1</value>
-  </data>
-  <data name="Team2" xml:space="preserve">
-    <value>Team2</value>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
   </data>
 </root>

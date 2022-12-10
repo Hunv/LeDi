@@ -126,6 +126,9 @@
   <data name="MatchEnded" xml:space="preserve">
     <value>Spiel beendet</value>
   </data>
+  <data name="NoOngoingMatches" xml:space="preserve">
+    <value>Derzeit keine laufenden Spiele</value>
+  </data>
   <data name="Note" xml:space="preserve">
     <value>Bemerkungen</value>
   </data>

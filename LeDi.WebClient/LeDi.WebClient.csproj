@@ -35,10 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Shared\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Resources\Pages\MatchAdd.de-DE.Designer.cs">
       <DependentUpon>MatchAdd.de-DE.resx</DependentUpon>
       <DesignTime>True</DesignTime>

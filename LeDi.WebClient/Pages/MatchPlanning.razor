@@ -1,7 +1,7 @@
 ﻿@page "/matchplanning"
 @using LeDi.Shared.DtoModel
 @inject LeDi.Shared.Api Api
-@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchPlanning> Localizer
 
 <PageTitle>LeDi - @Localizer["MatchPlanning"]</PageTitle>
 
@@ -12,7 +12,7 @@
 }
 else
 {
-    <h1>@Localizer["AktuellGeplanteSpiele"]</h1>
+    <h1>@Localizer["CurrentlyPlannedMatches"]</h1>
     <a href="/matchadd">@Localizer["AddNewMatch"]</a>
 
     <table class="table">
@@ -46,7 +46,7 @@ else
     </table>
 
     <br /><br /><br />
-    <h1>@Localizer["AlteSpiele"]</h1>
+    <h1>@Localizer["FinishedMatches"]</h1>
 
     <table class="table">
         <thead>

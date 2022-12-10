@@ -120,14 +120,14 @@
   <data name="AddNewMatch" xml:space="preserve">
     <value>Neues Spiel hinzufügen</value>
   </data>
-  <data name="AktuellGeplanteSpiele" xml:space="preserve">
+  <data name="CurrentlyPlannedMatches" xml:space="preserve">
     <value>Aktuell geplante Spiele:</value>
-  </data>
-  <data name="AlteSpiele" xml:space="preserve">
-    <value>Alte Spiele:</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Bearbeiten</value>
+  </data>
+  <data name="FinishedMatches" xml:space="preserve">
+    <value>Abgeschlossene Spiele:</value>
   </data>
   <data name="Loading" xml:space="preserve">
     <value>Lade...</value>
