@@ -117,31 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Countdown" xml:space="preserve">
+    <value>Countdown</value>
   </data>
-  <data name="ManagePlayers" xml:space="preserve">
-    <value>Spieler verwalten</value>
+  <data name="CountdownSeconds" xml:space="preserve">
+    <value>Number of seconds to count down</value>
   </data>
-  <data name="MatchList" xml:space="preserve">
-    <value>Spiele verwalten</value>
+  <data name="CountdownText" xml:space="preserve">
+    <value>This page will show a countdown and optionally an additional text.</value>
   </data>
-  <data name="MatchSummary" xml:space="preserve">
-    <value>Spiel zusammenfassung</value>
+  <data name="CountdownText2" xml:space="preserve">
+    <value>Optionally a text to show above the countdown. On tight displays, leave this empty to fit the countdown to the display height.</value>
   </data>
-  <data name="NewMatch" xml:space="preserve">
-    <value>Neues Spiel</value>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
   </data>
-  <data name="PrepareMatch" xml:space="preserve">
-    <value>Spiel vorbereiten</value>
+  <data name="Match" xml:space="preserve">
+    <value>Match</value>
   </data>
-  <data name="RefereeMatch" xml:space="preserve">
-    <value>Spielmanagement</value>
+  <data name="NoMatches" xml:space="preserve">
+    <value>No matches available.</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Einstellungen</value>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Devices</value>
   </data>
-  <data name="Tablet Start Page" xml:space="preserve">
-    <value>Tablet Startseite</value>
+  <data name="Seconds" xml:space="preserve">
+    <value>Seconds</value>
+  </data>
+  <data name="SelectDevice" xml:space="preserve">
+    <value>Select device</value>
+  </data>
+  <data name="SelectMatch" xml:space="preserve">
+    <value>Select the match, you want to show on the display. You can also set this page on the referee page.</value>
+  </data>
+  <data name="SelectMatch2" xml:space="preserve">
+    <value>Match to show</value>
+  </data>
+  <data name="SelectPage" xml:space="preserve">
+    <value>Select mode</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="TextText" xml:space="preserve">
+    <value>Text to show on display.</value>
+  </data>
+  <data name="Tournament" xml:space="preserve">
+    <value>Tournament</value>
+  </data>
+  <data name="TournamentText" xml:space="preserve">
+    <value>If you select this mode, the display will always show the currently running match, that is configured to show the match on this display. After a match is finished and closed, the countdown to the next match regarding the scheduled time will be shown. The countdown stop 60 seconds before the start and will show the start page of the match on the display (period length and 0:0 scores). If the next match should already being started, it is shown directly.</value>
   </data>
 </root>

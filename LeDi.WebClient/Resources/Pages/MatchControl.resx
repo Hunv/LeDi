@@ -150,6 +150,9 @@
   <data name="MatchTimeLeft" xml:space="preserve">
     <value>Set match time left</value>
   </data>
+  <data name="NoMatchesOngoing" xml:space="preserve">
+    <value>Currently no matches running.</value>
+  </data>
   <data name="NoMatchEventsAvailable." xml:space="preserve">
     <value>No match events available.</value>
   </data>

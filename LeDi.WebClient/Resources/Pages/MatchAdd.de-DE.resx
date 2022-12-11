@@ -154,7 +154,7 @@
     <value>Speichern und Starten</value>
   </data>
   <data name="ScheduledDateTime" xml:space="preserve">
-    <value>Scheduled Start Date and Time</value>
+    <value>Geplanter Spielstart (Datum/Uhrzeit)</value>
     <comment>Scheduled Start Date and Time</comment>
   </data>
   <data name="SelectSport" xml:space="preserve">

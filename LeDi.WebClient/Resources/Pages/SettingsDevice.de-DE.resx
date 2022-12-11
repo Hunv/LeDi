@@ -163,7 +163,7 @@
     <value>Anzeigedienst neustarten</value>
   </data>
   <data name="RestartHardware" xml:space="preserve">
-    <value>Hardware neustarten (Wenn Server und Webclient auf dem selben Gerät laufen, kann es Beide beeinflussen)</value>
+    <value>Hardware neustarten (Wenn Server und Webclient auf dem selben Gerät laufen, kann es beide beeinflussen)</value>
     <comment>Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</comment>
   </data>
   <data name="SaveProperties" xml:space="preserve">

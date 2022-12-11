@@ -2,12 +2,13 @@
 @using LeDi.Shared.DtoModel
 @using LeDi.Shared.Enum
 @inject LeDi.Shared.Api Api
+@inject Microsoft.Extensions.Localization.IStringLocalizer<DevicePages> Localizer
 
-<PageTitle>LeDi - Device Pages</PageTitle>
+<PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
 
 @if (DeviceList == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
@@ -15,7 +16,7 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <p>Select device</p>
+        <p>@Localizer["SelectDevice"]</p>
         <InputSelect class="form-control" @bind-Value="SelectedDevice">
             @foreach(var aDevice in DeviceList)
             {
@@ -25,13 +26,13 @@ else
         </InputSelect>
         <br /><br />
 
-        <p>Select page</p>
+        <p>@Localizer["SelectPage"]</p>
         <InputSelect class="form-control" @bind-Value="SelectedPage" @onselectionchange="SelectedPageChanged">
             <option value=""></option>
-            <option value="match">Match</option>
-            <option value="tournament">Tournament</option>
-            <option value="countdown">Countdown</option>
-            <option value="text">Text</option>
+            <option value="match">@Localizer["Match"]</option>
+            <option value="tournament">@Localizer["Tournament"]</option>
+            <option value="countdown">@Localizer["Countdown"]</option>
+            <option value="text">@Localizer["Text"]</option>
         </InputSelect>
     
         <br /><br />
@@ -40,11 +41,11 @@ else
         </div>
 
         <div hidden="@(!(SelectedPage == "match"))">
-            <p>Select the match, you want to show on the display. You can also set this page on the referee page.</p>
-            <p>Match to show</p>
+            <p>@Localizer["SelectMatch"]</p>
+            <p>@Localizer["SelectMatch2"]</p>
             @if(MatchList == null || MatchList.Count == 0)
             {
-                <p><em>No matches available.</em></p>
+                <p><em>@Localizer["NoMatches"]</em></p>
             }
             else
             {
@@ -58,28 +59,28 @@ else
         </div>
 
         <div hidden="@(!(SelectedPage == "tournament"))">
-            <p>If you select this mode, the display will always show the currently running match, that is configured to show the match on this display. After a match is finished and closed, the countdown to the next match regarding the scheduled time will be shown. The countdown stop 60 seconds before the start and will show the start page of the match on the display (period length and 0:0 scores). If the next match should already being started, it is shown directly.</p>
+            <p>@Localizer["TournamentText"]</p>
         </div>
 
         <div hidden="@(!(SelectedPage == "countdown"))">
-            <p>This page will show a countdown and optionally an additional text.</p>
+            <p>@Localizer["CountdownText"]</p>
 
-            <p>Optionally a text to show above the countdown. On tight displays, leave this empty to fit the countdown to the display hight.</p>
+            <p>@Localizer["CountdownText2"]</p>
             <InputText class="form-control" @bind-Value="CountdownText"/>
-            
-            <p>Number of seconds to count down</p>
+
+            <p>@Localizer["CountdownSeconds"]</p>
             <input 
                 type="number" 
-                class="form-control" 
-                placeholder="Seconds" 
-                min="0" 
+                class="form-control"
+               placeholder="@Localizer["Seconds"]"
+               min="0" 
                 max="99999" 
                 @bind-value="CountdownSeconds"
                 />
         </div>
 
-        <div hidden="@(!(SelectedPage == "text"))">            
-            <p>Text to show on display.</p>
+        <div hidden="@(!(SelectedPage == "text"))">
+            <p>@Localizer["TextText"]</p>
             <InputTextArea class="form-control" @bind-Value="TextContent"/>
         </div>
 

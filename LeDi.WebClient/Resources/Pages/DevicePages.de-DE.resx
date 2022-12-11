@@ -117,31 +117,55 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Countdown" xml:space="preserve">
+    <value>Countdown</value>
   </data>
-  <data name="ManagePlayers" xml:space="preserve">
-    <value>Spieler verwalten</value>
+  <data name="CountdownSeconds" xml:space="preserve">
+    <value>Sekunden des Countdowns.</value>
   </data>
-  <data name="MatchList" xml:space="preserve">
-    <value>Spiele verwalten</value>
+  <data name="CountdownText" xml:space="preserve">
+    <value>Dieser Modus zeigt einen Countdown und optional einen Text.</value>
   </data>
-  <data name="MatchSummary" xml:space="preserve">
-    <value>Spiel zusammenfassung</value>
+  <data name="CountdownText2" xml:space="preserve">
+    <value>Optional ein Text über dem Countdown. Auf schmalen Displays sollte dies frei gelassen werden.</value>
   </data>
-  <data name="NewMatch" xml:space="preserve">
-    <value>Neues Spiel</value>
+  <data name="Loading" xml:space="preserve">
+    <value>Lade...</value>
   </data>
-  <data name="PrepareMatch" xml:space="preserve">
-    <value>Spiel vorbereiten</value>
+  <data name="Match" xml:space="preserve">
+    <value>Spiel</value>
   </data>
-  <data name="RefereeMatch" xml:space="preserve">
-    <value>Spielmanagement</value>
+  <data name="NoMatches" xml:space="preserve">
+    <value>Keine Spiele verfügbar.</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Einstellungen</value>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Geräte</value>
   </data>
-  <data name="Tablet Start Page" xml:space="preserve">
-    <value>Tablet Startseite</value>
+  <data name="Seconds" xml:space="preserve">
+    <value>Sekunden</value>
+  </data>
+  <data name="SelectDevice" xml:space="preserve">
+    <value>Wähle das Gerät</value>
+  </data>
+  <data name="SelectMatch" xml:space="preserve">
+    <value>Wähle das Spiel, welches auf dem Display gezeigt werden soll. Dies kann auch im Spielmanagement ausgewählt werden.</value>
+  </data>
+  <data name="SelectMatch2" xml:space="preserve">
+    <value>Anzuzeigendes Spiel</value>
+  </data>
+  <data name="SelectPage" xml:space="preserve">
+    <value>Wähle den Modus</value>
+  </data>
+  <data name="Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="TextText" xml:space="preserve">
+    <value>Text zum Anzeigen auf dem Display</value>
+  </data>
+  <data name="Tournament" xml:space="preserve">
+    <value>Turnier</value>
+  </data>
+  <data name="TournamentText" xml:space="preserve">
+    <value>Dieser Modus wird immer das aktuell laufende Spiel anzeigen, das auf dem Display angezeigt werden soll. Nachdem ein Spiel beendet und geschlossen wurde, wird ein Countdown bis zum nächsten geplaten Spiel angezeigt. 60 Sekunden vor dem geplanten Spielstart, springt die Anzeige auf den aktuellen Spielstand (0:0) und die Spielzeit. Wenn ein Zeitverzug im Turnier stattfindet, springt die Anzeige direkt auf die Spielstandsanzeige um.</value>
   </data>
 </root>

@@ -160,6 +160,15 @@ namespace LeDi.WebClient.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Currently no matches running..
+        /// </summary>
+        public static string NoMatchesOngoing {
+            get {
+                return ResourceManager.GetString("NoMatchesOngoing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No match events available..
         /// </summary>
         public static string NoMatchEventsAvailable_ {

@@ -53,13 +53,6 @@ namespace LeDi.Display.Display
             _Connector = connector;
             _TmrMisc.Elapsed += _TmrMisc_Elapsed;
             _TmrMisc.Start();
-
-            //Set the first row of LEDs to green
-            for (int i = 0; i < Display.X; i++)
-            {
-                Display.SetLed(i, Color.Green);
-            }
-            Display.Render();
         }
 
         private async void _TmrMisc_Elapsed(object? sender, ElapsedEventArgs e)
@@ -567,6 +560,22 @@ namespace LeDi.Display.Display
             if ((Display.LayoutConfig == null || force) && layout != null)
             {
                 Display.Initialize(layout);
+
+                //Set the first row of LEDs to green
+                for (int i = 0; i < Display.X; i++)
+                {
+                    Display.SetLed(i, Color.White);
+                }
+
+                if (Display.LedCount > Display.X) // In case of 1-liner or the default 1x1 layout
+                {
+                    //Set the last row of LEDs to green            
+                    for (int i = Display.LedCount - Display.X; i < Display.LedCount; i++)
+                    {
+                        Display.SetLed(i, Color.Green);
+                    }
+                }
+                Display.Render();
             }
         }
     }

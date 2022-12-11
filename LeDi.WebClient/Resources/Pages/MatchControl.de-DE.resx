@@ -142,13 +142,16 @@
     <value>Spiele werden geladen...</value>
   </data>
   <data name="LogPenalty" xml:space="preserve">
-    <value>Strafe eintragen</value>
+    <value>Strafen</value>
   </data>
   <data name="MatchEnded" xml:space="preserve">
     <value>Spiel beendet</value>
   </data>
   <data name="MatchTimeLeft" xml:space="preserve">
     <value>Setze Restspielzeit</value>
+  </data>
+  <data name="NoMatchesOngoing" xml:space="preserve">
+    <value>Aktuell keine laufenden Spiele</value>
   </data>
   <data name="NoMatchEventsAvailable." xml:space="preserve">
     <value>Keine Spiele verfügbar</value>

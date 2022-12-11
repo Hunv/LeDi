@@ -117,31 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="Contact" xml:space="preserve">
+    <value>Contact</value>
   </data>
-  <data name="ManagePlayers" xml:space="preserve">
-    <value>Spieler verwalten</value>
+  <data name="Headline" xml:space="preserve">
+    <value>About LeDi</value>
   </data>
-  <data name="MatchList" xml:space="preserve">
-    <value>Spiele verwalten</value>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
   </data>
-  <data name="MatchSummary" xml:space="preserve">
-    <value>Spiel zusammenfassung</value>
+  <data name="IntroText" xml:space="preserve">
+    <value>LeDi is a project to support a sports match with a display, that is readable, waterproof, inexpensive and easy to maintain. It is also mobile and can be used with regular components like smartphones or tablets.</value>
   </data>
-  <data name="NewMatch" xml:space="preserve">
-    <value>Neues Spiel</value>
+  <data name="PageTitle" xml:space="preserve">
+    <value>About LeDi</value>
   </data>
-  <data name="PrepareMatch" xml:space="preserve">
-    <value>Spiel vorbereiten</value>
-  </data>
-  <data name="RefereeMatch" xml:space="preserve">
-    <value>Spielmanagement</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Einstellungen</value>
-  </data>
-  <data name="Tablet Start Page" xml:space="preserve">
-    <value>Tablet Startseite</value>
+  <data name="ProjectPage" xml:space="preserve">
+    <value>Project page</value>
   </data>
 </root>

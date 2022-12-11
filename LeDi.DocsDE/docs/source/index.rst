@@ -40,6 +40,7 @@ Inhalt
 .. toctree::
 
    idea
-   ledi-raspberrysetup
-   ledi-server   
-   usage
+   ledi-prerequirements
+   ledi-install
+   ledi-usage
+   ledi-builddisplay   
