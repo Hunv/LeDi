@@ -131,8 +131,7 @@ Als allererstes muss der RapsberryPi installiert werden. Dazu müssen wir zunäc
 * Für Option via SSH: Um via SSH zu verbinden muss kann man via ``ping -4 ledi`` die IP-Adresse herausfinden. Alternativ kann man auch direkt via hostnamen verbinden. Dies geschieht mit dem Programm PuTTY (`Download hier: <https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html>`_ unter ``putty-64bit-0.78-installer.msi``). Nach der Installation zu der IP-Adresse bzw. ``ledi`` verbinden und die im Raspberry Pi Imager angegebenen Benutzerdaten zum Anmelden nutzen.
 * Nachdem der erste Start erfolgreich durchgeführt wurden, aktualisieren wir noch das Betriebssystem mit folgenden Befehlen:
 
-    .. code-block:: bash
-        :linenos:
+    .. prompt:: bash $
         sudo apt update
         sudo apt upgrade
 
@@ -146,14 +145,12 @@ Als allererstes muss der RapsberryPi installiert werden. Dazu müssen wir zunäc
 Jetzt werden wir .Net 6 installieren. Dazu gehen wir zunächst auf https://dotnet.microsoft.com/en-us/download/dotnet/6.0.
 Auf dieser Seite unter ``SDK 6.0.xx`` in der Tabelle den Eintrag ``Linux``. Dort die Binary ``Arm32`` anklicken. Nun die URL, die als ``Direktlink`` ("direct link") bezeichnet ist, kopieren (z.B. https://download.visualstudio.microsoft.com/download/pr/5a24144e-0d7d-4cc9-b9d8-b4d32d6bb084/e882181e475e3c66f48a22fbfc7b19c0/dotnet-sdk-6.0.403-linux-arm.tar.gz). Anschließend zur Raspberry Pi Konsole wechseln und folgendes ausführen:
 
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     wget <url from above>
 
 Anschließend die folgenden Befehle ausführen. Dabei den Dateinamen in der ersten Zeile mit dem Dateinamen der zuvor heruntergeladenen Datei ersetzen.
 
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     DOTNET_FILE=dotnet-sdk-6.0.403-linux-arm.tar.gz
     export DOTNET_ROOT=$(pwd)/.dotnet
 
@@ -173,29 +170,27 @@ Wi-Fi aktivieren
 ****************
 Sofern beim Login folgende Meldung angezeigt wurde, bitte noch den folgenden Abschnitt befolgen. Wenn nicht, diesen Abschnitt überspringen.
 
-.. code-block:: text
-    :linenos:
+.. prompt:: text
     Wi-Fi is currently blocked by rfkill.
     Use raspi-config to set the country before use.
 
 Also machen wir, was dort steht. Wir führen folgenden Befehl aus:
-.. code-block:: bash
-    :linenos:
+
+.. prompt:: bash $
     sudo raspi-config
+
+Anschließend öffnet sich das Raspbery Pi Software Configuration Tool. Hier gehen wir auf den ersten Punkt ``System Settings``. Anschließend wählen wir ``S1 Wireless LAN`` aus. Nun ``DE Germany`` für Deutschland. Die anschließende Meldung bestäigen wir noch mit ``OK`` und wenn ``Please enter SSID`` erscheint, gehen wir auf ``Cancel``. Im Hauptmenü dann auf ``Finish``.
 
 Hostapd und Dnsmasq installieren
 *********************************
 Folgende Befehle ausführen um hostapd und dnsmasq zu installieren und den hostapd service zu konfigurieren. dhcpd ist in der Regel bereits vorinstalliert und braucht nicht installiert zu werden.
-.. code-block:: bash
-    :linenos:
-    sudo apt install -y hostapd
-    sudo apt install -y dnsmasq
+.. prompt:: bash $
+    sudo apt install -y hostapd dnsmasq
     sudo systemctl unmask hostapd
     sudo systemctl enable hostapd
 
 Nachdem die installation ausgeführt wurde, müssen die Dienste einmal angehalten werden um diese zu konfigurieren:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo systemctl stop hostapd
     sudo systemctl stop dnsmasq
 
@@ -203,13 +198,11 @@ DHCP konfigurieren (dhcpcd)
 ***************************
 Nun installieren wir das private Netzwerk für den WLAN Netzwerkadapter des RaspberryPi. Wir wählen ein Subnetz in einem privaten IP Segment und ein /24 (255.255.255.0) Subnetz. In diesem Fall nutzen wir das Subnetz 10.10.100.0/24 und damit die IP 10.10.100.1 für die IP-Addresse des RaspberryPi. Es kann jedoch auch jedes andere Subnetz und jede andere darin liegende IP genutzt werden.
 Nun die IP Konfiguration wie folgt konfigurieren:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo nano /etc/dhcpcd.conf
 
 Folgende Zeilen am Ende der Datei hinzufügen:
-.. code-block:: text
-    :linenos:
+.. prompt:: text
     interface wlan0
     nohook wpa_supplicant
     static ip_address=10.10.100.1/24
@@ -220,14 +213,12 @@ Die Datei mit Strg+O speichern und mit Strg+X die Datei schließen.
 DHCP konfigurieren (dnsmasq)
 ****************************
 Jetzt konfigureren wir den DHCP Server in dnsmasq um den verbindenden Clients eine IP bereit zu stellen. Zunächst eine neue config erstellen:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
     sudo nano /etc/dnsmasq.conf
 
 Nun folgendes einfügen:
-.. code-block:: text
-    :linenos:
+.. prompt:: text
     interface=wlan0
     dhcp-range=10.10.100.11,10.10.100.254,255.255.255.0,1h
     domain=intern
@@ -242,13 +233,11 @@ Die Konfiguration definiert auch, dass andere Systeme als das lokale System den 
 DNS konfigurieren (dnsmasq)
 ***************************
 Jetzt konfigurieren wir die DNS Auflösung. Dazu die hosts-Datei editieren:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo nano /etc/hosts
 
 Folgende Zeilen am Ende hinzufügen:
-.. code-block:: text
-    :linenos:
+.. prompt:: bash $
     10.10.100.1	ledi.intern
     10.10.100.1	board board.intern
 
@@ -258,13 +247,11 @@ Die Datei mit Strg+O speichern und mit Strg+X schließen.
 WLAN AccessPoint konfigurieren (hostap)
 ***************************************
 Im folgenden wird der WLAN AccessPoint selbst konfiguriert:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo nano /etc/hostapd/hostapd.conf
 
 Folgende Zeilen in die Datei einfügen:
-.. code-block:: text
-    :linenos:
+.. prompt:: text
     interface=wlan0
     hw_mode=g
     channel=7
@@ -279,8 +266,7 @@ Die Datei mit Strg+O speichern und mit Strg+X schließen.
 Dies konfiguriert den Netzwerkadapter wlan0. Der Name (SSID) des WLANs heißt "LeDi" und die Verbindung wird unverschlüsselt sein. So kann sich jeder zum RaspberryPi verbinden.
 
 Die neue Konfiguration muss nun noch beim init geladen werden:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo nano /etc/default/hostapd
 
 Ersetze die Zeile **#DAEMON_CONF=""** mit **DAEMON_CONF="/etc/hostapd/hostapd.conf"** um das führende # zu entfernen und den Pfad zur neuen Konfigurationsdatei hinzuzufügen.
@@ -289,8 +275,7 @@ Die Datei mit Strg+O speichern und mit Strg+X schließen.
 Abschluss
 *********
 Die Dienste (neu)starten:
-.. code-block:: bash
-    :linenos:
+.. prompt:: bash $
     sudo systemctl restart dhcpcd
     sudo systemctl start hostapd
     sudo systemctl start dnsmasq
