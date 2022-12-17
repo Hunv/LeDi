@@ -130,8 +130,8 @@ Als allererstes muss der RapsberryPi installiert werden. Dazu müssen wir zunäc
 * Lege nun die Micro-SD-Karte in den Raspberry Pi ein und start diesen. Der erste Start kann einige Minuten dauern. Sofern der Raspberry Pi via Netzwerkkabel mit dem Netzwerk verbunden ist, kann dieser anschließend via SSH erreicht werden oder alternativ einfach über einen direkt angeschlossenen Bildschirm/Tastatur/Maus bedient werden.
 * Für Option via SSH: Um via SSH zu verbinden muss kann man via ``ping -4 ledi`` die IP-Adresse herausfinden. Alternativ kann man auch direkt via hostnamen verbinden. Dies geschieht mit dem Programm PuTTY (`Download hier: <https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html>`_ unter ``putty-64bit-0.78-installer.msi``). Nach der Installation zu der IP-Adresse bzw. ``ledi`` verbinden und die im Raspberry Pi Imager angegebenen Benutzerdaten zum Anmelden nutzen.
 * Nachdem der erste Start erfolgreich durchgeführt wurden, aktualisieren wir noch das Betriebssystem mit folgenden Befehlen:
-
-    .. prompt:: bash $
+    .. code-block:: sh
+        :linenos:
         sudo apt update
         sudo apt upgrade
 

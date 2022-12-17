@@ -18,7 +18,7 @@ ws2811.so Datei kompilieren
 ---------------------------
 die ws2811.so Datei ist eine Datei, die nachher die LEDs ansteuert. Dazu zunächst scons, git und gcc installieren:
 
-.. code-block:: sh
+.. code-block:: json
     :linenos:
     sudo apt -y install scons gcc git
 
