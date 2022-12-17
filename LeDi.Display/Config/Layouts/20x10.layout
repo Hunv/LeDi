@@ -10,15 +10,15 @@
 			"name": "team1goals",
 			"positionX": 0,
 			"positionY": 0,
-			"width": 8,
+			"width": 7,
 			"height": 5,
 			"align": "right"
 		},
 		{
 			"name": "team2goals",
-			"positionX": 12,
+			"positionX": 13,
 			"positionY": 0,
-			"width": 8,
+			"width": 7,
 			"height": 5,
 			"align": "left"
 		},

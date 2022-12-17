@@ -15,7 +15,8 @@ Um ein angeschlossenes LED Display zu konfigurieren, muss ggf. zunächst die ``c
 
 Standardmäßig sieht diese wie folgt aus
 
-.. prompt:: bash $
+.. code-block:: sh
+    :linenos:
     ServerUrl:https://localhost:5001/api/
     DeviceType:LED Screen
     DeviceModel:LeDiDisplay
@@ -26,7 +27,8 @@ Dies heißt, dass die Schnittstelle zur Server-Komponente auf dem gleichen Gerä
 
 Nach der Änderung der Konfiguration muss der Dienst einmal neu gestartet werden:
 
-.. prompt:: bash $
+.. code-block:: sh
+    :linenos:
     sudo systemctl restart ledi.display
 
 Nun auf der LeDi-Benutzeroberfläche auf den Menüpunkt "Einstellungen" wechseln. Dort wird das Display nun angezeigt.
