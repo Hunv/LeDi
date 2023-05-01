@@ -189,3 +189,5 @@ LeDi.WebClient/obj/
 LeDi.Server/LeDi.db-wal
 internal-nlog.txt
 LeDi.Server/Properties/PublishProfiles/FolderProfile.pubxml
+LeDi.Server2/bin/
+LeDi.Server2/obj/

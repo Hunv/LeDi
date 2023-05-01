@@ -155,10 +155,10 @@ else
                 await Api.SetDeviceSettingAsync(SelectedDevice, new DtoDeviceSetting(SelectedDevice, "mode", "tournament"));
                 break;
             case "countdown":
-                await Api.SetDeviceCommand(SelectedDevice, "countdown", CountdownSeconds.ToString());
+                await Api.SetDeviceCommand(SelectedDevice, "showcountdown", CountdownSeconds.ToString());
                 break;
             case "text":
-                await Api.SetDeviceCommand(SelectedDevice, "text", TextContent);
+                await Api.SetDeviceCommand(SelectedDevice, "showtext", TextContent);
                 break;
         }
     }

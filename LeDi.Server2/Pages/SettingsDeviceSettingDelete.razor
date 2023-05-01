@@ -1,0 +1,63 @@
+﻿@page "/settingsdevicesettingdelete/{deviceId}/{settingName}"
+@using LeDi.Server2.Data
+@using LeDi.Server2.DatabaseModel
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SettingsDeviceSettingDelete> Localizer
+
+<PageTitle>LeDi - @Localizer["ConfirmDeletionDevice"]</PageTitle>
+
+
+<h1>@Localizer["ConfirmDeletionDeviceSetting"]</h1>
+
+@if (ToDeleteDeviceSetting == null)
+{
+    <p><em>@Localizer["LoadingDevice"]</em></p>
+}
+else
+{
+    <p>@Localizer["ConfirmTheDeletionDeviceSetting"]@settingName:</p>
+    <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">
+
+        <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
+        <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string deviceId { get; set; } = "";
+
+    [Parameter]
+    public string settingName { get; set; } = "";
+
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private TblDeviceSetting ToDeleteDeviceSetting = new TblDeviceSetting("","","");
+
+    protected override async Task OnInitializedAsync()
+    {
+        var devSetting = await DataHandler.GetDeviceSettingAsync(deviceId, settingName);
+
+        if (devSetting == null)
+            return;
+
+        ToDeleteDeviceSetting = devSetting;
+    }
+
+    private void CancelDelete()
+    {
+        Logger.Trace("Cancel clicked.");
+        NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);
+    }
+
+    private async void ConfirmDelete()
+    {
+        Logger.Trace("Conform clicked.");
+        var toDelete = await DataHandler.GetDeviceSettingAsync(deviceId, settingName);
+        if (toDelete != null)
+        {
+            await DataHandler.RemoveDeviceSettingAsync(deviceId, settingName);
+        }
+
+        NavigationManager.NavigateTo("/SettingsDevice/" + deviceId);
+    }
+}

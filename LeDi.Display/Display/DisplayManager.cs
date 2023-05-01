@@ -58,15 +58,7 @@ namespace LeDi.Display.Display
         private async void _TmrMisc_Elapsed(object? sender, ElapsedEventArgs e)
         {
             Logger.Trace("TmrMisc elapsed");
-
-            if (_MiscRunning)
-            {
-                Logger.Warn("Loop executed while previous loop still running.");
-                //Logger.Warn("TmrMisc skipped due to previous run is still running");
-                //return;
-            }
-
-            _MiscRunning = true;
+            Logger.Debug("Running Action {0}", Enum.GetName(CurrentAction.GetType(), CurrentAction));
 
             // Check the current action of the display
             switch (CurrentAction)
@@ -75,8 +67,7 @@ namespace LeDi.Display.Display
                 case DisplayActionEnum.None:
                     break;
                 case DisplayActionEnum.Match:
-                    if (Match != null)
-                        await ShowMatch();
+                    await ShowMatch();
                     break;
                 case DisplayActionEnum.Time:
                     ShowTime();
@@ -88,6 +79,15 @@ namespace LeDi.Display.Display
                     ShowCountdown();
                     break;
             }
+
+            if (_MiscRunning)
+            {
+                Logger.Warn("Loop executed while previous action still running.");
+                //Logger.Warn("TmrMisc skipped due to previous run is still running");
+                //return;
+            }
+
+            _MiscRunning = true;
 
             // Check for new commands
             var commands = await _Connector.GetDeviceCommands();
@@ -101,6 +101,10 @@ namespace LeDi.Display.Display
             // Run the new commands
             foreach(var aCmd in commands)
             {
+                // Remove Device command to avoid double run.
+                await Api.RemoveDeviceCommand(aCmd);
+                _MiscRunning = false;
+
                 IEffect effect = new NoEffect();
                 switch (aCmd.Command)
                 {
@@ -298,12 +302,10 @@ namespace LeDi.Display.Display
                     }
                     Display.SetBrightness(Display.Brightness); //Setting Brightness back to configured value in case it was changed for calibration tests
                     Logger.Debug("Effect {0} done...", aCmd.Command);
-                    await Api.RemoveDeviceCommand(aCmd);
                 }
             }
             
             _MiscRunning = false;
-            
         }
 
         private void ShowCountdown()
@@ -368,6 +370,8 @@ namespace LeDi.Display.Display
             var Mode = "none";
             if (ModeSetting != null)
                 Mode = ModeSetting.Value.ToLower();
+
+            Logger.Trace("Mode is {0}", Mode);
 
             //In case it is required, update the Match variable to the next match
             if (Match.TimeLeftSeconds <= 0 && Mode == "tournament") {

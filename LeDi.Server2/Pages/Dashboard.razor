@@ -1,0 +1,348 @@
+﻿@page "/dashboard"
+@page "/dashboard/{Id:int}"
+@using LeDi.Server2.DatabaseModel;
+@using LeDi.Server2.Enum
+@using LeDi.Server2.Components
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Dashboard> Localizer
+
+<PageTitle>LeDi - Dashboard</PageTitle>
+
+@if (Match != null)
+{
+        <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
+            @*Row 1: Time, Scores*@
+            <div class="row align-items-start" style="height:20vh; min-height:20vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
+                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
+                            {
+                            <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["Canceled"]</a>
+                            }
+                            else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+                            {
+                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["MatchEnded"]</a>
+                            }
+                            else 
+                            {
+                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.CurrentTimeLeft / 60):@((Match.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
+                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.CurrentPeriod of @Match.RulePeriodCount</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <div>
+                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
+                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*Row 2: Penalties*@
+            <div class="row align-items-start" style="height:15vh; min-height:10vh;">
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                            <div class="container">                                
+                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 0))
+                                {
+                                    if (aPenalty.PenaltyTime > 0)
+                                    {
+                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
+
+                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                        {
+                                            if (timeleft < 0)
+                                                timeleft = 0;
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                </div>
+                                                <div class="col-10">
+                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        
+                    </div>
+                </div>
+                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1">
+                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                            <div class="container">                                
+                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 1))
+                                {
+                                    if (aPenalty.PenaltyTime > 0)
+                                    {
+                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
+
+                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                        {
+                                            if (timeleft < 0)
+                                                timeleft = 0;
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                </div>
+                                                <div class="col-10">
+                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @*Row 4: Matchlog*@
+            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+                <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
+                    <div style="height:100%; min-height:100%;" class="p-1 fs-3">
+                        <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
+                        @if (MatchEventList == null || MatchEventList.Count == 0) 
+                        {
+                            <a>@Localizer["CurrentlyNoMatch"]</a>
+
+                        <br />
+                        }
+                        else
+                        {
+                            <div class="container-fluid">
+                                <div class="row">
+                                    @*<div class="col-1 text-nowrap">
+                                        <b>#</b>
+                                    </div>*@
+                                    <div class="col-1 text-nowrap" style="min-width:100px;">
+                                        <b>@Localizer["Time"]</b>
+                                    </div>@*
+                                    <div class="col-1 text-nowrap">
+                                        <b>Creator</b>
+                                    </div>*@
+                                    <div class="col-auto">
+                                        <b>@Localizer["Note"]</b>
+                                    </div>
+                                </div>
+         
+                                @foreach(var aEvent in MatchEventList.Reverse<TblMatchEvent>())
+                                {
+                                    <div class="row justify-content-start">                    
+                                        @*<div class="col-1 text-nowrap">
+                                            @aEvent.Event
+                                        </div>*@
+                                        <div class="col-1 text-nowrap" style="min-width:100px;">
+                                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
+                                        </div>@*
+                                        <div class="col-1 text-nowrap">
+                                            @(aEvent.Source ?? "System")
+                                        </div>*@
+                                        <div class="col-auto">
+                                            @aEvent.Text
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+else if (LiveMatchList != null)
+{
+    <p>@Localizer["OngoingMatches"]</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>@Localizer["Team1"]</th>
+                <th>@Localizer["Team2"]</th>
+                <th>@Localizer["TimeLeft"]</th>
+                <th>@Localizer["Team1Score"]</th>
+                <th>@Localizer["Team2Score"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aMatch in LiveMatchList)
+            {
+                <tr>
+                    <td>  
+                        <a href="dashboard/@aMatch.Id" class="btn btn-primary">
+                            @*Show a pulsing circle, if the match is running*@
+                            @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
+                            {
+                                <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"> </span>
+                            } 
+                            Show
+                        </a>
+                    </td>
+                    <td>@aMatch.Team1Name</td>
+                    <td>@aMatch.Team2Name</td>
+                    <td>
+                        @(aMatch.CurrentTimeLeft / 60):@((aMatch.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))
+                    </td>
+                    <td>@aMatch.Team1Score</td>
+                    <td>@aMatch.Team2Score</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else {
+    <a>@Localizer["NoOngoingMatches"]</a>
+}
+
+@code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    TblMatch? Match = null;
+    IEnumerable<TblMatch>? LiveMatchList = null;
+    System.Timers.Timer tmrUpdate = new System.Timers.Timer();
+    List<TblMatchEvent>? MatchEventList = null; //List of all match events
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            Logger.Trace("On reload the page, ID {0} was set.", Id);
+            Match = await DataHandler.GetMatchAsync(Id.Value);
+            MatchEventList = DataHandler.GetMatchEvents(Id.Value);
+        }
+        else if (Id == null)
+        {
+            Logger.Trace("On reload the page, no ID was set.");
+            Match = null;
+        }
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tmrUpdate.Elapsed += tmrUpdate_Elapsed;
+        tmrUpdate.Interval = 1000;
+
+        if (Id != null)
+        {
+            Logger.Trace("On loading the page, ID {0} was set.", Id);
+            Match = await DataHandler.GetMatchAsync(Id.Value);
+            if (Match == null)
+                return;
+
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+        else
+        {
+            Logger.Trace("On loading the page, no ID was set.");
+
+            // Reset Match value
+            Match = null;
+
+            var matches = DataHandler.GetMatchList();
+            if (matches == null)
+                return;
+
+            if (matches.Count > 1)
+            {
+                var runningMatches = matches.Where(x => x.MatchStatus == (int)LeDi.Server2.Enum.MatchStatusEnum.Running);
+
+                if (runningMatches.Count() > 1)
+                {
+                    Logger.Debug("Creating match list for {0} matches.", runningMatches.Count());
+
+                    //More than one match to show. Show list to select.
+                    LiveMatchList = runningMatches;
+                }
+                else if (runningMatches.Count() == 0)
+                {
+                    Logger.Debug("No running matches.");
+
+                    //No match to show.
+                    LiveMatchList = null;
+                }
+                else
+                {
+                    // The only match that makes sense to show.
+                    Match = runningMatches.First();
+                    Logger.Debug("Only match {0} is running. Redirecting to the match...", Match.Id);
+
+                    tmrUpdate.Start();
+                    NavigationManager.NavigateTo("dashboard/" + Match.Id);
+                }
+            }
+        }
+        tmrUpdate.Start();
+    }
+
+    private async void tmrUpdate_Elapsed(object? sender, EventArgs e)
+    {
+        // If one match is shown update only that one match
+        if (Match != null)
+        {
+            Logger.Trace("Updating match {0}...", Match.Id);
+
+            if (Match.CurrentTimeLeft > 0)
+            {
+                Match.CurrentTimeLeft--;
+                //await DbContext.SaveChangesAsync();
+            }
+        }
+        else //Update all matches
+        {
+            Logger.Trace("No match selected. Updating all matches...");
+
+            // Reset matcheventlist because it may belong to another match
+            MatchEventList = null;
+
+            // Get the ongoing matches
+            var updatedData = DataHandler.GetMatchList().Where(x => x.MatchStatus == (int)LeDi.Server2.Enum.MatchStatusEnum.Running);
+
+            // Cancel if no data returned
+            if (updatedData == null)
+                return;
+
+            // Cancel if no matches lodaded
+            if (LiveMatchList == null)
+                return;
+
+            foreach (var ud in updatedData)
+            {
+                if (LiveMatchList.Any(x => x.Id == ud.Id))
+                {
+                    LiveMatchList.Single(x => x.Id == ud.Id).Team1Score = ud.Team1Score;
+                    LiveMatchList.Single(x => x.Id == ud.Id).Team2Score = ud.Team2Score;
+                    LiveMatchList.Single(x => x.Id == ud.Id).CurrentTimeLeft = ud.CurrentTimeLeft;
+                }
+            }
+        }
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+}

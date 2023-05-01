@@ -1,0 +1,203 @@
+﻿@page "/matchadd"
+@using LeDi.Server2.DatabaseModel;
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchAdd> Localizer
+
+<PageTitle>LeDi - @Localizer["NewMatch"]</PageTitle>
+@if (NewMatch == null)
+{
+    <p><em>@Localizer["LoadingData"]</em></p>
+}
+else
+{
+    <EditForm Model="@NewMatch" OnValidSubmit="@SaveMatch">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="table">
+            <div class="row">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["SelectSport"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <select id="cmbGamename" class="form-select w-auto" disabled="@(TournamentId != null)" @bind="SelectedSport">
+                        <option value=""> </option>
+                        <option value="Underwaterhockey">@Localizer["Underwaterhockey"]</option>
+                        <option value="Handball">@Localizer["Handball"]</option>
+                        <option value="Soccer">@Localizer["Soccer"]</option>
+            @*            <option value="Baseball">Baseball</option>
+                        <option value="Hockey">Hockey</option>
+                        <option value="Football">Football</option>
+                        <option value="Basketball">Basketball</option>
+                        <option value="Tennis">Tennis</option>*@
+                        <option value="Other">@Localizer["Other"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("txtTeamName1"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["Team1"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputText 
+                        id="txtTeamName1" 
+                        class="form-control w-auto" 
+                        type="text" 
+                        @bind-Value="@NewMatch.Team1Name"
+                        />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("txtTeamName2"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["Team2"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputText 
+                        id="txtTeamName2"
+                               class="form-control w-auto"
+                               type="text" 
+                        @bind-Value="@NewMatch.Team2Name"
+                        />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("txtPeriodCount"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["NumberPeriods"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputNumber 
+                        id="txtPeriodCount"
+                                 class="form-control w-auto"
+                                 type="text" 
+                        min="1"
+                        @bind-Value="@NewMatch.RulePeriodCount"
+                        />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("txtPeriodLength"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["LengthPeriod"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <div id="txtPeriodLength" class="input-group">
+                        <input 
+                            id="txtPeriodLengthMin" 
+                            type="number"
+                               class="form-control"
+                               style="max-width:100px; min-width:50px" 
+                            placeholder="Minutes" 
+                            min="0" 
+                            max="99999" 
+                            @bind-value="TimeLeftMinutesProxy"
+                            />
+                        <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
+                        <input 
+                            id="txtPeriodLengthSec" 
+                            type="number"
+                               class="form-control"
+                               style="max-width:100px; min-width:50px" 
+                            placeholder="Seconds" 
+                            min="0" 
+                            max="59" 
+                            @bind-value="TimeLeftSecondsProxy"
+                            />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("dtScheduledTime"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["ScheduledDateTime"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <input 
+                        id="dtScheduledTime"
+                        type="datetime-local" 
+                        class="form-control w-auto" 
+                        @bind-value="NewMatch.ScheduledTime"
+                        />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("chkPeriodOvertime"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["MatchOvertime"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputCheckbox 
+                        id="chkPeriodOvertime"
+                        @bind-Value="NewMatch.RulePeriodOvertime"
+                                   class="form-check w-auto" />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("chkPeriodPauseNearEnd"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["MatchInterruptions"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputCheckbox 
+                        id="chkPeriodPauseNearEnd"
+                        @bind-Value="NewMatch.RulePeriodLastPauseTimeOnEvent"
+                                   class="form-check w-auto" />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("txtPeriodPauseNearEndSec")|| NewMatch.RulePeriodLastPauseTimeOnEvent == false)">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["NumberOfSeconds"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputNumber 
+                        id="txtPeriodPauseNearEndSec"
+                                 class="form-control w-auto"
+                                 type="text" 
+                        @bind-Value="@NewMatch.RulePeriodLastPauseTimeOnEventSeconds"
+                        />
+                </div>
+            </div>
+
+            <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("chkMatchExtensionOnDraw"))">
+                <div class="col-xxl-2">
+                    <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["ExtendMatch"]</a>
+                </div>
+                <div class="col-xxl-auto">
+                    <InputCheckbox 
+                        id="chkMatchExtensionOnDraw"
+                        @bind-Value="NewMatch.RuleMatchExtensionOnDraw"
+                        class="form-check w-auto" 
+                        />
+                </div>
+            </div>
+
+            @*Show displaylist only if there are displays available*@
+            @if (DisplayList != null && DisplayList.Count > 0)
+            {
+                <div class="row pt-1" hidden="@(!FieldList[SelectedSport].Contains("displaylist"))">
+                    <div class="col-xxl-2">
+                        <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["OnDisplay"]</a>
+                    </div>
+                    <div class="col-xxl-auto">
+                        <br />
+                        @foreach (var aDisplay in DisplayList)
+                        {
+                            var value = aDisplay;
+                            <input type="checkbox" checked="@aDisplay.Enabled" @onchange="eventArgs => {DisplayClicked(value,(bool)(eventArgs.Value ?? false));}"> @aDisplay.DeviceName
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <br /><br />
+
+        <button class="btn btn-primary" type="button" @onclick="@SaveStartMatch" hidden="@(ReturnUrl != null)">@Localizer["SaveStart"]</button>
+        <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
+
+    
+    </EditForm>
+}

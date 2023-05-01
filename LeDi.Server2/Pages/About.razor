@@ -1,0 +1,17 @@
+﻿@page "/about"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<About> Localizer
+
+<PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
+
+<h1>@Localizer["Headline"]</h1>
+<p>@Localizer["IntroText"]</p>
+
+<p>@Localizer["ProjectPage"]: <a href="https://github.com/Hunv/ledi">Github</a> </p>
+<p>@Localizer["Help"]: <a href="https://ledi.readthedocs.io/">Help</a></p>
+<p>@Localizer["Contact"]: <a href="https://reukauff.eu/kontakt">Contact Page</a></p>
+<p>@Localizer["YouTube"]: <a href="https://www.youtube.com/channel/UCXv7evHgG1I1AZbTPA9KrRg">YouTube</a></p>
+
+
+@code {
+    
+}

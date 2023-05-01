@@ -1,0 +1,144 @@
+﻿@page "/settings"
+@using LeDi.Server2.Data
+@using LeDi.Server2.DatabaseModel;
+@inject IJSRuntime JSRuntime
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Settings> Localizer
+
+<PageTitle>LeDi - @Localizer["Settings"]</PageTitle>
+
+
+<h1>@Localizer["Settings"]</h1>
+
+@*<a href="administration">@Localizer["UserAdministration"]</a>
+<br />*@
+
+@if (SettingList == null)
+{
+    <p><em>@Localizer["LoadingSettinglist"]</em></p>
+}
+else
+{
+    <p>@Localizer["FollowingSettingsConfigured"]</p>
+    <EditForm Model="@SettingList" OnValidSubmit="@SaveSettings">
+        @*<DataAnnotationsValidator />
+        <ValidationSummary />*@
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Localizer["Setting"]</th>
+                    <th>@Localizer["Value"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var aSetting in SettingList)
+                {
+                    <tr>
+                        <td>
+                            <InputText id="txtSetting@aSetting.SettingName" type="text" class="form-control" @bind-Value="@aSetting.SettingName" />
+                            @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+                        </td>
+                        <td>
+                            <InputText id="txtSetting@aSetting.SettingValue" type="text" class="form-control" @bind-Value="@aSetting.SettingValue" />
+                            @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                        </td>
+                    </tr>
+                }      
+            </tbody>
+        </table>
+
+        <button class="btn btn-primary" type="submit">@Localizer["SaveChanges"]</button>
+    </EditForm>
+}
+<br /><br />
+<h1>@Localizer["Devices"]</h1>
+
+@if (DeviceList == null)
+{
+    <p><em>@Localizer["LoadingDevicelist"]</em></p>
+}
+else
+{
+    <p>@Localizer["DevicesKnown"]</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Localizer["DeviceName"]</th>
+                <th>@Localizer["DeviceModel"]</th>
+                <th>@Localizer["DeviceType"]</th>
+                <th>@Localizer["Enabled"]</th>
+                <th>@Localizer["Default"]</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var aDevice in DeviceList)
+            {
+                <tr>
+                    <td><p>@(string.IsNullOrWhiteSpace(aDevice.DeviceName) ? aDevice.DeviceId : aDevice.DeviceName)</p></td>
+                    <td><p>@aDevice.DeviceModel</p></td>
+                    <td><p>@aDevice.DeviceType</p></td>
+                    <td><p>@aDevice.Enabled</p></td>
+                    <td><p>@aDevice.Default</p></td>
+                    <td><a href="/SettingsDevice/@aDevice.DeviceId" class="text-decoration-none">🔧</a></td>
+                    <td><a href="/SettingsDeviceDelete/@aDevice.DeviceId" class="text-decoration-none">🗑</a></td>
+                </tr>
+            }      
+        </tbody>
+    </table> 
+}
+
+@code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private List<TblSetting>? SettingList;
+    private List<TblDevice>? DeviceList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SettingList = await DataHandler.GetSettingListAsync();
+        DeviceList = await DataHandler.GetDeviceListAsync();
+    }
+
+    private async void SaveSettings()
+    {
+        Logger.Trace("Saving settings...");
+
+        if (SettingList == null) 
+        {
+            Logger.Warn("No settings to save.");
+            await JSRuntime.InvokeVoidAsync("alert", "No settings to save.");
+            return;
+        }
+
+        // Get the current serversettings to check which settings changed
+        var currentServerSettings = await DataHandler.GetSettingListAsync();
+        if (currentServerSettings == null)
+        {
+            Logger.Warn("Cannot get current settings from server.");
+            await JSRuntime.InvokeVoidAsync("alert", "Cannot get current settings from server.");
+            return;
+        }
+
+        // Update all changed settings
+        foreach(var aServerSet in currentServerSettings)
+        {
+            var locSet = SettingList.SingleOrDefault(x => x.SettingName == aServerSet.SettingName);
+
+            if (locSet == null)
+                continue;
+
+            if (locSet.SettingValue != aServerSet.SettingValue)
+            {
+                aServerSet.SettingValue = locSet.SettingValue;
+            }
+        }
+
+        // Save the changes in the database
+        //await DbContext.SaveChangesAsync();
+
+        // reload settings
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+}

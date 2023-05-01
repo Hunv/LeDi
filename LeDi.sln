@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeDi.Display.TestApp", "LeD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeDi.Shared", "LeDi.Shared\LeDi.Shared.csproj", "{AF0CA65B-7AF2-40B2-9F76-E544F4D4DAED}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeDi.Server2", "LeDi.Server2\LeDi.Server2.csproj", "{0FA802BA-0D94-4B76-837F-B1B65EEADD24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AF0CA65B-7AF2-40B2-9F76-E544F4D4DAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF0CA65B-7AF2-40B2-9F76-E544F4D4DAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF0CA65B-7AF2-40B2-9F76-E544F4D4DAED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FA802BA-0D94-4B76-837F-B1B65EEADD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FA802BA-0D94-4B76-837F-B1B65EEADD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FA802BA-0D94-4B76-837F-B1B65EEADD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FA802BA-0D94-4B76-837F-B1B65EEADD24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

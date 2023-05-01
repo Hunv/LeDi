@@ -1,0 +1,97 @@
+﻿@page "/tournamentplanning"
+@using LeDi.Server2.DatabaseModel;
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TournamentPlanning> Localizer
+
+<h3>@Localizer["TournamentPlanning"]</h3>
+
+
+@if (TournamentList == null)
+{
+    <p><em>@Localizer["Loading"]</em></p>
+}
+else
+{
+    <a>@Localizer["CurrentOrPlanedTournaments"]</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Localizer["TournamentName"]</th>
+                <th>@Localizer["TournamentStartDate"]</th>
+                <th>@Localizer["TournamentEndDate"]</th>
+                <th>@Localizer["NumberOfTeams"]</th>
+                <th>@Localizer["NumberOfMatches"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tournament in TournamentList.Where(x => x.EndDate >= DateTime.Today))
+            {
+                <tr>
+                    <td>
+                        <a href="/tournamentmatchlist/@tournament.Id">@tournament.Name</a>
+                    </td>
+                    <td>
+                        @tournament.StartDate
+                    </td>
+                    <td>
+                        @tournament.EndDate
+                    </td>
+                    <td>todo</td>
+                    <td>@tournament.Matches.Count() <a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning">@Localizer["AddMatch"]</a></td>
+                    <td>
+                        <a href="/tournamentadd/@tournament.Id">@Localizer["Edit"]</a> 
+                        @if (EventTournamentId != tournament.Id.ToString())
+                        {
+                            <a class="btn btn-link" @onclick="@(() => StartTournament(tournament.Id))">@Localizer["StartTournament"]</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-link" @onclick="StopTournament">@Localizer["StopTournament"]</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br /> <br />
+
+    <a>@Localizer["FinishedTournaments"]</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Localizer["TournamentName"]</th>
+                <th>@Localizer["TournamentStartDate"]</th>
+                <th>@Localizer["TournamentEndDate"]</th>
+                <th>@Localizer["NumberOfTeams"]</th>
+                <th>@Localizer["NumberOfMatches"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tournament in TournamentList)
+            {
+                <tr>
+                    <td>
+                        @tournament.Name
+                    </td>
+                    <td>
+                        @tournament.StartDate
+                    </td>
+                    <td>
+                        @tournament.EndDate
+                    </td>
+                    <td>todo</td>
+                    <td>@tournament.Matches.Count()</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <br />
+
+    <a class="btn btn-primary" href="tournamentadd" role="button">Create Tournament</a>
+}

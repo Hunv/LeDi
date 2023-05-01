@@ -1,0 +1,58 @@
+﻿@page "/settingsdevicedelete/{id}"
+@using LeDi.Server2.Data
+@using LeDi.Server2.DatabaseModel;
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<SettingsDeviceDelete> Localizer
+
+<PageTitle>LeDi - @Localizer["ConfirmDeletionDevice"]</PageTitle>
+
+
+<h1>@Localizer["ConfirmDeletionDevice"]</h1>
+
+@if (ToDeleteDevice == null)
+{
+    <p><em>@Localizer["LoadingDevice"]</em></p>
+}
+else
+{
+    <p>@Localizer["ConfirmTheDeletionDevice"]@Id:</p>
+    <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete">
+
+        <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
+        <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
+    </EditForm>
+}
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private TblDevice? ToDeleteDevice;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ToDeleteDevice = await DataHandler.GetDeviceAsync(Id);
+    }
+
+    private void CancelDelete()
+    {
+        Logger.Trace("Cancel clicked.");
+        NavigationManager.NavigateTo("/settings");
+    }
+
+    private async void ConfirmDelete()
+    {
+        Logger.Trace("Confirm clicked");
+        if (ToDeleteDevice != null)
+        {
+            if (!(await DataHandler.RemoveDeviceAsync(ToDeleteDevice.DeviceId)))
+            {
+                Logger.Error("Failed to delete device {0}", ToDeleteDevice.DeviceId);
+            }
+        }
+
+        NavigationManager.NavigateTo("/settings");
+    }
+}

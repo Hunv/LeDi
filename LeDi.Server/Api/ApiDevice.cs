@@ -184,9 +184,10 @@ namespace LeDi.Server.Api
             var dev = dbContext.Device;
             if (dev != null)
             {
-                //Check if device ID exists
+                //Check if device ID was stated
                 if (!string.IsNullOrEmpty(device.DeviceId))
                 {
+                    //Chec if device ID is known
                     if (dev.Any(x => x.DeviceId == device.DeviceId))
                     {
                         //DeviceID exists
@@ -201,9 +202,17 @@ namespace LeDi.Server.Api
                         return json1;
                     }
                 }
+                else
+                {
+                    //Create a new DeviceId if it was not stated
+                    Logger.Info("Device registered without DeviceId, creating a new one.");
+                    device.DeviceId = Guid.NewGuid().ToString();
+                    Logger.Info("New DeviceId created: {0} ", device.DeviceId);
+                }
 
                 //Create a new device ID
-                var devId = Guid.NewGuid().ToString();
+                var devId = device.DeviceId;
+
                 var newDevice = new Device(devId, device.DeviceModel, device.DeviceType, device.DeviceName) 
                 {
                     Default = device.Default, Enabled = device.Enabled 
@@ -213,13 +222,26 @@ namespace LeDi.Server.Api
                 // Add default settings
                 if (dbContext.DeviceSettings != null)
                 {
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "width", "1"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "height", "1"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "brightness", "50"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_toptobottom", "true"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_alternatingrows", "true"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_firstledleft", "true"));
-                    dbContext.DeviceSettings.Add(new DeviceSetting(devId, "mode", "none"));
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "width"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "width", "1"));
+
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "height"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "height", "1"));
+
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "brightness"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "brightness", "50"));
+
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "led_toptobottom"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_toptobottom", "true"));
+
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "led_alternatingrows"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_alternatingrows", "true"));
+
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "led_firstledleft"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "led_firstledleft", "true"));
+
+                    if (!dbContext.DeviceSettings.Any(x => x.DeviceId == devId && x.SettingName == "mode"))
+                        dbContext.DeviceSettings.Add(new DeviceSetting(devId, "mode", "none"));
                 }
 
                 await dbContext.SaveChangesAsync();

@@ -1,0 +1,142 @@
+﻿@page "/matchprepare/{Id:int}"
+@using LeDi.Server2.DatabaseModel;
+@using LeDi.Server2.Enum
+@using LeDi.Server2.Components
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MatchPrepare> Localizer
+
+<PageTitle>LeDi - @Localizer["PrepareMatch"]</PageTitle>
+
+@if (Match == null)
+{
+    <p><em>@Localizer["Loading"]</em></p>
+}
+else
+{
+    <EditForm Model="@Match" OnValidSubmit="@SaveMatch">
+        <a>@Localizer["PrepareMatchText"] @Match.Team1Name @Localizer["vs"] @Match.Team2Name @Localizer["ScheduledFor"] @Match.ScheduledTime.</a><br />
+        <br />
+        <a>@Localizer["AssignPlayers"]</a><br />
+        <a>@Localizer["Todo"]</a><br />
+        <br />
+        <br />
+        <a>@Localizer["MainRefereeName"]</a><br />
+        <InputText id="txtReferee1" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee1Name" />
+        <br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
+        <InputText id="txtReferee2" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee2Name" />
+        <br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
+        <InputText id="txtReferee3" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee3Name" />
+        <br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
+        <InputText id="txtReferee4" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee4Name" />
+        <br />
+        <a>@Localizer["WaterRefereeName"]</a><br />
+        <InputText id="txtReferee5" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee5Name" />
+        <br />
+        <a>@Localizer["TimeKeeperName"]</a><br />
+        <InputText id="txtTimeKeeper" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="TimeKeeperName" />
+        <br />
+
+        <button class="btn btn-primary" type="submit">@Localizer["PreperationDone"]</button>
+        <a class="btn btn-danger" href="matchplanning" role="button">@Localizer["Cancel"]</a>
+    </EditForm>
+}
+
+
+@code {
+    private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+    private TblMatch? Match = null;
+    private string Referee1Name { get; set; } = "";
+    private string Referee2Name { get; set; } = "";
+    private string Referee3Name { get; set; } = "";
+    private string Referee4Name { get; set; } = "";
+    private string Referee5Name { get; set; } = "";
+    private string TimeKeeperName { get; set; } = "";
+
+    [Parameter]
+    public int? Id { get; set; }    
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id == null)
+            return;
+
+        Match = await DataHandler.GetMatchAsync(Id.Value);
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    private async void SaveMatch()
+    {
+        Logger.Trace("Saving match...");
+
+        if (Match == null)
+            return;
+
+        if (!string.IsNullOrWhiteSpace(Referee1Name))
+        {
+            Match.MatchReferees.Add(new TblMatchReferee
+                {
+                    Name = Referee1Name,
+                    Role = "Chief Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee2Name))
+        {
+            Match.MatchReferees.Add(new TblMatchReferee
+                {
+                    Name = Referee2Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee3Name))
+        {
+            Match.MatchReferees.Add(new TblMatchReferee
+                {
+                    Name = Referee3Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee4Name))
+        {
+            Match.MatchReferees.Add(new TblMatchReferee
+                {
+                    Name = Referee4Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(Referee5Name))
+        {
+            Match.MatchReferees.Add(new TblMatchReferee
+                {
+                    Name = Referee5Name,
+                    Role = "Water Referee"
+                }
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(TimeKeeperName))
+        {
+            Match.MatchReferees.Add(new TblMatchReferee
+                {
+                    Name = TimeKeeperName,
+                    Role = "Time-Keeper"
+                }
+            );
+        }
+
+        Match.MatchStatus = (int)LeDi.Server2.Enum.MatchStatusEnum.ReadyToStart;
+
+        // Save the changes on the Match
+        //await DbContext.SaveChangesAsync();
+    }
+}

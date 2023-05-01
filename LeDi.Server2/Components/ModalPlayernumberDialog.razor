@@ -1,0 +1,212 @@
+﻿@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ModalPlayernumberDialog> Localizer
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Text</p>
+                
+                <div class="container">
+                    @*Show Inputfield for playernumber*@
+                    @if (PlayerNumbers == null || PlayerNumbers.Count == 0) 
+                    {
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(1))" role="button">1</a>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(2))" role="button">2</a>
+                                </div>
+
+                            </div>
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(3))" role="button">3</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(4))" role="button">4</a>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(5))" role="button">5</a>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(6))" role="button">6</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(7))" role="button">7</a>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(8))" role="button">8</a>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(9))" role="button">9</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => AddPlayernumber(0))" role="button">0</a>
+                                </div>
+                            </div>
+                            <div class="col-8">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-danger fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => RemovePlayernumber())" role="button"><span class="oi oi-delete" aria-hidden="true"/></a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @*Show only available Playernumbers*@
+                    else 
+                    {
+                        @for(int i = 0; i < PlayerNumbers.Count; i += 3)
+                        {
+                            int buffer = i;
+                            <div class="row">
+                                <div class="col-4">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        @if (PlayerNumbers.Count > i)
+                                        {
+                                            <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetPlayernumber(PlayerNumbers[buffer]))" role="button">@PlayerNumbers[i]</a>
+                                        }
+                                    </div>
+                                </div>
+                            
+                                <div class="col-4">
+                                    <div style="height:100%; min-height:100%;" class="p-1">                                    
+                                        @if (PlayerNumbers.Count > i+1)
+                                        {
+                                            <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetPlayernumber(PlayerNumbers[buffer+1]))" role="button">@PlayerNumbers[i+1]</a>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        @if (PlayerNumbers.Count > i+2)
+                                        {
+                                            <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetPlayernumber(PlayerNumbers[buffer+2]))" role="button">@PlayerNumbers[i+2]</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        
+                    }
+                    @*Show the team-button in case it should be shown*@
+                    @if(ShowTeamButton)
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <div style="height:100%; min-height:100%;" class="p-1">
+                                    <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetTeampenalty())" role="button">@Localizer["TeamPenalty"]</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <EditForm Model="SelectedPlayerNumber">
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["Playernumber"]</a>
+                                    <InputNumber id="txtPlayerNumber" class="form-control" @bind-Value="@SelectedPlayerNumber" />
+                                    <br />
+                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>@Localizer["OK"]</button>
+                                    <br /><br />
+                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">@Localizer["Cancel"]</button>
+                                </EditForm>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public bool ShowTeamButton { get; set; }
+
+    [Parameter]
+    public List<int>? PlayerNumbers { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnClose { get; set; }
+
+    /// <summary>
+    /// The Playernumber entered in the textfield
+    /// </summary>
+    private int SelectedPlayerNumber{ get; set; }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(-1);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(SelectedPlayerNumber);
+    }
+
+    private void SetPlayernumber(int number)
+    {
+        SelectedPlayerNumber = number;
+        StateHasChanged();
+    }
+
+    private void AddPlayernumber(int number)
+    {
+        SelectedPlayerNumber = Convert.ToInt32(SelectedPlayerNumber.ToString() + number.ToString());
+        StateHasChanged();
+    }
+
+    private void RemovePlayernumber()
+    {
+        var strNumber = SelectedPlayerNumber.ToString();
+        if (strNumber.Length > 0)
+        {
+            strNumber = strNumber.Substring(0, strNumber.Length - 1);
+
+            if (string.IsNullOrEmpty(strNumber))
+                strNumber = "0";
+        }
+        SelectedPlayerNumber = Convert.ToInt32(strNumber);
+        StateHasChanged();
+    }
+
+    private Task SetTeampenalty()
+    {
+        SetPlayernumber(0);
+        return ModalOk();
+    }
+}
