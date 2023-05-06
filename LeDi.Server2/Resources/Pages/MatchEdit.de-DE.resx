@@ -135,6 +135,12 @@
   <data name="MatchStatus" xml:space="preserve">
     <value>Spielstatus</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>Sie sind nicht angemeldet.</value>
+  </data>
   <data name="NumberOfSeconds" xml:space="preserve">
     <value>Sekunden gegen Spielende, bei denen die Spielzeit pausiert wird?</value>
   </data>

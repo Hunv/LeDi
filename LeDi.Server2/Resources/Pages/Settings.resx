@@ -147,6 +147,12 @@
   <data name="LoadingSettinglist" xml:space="preserve">
     <value>Loading Settinglist...</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
   <data name="SaveChanges" xml:space="preserve">
     <value>Save Changes</value>
   </data>

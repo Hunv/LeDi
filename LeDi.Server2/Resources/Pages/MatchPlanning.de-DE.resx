@@ -135,6 +135,12 @@
   <data name="MatchPlanning" xml:space="preserve">
     <value>Spielplanung</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>Sie sind nicht angemeldet.</value>
+  </data>
   <data name="ScheduledTime" xml:space="preserve">
     <value>Geplante Zeit</value>
   </data>

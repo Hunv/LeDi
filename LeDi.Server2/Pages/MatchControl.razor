@@ -6,486 +6,509 @@
 @using LeDi.Server2.Components
 @using System.Reflection;
 @using System.ComponentModel;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject MatchEngine MatchEng
 @inject Microsoft.Extensions.Localization.IStringLocalizer<MatchControl> Localizer
 @inject LeDi.Server2.Data.MatchManagerService MatchManager
 
 <PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
-@if (MatchList == null && SelectedMatchId == null)
+@if (MatchList == null && SelectedMatchId == null || AuthenticatedUserRole == null)
 {
-    <p><em>@Localizer["LoadingMatches"]</em></p>
+    <p><em>@Localizer["Loading"]</em></p>
 }
 else if (SelectedMatchId == null && MatchList != null && MatchList.Count == 0)
 {
     <p><em>@Localizer["NoMatchesOngoing"]</em></p>
 }
-else if (SelectedMatchId == null && MatchList != null)
-{
-    @*Select the Match to referee about*@
-    <div class="container-fluid">
-        @foreach(var aMatch in MatchList)
-        {
-            <div class="row">
-                <div class="col-12">
-                    @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
-                    {
-                        <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
-                    }
-                    else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
-                    {
-                        <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
-                    }
-                    else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
-                    {
-                        <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
-                    }
-                    else {
-                        <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
-                    }
-                    <br />
-                </div>
-            </div>
-        }    
-        <a>@Localizer["Legend"]</a>
-    </div>
-}
-else if (SelectedMatchId != null)
-{
-    @if (Match == null)
-    {
-        <p><em>@Localizer["LoadingMatch"]</em></p>
-    }
-    else
-    {
-        <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
-            @*Row 1: Time, Scores*@
-            <div class="row align-items-start" style="height:20vh; min-height:20vh;">
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <div>
-                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
-                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <div>
-                            @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
-                            {
-                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["Canceled"]</a>
-                            }
-                            else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
-                            {
-                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["MatchEnded"]</a>
-                            }
-                            else 
-                            {
-                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.CurrentTimeLeft / 60):@((Match.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))</a>
-                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
-                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.CurrentPeriod of @Match.RulePeriodCount</a>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <div>
-                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
-                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @*Row 2: Penalties*@
-            <div class="row align-items-start" style="height:15vh; min-height:10vh;">
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <a 
-                            id="btnPenaltyTeam1"
-                            class="btn btn-danger fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@PenaltyTeam1Clicked"                            
-                            >
-                            @Localizer["LogPenalty"]
-                        </a>
-                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
-                            <div class="container">                                
-                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 0))
-                                {
-                                    if (aPenalty.PenaltyTime > 0)
-                                    {
-                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
-
-                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
-                                        {
-                                            if (timeleft < 0)
-                                                timeleft = 0;
-
-                                            <div class="row">
-                                                <div class="col-2">
-                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
-                                                </div>
-                                                <div class="col-10">
-                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
-                                                </div>
-                                            </div>
-                                        }
-                                    }
-                                }
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <a 
-                            id="btnPenaltyTeam2"
-                            class="btn btn-danger fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@PenaltyTeam2Clicked"
-                            >
-                            @Localizer["LogPenalty"]
-                        </a>                        
-                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
-                            <div class="container">                                
-                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 1))
-                                {
-                                    if (aPenalty.PenaltyTime > 0)
-                                    {
-                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
-
-                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
-                                        {
-                                            if (timeleft < 0)
-                                                timeleft = 0;
-
-                                            <div class="row">
-                                                <div class="col-2">
-                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
-                                                </div>
-                                                <div class="col-10">
-                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
-                                                </div>
-                                            </div>
-                                        }
-                                    }
-                                }
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            @*Row 3: Controls*@
-            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <a 
-                            id="btnScoreTeam1"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@IncrementCountTeam1Clicked"
-                            >
-                            @Localizer["Score"]
-                        </a>                        
-                        <a 
-                            style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
-                        </a>
-                        <a 
-                            id="btnRevokeTeam1"
-                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@DecreaseCountTeam1Clicked"
-                            >
-                            @Localizer["RevokeScore"]
-                        </a>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        @*Combind Start/Stop-Button*@
-                        <a id="btnStartStop"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")"
-                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"
-                            role="button"
-                            @onclick="@MatchStartStopClicked"
-                            disabled="@ButtonDisableStartStop"
-                            hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)">
-                            @ButtonTextStartStop
-                        </a>
-
-                        @*Next Period-Button*@
-                        <a 
-                            id="btnPreparePeriod"
-                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@MatchPreparePeriodClicked"
-                            disabled="@ButtonPreparePeriodDisabled" 
-                            hidden="@ButtonPreparePeriodDisabled"
-                            >
-                            @Localizer["PrepareNextPeriod"]
-                        </a>
-
-                        @*Close Match-Button*@
-                        <a 
-                            id="btnCloseMatch"
-                            class="btn btn-dark fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@MatchCloseClicked"
-                            disabled="@ButtonCloseMatchDisabled" 
-                            hidden="@ButtonCloseMatchDisabled"
-                            >
-                            @Localizer["CloseMatch"]
-                        </a>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">                                                
-                        <a 
-                            id="btnScoreTeam2"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@IncrementCountTeam2Clicked"
-                            >
-                            @Localizer["Score"]
-                        </a>
-                        <a 
-                            style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
-                        </a>
-                        <a 
-                            id="btnRevokeTeam2"
-                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@DecreaseCountTeam2Clicked"
-                            >
-                            @Localizer["RevokeScore"]
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            @*Row 3a: Advanced controls*@
-            <div class="row align-items-start pt-5">
-                 <div class="col-12 p-0 m-0">
-                    <div class="p-1">          
-                        <a 
-                            id="btnAdvancedControlsExpand"
-                            class="btn btn-primary fs-3" 
-                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@ExpandAdvancedControls"
-                            >
-                            <span class="oi @(this.HideAdvancedControls ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideAdvancedControls ? Localizer["ShowControls"] : Localizer["HideControls"])
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row align-items-start @(ButtonAllDisabled ? "disabled": "")" hidden="@HideAdvancedControls">
-                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">                        
-                        <a 
-                            id="btnCancelMatch"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@MatchCancelClicked"
-                            >
-                            @Localizer["CancelMatch"]
-                        </a>  
-                    </div>
-                    <div style="height:100%; min-height:100%;" class="p-1">                        
-                        <a 
-                            id="btnRestartMatch"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@MatchRestartClicked"
-                            >
-                            @Localizer["RestartMatch"]
-                        </a>  
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">                        
-                        <a 
-                            id="btnSetTime"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@MatchSetTimeClicked"
-                            >
-                            @Localizer["SetMatchTime"]
-                        </a>  
-                    </div>
-                    <div style="height:100%; min-height:100%;" class="p-1">                        
-                        <a 
-                            id="btnSetDisplay"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@SetDisplayClicked"
-                            >
-                            @Localizer["ShowOnDisplay"]
-                        </a>  
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">                        
-                        <a 
-                            id="btnRevokePenalty"
-                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
-                            role="button" 
-                            @onclick="@RevokePenaltyClicked"
-                            >
-                            @Localizer["RevokePenalty"]
-                        </a>  
-                    </div>
-                </div>
-            </div>
-
-            @*Row 4: Matchlog*@            
-            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
-                <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
-                        @if(MatchEventList == null) 
-                        {
-                            <a>@Localizer["NoMatchEventsAvailable"]</a>
-
-                            <br />
-                        }
-                        else
-                        {
-                            <div class="container-fluid">
-                                <div class="row">
-                                    @*<div class="col-1 text-nowrap">
-                                        <b>#</b>
-                                    </div>*@
-                                    <div class="col-1 text-nowrap">
-                                        <b>@Localizer["Time"]</b>
-                                    </div>@*
-                                    <div class="col-1 text-nowrap">
-                                        <b>Creator</b>
-                                    </div>*@
-                                    <div class="col-auto">
-                                        <b>@Localizer["Note"]</b>
-                                    </div>
-                                </div>
-         
-                                @foreach(var aEvent in MatchEventList.Reverse<TblMatchEvent>())
-                                {
-                                    <div class="row justify-content-start">                    
-                                        @*<div class="col-1 text-nowrap">
-                                            @aEvent.Event
-                                        </div>*@
-                                        <div class="col-1 text-nowrap">
-                                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
-                                        </div>@*
-                                        <div class="col-1 text-nowrap">
-                                            @(aEvent.Source ?? "System")
-                                        </div>*@
-                                        <div class="col-auto">
-                                            @aEvent.Text
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-}
 else
 {
-    <p><em>@Localizer["UnableToLoadMatch"]</em></p>
-}
+    <AuthorizeView>
+        <Authorized>
+            @if (AuthenticatedUserRole.CanMatchAdvancedControls || AuthenticatedUserRole.CanMatchPenalty || AuthenticatedUserRole.CanMatchStart || AuthenticatedUserRole.CanMatchEnd)
+            {
 
-@if (DialogPenaltyPlayerShow)
-{
-    <ModalPlayernumberDialog 
-        Title="@Localizer["SelectPlayernumber"]"
-        Text="@Localizer["SelectPlayernumberAppliesTo"]"
-        PlayerNumbers=@PenaltyPlayerNumbers
-        OnClose="@OnPenaltyPlayerClose"
-        ShowTeamButton=true
-        >
-    </ModalPlayernumberDialog>
-}
+                if (SelectedMatchId == null && MatchList != null)
+                {
+                    @*Select the Match to referee about*@
+                    <div class="container-fluid">
+                        @foreach(var aMatch in MatchList)
+                        {
+                            <div class="row">
+                                <div class="col-12">
+                                    @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
+                                    {
+                                        <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
+                                    }
+                                    else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
+                                    {
+                                        <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
+                                    }
+                                    else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                                    {
+                                        <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
+                                    }
+                                    else {
+                                        <a class="btn btn-outline-dark fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
+                                    }
+                                    <br />
+                                </div>
+                            </div>
+                        }    
+                        <a>@Localizer["Legend"]</a>
+                    </div>
+                }
+                else if (SelectedMatchId != null)
+                {
+                    @if (Match == null)
+                    {
+                        <p><em>@Localizer["LoadingMatch"]</em></p>
+                    }
+                    else
+                    {
+                        <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
+                            @*Row 1: Time, Scores*@
+                            <div class="row align-items-start" style="height:20vh; min-height:20vh;">
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <div>
+                                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
+                                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <div>
+                                            @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
+                                            {
+                                                <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["Canceled"]</a>
+                                            }
+                                            else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+                                            {
+                                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["MatchEnded"]</a>
+                                            }
+                                            else 
+                                            {
+                                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.CurrentTimeLeft / 60):@((Match.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))</a>
+                                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
+                                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.CurrentPeriod of @Match.RulePeriodCount</a>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <div>
+                                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
+                                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-@if (DialogPenaltyPenaltyShow)
-{
-    <ModalPenaltyDialog 
-        Title="@Localizer["SelectPenalty"]"
-        Text="@Localizer["SelectPenaltyPlayer."]"
-        PenaltyList=@PenaltyList
-        OnClose="@OnPenaltyPenaltyClose"
-        >
-    </ModalPenaltyDialog>
-}
+                            @*Row 2: Penalties*@
+                            <div class="row align-items-start" style="height:15vh; min-height:10vh;">
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a 
+                                            id="btnPenaltyTeam1"
+                                            class="btn btn-danger fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@PenaltyTeam1Clicked"                            
+                                            >
+                                            @Localizer["LogPenalty"]
+                                        </a>
+                                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                                            <div class="container">                                
+                                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 0))
+                                                {
+                                                    if (aPenalty.PenaltyTime > 0)
+                                                    {
+                                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
 
-@if (DialogYesNoDangerShow)
-{
-    <ModalDialog
-        Title="@Localizer["AreYouSure"]"
-        Text="@Localizer["PerfomThatAction"]"
-        OnClose="@OnYesNoClose"
-        ButtonOKText="Yes"
-        ButtonCancelText="No"
-        ButtonOKClass="btn-danger"
-        >
-    </ModalDialog>
-}
+                                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                                        {
+                                                            if (timeleft < 0)
+                                                                timeleft = 0;
 
-@if (DialogTimeShow)
-{
-    <ModalTimeDialog 
-        Title="@Localizer["MatchTimeLeft"]"
-        Text="@Localizer["SetMatchTimeLeft"]"
-        OnClose="@OnTimeClose"
-        DefaultTimeSeconds="@(Match == null ? 600 : Match.RulePeriodLength)"        
-        TimeLeftSeconds="@(Match == null ? 0 : Match.CurrentTimeLeft)"
-        >
-    </ModalTimeDialog>
-}
+                                                            <div class="row">
+                                                                <div class="col-2">
+                                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                                </div>
+                                                                <div class="col-10">
+                                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                        
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a 
+                                            id="btnPenaltyTeam2"
+                                            class="btn btn-danger fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@PenaltyTeam2Clicked"
+                                            >
+                                            @Localizer["LogPenalty"]
+                                        </a>                        
+                                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                                            <div class="container">                                
+                                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 1))
+                                                {
+                                                    if (aPenalty.PenaltyTime > 0)
+                                                    {
+                                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
 
-@if (DialogPenaltyRevokeShow)
-{
-    <ModalPenaltyRevokeDialog 
-        Title="@Localizer["PenaltyRevoke"]"
-        Text="@Localizer["WhichPenaltyRevoke"]"
-        OnClose="@OnPenaltyRevokeClose"
-        PenaltyList="@(Match == null ? new List<TblMatchPenalty>() : Match.MatchPenalties.Where(x => x.Revoked == false).ToList())"
-        >
-    </ModalPenaltyRevokeDialog>
-}
+                                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                                        {
+                                                            if (timeleft < 0)
+                                                                timeleft = 0;
+
+                                                            <div class="row">
+                                                                <div class="col-2">
+                                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                                                </div>
+                                                                <div class="col-10">
+                                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                }
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Row 3: Controls*@
+                            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a 
+                                            id="btnScoreTeam1"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@IncrementCountTeam1Clicked"
+                                            >
+                                            @Localizer["Score"]
+                                        </a>                        
+                                        <a 
+                                            style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
+                                        </a>
+                                        <a 
+                                            id="btnRevokeTeam1"
+                                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@DecreaseCountTeam1Clicked"
+                                            >
+                                            @Localizer["RevokeScore"]
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        @*Combind Start/Stop-Button*@
+                                        <a id="btnStartStop"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")"
+                                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"
+                                            role="button"
+                                            @onclick="@MatchStartStopClicked"
+                                            disabled="@ButtonDisableStartStop"
+                                            hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)">
+                                            @ButtonTextStartStop
+                                        </a>
+
+                                        @*Next Period-Button*@
+                                        <a 
+                                            id="btnPreparePeriod"
+                                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@MatchPreparePeriodClicked"
+                                            disabled="@ButtonPreparePeriodDisabled" 
+                                            hidden="@ButtonPreparePeriodDisabled"
+                                            >
+                                            @Localizer["PrepareNextPeriod"]
+                                        </a>
+
+                                        @*Close Match-Button*@
+                                        <a 
+                                            id="btnCloseMatch"
+                                            class="btn btn-dark fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@MatchCloseClicked"
+                                            disabled="@ButtonCloseMatchDisabled" 
+                                            hidden="@ButtonCloseMatchDisabled"
+                                            >
+                                            @Localizer["CloseMatch"]
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">                                                
+                                        <a 
+                                            id="btnScoreTeam2"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@IncrementCountTeam2Clicked"
+                                            >
+                                            @Localizer["Score"]
+                                        </a>
+                                        <a 
+                                            style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
+                                        </a>
+                                        <a 
+                                            id="btnRevokeTeam2"
+                                            class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@DecreaseCountTeam2Clicked"
+                                            >
+                                            @Localizer["RevokeScore"]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Row 3a: Advanced controls*@
+                            <div class="row align-items-start pt-5">
+                                 <div class="col-12 p-0 m-0">
+                                    <div class="p-1">          
+                                        <a 
+                                            id="btnAdvancedControlsExpand"
+                                            class="btn btn-primary fs-3" 
+                                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@ExpandAdvancedControls"
+                                            >
+                                            <span class="oi @(this.HideAdvancedControls ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideAdvancedControls ? Localizer["ShowControls"] : Localizer["HideControls"])
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div class="row align-items-start @(ButtonAllDisabled ? "disabled": "")" hidden="@HideAdvancedControls">
+                                 <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                                        <a 
+                                            id="btnCancelMatch"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@MatchCancelClicked"
+                                            >
+                                            @Localizer["CancelMatch"]
+                                        </a>  
+                                    </div>
+                                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                                        <a 
+                                            id="btnRestartMatch"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@MatchRestartClicked"
+                                            >
+                                            @Localizer["RestartMatch"]
+                                        </a>  
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                                        <a 
+                                            id="btnSetTime"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@MatchSetTimeClicked"
+                                            >
+                                            @Localizer["SetMatchTime"]
+                                        </a>  
+                                    </div>
+                                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                                        <a 
+                                            id="btnSetDisplay"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@SetDisplayClicked"
+                                            >
+                                            @Localizer["ShowOnDisplay"]
+                                        </a>  
+                                    </div>
+                                </div>
+                                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">                        
+                                        <a 
+                                            id="btnRevokePenalty"
+                                            class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
+                                            style="display:block; width:100%; display:flex; align-items:center; justify-content:center;" 
+                                            role="button" 
+                                            @onclick="@RevokePenaltyClicked"
+                                            >
+                                            @Localizer["RevokePenalty"]
+                                        </a>  
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*Row 4: Matchlog*@            
+                            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+                                <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
+                                        @if(MatchEventList == null) 
+                                        {
+                                            <a>@Localizer["NoMatchEventsAvailable"]</a>
+
+                                            <br />
+                                        }
+                                        else
+                                        {
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    @*<div class="col-1 text-nowrap">
+                                                        <b>#</b>
+                                                    </div>*@
+                                                    <div class="col-1 text-nowrap">
+                                                        <b>@Localizer["Time"]</b>
+                                                    </div>@*
+                                                    <div class="col-1 text-nowrap">
+                                                        <b>Creator</b>
+                                                    </div>*@
+                                                    <div class="col-auto">
+                                                        <b>@Localizer["Note"]</b>
+                                                    </div>
+                                                </div>
+         
+                                                @foreach(var aEvent in MatchEventList.Reverse<TblMatchEvent>())
+                                                {
+                                                    <div class="row justify-content-start">                    
+                                                        @*<div class="col-1 text-nowrap">
+                                                            @aEvent.Event
+                                                        </div>*@
+                                                        <div class="col-1 text-nowrap">
+                                                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
+                                                        </div>@*
+                                                        <div class="col-1 text-nowrap">
+                                                            @(aEvent.Source ?? "System")
+                                                        </div>*@
+                                                        <div class="col-auto">
+                                                            @aEvent.Text
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p><em>@Localizer["UnableToLoadMatch"]</em></p>
+                }
+
+                @if (DialogPenaltyPlayerShow)
+                {
+                    <ModalPlayernumberDialog 
+                        Title="@Localizer["SelectPlayernumber"]"
+                        Text="@Localizer["SelectPlayernumberAppliesTo"]"
+                        PlayerNumbers=@PenaltyPlayerNumbers
+                        OnClose="@OnPenaltyPlayerClose"
+                        ShowTeamButton=true
+                        >
+                    </ModalPlayernumberDialog>
+                }
+
+                @if (DialogPenaltyPenaltyShow)
+                {
+                    <ModalPenaltyDialog 
+                        Title="@Localizer["SelectPenalty"]"
+                        Text="@Localizer["SelectPenaltyPlayer."]"
+                        PenaltyList=@PenaltyList
+                        OnClose="@OnPenaltyPenaltyClose"
+                        >
+                    </ModalPenaltyDialog>
+                }
+
+                @if (DialogYesNoDangerShow)
+                {
+                    <ModalDialog
+                        Title="@Localizer["AreYouSure"]"
+                        Text="@Localizer["PerfomThatAction"]"
+                        OnClose="@OnYesNoClose"
+                        ButtonOKText="Yes"
+                        ButtonCancelText="No"
+                        ButtonOKClass="btn-danger"
+                        >
+                    </ModalDialog>
+                }
+
+                @if (DialogTimeShow)
+                {
+                    <ModalTimeDialog 
+                        Title="@Localizer["MatchTimeLeft"]"
+                        Text="@Localizer["SetMatchTimeLeft"]"
+                        OnClose="@OnTimeClose"
+                        DefaultTimeSeconds="@(Match == null ? 600 : Match.RulePeriodLength)"        
+                        TimeLeftSeconds="@(Match == null ? 0 : Match.CurrentTimeLeft)"
+                        >
+                    </ModalTimeDialog>
+                }
+
+                @if (DialogPenaltyRevokeShow)
+                {
+                    <ModalPenaltyRevokeDialog 
+                        Title="@Localizer["PenaltyRevoke"]"
+                        Text="@Localizer["WhichPenaltyRevoke"]"
+                        OnClose="@OnPenaltyRevokeClose"
+                        PenaltyList="@(Match == null ? new List<TblMatchPenalty>() : Match.MatchPenalties.Where(x => x.Revoked == false).ToList())"
+                        >
+                    </ModalPenaltyRevokeDialog>
+                }
 
 
-@if (DialogDeviceShow)
-{
-    <ModalDisplayDialog 
-        Title="@Localizer["SelectDevice"]"
-        Text="@Localizer["WhichDevice"]"
-        OnClose="@OnDisplayClose"
-        Devices="@DeviceList"
-        >
-    </ModalDisplayDialog>
+                @if (DialogDeviceShow)
+                {
+                    <ModalDisplayDialog 
+                        Title="@Localizer["SelectDevice"]"
+                        Text="@Localizer["WhichDevice"]"
+                        OnClose="@OnDisplayClose"
+                        Devices="@DeviceList"
+                        >
+                    </ModalDisplayDialog>
+                }
+            }
+            else
+            {
+                <p>@Localizer["NoPermissions"]</p>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <p>@Localizer["NotLoggedIn"]</p>
+        </NotAuthorized>
+    </AuthorizeView>
 }

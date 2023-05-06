@@ -132,4 +132,10 @@
   <data name="LoadingDevice" xml:space="preserve">
     <value>Loading Device...</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
 </root>

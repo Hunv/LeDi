@@ -150,6 +150,12 @@
   <data name="LoadingDeviceSettings" xml:space="preserve">
     <value>Laden der Geräteeinstellung...</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>Sie sind nicht angemeldet.</value>
+  </data>
   <data name="PropertiesSetForDevice" xml:space="preserve">
     <value>Die Einstellungen sind für das Gerät gesetzt</value>
   </data>

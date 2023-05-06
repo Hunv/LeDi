@@ -48,6 +48,9 @@ using (var dbContext = new LeDiDbContext())
             dbContext.TblSettings.Add(new TblSetting("timezone", "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna"));
             dbContext.TblSettings.Add(new TblSetting("wifi_password", ""));
             dbContext.TblSettings.Add(new TblSetting("eventtournamentid", ""));
+
+            dbContext.TblUserRoles.Add(new TblUserRole() { RoleName = "Guests" });
+            dbContext.TblUserRoles.Add(new TblUserRole() { RoleName = "Administrators", CanDeviceCommands = true, CanDeviceManage = true, CanMatchAdd = true, CanMatchAdvancedControls = true, CanMatchDelete = true, CanMatchEdit = true, CanMatchEnd = true, CanMatchPenalty = true, CanMatchStart = true, CanMatchStop = true, CanPlayerAdd = true, CanPlayerDelete = true, CanPlayerEdit = true, CanRoleAdd = true, CanRoleDelete = true, CanRoleEdit = true, CanSettingManage = true, CanTeamAdd = true, CanTeamDelete = true, CanTeamEdit = true, CanTemplateManage = true, CanTournamentAdd = true, CanTournamentEdit = true, CanTournamentMatchAdd = true, CanTournamentMatchDelete = true, CanTournamentMatchEdit = true, CanUserAdd = true, CanUserDelete = true, CanUserEdit = true, CanUserPasswordEdit = true, IsAdmin = true });
             dbContext.SaveChanges();
         }
     }

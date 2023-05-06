@@ -1,90 +1,109 @@
 ﻿@page "/devicepages"
 @using LeDi.Server2.DatabaseModel;
 @using LeDi.Server2.Enum
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Microsoft.Extensions.Localization.IStringLocalizer<DevicePages> Localizer
 
 <PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
 
-@if (DeviceList == null)
+@if (DeviceList == null || AuthenticatedUserRole == null)
 {
     <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <EditForm Model="@SelectedDevice" OnValidSubmit="@ShowPage">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <p>@Localizer["SelectDevice"]</p>
-        <InputSelect class="form-control" @bind-Value="SelectedDevice">
-            @foreach(var aDevice in DeviceList)
+    <AuthorizeView>
+        <Authorized>
+            @if (AuthenticatedUserRole.CanDeviceManage)
             {
-                var dev = aDevice;
-                <option value="@dev.DeviceId">@dev.DeviceName</option>
-            }    
-        </InputSelect>
-        <br /><br />
+                        <EditForm Model="@SelectedDevice" OnValidSubmit="@ShowPage" Context="x">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-        <p>@Localizer["SelectPage"]</p>
-        <InputSelect class="form-control" @bind-Value="SelectedPage" @onselectionchange="SelectedPageChanged">
-            <option value=""></option>
-            <option value="match">@Localizer["Match"]</option>
-            <option value="tournament">@Localizer["Tournament"]</option>
-            <option value="countdown">@Localizer["Countdown"]</option>
-            <option value="text">@Localizer["Text"]</option>
-        </InputSelect>
+                    <p>@Localizer["SelectDevice"]</p>
+                    <InputSelect class="form-control" @bind-Value="SelectedDevice">
+                        @foreach(var aDevice in DeviceList)
+                        {
+                            var dev = aDevice;
+                            <option value="@dev.DeviceId">@dev.DeviceName</option>
+                        }    
+                    </InputSelect>
+                    <br /><br />
+
+                    <p>@Localizer["SelectPage"]</p>
+                    <InputSelect class="form-control" @bind-Value="SelectedPage" @onselectionchange="SelectedPageChanged">
+                        <option value=""></option>
+                        <option value="match">@Localizer["Match"]</option>
+                        <option value="tournament">@Localizer["Tournament"]</option>
+                        <option value="countdown">@Localizer["Countdown"]</option>
+                        <option value="text">@Localizer["Text"]</option>
+                    </InputSelect>
     
-        <br /><br />
+                    <br /><br />
 
-        <div hidden="@(!(SelectedPage == ""))">
-        </div>
+                    <div hidden="@(!(SelectedPage == ""))">
+                    </div>
 
-        <div hidden="@(!(SelectedPage == "match"))">
-            <p>@Localizer["SelectMatch"]</p>
-            <p>@Localizer["SelectMatch2"]</p>
-            @if(MatchList == null || MatchList.Count == 0)
-            {
-                <p><em>@Localizer["NoMatches"]</em></p>
+                    <div hidden="@(!(SelectedPage == "match"))">
+                        <p>@Localizer["SelectMatch"]</p>
+                        <p>@Localizer["SelectMatch2"]</p>
+                        @if(MatchList == null || MatchList.Count == 0)
+                        {
+                            <p><em>@Localizer["NoMatches"]</em></p>
+                        }
+                        else
+                        {
+                            <InputSelect class="form-control" @bind-Value="SelectedMatchId">
+                                @foreach(var aMatch in MatchList)
+                                {
+                                    <option value="@aMatch.Id">@aMatch.Team1Name - @aMatch.Team2Name (@aMatch.Team1Score:@aMatch.Team2Score)</option>
+                                }
+                            </InputSelect>
+                        }
+                    </div>
+
+                    <div hidden="@(!(SelectedPage == "tournament"))">
+                        <p>@Localizer["TournamentText"]</p>
+                    </div>
+
+                    <div hidden="@(!(SelectedPage == "countdown"))">
+                        <p>@Localizer["CountdownText"]</p>
+
+                        <p>@Localizer["CountdownText2"]</p>
+                        <InputText class="form-control" @bind-Value="CountdownText"/>
+
+                        <p>@Localizer["CountdownSeconds"]</p>
+                        <input 
+                            type="number" 
+                            class="form-control"
+                           placeholder="@Localizer["Seconds"]"
+                           min="0" 
+                            max="99999" 
+                            @bind-value="CountdownSeconds"
+                            />
+                    </div>
+
+                    <div hidden="@(!(SelectedPage == "text"))">
+                        <p>@Localizer["TextText"]</p>
+                        <InputTextArea class="form-control" @bind-Value="TextContent"/>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Show Page</button>
+                </EditForm>
             }
             else
             {
-                <InputSelect class="form-control" @bind-Value="SelectedMatchId">
-                    @foreach(var aMatch in MatchList)
-                    {
-                        <option value="@aMatch.Id">@aMatch.Team1Name - @aMatch.Team2Name (@aMatch.Team1Score:@aMatch.Team2Score)</option>
-                    }
-                </InputSelect>
+                <p>@Localizer["NoPermissions"]</p>
             }
-        </div>
-
-        <div hidden="@(!(SelectedPage == "tournament"))">
-            <p>@Localizer["TournamentText"]</p>
-        </div>
-
-        <div hidden="@(!(SelectedPage == "countdown"))">
-            <p>@Localizer["CountdownText"]</p>
-
-            <p>@Localizer["CountdownText2"]</p>
-            <InputText class="form-control" @bind-Value="CountdownText"/>
-
-            <p>@Localizer["CountdownSeconds"]</p>
-            <input 
-                type="number" 
-                class="form-control"
-               placeholder="@Localizer["Seconds"]"
-               min="0" 
-                max="99999" 
-                @bind-value="CountdownSeconds"
-                />
-        </div>
-
-        <div hidden="@(!(SelectedPage == "text"))">
-            <p>@Localizer["TextText"]</p>
-            <InputTextArea class="form-control" @bind-Value="TextContent"/>
-        </div>
-
-        <button class="btn btn-primary" type="submit">Show Page</button>
-    </EditForm>
+        </Authorized>
+        <NotAuthorized>
+            <p>@Localizer["NotLoggedIn"]</p>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 
 @code {
@@ -95,6 +114,11 @@ else
     private string CountdownText = "";
     private int CountdownSeconds = 0;
     private string TextContent = "";
+
+    /// <summary>
+    /// Contains the roles a user has
+    /// </summary>
+    private TblUserRole? AuthenticatedUserRole { get; set; }
 
     private string _SelectedPage = "";
     private string SelectedPage {
@@ -125,6 +149,27 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        // Get the roles of the currently logged in user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
+        {
+            // Get the Roles from Identity management. Should only be one always.
+            var username = authState.User.Identity.Name;
+            if (username != null)
+            {
+                var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
+
+                if (roles != null && roles.Count >= 1)
+                {
+                    AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
+                }
+            }
+        }
+        else
+        {
+            AuthenticatedUserRole = await DataHandler.GetUserRoleAsync("Guests");
+        }
+
         DeviceList = await DataHandler.GetDeviceListAsync();
     }
 

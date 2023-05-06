@@ -3,6 +3,11 @@
 @using LeDi.Server2.DatabaseModel;
 @using LeDi.Server2.Enum
 @using LeDi.Server2.Components
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Dashboard> Localizer
 
@@ -228,8 +233,31 @@ else {
     [Parameter]
     public int? Id { get; set; }
 
+    /// <summary>
+    /// Contains the roles a user has
+    /// </summary>
+    private TblUserRole? AuthenticatedUserRole { get; set; }
+
+
     protected override async Task OnParametersSetAsync()
     {
+        // Get the roles of the currently logged in user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
+        {
+            // Get the Roles from Identity management. Should only be one always.
+            var username = authState.User.Identity.Name;
+            if (username != null)
+            {
+                var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
+
+                if (roles != null && roles.Count >= 1)
+                {
+                    AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
+                }
+            }
+        }
+
         if (Id != null)
         {
             Logger.Trace("On reload the page, ID {0} was set.", Id);

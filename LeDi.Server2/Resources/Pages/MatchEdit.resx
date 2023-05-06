@@ -135,6 +135,12 @@
   <data name="MatchStatus" xml:space="preserve">
     <value>Match Status</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
   <data name="NumberOfSeconds" xml:space="preserve">
     <value>Number of seconds near end the time will be stopped?</value>
   </data>

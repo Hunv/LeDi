@@ -117,22 +117,121 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Contact" xml:space="preserve">
-    <value>Contact</value>
+  <data name="AddRole" xml:space="preserve">
+    <value>Add Role</value>
   </data>
-  <data name="Headline" xml:space="preserve">
-    <value>About LeDi</value>
+  <data name="CanDeviceCommands" xml:space="preserve">
+    <value>Can run device commands</value>
   </data>
-  <data name="Help" xml:space="preserve">
-    <value>Help</value>
+  <data name="CanDeviceManage" xml:space="preserve">
+    <value>Can manage devices</value>
   </data>
-  <data name="IntroText" xml:space="preserve">
-    <value>LeDi is a project to support a sports match with a display, that is readable, waterproof, inexpensive and easy to maintain. It is also mobile and can be used with regular components like smartphones or tablets.</value>
+  <data name="CanMatchAdd" xml:space="preserve">
+    <value>Can create new matches</value>
   </data>
-  <data name="PageTitle" xml:space="preserve">
-    <value>About LeDi</value>
+  <data name="CanMatchAvancedControls" xml:space="preserve">
+    <value>Can use the advanced controls for an ongoing match</value>
   </data>
-  <data name="ProjectPage" xml:space="preserve">
-    <value>Project page</value>
+  <data name="CanMatchDelete" xml:space="preserve">
+    <value>Can delete matches</value>
+  </data>
+  <data name="CanMatchEdit" xml:space="preserve">
+    <value>Can edit matches</value>
+  </data>
+  <data name="CanMatchEnd" xml:space="preserve">
+    <value>Can end matches</value>
+  </data>
+  <data name="CanMatchPenalty" xml:space="preserve">
+    <value>Can impose penalties</value>
+  </data>
+  <data name="CanMatchStart" xml:space="preserve">
+    <value>Can start matches</value>
+  </data>
+  <data name="CanMatchStop" xml:space="preserve">
+    <value>Can pause/stop matches</value>
+  </data>
+  <data name="CanPlayerAdd" xml:space="preserve">
+    <value>Can add new players</value>
+  </data>
+  <data name="CanPlayerDelete" xml:space="preserve">
+    <value>Can delete players</value>
+  </data>
+  <data name="CanPlayerEdit" xml:space="preserve">
+    <value>Can edit players</value>
+  </data>
+  <data name="CanRoleAdd" xml:space="preserve">
+    <value>Can add new roles</value>
+  </data>
+  <data name="CanRoleDelete" xml:space="preserve">
+    <value>Can delete roles</value>
+  </data>
+  <data name="CanRoleEdit" xml:space="preserve">
+    <value>Can edit existing roles</value>
+  </data>
+  <data name="CanSettingManage" xml:space="preserve">
+    <value>Can manage settings</value>
+  </data>
+  <data name="CanTeamAdd" xml:space="preserve">
+    <value>Can add a new team</value>
+  </data>
+  <data name="CanTeamDelete" xml:space="preserve">
+    <value>Can delete a team</value>
+  </data>
+  <data name="CanTeamEdit" xml:space="preserve">
+    <value>Can edit an existing team</value>
+  </data>
+  <data name="CanTemplateManage" xml:space="preserve">
+    <value>Can manage templates</value>
+  </data>
+  <data name="CanTournamentAdd" xml:space="preserve">
+    <value>Can create new tournaments</value>
+  </data>
+  <data name="CanTournamentEdit" xml:space="preserve">
+    <value>Can edit existing tournaments</value>
+  </data>
+  <data name="CanTournamentMatchAdd" xml:space="preserve">
+    <value>Can add matches to tournaments</value>
+  </data>
+  <data name="CanTournamentMatchDelete" xml:space="preserve">
+    <value>Can delete matches from tournaments</value>
+  </data>
+  <data name="CanTournamentMatchEdit" xml:space="preserve">
+    <value>Can edit matches from tournaments</value>
+  </data>
+  <data name="CanUserAdd" xml:space="preserve">
+    <value>Can add new users</value>
+  </data>
+  <data name="CanUserDelete" xml:space="preserve">
+    <value>Can delete users</value>
+  </data>
+  <data name="CanUserEdit" xml:space="preserve">
+    <value>Can edit users</value>
+  </data>
+  <data name="CanUserPasswordEdit" xml:space="preserve">
+    <value>Can edit/reset passwords for users</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="IsAdmin" xml:space="preserve">
+    <value>Is this an admin role?</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>Rolename</value>
+  </data>
+  <data name="UserRoles" xml:space="preserve">
+    <value>Userroles</value>
   </data>
 </root>

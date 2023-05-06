@@ -110,6 +110,23 @@ namespace LeDi.Server2.DatabaseModel
         public bool CanUserPasswordEdit{ get; set; }
 
 
+
+        /// <summary>
+        /// Can the role add new users
+        /// </summary>
+        public bool CanRoleAdd { get; set; }
+
+        /// <summary>
+        /// can the role edit users
+        /// </summary>
+        public bool CanRoleEdit { get; set; }
+
+        /// <summary>
+        /// Can the role delete users
+        /// </summary>
+        public bool CanRoleDelete { get; set; }
+
+
         /// <summary>
         /// Can the role add new players
         /// </summary>

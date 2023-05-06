@@ -129,6 +129,12 @@
   <data name="MainRefereeName" xml:space="preserve">
     <value>Main Referee Name:</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
   <data name="Prepare Match" xml:space="preserve">
     <value>Prepare Match</value>
   </data>

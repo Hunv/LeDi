@@ -1,10 +1,23 @@
-﻿namespace LeDi.Server2.Shared
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components;
+
+namespace LeDi.Server2.Shared
 {
     public partial class MainLayout
     {
+        /// <summary>
+        /// Contains a text, that is shown on top of the page. i.e. an event name
+        /// </summary>
         private string? CurrentText { get; set; }
+
+        /// <summary>
+        /// Contains the ID of the current Event
+        /// </summary>
         private string? CurrentEventId { get; set; }
+
+
         public MainLayout() { }
+
 
         protected override async Task OnInitializedAsync()
         {

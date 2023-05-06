@@ -26,7 +26,6 @@ namespace LeDi.Server2.DatabaseModel
         public DbSet<TblGameRulePenalty> TblGameRulePenalties { get; set; }
         public DbSet<TblGameRulePenaltyDisplay> TblGameRulePenaltyDisplays { get; set; }
         public DbSet<TblTournament> TblTournaments { get; set; }
-        public DbSet<TblUser> TblUsers { get; set; }
         public DbSet<TblUserRole> TblUserRoles { get; set; }
 
 
@@ -82,13 +81,6 @@ namespace LeDi.Server2.DatabaseModel
             modelBuilder.Entity<TblDeviceSetting>(entity =>
             {
                 entity.HasKey(new string[] { "SettingName", "DeviceId" });
-            });
-
-
-            // Set the LoginName to Unique
-            modelBuilder.Entity<TblUser>(entity =>
-            {
-                entity.HasIndex(p => p.LoginName).IsUnique(true);
             });
 
 

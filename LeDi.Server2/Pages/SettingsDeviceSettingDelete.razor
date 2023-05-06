@@ -1,6 +1,11 @@
 ﻿@page "/settingsdevicesettingdelete/{deviceId}/{settingName}"
 @using LeDi.Server2.Data
 @using LeDi.Server2.DatabaseModel
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject Microsoft.Extensions.Localization.IStringLocalizer<SettingsDeviceSettingDelete> Localizer
 
@@ -9,18 +14,32 @@
 
 <h1>@Localizer["ConfirmDeletionDeviceSetting"]</h1>
 
-@if (ToDeleteDeviceSetting == null)
+@if (ToDeleteDeviceSetting == null || AuthenticatedUserRole == null)
 {
     <p><em>@Localizer["LoadingDevice"]</em></p>
 }
 else
 {
-    <p>@Localizer["ConfirmTheDeletionDeviceSetting"]@settingName:</p>
-    <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete">
+    <AuthorizeView>
+        <Authorized>
+            @if (AuthenticatedUserRole.CanDeviceManage)
+            {
+                <p>@Localizer["ConfirmTheDeletionDeviceSetting"]@settingName:</p>
+                <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete" Context="x">
 
-        <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
-        <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
-    </EditForm>
+                    <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
+                    <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
+                </EditForm>
+            }
+            else
+            {
+                <p>@Localizer["NoPermissions"]</p>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <p>@Localizer["NotLoggedIn"]</p>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 
 @code {
@@ -31,10 +50,37 @@ else
     public string settingName { get; set; } = "";
 
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-    private TblDeviceSetting ToDeleteDeviceSetting = new TblDeviceSetting("","","");
+    private TblDeviceSetting ToDeleteDeviceSetting = new TblDeviceSetting("", "", "");
+
+    /// <summary>
+    /// Contains the roles a user has
+    /// </summary>
+    private TblUserRole? AuthenticatedUserRole { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
+        // Get the roles of the currently logged in user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
+        {
+            // Get the Roles from Identity management. Should only be one always.
+            var username = authState.User.Identity.Name;
+            if (username != null)
+            {
+                var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
+
+                if (roles != null && roles.Count >= 1)
+                {
+                    AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
+                }
+            }
+        }
+        else
+        {
+            AuthenticatedUserRole = await DataHandler.GetUserRoleAsync("Guests");
+        }
+
         var devSetting = await DataHandler.GetDeviceSettingAsync(deviceId, settingName);
 
         if (devSetting == null)

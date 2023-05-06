@@ -126,6 +126,12 @@
   <data name="CurrentCount" xml:space="preserve">
     <value>Current count:</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>Sie sind nicht angemeldet.</value>
+  </data>
   <data name="PlayerManagement" xml:space="preserve">
     <value>Player Management</value>
   </data>

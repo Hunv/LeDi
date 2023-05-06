@@ -138,6 +138,12 @@
   <data name="NoMatches" xml:space="preserve">
     <value>No matches available.</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
   <data name="PageTitle" xml:space="preserve">
     <value>Devices</value>
   </data>

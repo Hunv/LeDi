@@ -191,3 +191,4 @@ internal-nlog.txt
 LeDi.Server/Properties/PublishProfiles/FolderProfile.pubxml
 LeDi.Server2/bin/
 LeDi.Server2/obj/
+LeDi.Server2/LeDi.db

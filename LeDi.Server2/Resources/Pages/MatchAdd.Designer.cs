@@ -124,6 +124,24 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You do not have the permission to view this page..
+        /// </summary>
+        public static string NoPermissions {
+            get {
+                return ResourceManager.GetString("NoPermissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re not loggged in..
+        /// </summary>
+        public static string NotLoggedIn {
+            get {
+                return ResourceManager.GetString("NotLoggedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Number of seconds near end the time will be stopped?.
         /// </summary>
         public static string NumberOfSeconds {

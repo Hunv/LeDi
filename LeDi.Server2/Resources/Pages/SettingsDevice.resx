@@ -150,6 +150,12 @@
   <data name="LoadingDeviceSettings" xml:space="preserve">
     <value>Loading Device Settings...</value>
   </data>
+  <data name="NoPermissions" xml:space="preserve">
+    <value>You do not have the permission to view this page.</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>You're not loggged in.</value>
+  </data>
   <data name="PropertiesSetForDevice" xml:space="preserve">
     <value>The properties are set for device</value>
   </data>

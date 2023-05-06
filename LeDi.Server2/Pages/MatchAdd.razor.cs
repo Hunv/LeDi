@@ -1,5 +1,6 @@
 ﻿using LeDi.Server2.DatabaseModel;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json.Linq;
 
 namespace LeDi.Server2.Pages
@@ -23,6 +24,12 @@ namespace LeDi.Server2.Pages
         /// URL to open after click on "Save". When set, also hides the "Save and start" button.
         /// </summary>
         private string ReturnUrl { get; set; }
+
+
+        /// <summary>
+        /// Contains the roles a user has
+        /// </summary>
+        private TblUserRole? AuthenticatedUserRole { get; set; }
 
         /// <summary>
         /// The parameters for a new match
@@ -270,6 +277,27 @@ namespace LeDi.Server2.Pages
         protected override async Task OnInitializedAsync()
         {
             Logger.Trace("Initializing the page");
+            
+            // Get the roles of the currently logged in user
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
+            {
+                // Get the Roles from Identity management. Should only be one always.
+                var username = authState.User.Identity.Name;
+                if (username != null)
+                {
+                    var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
+
+                    if (roles != null && roles.Count >= 1)
+                    {
+                        AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
+                    }
+                }
+            }
+            else
+            {
+                AuthenticatedUserRole = await DataHandler.GetUserRoleAsync("Guests");
+            }
 
             // Get query string parameters
             var queryStringParameters = new Uri(NavigationManager.Uri).Query;

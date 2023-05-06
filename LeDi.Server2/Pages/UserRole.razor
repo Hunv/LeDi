@@ -1,132 +1,158 @@
 ﻿@page "/userrole"
 @using LeDi.Server2.DatabaseModel;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Microsoft.Extensions.Localization.IStringLocalizer<UserManage> Localizer
 
 <h3>@Localizer["UserRoles"]</h3>
 
-
-@if (RoleList == null)
+@if (RoleList == null || AuthenticatedUserRole == null)
 {
     <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <table class="table table-striped table-hover table-responsive-sm">
-        <thead>
-            <tr>
-                <th>@Localizer["RoleName"]</th>
-                <th>@Localizer["IsAdmin"]</th>
-                <th>@Localizer["CanMatchAdd"]</th>
-                <th>@Localizer["CanMatchDelete"]</th>
-                <th>@Localizer["CanMatchEdit"]</th>
-                <th>@Localizer["CanMatchStart"]</th>
-                <th>@Localizer["CanMatchStop"]</th>
-                <th>@Localizer["CanMatchEnd"]</th>
-                <th>@Localizer["CanMatchPenalty"]</th>
-                <th>@Localizer["CanMatchAvancedControls"]</th>
-                <th>@Localizer["CanTournamentAdd"]</th>
-                <th>@Localizer["CanTournamentEdit"]</th>
-                <th>@Localizer["CanTournamentMatchAdd"]</th>
-                <th>@Localizer["CanTournamentMatchDelete"]</th>
-                <th>@Localizer["CanTournamentMatchEdit"]</th>
-                <th>@Localizer["CanUserAdd"]</th>
-                <th>@Localizer["CanUserEdit"]</th>
-                <th>@Localizer["CanUserDelete"]</th>
-                <th>@Localizer["CanUserPasswordEdit"]</th>
-                <th>@Localizer["CanPlayerAdd"]</th>
-                <th>@Localizer["CanPlayerEdit"]</th>
-                <th>@Localizer["CanPlayerDelete"]</th>
-                <th>@Localizer["CanTeamAdd"]</th>
-                <th>@Localizer["CanTeamEdit"]</th>
-                <th>@Localizer["CanTeamDelete"]</th>
-                <th>@Localizer["CanTeamplateManage"]</th>
-                <th>@Localizer["CanSettingManage"]</th>
-                <th>@Localizer["CanDeviceManage"]</th>
-                <th>@Localizer["CanDeviceCommands"]</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var role in RoleList)
+    <AuthorizeView>
+        <Authorized>
+            @if (AuthenticatedUserRole.CanRoleAdd || AuthenticatedUserRole.CanRoleEdit || AuthenticatedUserRole.CanRoleDelete)
             {
-                <tr class="align-middle">
-                    <td>@role.RoleName</td>
-                    <td>@role.IsAdmin</td>
-                    <td>@role.CanMatchAdd</td>
-                    <td>@role.CanMatchDelete</td>
-                    <td>@role.CanMatchEdit</td>
-                    <td>@role.CanMatchStart</td>
-                    <td>@role.CanMatchStop</td>
-                    <td>@role.CanMatchEnd</td>
-                    <td>@role.CanMatchPenalty</td>
-                    <td>@role.CanMatchAdvancedControls</td>
-                    <td>@role.CanTournamentAdd</td>
-                    <td>@role.CanTournamentEdit</td>
-                    <td>@role.CanTournamentMatchAdd</td>
-                    <td>@role.CanTournamentMatchDelete</td>
-                    <td>@role.CanTournamentMatchEdit</td>
-                    <td>@role.CanUserAdd</td>
-                    <td>@role.CanUserEdit</td>
-                    <td>@role.CanUserDelete</td>
-                    <td>@role.CanUserPasswordEdit</td>
-                    <td>@role.CanPlayerAdd</td>
-                    <td>@role.CanPlayerEdit</td>
-                    <td>@role.CanPlayerDelete</td>
-                    <td>@role.CanTeamAdd</td>
-                    <td>@role.CanTeamEdit</td>
-                    <td>@role.CanTeamDelete</td>
-                    <td>@role.CanSettingManage</td>
-                    <td>@role.CanDeviceManage</td>
-                    <td>@role.CanDeviceCommands</td>
-                    <td>
-                        <a class="btn btn-primary" onclick="@(() => EditRole(role.Id))"><span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["Edit"]</a>
-                    </td>
-                    <td>
-                        <a class="btn btn-secondary" onclick="@(() => DeleteRole(role.Id))"><span class="oi oi-delete" aria-hidden="true"></span> @Localizer["Delete"]</a>
-                    </td>
-                </tr>
+                <table class="table table-striped table-hover table-responsive-sm">
+                    <thead>
+                        <tr>
+                            <th>@Localizer["RoleName"]</th>
+                            <th>@Localizer["IsAdmin"]</th>
+                            <th>@Localizer["CanMatchAdd"]</th>
+                            <th>@Localizer["CanMatchDelete"]</th>
+                            <th>@Localizer["CanMatchEdit"]</th>
+                            <th>@Localizer["CanMatchStart"]</th>
+                            <th>@Localizer["CanMatchStop"]</th>
+                            <th>@Localizer["CanMatchEnd"]</th>
+                            <th>@Localizer["CanMatchPenalty"]</th>
+                            <th>@Localizer["CanMatchAvancedControls"]</th>
+                            <th>@Localizer["CanTournamentAdd"]</th>
+                            <th>@Localizer["CanTournamentEdit"]</th>
+                            <th>@Localizer["CanTournamentMatchAdd"]</th>
+                            <th>@Localizer["CanTournamentMatchDelete"]</th>
+                            <th>@Localizer["CanTournamentMatchEdit"]</th>
+                            <th>@Localizer["CanUserAdd"]</th>
+                            <th>@Localizer["CanUserEdit"]</th>
+                            <th>@Localizer["CanUserDelete"]</th>
+                            <th>@Localizer["CanUserPasswordEdit"]</th>
+                            <th>@Localizer["CanRoleAdd"]</th>
+                            <th>@Localizer["CanRoleEdit"]</th>
+                            <th>@Localizer["CanRoleDelete"]</th>
+                            <th>@Localizer["CanPlayerAdd"]</th>
+                            <th>@Localizer["CanPlayerEdit"]</th>
+                            <th>@Localizer["CanPlayerDelete"]</th>
+                            <th>@Localizer["CanTeamAdd"]</th>
+                            <th>@Localizer["CanTeamEdit"]</th>
+                            <th>@Localizer["CanTeamDelete"]</th>
+                            <th>@Localizer["CanTemplateManage"]</th>
+                            <th>@Localizer["CanSettingManage"]</th>
+                            <th>@Localizer["CanDeviceManage"]</th>
+                            <th>@Localizer["CanDeviceCommands"]</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in RoleList)
+                        {
+                            <tr class="align-middle">
+                                <td>@role.RoleName</td>
+                                <td>@role.IsAdmin</td>
+                                <td>@role.CanMatchAdd</td>
+                                <td>@role.CanMatchDelete</td>
+                                <td>@role.CanMatchEdit</td>
+                                <td>@role.CanMatchStart</td>
+                                <td>@role.CanMatchStop</td>
+                                <td>@role.CanMatchEnd</td>
+                                <td>@role.CanMatchPenalty</td>
+                                <td>@role.CanMatchAdvancedControls</td>
+                                <td>@role.CanTournamentAdd</td>
+                                <td>@role.CanTournamentEdit</td>
+                                <td>@role.CanTournamentMatchAdd</td>
+                                <td>@role.CanTournamentMatchDelete</td>
+                                <td>@role.CanTournamentMatchEdit</td>
+                                <td>@role.CanUserAdd</td>
+                                <td>@role.CanUserEdit</td>
+                                <td>@role.CanUserDelete</td>
+                                <td>@role.CanUserPasswordEdit</td>
+                                <td>@role.CanRoleAdd</td>
+                                <td>@role.CanRoleEdit</td>
+                                <td>@role.CanRoleDelete</td>
+                                <td>@role.CanPlayerAdd</td>
+                                <td>@role.CanPlayerEdit</td>
+                                <td>@role.CanPlayerDelete</td>
+                                <td>@role.CanTeamAdd</td>
+                                <td>@role.CanTeamEdit</td>
+                                <td>@role.CanTeamDelete</td>
+                                <td>@role.CanSettingManage</td>
+                                <td>@role.CanDeviceManage</td>
+                                <td>@role.CanDeviceCommands</td>
+                                <td>
+                                    <a class="btn btn-primary" onclick="@(() => EditRole(role.Id))"><span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["Edit"]</a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-secondary" onclick="@(() => DeleteRole(role.Id))"><span class="oi oi-delete" aria-hidden="true"></span> @Localizer["Delete"]</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <br />
+                <h3>@Localizer["AddRole"]</h3>
+                                
+                <EditForm Model="@Role" OnValidSubmit="@SaveRole" Context="x">
+                    <a>@Localizer["RoleName"]</a>
+                    <InputText id="txtRoleName" type="text" class="form-control" @bind-Value="@Role.RoleName" />
+                    <br />
+
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.IsAdmin" /> <a>@Localizer["IsAdmin"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchAdd" /> <a>@Localizer["CanMatchAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchDelete" /> <a>@Localizer["CanMatchDelete"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchEdit" /> <a>@Localizer["CanMatchEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchStart" /> <a>@Localizer["CanMatchStart"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchStop" /> <a>@Localizer["CanMatchStop"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchEnd" /> <a>@Localizer["CanMatchEnd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchPenalty" /> <a>@Localizer["CanMatchPenalty"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchAdvancedControls" /> <a>@Localizer["CanMatchAdvancedControls"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentAdd" /> <a>@Localizer["CanTournamentAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentEdit" /> <a>@Localizer["CanTournamentEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentMatchAdd" /> <a>@Localizer["CanTournamentMatchAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentMatchDelete" /> <a>@Localizer["CanTournamentMatchDelete"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentMatchEdit" /> <a>@Localizer["CanTournamentMatchEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserAdd" /> <a>@Localizer["CanUserAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserEdit" /> <a>@Localizer["CanUserEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserDelete" /> <a>@Localizer["CanUserDelete"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserPasswordEdit" /> <a>@Localizer["CanUserPasswordEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanRoleAdd" /> <a>@Localizer["CanRoleAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanRoleEdit" /> <a>@Localizer["CanRoleEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanRoleDelete" /> <a>@Localizer["CanRoleDelete"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanPlayerAdd" /> <a>@Localizer["CanPlayerAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanPlayerEdit" /> <a>@Localizer["CanPlayerEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanPlayerDelete" /> <a>@Localizer["CanPlayerDelete"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTeamAdd" /> <a>@Localizer["CanTeamAdd"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTeamEdit" /> <a>@Localizer["CanTeamEdit"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTeamDelete" /> <a>@Localizer["CanTeamDelete"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanSettingManage" /> <a>@Localizer["CanSettingManage"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanDeviceManage" /> <a>@Localizer["CanDeviceManage"]</a><br />
+                    <InputCheckbox class="form-check-input" @bind-Value="@Role.CanDeviceCommands" /> <a>@Localizer["CanDeviceCommands"]</a><br />
+
+                    <button class="btn btn-primary" type="submit">@Localizer["AddRole"]</button>
+                </EditForm>
             }
-        </tbody>
-    </table>
-    <br />
-    <br />
-    <h3>@Localizer["AddRole"]</h3>
-
-    <EditForm Model="@Role" OnValidSubmit="@SaveRole">
-        <a>@Localizer["RoleName"]</a>
-        <InputText id="txtRoleName" type="text" class="form-control" @bind-Value="@Role.RoleName" />
-        <br />
-
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.IsAdmin" /> <a>@Localizer["IsAdmin"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchAdd" /> <a>@Localizer["CanMatchAdd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchDelete" /> <a>@Localizer["CanMatchDelete"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchEdit" /> <a>@Localizer["CanMatchEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchStart" /> <a>@Localizer["CanMatchStart"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchStop" /> <a>@Localizer["CanMatchStop"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchEnd" /> <a>@Localizer["CanMatchEnd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchPenalty" /> <a>@Localizer["CanMatchPenalty"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchAdvancedControls" /> <a>@Localizer["CanMatchAdvancedControls"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentAdd" /> <a>@Localizer["CanTournamentAdd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentEdit" /> <a>@Localizer["CanTournamentEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentMatchAdd" /> <a>@Localizer["CanTournamentMatchAdd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentMatchDelete" /> <a>@Localizer["CanTournamentMatchDelete"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTournamentMatchEdit" /> <a>@Localizer["CanTournamentMatchEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserAdd" /> <a>@Localizer["CanUserAdd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserEdit" /> <a>@Localizer["CanUserEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserDelete" /> <a>@Localizer["CanUserDelete"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanUserPasswordEdit" /> <a>@Localizer["CanUserPasswordEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanPlayerAdd" /> <a>@Localizer["CanPlayerAdd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanPlayerEdit" /> <a>@Localizer["CanPlayerEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanPlayerDelete" /> <a>@Localizer["CanPlayerDelete"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTeamAdd" /> <a>@Localizer["CanTeamAdd"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTeamEdit" /> <a>@Localizer["CanTeamEdit"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanTeamDelete" /> <a>@Localizer["CanTeamDelete"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanSettingManage" /> <a>@Localizer["CanSettingManage"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanDeviceManage" /> <a>@Localizer["CanDeviceManage"]</a><br />
-        <InputCheckbox class="form-check-input" @bind-Value="@Role.CanDeviceCommands" /> <a>@Localizer["CanDeviceCommands"]</a><br />
-
-        <button class="btn btn-primary" type="submit">@Localizer["AddRole"]</button>
-    </EditForm>
-
+            else
+            {
+                <p>@Localizer["NoPermissions"]</p>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <p>@Localizer["NotLoggedIn"]</p>
+        </NotAuthorized>
+    </AuthorizeView>
 }

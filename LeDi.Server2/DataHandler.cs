@@ -1,5 +1,6 @@
 ﻿using LeDi.Server2.DatabaseModel;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +13,7 @@ namespace LeDi.Server2
         private static LeDiDbContext DbContext;
         private static System.Timers.Timer TmrDbSaveTime = new System.Timers.Timer(100);
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-
-
+        
         static DataHandler()
         {
             InitializeDataHandler();
@@ -534,6 +534,16 @@ namespace LeDi.Server2
         public static async Task<TblUserRole?> GetUserRoleAsync(int roleId)
         {
             return await DbContext.TblUserRoles.SingleOrDefaultAsync(x => x.Id == roleId);
+        }
+
+
+        /// <summary>
+        /// Gets a userrole from the database
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<TblUserRole?> GetUserRoleAsync(string roleName)
+        {
+            return await DbContext.TblUserRoles.SingleOrDefaultAsync(x => x.RoleName == roleName);
         }
     }
 }

@@ -1,4 +1,10 @@
 ﻿@page "/matchsummary"
+@using LeDi.Server2.DatabaseModel;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject Microsoft.Extensions.Localization.IStringLocalizer<MatchPrepare> Localizer
 
 <PageTitle>LeDi - @Localizer["MatchSummary"]</PageTitle>
@@ -10,6 +16,12 @@
 <button class="btn btn-primary" @onclick="IncrementCount">@Localizer["ClickMe"]</button>
 
 @code {
+
+    /// <summary>
+    /// Contains the roles a user has
+    /// </summary>
+    private TblUserRole? AuthenticatedUserRole { get; set; }
+
     private int currentCount = 0;
 
     private void IncrementCount()
