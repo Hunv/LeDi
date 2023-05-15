@@ -17,7 +17,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanMatchAdd">
+    <AuthorizeView Roles="Att-CanMatchAdd,Att-IsAdmin">
         <Authorized>
             <h1>@Localizer["CurrentlyPlannedMatches"]</h1>
             <a href="/matchadd">@Localizer["AddNewMatch"]</a>

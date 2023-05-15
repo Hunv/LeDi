@@ -18,7 +18,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanMatchEdit">
+    <AuthorizeView Roles="Att-CanMatchEdit,Att-IsAdmin">
         <Authorized>
             <EditForm Model="@Match" OnValidSubmit="@SaveMatch" Context="x">
                 <DataAnnotationsValidator />

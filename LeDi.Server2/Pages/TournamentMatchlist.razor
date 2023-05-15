@@ -86,7 +86,11 @@ else
                                 <a href="/matchcontrol/@match.Id" class="btn btn-primary"><span class="oi oi-target" aria-hidden="true"></span> @Localizer["Referee"]</a>
                             </td>
                             <td>
-                                <a href="/match/@match.Id?returnurl=/tournamentmatchlist/@Tournament.Id" class="btn btn-secondary"><span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["Edit"]</a>
+                                <AuthorizeView Roles="Att-CanTournamentMatchEdit,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <a href="/match/@match.Id?returnurl=/tournamentmatchlist/@Tournament.Id" class="btn btn-secondary"><span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["Edit"]</a>
+                                    </Authorized>
+                                </AuthorizeView>
                             </td>
                         </tr>
                     }
@@ -95,8 +99,12 @@ else
 
             <br />
             <br />
-
-            <a class="btn btn-primary" href="/matchadd?tournamentid=@Tournament.Id&returnurl=/tournamentmatchlist/@Tournament.Id" role="button">@Localizer["AddMatch"]</a>
+            
+            <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <a class="btn btn-primary" href="/matchadd?tournamentid=@Tournament.Id&returnurl=/tournamentmatchlist/@Tournament.Id" role="button">@Localizer["AddMatch"]</a>
+                </Authorized>
+            </AuthorizeView>
         </Authorized>
         <NotAuthorized>
             <p>@Localizer["NoPermissions"]</p>

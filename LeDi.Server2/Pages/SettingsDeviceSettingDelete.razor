@@ -20,7 +20,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanDeviceManage">
+    <AuthorizeView Roles="Att-CanDeviceManage,Att-IsAdmin">
         <Authorized>
             <p>@Localizer["ConfirmTheDeletionDeviceSetting"]@settingName:</p>
             <EditForm Model="@ToDeleteDeviceSetting" OnValidSubmit="@ConfirmDelete" OnInvalidSubmit="@CancelDelete" Context="x">

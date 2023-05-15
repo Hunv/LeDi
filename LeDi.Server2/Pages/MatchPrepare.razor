@@ -17,7 +17,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanMatchAdd,Att-CanMatchEdit,Att-CanMatchStart">
+    <AuthorizeView Roles="Att-CanMatchAdd,Att-CanMatchEdit,Att-CanMatchStart,Att-IsAdmin">
         <Authorized>
             <EditForm Model="@Match" OnValidSubmit="@SaveMatch" Context="x">
                 <a>@Localizer["PrepareMatchText"] @Match.Team1Name @Localizer["vs"] @Match.Team2Name @Localizer["ScheduledFor"] @Match.ScheduledTime.</a><br />

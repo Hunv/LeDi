@@ -16,7 +16,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanDeviceManage">
+    <AuthorizeView Roles="Att-CanDeviceManage,Att-IsAdmin">
         <Authorized>
             <EditForm Model="@SelectedDevice" OnValidSubmit="@ShowPage" Context="x">
                 <DataAnnotationsValidator />

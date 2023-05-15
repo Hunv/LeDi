@@ -17,7 +17,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanTournamentAdd,Att-CanTournamentEdit,Att-CanTournamentMatchAdd,Att-CanTournamentMatchDelete,Att-CanTournamentMatchDelete">
+    <AuthorizeView Roles="Att-CanTournamentAdd,Att-CanTournamentEdit,Att-CanTournamentMatchAdd,Att-CanTournamentMatchDelete,Att-CanTournamentMatchDelete,Att-IsAdmin">
         <Authorized>
             <a>@Localizer["CurrentOrPlanedTournaments"]</a>
             <table class="table">
@@ -45,16 +45,34 @@ else
                                 @tournament.EndDate
                             </td>
                             <td>todo</td>
-                            <td>@tournament.Matches.Count() <a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning">@Localizer["AddMatch"]</a></td>
                             <td>
-                                <a href="/tournamentadd/@tournament.Id">@Localizer["Edit"]</a> 
+                                <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        @tournament.Matches.Count() <a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning">@Localizer["AddMatch"]</a>
+                                    </Authorized>
+                                </AuthorizeView>
+                            </td>
+                            <td>
+                                <AuthorizeView Roles="Att-CanTournamentEdit,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <a href="/tournamentadd/@tournament.Id">@Localizer["Edit"]</a> 
+                                    </Authorized>
+                                </AuthorizeView>
                                 @if (EventTournamentId != tournament.Id.ToString())
                                 {
-                                    <a class="btn btn-link" @onclick="@(() => StartTournament(tournament.Id))">@Localizer["StartTournament"]</a>
+                                    <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
+                                        <Authorized>
+                                            <a class="btn btn-link" @onclick="@(() => StartTournament(tournament.Id))">@Localizer["StartTournament"]</a>
+                                        </Authorized>
+                                    </AuthorizeView>
                                 }
                                 else
                                 {
-                                    <a class="btn btn-link" @onclick="StopTournament">@Localizer["StopTournament"]</a>
+                                    <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
+                                        <Authorized>
+                                            <a class="btn btn-link" @onclick="StopTournament">@Localizer["StopTournament"]</a>
+                                        </Authorized>
+                                    </AuthorizeView>
                                 }
                             </td>
                         </tr>
@@ -100,7 +118,11 @@ else
             <br />
             <br />
 
-            <a class="btn btn-primary" href="tournamentadd" role="button">Create Tournament</a>
+            <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <a class="btn btn-primary" href="tournamentadd" role="button">Create Tournament</a>
+                </Authorized>
+            </AuthorizeView>
         </Authorized>
         <NotAuthorized>
             <p>@Localizer["NoPermissions"]</p>

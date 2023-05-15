@@ -18,7 +18,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanTournamentAdd">
+    <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin">
         <Authorized>
             <EditForm Model="@ToSaveTournament" OnValidSubmit="@SaveTournament" Context="x">
                 <DataAnnotationsValidator />

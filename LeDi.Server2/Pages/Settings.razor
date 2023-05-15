@@ -23,7 +23,7 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanSettingManage">
+    <AuthorizeView Roles="Att-CanSettingManage,Att-IsAdmin">
         <Authorized>
             <p>@Localizer["FollowingSettingsConfigured"]</p>
             <EditForm Model="@SettingList" OnValidSubmit="@SaveSettings" Context="x">

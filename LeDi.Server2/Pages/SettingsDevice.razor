@@ -20,148 +20,161 @@
 }
 else
 {
-    <AuthorizeView Roles="Att-CanDeviceManage,Att-CanDeviceCommands">
+    <AuthorizeView Roles="Att-CanDeviceManage,Att-CanDeviceCommands,Att-IsAdmin">
         <Authorized>
-            <p>@Localizer["PropertiesSetForDevice"]@Device.DeviceName (@Id):</p>
-            <EditForm Model="@Device" OnValidSubmit="@SaveProperties" Context="x">
-                @*<DataAnnotationsValidator />
-                <ValidationSummary />*@
+            <AuthorizeView Roles="Att-CanDeviceManage,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <p>@Localizer["PropertiesSetForDevice"]@Device.DeviceName (@Id):</p>
+                    <EditForm Model="@Device" OnValidSubmit="@SaveProperties" Context="x">
+                        @*<DataAnnotationsValidator />
+                        <ValidationSummary />*@
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>@Localizer["Property"]</th>
-                            <th>@Localizer["Value"]</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <a>@Localizer["DeviceName"]</a>
-                            </td>
-                            <td>
-                                <InputText type="text" class="form-control" @bind-Value="Device.DeviceName" />                        
-                                @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a>@Localizer["DeviceModel"]</a>
-                            </td>
-                            <td>
-                                <InputText type="text" class="form-control" @bind-Value="Device.DeviceModel" />                        
-                                @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a>@Localizer["DeviceType"]</a>
-                            </td>
-                            <td>
-                                <InputText type="text" class="form-control" @bind-Value="Device.DeviceType" />                        
-                                @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a>@Localizer["Enabled"]</a>
-                            </td>
-                            <td>
-                                <InputCheckbox @bind-Value="Device.Enabled" />                        
-                                @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a>@Localizer["Default"]</a>
-                            </td>
-                            <td>
-                                <InputCheckbox @bind-Value="Device.Default" />                        
-                                @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <button class="btn btn-primary" type="submit">@Localizer["SaveProperties"]</button>
-            </EditForm>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer["Property"]</th>
+                                    <th>@Localizer["Value"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <a>@Localizer["DeviceName"]</a>
+                                    </td>
+                                    <td>
+                                        <InputText type="text" class="form-control" @bind-Value="Device.DeviceName" />                        
+                                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a>@Localizer["DeviceModel"]</a>
+                                    </td>
+                                    <td>
+                                        <InputText type="text" class="form-control" @bind-Value="Device.DeviceModel" />                        
+                                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a>@Localizer["DeviceType"]</a>
+                                    </td>
+                                    <td>
+                                        <InputText type="text" class="form-control" @bind-Value="Device.DeviceType" />                        
+                                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a>@Localizer["Enabled"]</a>
+                                    </td>
+                                    <td>
+                                        <InputCheckbox @bind-Value="Device.Enabled" />                        
+                                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a>@Localizer["Default"]</a>
+                                    </td>
+                                    <td>
+                                        <InputCheckbox @bind-Value="Device.Default" />                        
+                                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="btn btn-primary" type="submit">@Localizer["SaveProperties"]</button>
+                    </EditForm>
+                </Authorized>
+            </AuthorizeView>
             <br /><br />
 
-            <p>@Localizer["SettingsConfiguredForDevice"]@Device.DeviceName (@Id):</p>
-            <EditForm Model="@DeviceSettingList" OnValidSubmit="@SaveSettings" Context="x">
-                @*<DataAnnotationsValidator />
-                <ValidationSummary />*@
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>@Localizer["Setting"]</th>
-                            <th>@Localizer["Value"]</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach(var aSetting in DeviceSettingList)
-                        {
-                            <tr>
-                                <td>
-                                    <a>@aSetting.SettingName</a>
-                                    @*<InputText id="txtSetting@aSetting.Name" type="text" class="form-control" @bind-Value="@aSetting.Name" />*@
-                                    @*<ValidationMessage For="@(() => aSetting.Name)" />*@
-                                </td>
-                                <td>
-                                    <InputText type="text" class="form-control" @bind-Value="@aSetting.SettingValue" />
-                                    @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                                </td>
-                                <td>
-                                    <a href="/SettingsDeviceSettingDelete/@Id/@aSetting.SettingName" class="text-decoration-none">🗑</a>
-                                </td>
-                            </tr>
-                        }      
-                    </tbody>
-                </table>    
-        
-                <button class="btn btn-primary" type="submit">Save Settings</button>
-            </EditForm>
+            <AuthorizeView Roles="Att-CanDeviceManage,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <p>@Localizer["SettingsConfiguredForDevice"]@Device.DeviceName (@Id):</p>
+                    <EditForm Model="@DeviceSettingList" OnValidSubmit="@SaveSettings" Context="x">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>@Localizer["Setting"]</th>
+                                    <th>@Localizer["Value"]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var aSetting in DeviceSettingList)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a>@aSetting.SettingName</a>
+                                            @*<InputText id="txtSetting@aSetting.Name" type="text" class="form-control" @bind-Value="@aSetting.Name" />*@
+                                            @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+                                        </td>
+                                        <td>
+                                            <InputText type="text" class="form-control" @bind-Value="@aSetting.SettingValue" />
+                                            @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                                        </td>
+                                        <td>
+                                            <a href="/SettingsDeviceSettingDelete/@Id/@aSetting.SettingName" class="text-decoration-none">🗑</a>
+                                        </td>
+                                    </tr>
+                                }      
+                            </tbody>
+                        </table>
+                        <button class="btn btn-primary" type="submit">Save Settings</button>
+                    </EditForm>
+                </Authorized>
+            </AuthorizeView>
             <br /><br />
-            <h3>@Localizer["AddNewSetting"]</h3>
-            <EditForm Model="@NewSetting" OnValidSubmit="@SaveNewSetting" Context="x">
-                @*<DataAnnotationsValidator />
-                <ValidationSummary />*@
 
-                <a>@Localizer["SettingName"]</a>
-                <InputText id="txtNewSettingName" type="text" class="form-control" @bind-Value="@NewSetting.SettingName" />
-                @*<ValidationMessage For="@(() => aSetting.Name)" />*@
-                <br />
+            <AuthorizeView Roles="Att-CanDeviceManage,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <h3>@Localizer["AddNewSetting"]</h3>
+                    <EditForm Model="@NewSetting" OnValidSubmit="@SaveNewSetting" Context="x">
+                        @*<DataAnnotationsValidator />
+                        <ValidationSummary />*@
 
-                <a>@Localizer["SettingValue"]</a>
-                <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.SettingValue" />
-                @*<ValidationMessage For="@(() => aSetting.Value)" />*@
-                <br />
-        
-                <button class="btn btn-primary" type="submit">Add Setting</button>
-            </EditForm>
+                        <a>@Localizer["SettingName"]</a>
+                        <InputText id="txtNewSettingName" type="text" class="form-control" @bind-Value="@NewSetting.SettingName" />
+                        @*<ValidationMessage For="@(() => aSetting.Name)" />*@
+                        <br />
+
+                        <a>@Localizer["SettingValue"]</a>
+                        <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.SettingValue" />
+                        @*<ValidationMessage For="@(() => aSetting.Value)" />*@
+                        <br />
+                        <button class="btn btn-primary" type="submit">Add Setting</button>
+                    </EditForm>
+                </Authorized>
+            </AuthorizeView>
             <br /><br />
-            <h3>@Localizer["SendCommandDevice"]</h3>
-            <EditForm Model="@selectedDeviceCommand" OnValidSubmit="@ExecuteDeviceCommand" Context="x">
-                <InputSelect @bind-Value="selectedDeviceCommand" class="form-control">
-                    <option value="showareas">@Localizer["ShowAreas"]</option>
-                    <option value="showtestpattern">@Localizer["ShowTestpattern"]</option>
-                    <option value="showcolortest">@Localizer["ShowColortest"]</option>
-                    <option value="showfullcolortest">@Localizer["ShowFullcolortest"]</option>
-                    <option value="showclock">@Localizer["ShowCurrentTime"]</option>
-                    <option value="idlebar">@Localizer["ShowIdlebar"]</option>
-                    <option value="calibratefps">@Localizer["CalibrationTest"]</option>
-                    <option value="calibratebrightness">@Localizer["BrightnessTest"]</option>
-                    <option value="reload">@Localizer["ReloadDisplaySettings"]</option>
-                    <option value=""></option>
-                    <option value="">@Localizer["DANGERZONE"]</option>
-                    <option value="restartsoft">@Localizer["RestartDisplayService"]</option>
-                    <option value="restarthard">@Localizer["RestartHardware"]</option>
-                    <option value="shutdown">@Localizer["ShutdownHardware"]</option>
-                </InputSelect>
-                <button class="btn btn-primary" type="submit">@Localizer["SendCommand"]</button>
-            </EditForm>
+
+            
+            <AuthorizeView Roles="Att-CanDeviceCommands,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <h3>@Localizer["SendCommandDevice"]</h3>
+                    <EditForm Model="@selectedDeviceCommand" OnValidSubmit="@ExecuteDeviceCommand" Context="x">
+                        <InputSelect @bind-Value="selectedDeviceCommand" class="form-control">
+                            <option value="showareas">@Localizer["ShowAreas"]</option>
+                            <option value="showtestpattern">@Localizer["ShowTestpattern"]</option>
+                            <option value="showcolortest">@Localizer["ShowColortest"]</option>
+                            <option value="showfullcolortest">@Localizer["ShowFullcolortest"]</option>
+                            <option value="showclock">@Localizer["ShowCurrentTime"]</option>
+                            <option value="idlebar">@Localizer["ShowIdlebar"]</option>
+                            <option value="calibratefps">@Localizer["CalibrationTest"]</option>
+                            <option value="calibratebrightness">@Localizer["BrightnessTest"]</option>
+                            <option value="reload">@Localizer["ReloadDisplaySettings"]</option>
+                            <option value=""></option>
+                            <option value="">@Localizer["DANGERZONE"]</option>
+                            <option value="restartsoft">@Localizer["RestartDisplayService"]</option>
+                            <option value="restarthard">@Localizer["RestartHardware"]</option>
+                            <option value="shutdown">@Localizer["ShutdownHardware"]</option>
+                        </InputSelect>
+                        <button class="btn btn-primary" type="submit">@Localizer["SendCommand"]</button>
+                    </EditForm>
+                </Authorized>
+            </AuthorizeView>
         </Authorized>
         <NotAuthorized>
             <p>@Localizer["NoPermissions"]</p>

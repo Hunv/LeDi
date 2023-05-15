@@ -30,10 +30,14 @@
                         <td>@user.Email</td>
                         <td>@user.PhoneNumber</td> @*Shows the roles*@
                         <td>
-                            <button class="btn btn-primary"
-                                @onclick="(() => EditUser(user))">
-                                Edit
-                            </button>
+                            <AuthorizeView Roles="Att-CanUserEdit,Att-IsAdmin" Context="y">
+                                <Authorized>
+                                    <button class="btn btn-primary"
+                                        @onclick="(() => EditUser(user))">
+                                        Edit
+                                    </button>
+                                </Authorized>
+                            </AuthorizeView>
                         </td>
                     </tr>
                 }
@@ -93,14 +97,19 @@
                                 Save
                             </button>
                             <!-- Only show delete button if not a new record -->
-                            @if (objUser.Id != "")
-                            {
-                                <!-- Button to delete the forecast -->
-                                <button class="btn btn-danger"
-                                    @onclick="DeleteUser">
-                                    Delete
-                                </button>
-                            }
+                            
+                            <AuthorizeView Roles="Att-CanUserDelete,Att-IsAdmin" Context="y">
+                                <Authorized>
+                                    @if (objUser.Id != "")
+                                    {
+                                        <!-- Button to delete the forecast -->
+                                        <button class="btn btn-danger"
+                                            @onclick="DeleteUser">
+                                            Delete
+                                        </button>
+                                    }
+                                </Authorized>
+                            </AuthorizeView>
                             <br />
                             <span style="color:red">@strError</span>
                         </div>
@@ -108,9 +117,13 @@
                 </div>
             </div>
         }
-        <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
+        <AuthorizeView Roles="Att-CanUserAdd,Att-IsAdmin" Context="y">
+            <Authorized>
+                <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
+            </Authorized>
+        </AuthorizeView>
     </Authorized>
     <NotAuthorized>
-        <p>You're not signed in as a user in @AdministrationRole.</p>
+        <p>You're not logged in.</p>
     </NotAuthorized>
 </AuthorizeView>
