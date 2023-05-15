@@ -11,89 +11,82 @@
 <PageTitle>LeDi - @Localizer["MatchPlanning"]</PageTitle>
 
 
-@if (MatchList == null || AuthenticatedUserRole == null)
+@if (MatchList == null)
 {
     <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <AuthorizeView>
+    <AuthorizeView Roles="Att-CanMatchAdd">
         <Authorized>
-            @if (AuthenticatedUserRole.CanMatchAdd)
-            {
-                <h1>@Localizer["CurrentlyPlannedMatches"]</h1>
-                <a href="/matchadd">@Localizer["AddNewMatch"]</a>
+            <h1>@Localizer["CurrentlyPlannedMatches"]</h1>
+            <a href="/matchadd">@Localizer["AddNewMatch"]</a>
 
-                <table class="table">
-                    <thead>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Team1"]</th>
+                        <th>@Localizer["Team2"]</th>
+                        <th>@Localizer["Score"]</th>
+                        <th>@Localizer["ScheduledTime"]</th>
+                        <th>@Localizer["Status"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in MatchList.Where(x => x.ScheduledTime >= DateTime.Now.Subtract(new TimeSpan(1, 0, 0))))
+                    {
                         <tr>
-                            <th>@Localizer["Team1"]</th>
-                            <th>@Localizer["Team2"]</th>
-                            <th>@Localizer["Score"]</th>
-                            <th>@Localizer["ScheduledTime"]</th>
-                            <th>@Localizer["Status"]</th>
-                            <th></th>
+                            <td>
+                                @match.Team1Name
+                            </td>
+                            <td>
+                                @match.Team2Name
+                            </td>
+                            <td>@match.Team1Score:@match.Team2Score</td>
+                            <td>@match.ScheduledTime</td>
+                            <td>@(Enum.GetName(typeof(LeDi.Server2.Enum.MatchStatusEnum), match.MatchStatus))</td>
+                            <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var match in MatchList.Where(x => x.ScheduledTime >= DateTime.Now.Subtract(new TimeSpan(1, 0, 0))))
-                        {
-                            <tr>
-                                <td>
-                                    @match.Team1Name
-                                </td>
-                                <td>
-                                    @match.Team2Name
-                                </td>
-                                <td>@match.Team1Score:@match.Team2Score</td>
-                                <td>@match.ScheduledTime</td>
-                                <td>@(Enum.GetName(typeof(LeDi.Server2.Enum.MatchStatusEnum), match.MatchStatus))</td>
-                                <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
 
-                <br /><br /><br />
-                <h1>@Localizer["FinishedMatches"]</h1>
+            <br /><br /><br />
+            <h1>@Localizer["FinishedMatches"]</h1>
 
-                <table class="table">
-                    <thead>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@Localizer["Team1"]</th>
+                        <th>@Localizer["Team2"]</th>
+                        <th>@Localizer["Score"]</th>
+                        <th>@Localizer["ScheduledTime"]</th>
+                        <th>@Localizer["Status"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in MatchList.Where(x => x.ScheduledTime < DateTime.Now.Subtract(new TimeSpan(1, 0, 0)) || x.ScheduledTime == null))
+                    {
                         <tr>
-                            <th>@Localizer["Team1"]</th>
-                            <th>@Localizer["Team2"]</th>
-                            <th>@Localizer["Score"]</th>
-                            <th>@Localizer["ScheduledTime"]</th>
-                            <th>@Localizer["Status"]</th>
-                            <th></th>
+                            <td>
+                                @match.Team1Name
+                            </td>
+                            <td>
+                                @match.Team2Name
+                            </td>
+                            <td>@match.Team1Score:@match.Team2Score</td>
+                            <td>@match.ScheduledTime</td>
+                            <td>@(Enum.GetName(typeof(LeDi.Server2.Enum.MatchStatusEnum), match.MatchStatus))</td>
+                            <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var match in MatchList.Where(x => x.ScheduledTime < DateTime.Now.Subtract(new TimeSpan(1, 0, 0)) || x.ScheduledTime == null))
-                        {
-                            <tr>
-                                <td>
-                                    @match.Team1Name
-                                </td>
-                                <td>
-                                    @match.Team2Name
-                                </td>
-                                <td>@match.Team1Score:@match.Team2Score</td>
-                                <td>@match.ScheduledTime</td>
-                                <td>@(Enum.GetName(typeof(LeDi.Server2.Enum.MatchStatusEnum), match.MatchStatus))</td>
-                                <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <p>@Localizer["NoPermissions"]</p>
-            }
+                    }
+                </tbody>
+            </table>
         </Authorized>
         <NotAuthorized>
-            <p>@Localizer["NotLoggedIn"]</p>
+            <p>@Localizer["NoPermissions"]</p>
         </NotAuthorized>
     </AuthorizeView>
 }

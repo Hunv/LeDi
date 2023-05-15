@@ -14,30 +14,23 @@
 
 <h1>@Localizer["ConfirmDeletionDevice"]</h1>
 
-@if (ToDeleteDevice == null || AuthenticatedUserRole == null)
+@if (ToDeleteDevice == null)
 {
     <p><em>@Localizer["LoadingDevice"]</em></p>
 }
 else
 {
-    <AuthorizeView>
+    <AuthorizeView Roles="Att-CanDeviceManage">
         <Authorized>
-            @if (AuthenticatedUserRole.CanDeviceManage)
-            {
-                <p>@Localizer["ConfirmTheDeletionDevice"]@Id:</p>
-                <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete" Context="x">
+            <p>@Localizer["ConfirmTheDeletionDevice"]@Id:</p>
+            <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete" Context="x">
 
-                    <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
-                    <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
-                </EditForm>
-            }
-            else
-            {
-                <p>@Localizer["NoPermissions"]</p>
-            }
+                <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
+                <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
+            </EditForm>
         </Authorized>
         <NotAuthorized>
-            <p>@Localizer["NotLoggedIn"]</p>
+            <p>@Localizer["NoPermissions"]</p>
         </NotAuthorized>
     </AuthorizeView>
 }
@@ -50,35 +43,8 @@ else
     private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
     private TblDevice? ToDeleteDevice;
 
-    /// <summary>
-    /// Contains the roles a user has
-    /// </summary>
-    private TblUserRole? AuthenticatedUserRole { get; set; }
-
-
     protected override async Task OnInitializedAsync()
     {
-        // Get the roles of the currently logged in user
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
-        {
-            // Get the Roles from Identity management. Should only be one always.
-            var username = authState.User.Identity.Name;
-            if (username != null)
-            {
-                var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
-
-                if (roles != null && roles.Count >= 1)
-                {
-                    AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
-                }
-            }
-        }
-        else
-        {
-            AuthenticatedUserRole = await DataHandler.GetUserRoleAsync("Guests");
-        }
-
         ToDeleteDevice = await DataHandler.GetDeviceAsync(Id);
     }
 

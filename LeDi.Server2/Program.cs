@@ -17,13 +17,19 @@ var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentCla
 
 // Add services to the container.
 // Identity services:
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseSqlite("Filename=LeDi2.db"));
+builder.Services.AddDbContext<LeDiDbContext>(options =>
+    options.UseSqlite("Filename=LeDi.db"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<LeDiDbContext>();
+
+//To ckeck: .AddDefaultUI()
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();

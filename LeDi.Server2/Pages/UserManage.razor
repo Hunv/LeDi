@@ -9,114 +9,108 @@
 
 <h3>@Localizer["ManageUsers"]</h3>
 
-<AuthorizeView>
+
+<AuthorizeView Roles="Att-CanUserAdd,Att-CanUserEdit,Att-CanUserDelete,Att-IsAdmin">
     <Authorized>
-        @if (@context.User.IsInRole(AdministrationRole))
-        {
-            <table class="table">
-                <thead>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in ColUsers)
+                {
                     <tr>
-                        <th>Id</th>
-                        <th>User Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
+                        <td>@user.Id.Substring(0, 5) ...</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.PhoneNumber</td> @*Shows the roles*@
+                        <td>
+                            <button class="btn btn-primary"
+                                @onclick="(() => EditUser(user))">
+                                Edit
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in ColUsers)
-                    {
-                        <tr>
-                            <td>@user.Id.Substring(0, 5) ...</td>
-                            <td>@user.UserName</td>
-                            <td>@user.Email</td>
-                            <td>@user.PhoneNumber</td>
-                            <td>
-                                <button class="btn btn-primary"
-                                    @onclick="(() => EditUser(user))">
-                                    Edit
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            @if (ShowPopup)
-            {
-                <!-- This is the popup to create or edit a user -->
-                <div class="modal" tabindex="-1" style="display:block" role="dialog">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title">Edit User</h3>
-                                <!-- Button to close the popup -->
-                                <button type="button" class="close"
-                                    @onclick="ClosePopup">
-                                    <span aria-hidden="true">X</span>
-                                </button>
-                            </div>
-                            <!-- Edit form for the current user -->
-                            <div class="modal-body">
-                                <!-- Only show Id if not a new user -->
-                                @if (objUser.Id != "")
-                                {
-                                    <p>@objUser.Id</p>
-                                }
-                                <!-- Only allow edit if a new user -->
-                                @if (objUser.Id != "")
-                                {
-                                    <p>@objUser.UserName</p>
-                                }
-                                else
-                                {
-                                    <input class="form-control" type="text"
-                                        placeholder="UserName"
-                                        @bind="objUser.UserName" />
-                                }
+                }
+            </tbody>
+        </table>
+        @if (ShowPopup)
+        {
+            <!-- This is the popup to create or edit a user -->
+            <div class="modal" tabindex="-1" style="display:block" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Edit User</h3>
+                            <!-- Button to close the popup -->
+                            <button type="button" class="close"
+                                @onclick="ClosePopup">
+                                <span aria-hidden="true">X</span>
+                            </button>
+                        </div>
+                        <!-- Edit form for the current user -->
+                        <div class="modal-body">
+                            <!-- Only show Id if not a new user -->
+                            @if (objUser.Id != "")
+                            {
+                                <p>@objUser.Id</p>
+                            }
+                            <!-- Only allow edit if a new user -->
+                            @if (objUser.Id != "")
+                            {
+                                <p>@objUser.UserName</p>
+                            }
+                            else
+                            {
                                 <input class="form-control" type="text"
-                                    placeholder="Email"
-                                    @bind="objUser.Email" />
-                                <input class="form-control" type="password"
-                                    placeholder="Password"
-                                    @bind="objUser.PasswordHash" />
-                                <select class="form-control"
-                                    @bind="@CurrentUserRole">
-                                    @foreach (var option in Options)
-                                    {
-                                        <option value="@option">
-                                            @option
-                                        </option>
-                                    }
-                                </select>
-                                <br /><br />
-                                <!-- Button to save the user -->
-                                <button class="btn btn-primary"
-                                    @onclick="SaveUser">
-                                    Save
-                                </button>
-                                <!-- Only show delete button if not a new record -->
-                                @if (objUser.Id != "")
+                                    placeholder="UserName"
+                                    @bind="objUser.UserName" />
+                            }
+                            <input class="form-control" type="text"
+                                placeholder="Email"
+                                @bind="objUser.Email" />
+                            <input class="form-control" type="password"
+                                placeholder="Password"
+                                @bind="objUser.PasswordHash" />
+                            <select class="form-control"
+                                @bind="@CurrentUserRole">
+                                @foreach (var option in Options)
                                 {
-                                    <!-- Button to delete the forecast -->
-                                    <button class="btn btn-danger"
-                                        @onclick="DeleteUser">
-                                        Delete
-                                    </button>
+                                    <option value="@option">
+                                        @option
+                                    </option>
                                 }
-                                <br />
-                                <span style="color:red">@strError</span>
-                            </div>
+                            </select>
+                            <br /><br />
+                            <!-- Button to save the user -->
+                            <button class="btn btn-primary"
+                                @onclick="SaveUser">
+                                Save
+                            </button>
+                            <!-- Only show delete button if not a new record -->
+                            @if (objUser.Id != "")
+                            {
+                                <!-- Button to delete the forecast -->
+                                <button class="btn btn-danger"
+                                    @onclick="DeleteUser">
+                                    Delete
+                                </button>
+                            }
+                            <br />
+                            <span style="color:red">@strError</span>
                         </div>
                     </div>
                 </div>
-            }
-            <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
+            </div>
         }
-        else
-        {
-            <p>You're not signed in as a user in @AdministrationRole.</p>
-        }
+        <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
     </Authorized>
     <NotAuthorized>
-        <p>You're not loggged in.</p>
+        <p>You're not signed in as a user in @AdministrationRole.</p>
     </NotAuthorized>
 </AuthorizeView>

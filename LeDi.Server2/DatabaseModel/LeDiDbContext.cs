@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LeDi.Server2.DatabaseModel
 {
-    public class LeDiDbContext : DbContext
+    public class LeDiDbContext : IdentityDbContext
     {
         public DbSet<TblMatch>? TblMatches { get; set; }
         public DbSet<TblMatchEvent>? TblMatchEvents { get; set; }
@@ -28,6 +30,12 @@ namespace LeDi.Server2.DatabaseModel
         public DbSet<TblTournament> TblTournaments { get; set; }
         public DbSet<TblUserRole> TblUserRoles { get; set; }
 
+        public LeDiDbContext(DbContextOptions<LeDiDbContext> options)
+            : base(options)
+        {
+        }
+
+        public LeDiDbContext() : base() { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -60,7 +68,7 @@ namespace LeDi.Server2.DatabaseModel
                     .WithMany(e => e.MatchList);
             });
 
-            // Devices to Tournments (for the default config for matches)
+            // Devices to Tournaments (for the default config for matches)
             modelBuilder.Entity<TblDevice2Tournament>().ToTable("Device2Tournaments");
             modelBuilder.Entity<TblDevice2Tournament>(entity =>
             {
@@ -83,9 +91,7 @@ namespace LeDi.Server2.DatabaseModel
                 entity.HasKey(new string[] { "SettingName", "DeviceId" });
             });
 
-
-
-            //base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
     }

@@ -11,53 +11,46 @@
 
 <PageTitle>LeDi - @Localizer["PrepareMatch"]</PageTitle>
 
-@if (Match == null || AuthenticatedUserRole == null)
+@if (Match == null)
 {
     <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <AuthorizeView>
+    <AuthorizeView Roles="Att-CanMatchAdd,Att-CanMatchEdit,Att-CanMatchStart">
         <Authorized>
-            @if (AuthenticatedUserRole.CanMatchAdd || AuthenticatedUserRole.CanMatchEdit || AuthenticatedUserRole.CanMatchStart)
-            {
-                <EditForm Model="@Match" OnValidSubmit="@SaveMatch" Context="x">
-                    <a>@Localizer["PrepareMatchText"] @Match.Team1Name @Localizer["vs"] @Match.Team2Name @Localizer["ScheduledFor"] @Match.ScheduledTime.</a><br />
-                    <br />
-                    <a>@Localizer["AssignPlayers"]</a><br />
-                    <a>@Localizer["Todo"]</a><br />
-                    <br />
-                    <br />
-                    <a>@Localizer["MainRefereeName"]</a><br />
-                    <InputText id="txtReferee1" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee1Name" />
-                    <br />
-                    <a>@Localizer["WaterRefereeName"]</a><br />
-                    <InputText id="txtReferee2" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee2Name" />
-                    <br />
-                    <a>@Localizer["WaterRefereeName"]</a><br />
-                    <InputText id="txtReferee3" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee3Name" />
-                    <br />
-                    <a>@Localizer["WaterRefereeName"]</a><br />
-                    <InputText id="txtReferee4" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee4Name" />
-                    <br />
-                    <a>@Localizer["WaterRefereeName"]</a><br />
-                    <InputText id="txtReferee5" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee5Name" />
-                    <br />
-                    <a>@Localizer["TimeKeeperName"]</a><br />
-                    <InputText id="txtTimeKeeper" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="TimeKeeperName" />
-                    <br />
+            <EditForm Model="@Match" OnValidSubmit="@SaveMatch" Context="x">
+                <a>@Localizer["PrepareMatchText"] @Match.Team1Name @Localizer["vs"] @Match.Team2Name @Localizer["ScheduledFor"] @Match.ScheduledTime.</a><br />
+                <br />
+                <a>@Localizer["AssignPlayers"]</a><br />
+                <a>@Localizer["Todo"]</a><br />
+                <br />
+                <br />
+                <a>@Localizer["MainRefereeName"]</a><br />
+                <InputText id="txtReferee1" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee1Name" />
+                <br />
+                <a>@Localizer["WaterRefereeName"]</a><br />
+                <InputText id="txtReferee2" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee2Name" />
+                <br />
+                <a>@Localizer["WaterRefereeName"]</a><br />
+                <InputText id="txtReferee3" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee3Name" />
+                <br />
+                <a>@Localizer["WaterRefereeName"]</a><br />
+                <InputText id="txtReferee4" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee4Name" />
+                <br />
+                <a>@Localizer["WaterRefereeName"]</a><br />
+                <InputText id="txtReferee5" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="Referee5Name" />
+                <br />
+                <a>@Localizer["TimeKeeperName"]</a><br />
+                <InputText id="txtTimeKeeper" type="text" class="form-control" placeholder="First- and Lastname" @bind-Value="TimeKeeperName" />
+                <br />
 
-                    <button class="btn btn-primary" type="submit">@Localizer["PreperationDone"]</button>
-                    <a class="btn btn-danger" href="matchplanning" role="button">@Localizer["Cancel"]</a>
-                </EditForm>
-            }
-            else
-            {
-                <p>@Localizer["NoPermissions"]</p>
-            }
+                <button class="btn btn-primary" type="submit">@Localizer["PreperationDone"]</button>
+                <a class="btn btn-danger" href="matchplanning" role="button">@Localizer["Cancel"]</a>
+            </EditForm>
         </Authorized>
         <NotAuthorized>
-            <p>@Localizer["NotLoggedIn"]</p>
+            <p>@Localizer["NoPermissions"]</p>
         </NotAuthorized>
     </AuthorizeView>
 }
@@ -76,35 +69,8 @@ else
     [Parameter]
     public int? Id { get; set; }
 
-    /// <summary>
-    /// Contains the roles a user has
-    /// </summary>
-    private TblUserRole? AuthenticatedUserRole { get; set; }
-
-
     protected override async Task OnInitializedAsync()
     {
-        // Get the roles of the currently logged in user
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
-        {
-            // Get the Roles from Identity management. Should only be one always.
-            var username = authState.User.Identity.Name;
-            if (username != null)
-            {
-                var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
-
-                if (roles != null && roles.Count >= 1)
-                {
-                    AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
-                }
-            }
-        }
-        else
-        {
-            AuthenticatedUserRole = await DataHandler.GetUserRoleAsync("Guests");
-        }
-
         if (Id == null)
             return;
 

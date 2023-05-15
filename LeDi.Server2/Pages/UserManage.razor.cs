@@ -19,7 +19,7 @@ namespace LeDi.Server2.Pages
         private Task<AuthenticationState> authenticationStateTask { get; set; }
 
         // The role that defindes the role for Administrators
-        string AdministrationRole = "Administrators";
+        string AdministrationRole = "Role-Administrators";
         //System.Security.Claims.ClaimsPrincipal CurrentUser;
 
         // The role that defindes the role for Guests
@@ -29,7 +29,7 @@ namespace LeDi.Server2.Pages
         IdentityUser objUser = new IdentityUser();
 
         // Tracks the selected role for the currently selected user
-        string CurrentUserRole { get; set; } = "Guests";
+        string CurrentUserRole { get; set; } = "Role-Guests";
 
         // Collection to display the existing users
         List<IdentityUser> ColUsers = new List<IdentityUser>();
@@ -43,38 +43,49 @@ namespace LeDi.Server2.Pages
         // To enable showing the Popup
         bool ShowPopup = false;
 
-        /// <summary>
-        /// Contains the roles a user has
-        /// </summary>
-        private TblUserRole? AuthenticatedUserRole { get; set; }
-
-
 
         protected override async Task OnInitializedAsync()
         {
-            // Get the roles of the currently logged in user
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
-            {
-                // Get the Roles from Identity management. Should only be one always.
-                var username = authState.User.Identity.Name;
-                if (username != null)
-                {
-                    var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
-
-                    if (roles != null && roles.Count >= 1)
-                    {
-                        AuthenticatedUserRole = await DataHandler.GetUserRoleAsync(roles[0]);
-                    }
-                }
-            }
-
             // Ensure the Build in Admin role is created
             var RoleResult = await _RoleManager.FindByNameAsync(AdministrationRole);
             if (RoleResult == null)
             {
                 // Create AdministrationRole Role
                 await _RoleManager.CreateAsync(new IdentityRole(AdministrationRole));
+                await DataHandler.SetUserRoleAsync(new TblUserRole() { 
+                    CanDeviceCommands = true,
+                    CanDeviceManage = true,
+                    CanMatchAdd = true,
+                    CanMatchAdvancedControls = true,
+                    CanMatchDelete = true,
+                    CanMatchEdit = true,
+                    CanMatchEnd = true,
+                    CanMatchPenalty = true,
+                    CanMatchStart = true,
+                    CanMatchStop = true,
+                    CanPlayerAdd = true,
+                    CanPlayerDelete = true,
+                    CanPlayerEdit = true,
+                    CanRoleAdd = true,
+                    CanRoleDelete = true,
+                    CanRoleEdit = true,
+                    CanSettingManage = true,
+                    CanTeamAdd = true,
+                    CanTeamDelete = true,
+                    CanTeamEdit = true,
+                    CanTemplateManage = true,
+                    CanTournamentAdd = true,
+                    CanTournamentEdit = true,
+                    CanTournamentMatchAdd = true,
+                    CanTournamentMatchDelete = true,
+                    CanTournamentMatchEdit = true,
+                    CanUserAdd = true,
+                    CanUserDelete = true,
+                    CanUserEdit = true,
+                    CanUserPasswordEdit = true,
+                    IsAdmin = true,
+                    RoleName = "Role-Administrators"
+                });
             }
 
             // Ensure the Build in Guest role is created
@@ -83,6 +94,7 @@ namespace LeDi.Server2.Pages
             {
                 // Create GuestRole Role
                 await _RoleManager.CreateAsync(new IdentityRole(GuestRole));
+                await DataHandler.SetUserRoleAsync(new TblUserRole() { RoleName = "Role-Guests" });
             }
 
             // Ensure all roles are created
@@ -112,6 +124,7 @@ namespace LeDi.Server2.Pages
                 {
                     // Put admin in Administrator role
                     await _UserManager.AddToRoleAsync(user, AdministrationRole);
+                    await SetRoleAttributes(user, "Role-Administrators");
                 }
             }
 
@@ -146,8 +159,11 @@ namespace LeDi.Server2.Pages
 
             foreach (var item in user)
             {
+                var roles = await GetRoles(item);
+                roles = roles.Where(x => x.StartsWith("Role")).ToList();
+
                 // Just for visual purposes to show the assigned role(s) in the UI. Abuse the unused PhoneNumber field for this.
-                item.PhoneNumber = string.Join(", ", await GetRoles(item)); 
+                item.PhoneNumber = string.Join(", ", roles); 
 
                 ColUsers.Add(item);
             }
@@ -184,6 +200,12 @@ namespace LeDi.Server2.Pages
                     var user = await _UserManager.FindByIdAsync(objUser.Id);
                     if (user == null) { return; }
 
+                    // Check if currently selected Role has the Role Prefix
+                    if (!CurrentUserRole.StartsWith("Role-"))
+                    {
+                        CurrentUserRole = "Role-" + CurrentUserRole;
+                    }
+
                     // Update Email
                     user.Email = objUser.Email;
 
@@ -214,35 +236,21 @@ namespace LeDi.Server2.Pages
                     }
 
                     // Handle Roles
-                    // Is user in administrator role?
-                    var UserResult = await _UserManager.IsInRoleAsync(user, AdministrationRole);
 
-                    // Of the role changed
+                    // If the role changed
                     if (await _UserManager.IsInRoleAsync(user, CurrentUserRole) == false)
                     {
                         // Remove user from old role(s)
                         var oldRoles = await _UserManager.GetRolesAsync(user);
-                        foreach (var oldRole in oldRoles) { await _UserManager.RemoveFromRolesAsync(user, oldRoles); }
+                        foreach (var oldRole in oldRoles)
+                        {
+                            await _UserManager.RemoveFromRolesAsync(user, oldRoles);
+                        }
 
                         // add user to new role
                         await _UserManager.AddToRoleAsync(user, CurrentUserRole);
+                        await SetRoleAttributes(user, CurrentUserRole.Replace("Role-", ""));
                     }
-
-                    // Is Administrator role selected but user is not an Administrator?
-                    //if ((CurrentUserRole == AdministrationRole) & (!UserResult))
-                    //{
-                    //    // Put admin in Administrator role
-                    //    await _UserManager.AddToRoleAsync(user, AdministrationRole);
-                    //}
-                    //else
-                    //{
-                    //    // Is Administrator role not selected but user is an Administrator?
-                    //    if ((CurrentUserRole != AdministrationRole) & (UserResult))
-                    //    {
-                    //        // Remove user from Administrator role
-                    //        await _UserManager.RemoveFromRoleAsync(user, AdministrationRole);
-                    //    }
-                    //}
                 }
                 else
                 {
@@ -274,6 +282,7 @@ namespace LeDi.Server2.Pages
                         // Handle Roles
                         // put user to given role
                         await _UserManager.AddToRoleAsync(NewUser, CurrentUserRole);
+                        await SetRoleAttributes(NewUser, CurrentUserRole.Replace("Role-", ""));
 
                         //if (CurrentUserRole == AdministrationRole)
                         //{
@@ -296,6 +305,234 @@ namespace LeDi.Server2.Pages
         }
 
         /// <summary>
+        /// Sets the attributs for the role of the user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private async Task SetRoleAttributes(IdentityUser? user, string role)
+        {
+            // add the attributes as role
+            var attributes = await DataHandler.GetUserRoleAsync(role);
+
+            try
+            {
+                if (!(await _RoleManager.RoleExistsAsync("Att-IsAdmin")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-IsAdmin"));
+                if (attributes.IsAdmin && !(await _UserManager.IsInRoleAsync(user, "Att-IsAdmin")))
+                    await _UserManager.AddToRoleAsync(user, "Att-IsAdmin");
+                else if (!attributes.IsAdmin && (await _UserManager.IsInRoleAsync(user, "Att-IsAdmin")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-IsAdmin");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchAdd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchAdd"));
+                if (attributes.CanMatchAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchAdd");
+                else if (!attributes.CanMatchAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchDelete")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchDelete"));
+                if (attributes.CanMatchDelete && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchDelete")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchDelete");
+                else if (!attributes.CanMatchDelete && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchDelete")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchDelete");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchEdit"));
+                if (attributes.CanMatchEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchEdit");
+                else if (!attributes.CanMatchEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchStart")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchStart"));
+                if (attributes.IsAdmin && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchStart")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchStart");
+                else if (!attributes.IsAdmin && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchStart")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchStart");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchStop")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchStop"));
+                if (attributes.CanMatchStop && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchStop")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchStop");
+                else if (!attributes.CanMatchStop && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchStop")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchStop");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchEnd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchEnd"));
+                if (attributes.CanMatchEnd && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchEnd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchEnd");
+                else if (!attributes.CanMatchEnd && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchEnd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchEnd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchPenalty")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchPenalty"));
+                if (attributes.CanMatchPenalty && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchPenalty")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchPenalty");
+                else if (!attributes.CanMatchPenalty && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchPenalty")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchPenalty");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanMatchAdvancedControls")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanMatchAdvancedControls"));
+                if (attributes.CanMatchAdvancedControls && !(await _UserManager.IsInRoleAsync(user, "Att-CanMatchAdvancedControls")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanMatchAdvancedControls");
+                else if (!attributes.CanMatchAdvancedControls && (await _UserManager.IsInRoleAsync(user, "Att-CanMatchAdvancedControls")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanMatchAdvancedControls");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTournamentAdd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTournamentAdd"));
+                if (attributes.CanTournamentAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanTournamentAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTournamentAdd");
+                else if (!attributes.CanTournamentAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanTournamentAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTournamentAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTournamentEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTournamentEdit"));
+                if (attributes.CanTournamentEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanTournamentEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTournamentEdit");
+                else if (!attributes.CanTournamentEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanTournamentEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTournamentEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTournamentMatchAdd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTournamentMatchAdd"));
+                if (attributes.CanTournamentMatchAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanTournamentMatchAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTournamentMatchAdd");
+                else if (!attributes.CanTournamentMatchAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanTournamentMatchAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTournamentMatchAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTournamentMatchDelete")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTournamentMatchDelete"));
+                if (attributes.CanTournamentMatchDelete && !(await _UserManager.IsInRoleAsync(user, "Att-CanTournamentMatchDelete")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTournamentMatchDelete");
+                else if (!attributes.CanTournamentMatchDelete && (await _UserManager.IsInRoleAsync(user, "Att-CanTournamentMatchDelete")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTournamentMatchDelete");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTournamentMatchEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTournamentMatchEdit"));
+                if (attributes.CanTournamentMatchEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanTournamentMatchEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTournamentMatchEdit");
+                else if (!attributes.CanTournamentMatchEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanTournamentMatchEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTournamentMatchEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanUserAdd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanUserAdd"));
+                if (attributes.CanUserAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanUserAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanUserAdd");
+                else if (!attributes.CanUserAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanUserAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanUserAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanUserEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanUserEdit"));
+                if (attributes.CanUserEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanUserEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanUserEdit");
+                else if (!attributes.CanUserEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanUserEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanUserEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanUserDelete")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanUserDelete"));
+                if (attributes.CanUserDelete && !(await _UserManager.IsInRoleAsync(user, "Att-CanUserDelete")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanUserDelete");
+                else if (!attributes.CanUserDelete && (await _UserManager.IsInRoleAsync(user, "Att-CanUserDelete")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanUserDelete");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanUserPasswordEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanUserPasswordEdit"));
+                if (attributes.CanUserPasswordEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanUserPasswordEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanUserPasswordEdit");
+                else if (!attributes.CanUserPasswordEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanUserPasswordEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanUserPasswordEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanRoleAdd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanRoleAdd"));
+                if (attributes.CanRoleAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanRoleAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanRoleAdd");
+                else if (!attributes.CanRoleAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanRoleAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanRoleAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanRoleEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanRoleEdit"));
+                if (attributes.CanRoleEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanRoleEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanRoleEdit");
+                else if (!attributes.CanRoleEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanRoleEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanRoleEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanRoleDelete")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanRoleDelete"));
+                if (attributes.CanRoleDelete && !(await _UserManager.IsInRoleAsync(user, "Att-CanRoleDelete")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanRoleDelete");
+                else if (!attributes.CanRoleDelete && (await _UserManager.IsInRoleAsync(user, "Att-CanRoleDelete")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanRoleDelete");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-IsAdCanPlayerAddmin")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanPlayerAdd"));
+                if (attributes.CanPlayerAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanPlayerAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanPlayerAdd");
+                else if (!attributes.CanPlayerAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanPlayerAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanPlayerAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanPlayerEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanPlayerEdit"));
+                if (attributes.CanPlayerEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanPlayerEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanPlayerEdit");
+                else if (!attributes.CanPlayerEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanPlayerEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanPlayerEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanPlayerDelete")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanPlayerDelete"));
+                if (attributes.CanPlayerDelete && !(await _UserManager.IsInRoleAsync(user, "Att-CanPlayerDelete")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanPlayerDelete");
+                else if (!attributes.CanPlayerDelete && (await _UserManager.IsInRoleAsync(user, "Att-CanPlayerDelete")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanPlayerDelete");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTeamAdd")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTeamAdd"));
+                if (attributes.CanTeamAdd && !(await _UserManager.IsInRoleAsync(user, "Att-CanTeamAdd")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTeamAdd");
+                else if (!attributes.CanTeamAdd && (await _UserManager.IsInRoleAsync(user, "Att-CanTeamAdd")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTeamAdd");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTeamEdit")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTeamEdit"));
+                if (attributes.CanTeamEdit && !(await _UserManager.IsInRoleAsync(user, "Att-CanTeamEdit")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTeamEdit");
+                else if (!attributes.CanTeamEdit && (await _UserManager.IsInRoleAsync(user, "Att-CanTeamEdit")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTeamEdit");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanSettingManage")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanSettingManage"));
+                if (attributes.CanSettingManage && !(await _UserManager.IsInRoleAsync(user, "Att-CanSettingManage")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanSettingManage");
+                else if (!attributes.CanSettingManage && (await _UserManager.IsInRoleAsync(user, "Att-CanSettingManage")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanSettingManage");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanTeamDelete")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanTeamDelete"));
+                if (attributes.CanTeamDelete && !(await _UserManager.IsInRoleAsync(user, "Att-CanTeamDelete")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanTeamDelete");
+                else if (!attributes.CanTeamDelete && (await _UserManager.IsInRoleAsync(user, "Att-CanTeamDelete")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanTeamDelete");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanDeviceManage")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanDeviceManage"));
+                if (attributes.CanDeviceManage && !(await _UserManager.IsInRoleAsync(user, "Att-CanDeviceManage")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanDeviceManage");
+                else if (!attributes.CanDeviceManage && (await _UserManager.IsInRoleAsync(user, "Att-CanDeviceManage")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanDeviceManage");
+
+                if (!(await _RoleManager.RoleExistsAsync("Att-CanDeviceCommands")))
+                    await _RoleManager.CreateAsync(new IdentityRole("Att-CanDeviceCommands"));
+                if (attributes.CanDeviceCommands && !(await _UserManager.IsInRoleAsync(user, "Att-CanDeviceCommands")))
+                    await _UserManager.AddToRoleAsync(user, "Att-CanDeviceCommands");
+                else if (!attributes.CanDeviceCommands && (await _UserManager.IsInRoleAsync(user, "Att-CanDeviceCommands")))
+                    await _UserManager.RemoveFromRoleAsync(user, "Att-CanDeviceCommands");
+            }
+            catch(Exception ea)
+            {
+                Console.WriteLine("Failed to set Role attributes. " + ea.ToString());
+            }
+        }
+
+        /// <summary>
         /// Edit an user
         /// </summary>
         /// <param name="_IdentityUser"></param>
@@ -310,9 +547,9 @@ namespace LeDi.Server2.Pages
             if (user != null)
             {
                 // Is user in administrator role?
-                var UserResult = await _UserManager.IsInRoleAsync(user, AdministrationRole);
+                var IsAdminUser = await _UserManager.IsInRoleAsync(user, AdministrationRole);
 
-                if (UserResult)
+                if (IsAdminUser)
                 {
                     CurrentUserRole = AdministrationRole;
                 }
@@ -361,11 +598,10 @@ namespace LeDi.Server2.Pages
         /// Gets the roles of a user
         /// </summary>
         /// <param name="user"></param>
-        async Task<string> GetRoles(IdentityUser user)
+        async Task<IList<string>> GetRoles(IdentityUser user)
         {
-            var roles = await _UserManager.GetRolesAsync(user);            
-            string roleString = String.Join(",", roles);
-            return roleString;
+            var roles = await _UserManager.GetRolesAsync(user);                        
+            return roles;
         }
 
         ///// <summary>

@@ -12,253 +12,246 @@
 <h3>@Localizer["TournamentAdd"]</h3>
 
 
-@if (ToSaveTournament == null || AuthenticatedUserRole == null)
+@if (ToSaveTournament == null)
 {
     <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <AuthorizeView>
+    <AuthorizeView Roles="Att-CanTournamentAdd">
         <Authorized>
-            @if (AuthenticatedUserRole.CanTournamentAdd)
-            {
-                <EditForm Model="@ToSaveTournament" OnValidSubmit="@SaveTournament" Context="x">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="table">
-                        <div class="row">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["SelectSport"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputSelect id="cmbSport" class="w-auto col-8 form-select" @bind-Value="ToSaveTournament.Sport">
-                                    <option value=""> </option>
-                                    <option value="Underwaterhockey">@Localizer["Underwaterhockey"]</option>
-                                    <option value="Handball">@Localizer["Handball"]</option>
-                                    <option value="Soccer">@Localizer["Soccer"]</option>
-                        @*            <option value="Baseball">Baseball</option>
-                                    <option value="Hockey">Hockey</option>
-                                    <option value="Football">Football</option>
-                                    <option value="Basketball">Basketball</option>
-                                    <option value="Tennis">Tennis</option>*@
-                                    <option value="Other">@Localizer["Other"]</option>
-                                </InputSelect>
-                            </div>
+            <EditForm Model="@ToSaveTournament" OnValidSubmit="@SaveTournament" Context="x">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="table">
+                    <div class="row">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["SelectSport"]</a>
                         </div>
-            
-                        <div class="row pt-1">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["TournamentName"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputText 
-                                    id="txtTournamentName"
-                                    class="form-control w-auto"
-                                    type="text"
-                                    @bind-Value="@ToSaveTournament.Name" 
-                                    />
-                            </div>
+                        <div class="col-xxl-auto">
+                            <InputSelect id="cmbSport" class="w-auto col-8 form-select" @bind-Value="ToSaveTournament.Sport">
+                                <option value=""> </option>
+                                <option value="Underwaterhockey">@Localizer["Underwaterhockey"]</option>
+                                <option value="Handball">@Localizer["Handball"]</option>
+                                <option value="Soccer">@Localizer["Soccer"]</option>
+                    @*            <option value="Baseball">Baseball</option>
+                                <option value="Hockey">Hockey</option>
+                                <option value="Football">Football</option>
+                                <option value="Basketball">Basketball</option>
+                                <option value="Tennis">Tennis</option>*@
+                                <option value="Other">@Localizer["Other"]</option>
+                            </InputSelect>
                         </div>
-                        <div class="row pt-1">
-                            <div class="col-xxl-2 align-self-baseline">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["TournamentStartDate"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputDate
-                                    id="dtTournamentStartDate"
-                                    class="form-control w-auto"
-                                    @bind-Value="ToSaveTournament.StartDate" 
-                                    />
-                            </div>
-                        </div>
-                        <div class="row pt-1">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["TournamentEndDate"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <input 
-                                    id="dtTournamentEndDate"
-                                    type="date"
-                                    class="form-control w-auto"
-                                    @bind-value="ToSaveTournament.EndDate" 
-                                    />
-                                <br />
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(ToSaveTournament.Sport == null || ToSaveTournament.Sport == string.Empty)">
-                            <div class="col-1">
-                                <a id="btnRulesExpand"
-                                    class="btn btn-outline-dark"
-                                    style="form-control w-auto"
-                                    role="button"
-                                    @onclick="@ExpandRules">
-                                    <span class="oi @(this.HideRules ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideRules ? Localizer["ShowRules"] : Localizer["HideRules"])
-                                </a>
-                                <br />
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtTeamName1"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam1"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputText 
-                                            id="txtTeamName1"
-                                            class="form-control w-auto"
-                                            type="text"
-                                    @bind-Value="@ToSaveTournament.DefaultTeam1Name" 
-                                    />
-                            </div>
-                        </div>
-
-                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtTeamName2"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam2"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputText 
-                                    id="txtTeamName2"
-                                            class="form-control w-auto"
-                                            type="text"
-                                    @bind-Value="@ToSaveTournament.DefaultTeam2Name" 
-                                    />
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtPeriodCount"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultNumberPeriods"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputNumber 
-                                    id="txtPeriodCount"
-                                                class="form-control w-auto"
-                                    min="1"
-                                    @bind-Value="@ToSaveTournament.DefaultPeriodCount" 
-                                    />
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(this.HideRules ||!FieldList[ToSaveTournament.Sport].Contains("txtPeriodLength"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultLengthPeriod"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <div id="txtPeriodLength" class="input-group">
-                                    <input 
-                                        id="txtPeriodLengthMin"
-                                        type="number"
-                                        class="form-control w-auto"
-                                        style="max-width:100px; min-width:50px"
-                                        placeholder="Minutes"
-                                        min="0"
-                                        max="99999"
-                                        @bind-value="PeriodLengthMinutesProxy" 
-                                        />
-                                    <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
-                                    <input 
-                                        id="txtPeriodLengthSec"
-                                        type="number"
-                                        class="form-control w-auto"
-                                        style="max-width:100px; min-width:50px"
-                                        placeholder="Seconds"
-                                        min="0"
-                                        max="59"
-                                        @bind-value="PeriodLengthSecondsProxy" 
-                                        />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(this.HideRules ||!FieldList[ToSaveTournament.Sport].Contains("chkPeriodOvertime"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultMatchOvertime"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputCheckbox 
-                                    id="chkPeriodOvertime"
-                                    class="w-auto"
-                                    @bind-Value="ToSaveTournament.DefaultRulePeriodOvertime" 
-                                    />
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("chkPeriodPauseNearEnd"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptions"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputCheckbox 
-                                    id="chkPeriodPauseNearEnd"
-                                    class="w-auto"
-                                    @bind-Value="ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent" 
-                                    />
-                            </div>
-                        </div>
-
-                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtPeriodPauseNearEndSec")|| ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent == false)">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptionsSeconds"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputNumber 
-                                    id="txtPeriodPauseNearEndSec"
-                                    class="form-control w-auto"
-                                    min="1"
-                                    @bind-Value="@ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEventSeconds" 
-                                    />
-                            </div>
-                        </div>
-
-                        <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("chkMatchExtensionOnDraw"))">
-                            <div class="col-xxl-2">
-                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultExtendMatch"]</a>
-                            </div>
-                            <div class="col-xxl-auto">
-                                <InputCheckbox 
-                                    id="chkMatchExtensionOnDraw"
-                                    class="w-auto"
-                                    @bind-Value="ToSaveTournament.DefaultRuleMatchExtensionOnDraw" 
-                                    />
-                            </div>
-                        </div>
-
-                        @*Show displaylist only if there are displays available*@
-                        @if (DisplayList != null && DisplayList.Count > 0)
-                        {
-                            <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("displaylist"))">
-                                <div class="col-xxl-2">
-                                    <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultDisplay"]</a>
-                                </div>
-                                <div class="col-xxl-auto">
-                                    <br />
-                                    @foreach (var aDisplay in DisplayList)
-                                    {
-                                        var value = aDisplay;
-                                        <input 
-                                            type="checkbox" 
-                                            checked="@aDisplay.Enabled" 
-                                            @onchange="eventArgs => {DisplayClicked(value,(bool)(eventArgs.Value ?? false));}"
-                                            > @aDisplay.DeviceName
-                                    }
-                                </div>
-                            </div>
-                        }
                     </div>
-                    <br />
+            
+                    <div class="row pt-1">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["TournamentName"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputText 
+                                id="txtTournamentName"
+                                class="form-control w-auto"
+                                type="text"
+                                @bind-Value="@ToSaveTournament.Name" 
+                                />
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col-xxl-2 align-self-baseline">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["TournamentStartDate"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputDate
+                                id="dtTournamentStartDate"
+                                class="form-control w-auto"
+                                @bind-Value="ToSaveTournament.StartDate" 
+                                />
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["TournamentEndDate"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <input 
+                                id="dtTournamentEndDate"
+                                type="date"
+                                class="form-control w-auto"
+                                @bind-value="ToSaveTournament.EndDate" 
+                                />
+                            <br />
+                        </div>
+                    </div>
 
-                    <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
-                </EditForm>
-            }
-            else
-            {
-                <p>@Localizer["NoPermissions"]</p>
-            }
+                    <div class="row pt-1" hidden="@(ToSaveTournament.Sport == null || ToSaveTournament.Sport == string.Empty)">
+                        <div class="col-1">
+                            <a id="btnRulesExpand"
+                                class="btn btn-outline-dark"
+                                style="form-control w-auto"
+                                role="button"
+                                @onclick="@ExpandRules">
+                                <span class="oi @(this.HideRules ? "oi-arrow-circle-bottom" : "oi-arrow-circle-top")" /> @(this.HideRules ? Localizer["ShowRules"] : Localizer["HideRules"])
+                            </a>
+                            <br />
+                        </div>
+                    </div>
+
+                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtTeamName1"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam1"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputText 
+                                        id="txtTeamName1"
+                                        class="form-control w-auto"
+                                        type="text"
+                                @bind-Value="@ToSaveTournament.DefaultTeam1Name" 
+                                />
+                        </div>
+                    </div>
+
+                <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtTeamName2"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam2"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputText 
+                                id="txtTeamName2"
+                                        class="form-control w-auto"
+                                        type="text"
+                                @bind-Value="@ToSaveTournament.DefaultTeam2Name" 
+                                />
+                        </div>
+                    </div>
+
+                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtPeriodCount"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultNumberPeriods"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputNumber 
+                                id="txtPeriodCount"
+                                            class="form-control w-auto"
+                                min="1"
+                                @bind-Value="@ToSaveTournament.DefaultPeriodCount" 
+                                />
+                        </div>
+                    </div>
+
+                    <div class="row pt-1" hidden="@(this.HideRules ||!FieldList[ToSaveTournament.Sport].Contains("txtPeriodLength"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultLengthPeriod"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <div id="txtPeriodLength" class="input-group">
+                                <input 
+                                    id="txtPeriodLengthMin"
+                                    type="number"
+                                    class="form-control w-auto"
+                                    style="max-width:100px; min-width:50px"
+                                    placeholder="Minutes"
+                                    min="0"
+                                    max="99999"
+                                    @bind-value="PeriodLengthMinutesProxy" 
+                                    />
+                                <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
+                                <input 
+                                    id="txtPeriodLengthSec"
+                                    type="number"
+                                    class="form-control w-auto"
+                                    style="max-width:100px; min-width:50px"
+                                    placeholder="Seconds"
+                                    min="0"
+                                    max="59"
+                                    @bind-value="PeriodLengthSecondsProxy" 
+                                    />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pt-1" hidden="@(this.HideRules ||!FieldList[ToSaveTournament.Sport].Contains("chkPeriodOvertime"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultMatchOvertime"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputCheckbox 
+                                id="chkPeriodOvertime"
+                                class="w-auto"
+                                @bind-Value="ToSaveTournament.DefaultRulePeriodOvertime" 
+                                />
+                        </div>
+                    </div>
+
+                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("chkPeriodPauseNearEnd"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptions"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputCheckbox 
+                                id="chkPeriodPauseNearEnd"
+                                class="w-auto"
+                                @bind-Value="ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent" 
+                                />
+                        </div>
+                    </div>
+
+                <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtPeriodPauseNearEndSec")|| ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent == false)">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptionsSeconds"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputNumber 
+                                id="txtPeriodPauseNearEndSec"
+                                class="form-control w-auto"
+                                min="1"
+                                @bind-Value="@ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEventSeconds" 
+                                />
+                        </div>
+                    </div>
+
+                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("chkMatchExtensionOnDraw"))">
+                        <div class="col-xxl-2">
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultExtendMatch"]</a>
+                        </div>
+                        <div class="col-xxl-auto">
+                            <InputCheckbox 
+                                id="chkMatchExtensionOnDraw"
+                                class="w-auto"
+                                @bind-Value="ToSaveTournament.DefaultRuleMatchExtensionOnDraw" 
+                                />
+                        </div>
+                    </div>
+
+                    @*Show displaylist only if there are displays available*@
+                    @if (DisplayList != null && DisplayList.Count > 0)
+                    {
+                        <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("displaylist"))">
+                            <div class="col-xxl-2">
+                                <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultDisplay"]</a>
+                            </div>
+                            <div class="col-xxl-auto">
+                                <br />
+                                @foreach (var aDisplay in DisplayList)
+                                {
+                                    var value = aDisplay;
+                                    <input 
+                                        type="checkbox" 
+                                        checked="@aDisplay.Enabled" 
+                                        @onchange="eventArgs => {DisplayClicked(value,(bool)(eventArgs.Value ?? false));}"
+                                        > @aDisplay.DeviceName
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                <br />
+
+                <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
+            </EditForm>
         </Authorized>
         <NotAuthorized>
-            <p>@Localizer["NotLoggedIn"]</p>
+            <p>@Localizer["NoPermissions"]</p>
         </NotAuthorized>
     </AuthorizeView>
 }

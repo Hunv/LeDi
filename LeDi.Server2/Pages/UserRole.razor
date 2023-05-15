@@ -9,16 +9,14 @@
 
 <h3>@Localizer["UserRoles"]</h3>
 
-@if (RoleList == null || AuthenticatedUserRole == null)
+@if (RoleList == null)
 {
     <p><em>@Localizer["Loading"]</em></p>
 }
 else
 {
-    <AuthorizeView>
+    <AuthorizeView Roles="Att-CanRoleAdd,Att-CanRoleEdit,Att-CanRoleDelete">
         <Authorized>
-            @if (AuthenticatedUserRole.CanRoleAdd || AuthenticatedUserRole.CanRoleEdit || AuthenticatedUserRole.CanRoleDelete)
-            {
                 <table class="table table-striped table-hover table-responsive-sm">
                     <thead>
                         <tr>
@@ -111,7 +109,9 @@ else
                     <a>@Localizer["RoleName"]</a>
                     <InputText id="txtRoleName" type="text" class="form-control" @bind-Value="@Role.RoleName" />
                     <br />
-
+                    <br />
+                    <a>@Localizer["RoleAttributes"]</a>
+                    <br />
                     <InputCheckbox class="form-check-input" @bind-Value="@Role.IsAdmin" /> <a>@Localizer["IsAdmin"]</a><br />
                     <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchAdd" /> <a>@Localizer["CanMatchAdd"]</a><br />
                     <InputCheckbox class="form-check-input" @bind-Value="@Role.CanMatchDelete" /> <a>@Localizer["CanMatchDelete"]</a><br />
@@ -145,11 +145,6 @@ else
 
                     <button class="btn btn-primary" type="submit">@Localizer["AddRole"]</button>
                 </EditForm>
-            }
-            else
-            {
-                <p>@Localizer["NoPermissions"]</p>
-            }
         </Authorized>
         <NotAuthorized>
             <p>@Localizer["NotLoggedIn"]</p>

@@ -228,6 +228,9 @@
   <data name="NotLoggedIn" xml:space="preserve">
     <value>You're not loggged in.</value>
   </data>
+  <data name="RoleAttributes" xml:space="preserve">
+    <value>Role attributes</value>
+  </data>
   <data name="RoleName" xml:space="preserve">
     <value>Rolename</value>
   </data>
