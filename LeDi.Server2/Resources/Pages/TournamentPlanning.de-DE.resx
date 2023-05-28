@@ -117,10 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddMatch" xml:space="preserve">
+    <value>Spiel hinzufügen</value>
+  </data>
+  <data name="CreateTournament" xml:space="preserve">
+    <value>Turnier erstellen</value>
+  </data>
+  <data name="CurrentOrPlanedTournaments" xml:space="preserve">
+    <value>Aktuelle oder geplante Turniere:</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Turnier bearbeiten</value>
+  </data>
+  <data name="FinishedTournaments" xml:space="preserve">
+    <value>Beendete Turniere:</value>
+  </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
   </data>
   <data name="NotLoggedIn" xml:space="preserve">
     <value>Sie sind nicht angemeldet.</value>
+  </data>
+  <data name="NumberOfMatches" xml:space="preserve">
+    <value>Anzahl an Spielen</value>
+  </data>
+  <data name="NumberOfTeams" xml:space="preserve">
+    <value>Anzahl an Teams</value>
+  </data>
+  <data name="StartTournament" xml:space="preserve">
+    <value>Turnier starten</value>
+  </data>
+  <data name="StopTournament" xml:space="preserve">
+    <value>Turnier stoppen</value>
+  </data>
+  <data name="TournamentEndDate" xml:space="preserve">
+    <value>Enddatum</value>
+  </data>
+  <data name="TournamentPlanning" xml:space="preserve">
+    <value>Turnierplanung</value>
+  </data>
+  <data name="TournamentStartDate" xml:space="preserve">
+    <value>Startdatum</value>
   </data>
 </root>

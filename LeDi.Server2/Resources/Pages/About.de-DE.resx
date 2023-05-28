@@ -135,4 +135,7 @@
   <data name="ProjectPage" xml:space="preserve">
     <value>Projektseite</value>
   </data>
+  <data name="SpecialThanks" xml:space="preserve">
+    <value>Besonderen Dank an ETSV Schlickteufel e.V. für die Unterstützung dieses Projekts.</value>
+  </data>
 </root>

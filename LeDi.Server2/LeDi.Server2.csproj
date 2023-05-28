@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" Version="1.7.3" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
@@ -72,6 +73,16 @@
       <LastGenOutput>MatchControl.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Display\Web\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="rpi_ws281x">
+      <HintPath>..\LeDi.Display\bin\Debug\net6.0\rpi_ws281x.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

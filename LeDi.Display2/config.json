@@ -1,0 +1,21 @@
+﻿{
+  "Config": {
+    "ServerURL": "localhost:7168",
+    "DeviceName": "LeDi",
+    "DeviceType": "LED Screen",
+    "DeviceModel": "LeDi LED Display",
+    "GpioPin": 12,
+    "PwmChannel": 0,
+    "DeviceId": "",
+    "Layout": "10x5",
+    "DeviceWidth": 10,
+    "DeviceHeight": 5,
+    "Brightness": 50,
+    "Frequency": 0,
+    "CharacterSet": "default",
+    "HardAreaBorders": false,
+    "LedTopToBottom": false,
+    "LedAlternatingRows": true,
+    "LedFirstLedLeft": false
+  }
+}

@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+﻿@*@inherits LayoutComponentBase
 @inject Microsoft.Extensions.Localization.IStringLocalizer<MainLayout> Localizer
 
 <PageTitle>LeDi.Server2</PageTitle>
@@ -18,4 +18,112 @@
             @Body
         </article>
     </main>
+</div>*@
+
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inherits LayoutComponentBase
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MainLayout> Localizer
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="bb-page">
+    <Sidebar @ref="sidebar"
+             IconName="IconName.Magnet"
+             Title="LeDi Manager"
+             DataProvider="SidebarDataProvider" />
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col bb-top-row px-4 d-flex justify-content-start">
+                    <a class="fw-bold fs-5 text-decoration-none">@CurrentText</a>
+                </div>
+                <div class="col bb-top-row px-4 d-flex justify-content-end">
+                    <LoginDisplay />
+                    <a href="/about">About</a>
+                </div>
+            </div>
+        </div>
+        <article class="content px-4">
+            <div class="py-2">
+                @Body
+            </div>
+        </article>
+    </main>
 </div>
+
+@code {
+    private Sidebar sidebar = default!;
+    private IEnumerable<NavItem> navItems = default!;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = await GetNavItems();
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private async Task<IEnumerable<NavItem>> GetNavItems()
+    {
+        // The roles the current user owns
+        IList<string> userRoles = null;
+
+        // Get the roles of the currently logged in user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState != null && authState.User.Identity != null && authState.User.Identity.IsAuthenticated)
+        {
+            // Get the Roles from Identity management. Should only be one always.
+            var username = authState.User.Identity.Name;
+            if (username != null)
+            {
+                var roles = await _UserManager.GetRolesAsync(await _UserManager.FindByNameAsync(username));
+
+                if (roles != null && roles.Count >= 1)
+                {
+                    userRoles = roles;                    
+                }
+            }
+        }
+
+        if (userRoles == null)
+            userRoles = new List<string>();
+
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = Localizer["Home"], Match=NavLinkMatch.All},
+            new NavItem { Id = "2", Href = "/dashboard", IconName = IconName.Clipboard, Text = Localizer["Dashboard"]},
+            //new NavItem { Id = "99", Href = "/about", IconName = IconName.Info, Text = Localizer["AboutLedi"]},
+        };
+
+        if (userRoles.Contains("Att-CanMatchAdd") || userRoles.Contains("Att-IsAdmin"))
+        {
+            ((List<NavItem>)navItems).Add(new NavItem { Id = "3", Href = "/matchplanning", IconName = IconName.List, Text = Localizer["MatchPlanning"] });
+        }
+
+        if (userRoles.Contains("Att-CanTournamentAdd") || userRoles.Contains("Att-CanTournamentEdit") || userRoles.Contains("Att-CanTournamentMatchAdd") || userRoles.Contains("Att-CanTournamentMatchEdit") || userRoles.Contains("Att-CanTournamentMatchDelete") || userRoles.Contains("Att-IsAdmin"))
+        {
+            ((List<NavItem>)navItems).Add(new NavItem { Id = "4", Href = "/tournamentplanning", IconName = IconName.CalendarWeek, Text = Localizer["Tournaments"] });
+        }
+
+        if (userRoles.Contains("Att-CanSettingsManage") || userRoles.Contains("Att-IsAdmin"))
+        {
+            ((List<NavItem>)navItems).Add(new NavItem { Id = "5", Href = "/settings", IconName = IconName.Gear, Text = Localizer["Settings"] });
+        }
+
+        if (userRoles.Contains("Att-CanUserAdd") || userRoles.Contains("Att-CanUserEdit") || userRoles.Contains("Att-CanUserDelete") || userRoles.Contains("Att-CanUserPasswordEdit") || userRoles.Contains("Att-IsAdmin"))
+        {
+            ((List<NavItem>)navItems).Add(new NavItem { Id = "6", Href = "/usermanage", IconName = IconName.People, Text = Localizer["UserManagement"] });
+        }
+
+        if (userRoles.Contains("Att-CanRoleAdd") || userRoles.Contains("Att-CanRoleEdit") || userRoles.Contains("Att-CanRoleDelete") || userRoles.Contains("Att-IsAdmin"))
+        {
+            ((List<NavItem>)navItems).Add(new NavItem { Id = "7", Href = "/userrole", IconName = IconName.Key, Text = Localizer["UserRole"] });
+        }
+
+        // Sort the navItems to show the order, ordered by the ID.
+        navItems = ((List<NavItem>)navItems).OrderBy(x => x.Id);
+
+        return navItems;
+    }
+}

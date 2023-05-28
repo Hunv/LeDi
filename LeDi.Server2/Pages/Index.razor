@@ -1,20 +1,7 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Components.Server.Circuits
-@using LeDi.Server2.Data
-@inject CircuitHandler CircuitHandlerService
 
 <PageTitle>Index</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
-
-<p>
-    Number of Circuits: @((CircuitHandlerService as CircuitHandlerService).Circuits.Count)
-    <ul>
-        @foreach (var circuit in (CircuitHandlerService as CircuitHandlerService).Circuits)
-        {
-            <li>@circuit.Key</li>
-        }
-    </ul>
-</p>

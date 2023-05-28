@@ -194,3 +194,5 @@ LeDi.Server2/obj/
 LeDi.Server2/LeDi.db
 LeDi.Server2/LeDi.db-shm
 LeDi.Server2/LeDi.db-wal
+LeDi.Display2/bin/
+LeDi.Display2/obj/

@@ -4,15 +4,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using NLog.Web.LayoutRenderers;
 
 namespace LeDi.Server2
 {
     public static class DataHandler
     {
-        private static LeDiDbContext DbContext;
+        private static LeDiDbContext? DbContext;
         private static System.Timers.Timer TmrDbSaveTime = new System.Timers.Timer(100);
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         
         static DataHandler()
         {
@@ -303,6 +305,38 @@ namespace LeDi.Server2
 
 
         /// <summary>
+        /// Gets device commands for a device Id
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        public static async Task<List<TblDeviceCommand>> GetDeviceCommandsAsync(string deviceId)
+        {
+            if (DbContext == null || DbContext.TblDeviceCommands == null)
+                return new List<TblDeviceCommand>();
+
+            return await DbContext.TblDeviceCommands.Where(x => x.DeviceId == deviceId).ToListAsync();
+        }
+
+        /// <summary>
+        /// A device command was removed
+        /// </summary>
+        public static Action<string>? OnDeviceCommandRemoved { get; set; }
+
+        /// <summary>
+        /// Removes a device command
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        public static async Task RemoveDeviceCommandAsync(TblDeviceCommand command)
+        {
+            if (DbContext == null || DbContext.TblDeviceCommands == null)
+                return;
+
+            DbContext.TblDeviceCommands.Remove(command);
+            await DbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// Gets the device with device ID deviceId
         /// </summary>
         /// <param name="deviceId"></param>
@@ -349,6 +383,9 @@ namespace LeDi.Server2
         /// </summary>
         public async static Task<bool> RemoveDeviceAsync(string deviceId)
         {
+            if (DbContext.TblDevice == null)
+                return false;
+
             if (await DbContext.TblDevice?.AnyAsync(x => x.DeviceId == deviceId))
             {
                 var dev = await DbContext.TblDevice.SingleAsync(x => x.DeviceId == deviceId);
@@ -364,6 +401,40 @@ namespace LeDi.Server2
         }
 
 
+        /// <summary>
+        /// Registers a new device at the server
+        /// </summary>
+        /// <returns></returns>
+        public static async Task RegisterDevice(string deviceId, string deviceName, string deviceType, string deviceModel)
+        {
+            try
+            {
+                Logger.Trace("RegisterDevice executed.");
+
+                // To satisfy the compiler
+                if (DbContext == null || DbContext.TblDevice == null)
+                    return;
+
+                //Check if device already exists
+                if (DbContext.TblDevice.Any(x => x.DeviceId == deviceId))
+                {
+                    Logger.Info("Device {0} is already registered.");
+                    return;
+                }
+
+                // Create new device entry
+                var newDevice = new TblDevice(deviceId, deviceModel, deviceType, deviceName);
+                newDevice.Enabled = true;
+
+                // Add device to database
+                await DbContext.TblDevice.AddAsync(newDevice);
+            }
+            catch (Exception ea)
+            {
+                Logger.Error("Cannot register because of an Error: ", ea.ToString());
+            }
+            
+        }
 
         /// <summary>
         /// Gets all settings

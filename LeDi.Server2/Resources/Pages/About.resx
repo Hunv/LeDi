@@ -135,4 +135,7 @@
   <data name="ProjectPage" xml:space="preserve">
     <value>Project page</value>
   </data>
+  <data name="SpecialThanks" xml:space="preserve">
+    <value>Special thanks to ETSV Schlickteufel e.V. for supporting this project.</value>
+  </data>
 </root>
