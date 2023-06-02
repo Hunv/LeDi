@@ -1,9 +1,12 @@
+using BlazorBootstrap;
+using LeDi.Display2.Display;
+using Newtonsoft.Json;
+
 namespace LeDi.Display2
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private Connector _connector = new Connector();
 
         public Worker(ILogger<Worker> logger)
         {
@@ -12,14 +15,9 @@ namespace LeDi.Display2
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _connector.Connect();
-
+            DisplayManager.Initialize();
             while (!stoppingToken.IsCancellationRequested)
             {
-                
-                _connector.SendMessage();
-
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(1000, stoppingToken);
             }
         }

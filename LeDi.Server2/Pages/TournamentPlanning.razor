@@ -24,10 +24,10 @@ else
             <br />
 
             <div class="container-fluid">
-                @foreach (var tournament in TournamentList.Where(x => x.EndDate >= DateTime.Today))
+                @foreach (var tournament in TournamentList.Where(x => x.EndDate >= DateTime.Today).OrderBy(x => x.StartDate))
                 {
-                    <div class="row border-top border-bottom" style="@((TournamentList.IndexOf(tournament) % 2 != 0) ? "background-color:#F6F6F6" : "")">
-                        <div class="col-sm-2">
+                    <Card>
+                        <CardBody>
                             <a href="/tournamentmatchlist/@tournament.Id">@tournament.Name</a><br />
                             <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
                                 <Authorized>
@@ -55,8 +55,7 @@ else
                                     <Tooltip Title="@Localizer["Edit"]" Placement="TooltipPlacement.Bottom"><a href="/tournamentadd/@tournament.Id"><Icon Name="IconName.PencilSquare" Size="IconSize.x2" /></a> </Tooltip>
                                 </Authorized>
                             </AuthorizeView>
-                        </div>
-                        <div class="col-sm-auto">
+
                             <table class="table table-borderless table-sm">
                                 <tbody>
                                     <tr>
@@ -74,31 +73,31 @@ else
                                         <td>
                                             @tournament.EndDate
                                         </td>
-                                    </tr>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Localizer["NumberOfMatches"]
+                                    </td>
+                                    <td>
+                                        @tournament.Matches.Count()
+                                    </td>
+                                </tr>
                                     <tr>
                                         <td>
                                             @Localizer["NumberOfTeams"]
                                         </td>
                                         <td>
-                                            todo
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            @Localizer["NumberOfMatches"]
-                                        </td>
-                                        <td>
-                                            @tournament.Matches.Count()
+                                            todo <br />
+                                            Participating Teams: todo
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
+                        </CardBody>
+                    </Card>
+                    <br />
                 }
             </div>
-
-            <br />
 
             <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
                 <Authorized>

@@ -8,14 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" Version="1.8.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NLog" Version="5.1.4" />
+    <PackageReference Include="NLog" Version="5.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LeDi.Server2\LeDi.Server2.csproj" />
+    <ProjectReference Include="..\LeDi.Shared2\LeDi.Shared2.csproj" />
   </ItemGroup>
 
   <ItemGroup>

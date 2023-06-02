@@ -4,7 +4,7 @@ using System.Text;
 using System.Timers;
 using System.Linq;
 using rpi_ws281x;
-using LeDi.Display2.Display;
+using LeDi.Shared2.Display;
 
 namespace LeDi.Display2.Effects
 {

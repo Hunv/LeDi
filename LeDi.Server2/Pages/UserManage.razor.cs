@@ -1,5 +1,5 @@
 ﻿using LeDi.Server2.Data;
-using LeDi.Server2.DatabaseModel;
+using LeDi.Shared2.DatabaseModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;

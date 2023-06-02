@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LeDi.Server2.DatabaseModel
+namespace LeDi.Shared2.DatabaseModel
 {
     public class TblUserRole
     {

@@ -45,7 +45,7 @@ else
                             </td>
                             <td>@match.Team1Score:@match.Team2Score</td>
                             <td>@match.ScheduledTime</td>
-                            <td>@(Enum.GetName(typeof(LeDi.Server2.Enum.MatchStatusEnum), match.MatchStatus))</td>
+                            <td>@(Enum.GetName(typeof(LeDi.Shared2.Enum.MatchStatusEnum), match.MatchStatus))</td>
                             <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
                         </tr>
                     }
@@ -78,7 +78,7 @@ else
                             </td>
                             <td>@match.Team1Score:@match.Team2Score</td>
                             <td>@match.ScheduledTime</td>
-                            <td>@(Enum.GetName(typeof(LeDi.Server2.Enum.MatchStatusEnum), match.MatchStatus))</td>
+                            <td>@(Enum.GetName(typeof(LeDi.Shared2.Enum.MatchStatusEnum), match.MatchStatus))</td>
                             <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
                         </tr>
                     }

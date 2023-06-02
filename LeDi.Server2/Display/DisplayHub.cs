@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using LeDi.Shared2.Display;
 
 namespace LeDi.Server2.Display
 {

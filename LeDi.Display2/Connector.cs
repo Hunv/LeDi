@@ -1,7 +1,7 @@
 ﻿using LeDi.Display2.Display;
 using LeDi.Display2.Events;
-using LeDi.Server2.DatabaseModel;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
+using LeDi.Shared2.DatabaseModel;
+//using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,7 @@
 using LeDi.Server2;
 using LeDi.Server2.Data;
 using LeDi.Server2.DatabaseModel;
+using LeDi.Shared2.DatabaseModel;
 using LeDi.Server2.Areas.Identity;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;

@@ -1,4 +1,4 @@
-﻿namespace LeDi.Server2.DatabaseModel
+﻿namespace LeDi.Shared2.DatabaseModel
 {
     public class TblDevice2Tournament
     {

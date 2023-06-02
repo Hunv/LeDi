@@ -77,6 +77,11 @@
 
   <ItemGroup>
     <Folder Include="Display\Web\" />
+    <Folder Include="Enum\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LeDi.Shared2\LeDi.Shared2.csproj" />
   </ItemGroup>
 
   <ItemGroup>

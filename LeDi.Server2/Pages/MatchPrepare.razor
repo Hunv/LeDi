@@ -1,6 +1,6 @@
 ﻿@page "/matchprepare/{Id:int}"
-@using LeDi.Server2.DatabaseModel;
-@using LeDi.Server2.Enum
+@using LeDi.Shared2.DatabaseModel;
+@using LeDi.Shared2.Enum
 @using LeDi.Server2.Components
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Identity;
@@ -146,7 +146,7 @@ else
             );
         }
 
-        Match.MatchStatus = (int)LeDi.Server2.Enum.MatchStatusEnum.ReadyToStart;
+        Match.MatchStatus = (int)LeDi.Shared2.Enum.MatchStatusEnum.ReadyToStart;
 
         // Save the changes on the Match
         //await DbContext.SaveChangesAsync();

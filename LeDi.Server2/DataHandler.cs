@@ -1,4 +1,5 @@
-﻿using LeDi.Server2.DatabaseModel;
+﻿using LeDi.Shared2.DatabaseModel;
+using LeDi.Server2.DatabaseModel;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OutputCaching;

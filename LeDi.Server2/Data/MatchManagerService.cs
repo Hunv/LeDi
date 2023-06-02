@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.AspNetCore.Components;
-using LeDi.Server2.DatabaseModel;
+using LeDi.Shared2.DatabaseModel;
 using System.Linq;
-using LeDi.Server2.Enum;
+using LeDi.Shared2.Enum;
 using System.Reflection;
 
 namespace LeDi.Server2.Data

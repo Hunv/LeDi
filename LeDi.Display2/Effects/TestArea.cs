@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using LeDi.Display.Display;
+using LeDi.Display2.Display;
 
 namespace LeDi.Display2.Effects
 {

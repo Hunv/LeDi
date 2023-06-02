@@ -1,4 +1,4 @@
-﻿namespace LeDi.Server2.Enum
+﻿namespace LeDi.Shared2.Enum
 {
     public enum MatchStatusEnum
     {

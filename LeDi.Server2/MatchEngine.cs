@@ -1,5 +1,5 @@
 ﻿using LeDi.Server2.DatabaseModel;
-using LeDi.Server2.Enum;
+using LeDi.Shared2.Enum;
 
 namespace LeDi.Server2
 {

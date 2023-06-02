@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LeDi.Server2.DatabaseModel
+namespace LeDi.Shared2.DatabaseModel
 {
     public class TblPlayer
     {

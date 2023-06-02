@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LeDi.Display2.Display
+namespace LeDi.Shared2.Display
 {
     public class Area
     {

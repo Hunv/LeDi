@@ -1,4 +1,5 @@
-﻿using LeDi.Server2.DatabaseModel;
+﻿using LeDi.Shared2.DatabaseModel;
+using LeDi.Shared2.Enum;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json.Linq;
@@ -38,7 +39,7 @@ namespace LeDi.Server2.Pages
             CurrentTimeLeft = 600,
             CurrentPeriod = 1,
             ScheduledTime = DateTime.Now,
-            MatchStatus = (int)Enum.MatchStatusEnum.Planned
+            MatchStatus = (int)MatchStatusEnum.Planned
         };
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace LeDi.Server2.Pages
                 GameName = SelectedSport,
                 Team1Name = "Team1",
                 Team2Name = "Team2",
-                MatchStatus = (int)Enum.MatchStatusEnum.Planned,
+                MatchStatus = (int)MatchStatusEnum.Planned,
                 ScheduledTime = DateTime.Now
             };
             NewMatch.RulePeriodCount = matchRules.RulePeriodCount;
@@ -261,7 +262,7 @@ namespace LeDi.Server2.Pages
                 NavigationManager.NavigateTo("/matchcontrol");
             else
             {
-                newMatch.MatchStatus = (int)Enum.MatchStatusEnum.ReadyToStart;
+                newMatch.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
                 //await DbContext.SaveChangesAsync();
 
                 NavigationManager.NavigateTo("/matchcontrol/" + newMatch.Id);

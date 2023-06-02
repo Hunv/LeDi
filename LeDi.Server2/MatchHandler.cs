@@ -1,6 +1,7 @@
 ﻿using System.Timers;
 using LeDi.Server2.DatabaseModel;
-using LeDi.Server2.Enum;
+using LeDi.Shared2.DatabaseModel;
+using LeDi.Shared2.Enum;
 using Microsoft.AspNetCore.Components;
 
 namespace LeDi.Server2

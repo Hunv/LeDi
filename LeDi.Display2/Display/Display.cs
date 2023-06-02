@@ -1,4 +1,5 @@
 ﻿using LeDi.Display2.Effects;
+using Newtonsoft.Json;
 using rpi_ws281x;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using LeDi.Shared2.Display;
 
 namespace LeDi.Display2.Display
 {

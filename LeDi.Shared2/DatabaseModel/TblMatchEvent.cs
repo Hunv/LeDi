@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using LeDi.Server2.Enum;
+using LeDi.Shared2.Enum;
 
 
-namespace LeDi.Server2.DatabaseModel
+namespace LeDi.Shared2.DatabaseModel
 {
     public class TblMatchEvent
     {
