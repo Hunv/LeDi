@@ -1,0 +1,9 @@
+﻿@page "/Setup"
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<Start> Localizer
+
+<PageTitle>LeDi - @Localizer["Setup"]</PageTitle>
+

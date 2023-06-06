@@ -138,11 +138,10 @@ Als allererstes muss der RapsberryPi installiert werden. Dazu müssen wir zunäc
 * Der ``sudo apt upgrade`` Befehl wird ggf. eine ganze Weile dauern.
 * Nun ist der Raspberry Pi in der Basis installiert und wir können nun die Installation von LeDi starten.
 
-
-.Net 6 installieren:
+.Net 7 installieren:
 ####################
-Jetzt werden wir .Net 6 installieren. Dazu gehen wir zunächst auf https://dotnet.microsoft.com/en-us/download/dotnet/6.0.
-Auf dieser Seite unter ``SDK 6.0.xx`` in der Tabelle den Eintrag ``Linux``. Dort die Binary ``Arm32`` anklicken. Nun die URL, die als ``Direktlink`` ("direct link") bezeichnet ist, kopieren (z.B. https://download.visualstudio.microsoft.com/download/pr/5a24144e-0d7d-4cc9-b9d8-b4d32d6bb084/e882181e475e3c66f48a22fbfc7b19c0/dotnet-sdk-6.0.403-linux-arm.tar.gz). Anschließend zur Raspberry Pi Konsole wechseln und folgendes ausführen:
+Jetzt werden wir .Net 7 installieren. Dazu gehen wir zunächst auf https://dotnet.microsoft.com/en-us/download/dotnet/7.0.
+Auf dieser Seite unter ``SDK 7.0.xx`` in der Tabelle den Eintrag ``Linux``. Dort die Binary ``Arm32`` anklicken. Nun die URL, die als ``Direktlink`` ("direct link") bezeichnet ist, kopieren (z.B. https://download.visualstudio.microsoft.com/download/pr/5a24144e-0d7d-4cc9-b9d8-b4d32d6bb084/e882181e475e3c66f48a22fbfc7b19c0/dotnet-sdk-7.0.403-linux-arm.tar.gz). Anschließend zur Raspberry Pi Konsole wechseln und folgendes ausführen:
 
 .. parsed-literal::
     wget <url from above>
@@ -150,14 +149,15 @@ Auf dieser Seite unter ``SDK 6.0.xx`` in der Tabelle den Eintrag ``Linux``. Dort
 Anschließend die folgenden Befehle ausführen. Dabei den Dateinamen in der ersten Zeile mit dem Dateinamen der zuvor heruntergeladenen Datei ersetzen.
 
 .. parsed-literal::
-    DOTNET_FILE=dotnet-sdk-6.0.403-linux-arm.tar.gz
+    DOTNET_FILE=dotnet-sdk-7.0.302-linux-arm.tar.gz
     export DOTNET_ROOT=$(pwd)/.dotnet
 
     mkdir -p "$DOTNET_ROOT" && tar zxf "$DOTNET_FILE" -C "$DOTNET_ROOT"
 
     export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+    echo "export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools" > .bashrc
 
-Herzlichen Glückwunsch. .Net 6.0 ist nun installiert. Dies kann über den Befehl ``dotnet --version`` geprüft werden. Erfolgt dort eine Ausgabe mit der Versionsnummer, so war die installation erfolgreich.
+Herzlichen Glückwunsch. .Net 7.0 ist nun installiert. Dies kann über den Befehl ``dotnet --version`` geprüft werden. Erfolgt dort eine Ausgabe mit der Versionsnummer, so war die installation erfolgreich.
 
 
 Einrichten des WLAN AccessPoints

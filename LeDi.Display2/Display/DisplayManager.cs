@@ -19,7 +19,7 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// The path the the config file.
         /// </summary>
-        private static readonly string ConfigFilename = "config.json";
+        private static readonly string ConfigFilename = "./config.json";
 
         /// <summary>
         /// Is the display initialized?
@@ -39,7 +39,7 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// The Connector that handles the server connection
         /// </summary>
-        private static Connector Connector { get; set; } = new Connector("");
+        private static Connector? Connector { get; set; } = null;
 
         /// <summary>
         /// Must be performed before the display works
@@ -94,14 +94,16 @@ namespace LeDi.Display2.Display
                 return;
             }
 
-            var layout = new Layout();
-            layout.Width = Config.DeviceWidth;
-            layout.Height = Config.DeviceHeight;
-            layout.Brightness = Config.Brightness;
-            layout.Frequency = Config.Frequency;
-            layout.DmaChannel = Config.DMAChannel;
-            layout.CharacterSet = Config.CharacterSet;
-            layout.HardAreaBorders = Config.HardAreaBorders;
+            var layout = new Layout
+            {
+                Width = Config.DeviceWidth,
+                Height = Config.DeviceHeight,
+                Brightness = Config.Brightness,
+                Frequency = Config.Frequency,
+                DmaChannel = Config.DMAChannel,
+                CharacterSet = Config.CharacterSet,
+                HardAreaBorders = Config.HardAreaBorders
+            };
 
             Display.IsBottomToTop = Config.LedTopToBottom;
             Display.HasAlternatingRows = Config.LedAlternatingRows;

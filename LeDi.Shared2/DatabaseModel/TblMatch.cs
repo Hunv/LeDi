@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LeDi.Shared2.DatabaseModel
 {
@@ -15,11 +16,13 @@ namespace LeDi.Shared2.DatabaseModel
         /// <summary>
         /// The List of the Players for Team 1
         /// </summary>
+        [ForeignKey("IdT1")]
         public List<TblPlayer>? Team1Players { get; set; }
 
         /// <summary>
         /// The List of the Players for Team 2
         /// </summary>
+        [ForeignKey("IdT2")]
         public List<TblPlayer>? Team2Players { get; set; }
 
         /// <summary>

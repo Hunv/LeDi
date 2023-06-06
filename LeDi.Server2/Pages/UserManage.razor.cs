@@ -20,10 +20,6 @@ namespace LeDi.Server2.Pages
 
         // The role that defindes the role for Administrators
         string AdministrationRole = "Role-Administrators";
-        //System.Security.Claims.ClaimsPrincipal CurrentUser;
-
-        // The role that defindes the role for Guests
-        string GuestRole = "Guests";
 
         // Property used to add or edit the currently selected user
         IdentityUser objUser = new IdentityUser();
@@ -46,89 +42,13 @@ namespace LeDi.Server2.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            // Ensure the Build in Admin role is created
-            var RoleResult = await _RoleManager.FindByNameAsync(AdministrationRole);
-            if (RoleResult == null)
-            {
-                // Create AdministrationRole Role
-                await _RoleManager.CreateAsync(new IdentityRole(AdministrationRole));
-                await DataHandler.SetUserRoleAsync(new TblUserRole() { 
-                    CanDeviceCommands = true,
-                    CanDeviceManage = true,
-                    CanMatchAdd = true,
-                    CanMatchAdvancedControls = true,
-                    CanMatchDelete = true,
-                    CanMatchEdit = true,
-                    CanMatchEnd = true,
-                    CanMatchPenalty = true,
-                    CanMatchStart = true,
-                    CanMatchStop = true,
-                    CanPlayerAdd = true,
-                    CanPlayerDelete = true,
-                    CanPlayerEdit = true,
-                    CanRoleAdd = true,
-                    CanRoleDelete = true,
-                    CanRoleEdit = true,
-                    CanSettingManage = true,
-                    CanTeamAdd = true,
-                    CanTeamDelete = true,
-                    CanTeamEdit = true,
-                    CanTemplateManage = true,
-                    CanTournamentAdd = true,
-                    CanTournamentEdit = true,
-                    CanTournamentMatchAdd = true,
-                    CanTournamentMatchDelete = true,
-                    CanTournamentMatchEdit = true,
-                    CanUserAdd = true,
-                    CanUserDelete = true,
-                    CanUserEdit = true,
-                    CanUserPasswordEdit = true,
-                    IsAdmin = true,
-                    RoleName = "Role-Administrators"
-                });
-            }
-
-            // Ensure the Build in Guest role is created
-            RoleResult = await _RoleManager.FindByNameAsync(GuestRole);
-            if (RoleResult == null)
-            {
-                // Create GuestRole Role
-                await _RoleManager.CreateAsync(new IdentityRole(GuestRole));
-                await DataHandler.SetUserRoleAsync(new TblUserRole() { RoleName = "Role-Guests" });
-            }
-
-            // Ensure all roles are created
             var roleList = await DataHandler.GetUserRoleListAsync();
-            foreach(var aRole in roleList)
-            {
-                if (await _RoleManager.FindByNameAsync(aRole.RoleName) == null)
-                {
-                    // Create role
-                    await _RoleManager.CreateAsync(new IdentityRole(aRole.RoleName));
-                }
-            }
 
             // Get all roles to show for add/edit dialog
             if (roleList.Count > 0)
             {
                 Options = roleList.Select(x => x.RoleName).ToList();
             }
-
-            // Ensure a user named admin@ledi is an Administrator
-            var user = await _UserManager.FindByNameAsync("admin@ledi");
-            if (user != null)
-            {
-                // Is admin@ledi in administrator role?
-                var UserResult = await _UserManager.IsInRoleAsync(user, AdministrationRole);
-                if (!UserResult)
-                {
-                    // Put admin in Administrator role
-                    await _UserManager.AddToRoleAsync(user, AdministrationRole);
-                    await SetRoleAttributes(user, "Role-Administrators");
-                }
-            }
-
-
 
             // Get the current logged in user
             //CurrentUser = (await authenticationStateTask).User;
@@ -313,6 +233,9 @@ namespace LeDi.Server2.Pages
         {
             // add the attributes as role
             var attributes = await DataHandler.GetUserRoleAsync(role);
+
+            if (user == null || attributes == null)
+                return;
 
             try
             {

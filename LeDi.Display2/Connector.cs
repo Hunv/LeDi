@@ -21,6 +21,8 @@ namespace LeDi.Display2
         public Connector(string ServerUrl) {
             if (string.IsNullOrWhiteSpace(ServerUrl))
             {
+                Logger.Error("ServerURL property is empty. Set a ServerURL before starting the application. The following error is expected.");
+
                 //Create a fake connection
                 connection = new HubConnectionBuilder().WithUrl("").Build();
                 return;
@@ -76,6 +78,12 @@ namespace LeDi.Display2
         /// <returns></returns>
         public async Task RegisterDevice(string deviceId, string deviceName, string deviceType, string deviceModel)
         {
+            if (connection.State != HubConnectionState.Connected)
+            {
+                Logger.Warn("Cannot request update. Connection to server not established.");
+                return;
+            }
+
             await connection.InvokeAsync("RegisterDevice", deviceId, deviceName, deviceType, deviceModel);
         }
 
@@ -85,6 +93,12 @@ namespace LeDi.Display2
         /// <returns></returns>
         public async Task RequestUpdate(string deviceId)
         {
+            if (connection.State != HubConnectionState.Connected)
+            {
+                Logger.Warn("Cannot request update. Connection to server not established.");
+                return;
+            }
+
             await connection.InvokeAsync("RequestUpdate", deviceId);
         }
     }

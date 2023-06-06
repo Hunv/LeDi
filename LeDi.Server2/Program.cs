@@ -32,7 +32,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddEntityFrameworkStores<LeDiDbContext>();
 builder.Services.AddBlazorBootstrap(); // For the BlazorBootstrap Components
 
-//To ckeck: .AddDefaultUI()
+//To check: .AddDefaultUI()
 
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
