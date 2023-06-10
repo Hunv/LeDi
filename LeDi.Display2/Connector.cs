@@ -28,8 +28,19 @@ namespace LeDi.Display2
                 return;
             }
 
+            Logger.Info("Connecting to Server {0}...", ServerUrl);
             connection = new HubConnectionBuilder()
-                .WithUrl("https://" + ServerUrl + ":7168/Display")
+                .WithUrl(ServerUrl + "/Display", (opts) =>
+                {
+                    opts.HttpMessageHandlerFactory = (message) =>
+                    {
+                        if (message is HttpClientHandler clientHandler)
+                            // bypass SSL certificate
+                            clientHandler.ServerCertificateCustomValidationCallback +=
+                                (sender, certificate, chain, sslPolicyErrors) => { return true; };
+                        return message;
+                    };
+                })
                 .WithAutomaticReconnect() //Automatically reconnect after 0, 2, 10 and 30 seconds.
                 .Build();
 
@@ -49,7 +60,7 @@ namespace LeDi.Display2
         /// <summary>
         /// Connect to the server
         /// </summary>
-        public async void Connect()
+        public async Task Connect()
         {
             connection.On<string>("ReceiveDataUpdate", (mode) =>
             {

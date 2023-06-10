@@ -29,7 +29,7 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// The configurable settings of this device
         /// </summary>
-        private static DeviceConfig Config { get; set; } = new DeviceConfig();
+        private static DeviceConfig? Config { get; set; } = null;
 
         /// <summary>
         /// Logger instance
@@ -47,13 +47,19 @@ namespace LeDi.Display2.Display
         public async static void Initialize()
         {
             //Load the config
-            await LoadConfig();
+            Config = await LoadConfig();
+
+            if (Config == null)
+            {
+                Logger.Fatal("Cannot load config file.");
+                return;
+            }
 
             //Initialize the Connector
             Connector = new Connector(Config.ServerURL);
 
             //Connect the device to the server
-            Connector.Connect();
+            await Connector.Connect();
 
             //Register events of Connector
             Connector.DataUpdateReceived += Connector_DataUpdateReceived;
@@ -130,6 +136,7 @@ namespace LeDi.Display2.Display
             if (string.IsNullOrWhiteSpace(Config.DeviceId))
             {
                 Config.DeviceId = Guid.NewGuid().ToString();
+                Logger.Info("New DeviceId is {0}", Config.DeviceId);
                 await SaveConfig();
             }
 
@@ -139,30 +146,31 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// Loads the config from the config.json file
         /// </summary>
-        private static async Task<bool> LoadConfig()
+        private static async Task<DeviceConfig?> LoadConfig()
         {
             try
             {
+                Logger.Info("Loading config {0}. Current Directory is {1}", ConfigFilename, Environment.CurrentDirectory);
                 StreamReader sR = new StreamReader(ConfigFilename);
                 var json = await sR.ReadToEndAsync();
                 sR.Close();
+                Logger.Trace("Loaded json content is {0}", json);
                 var config = JsonConvert.DeserializeObject<DeviceConfig>(json, GetJsonSerializer());
 
                 if (config != null)
                 {
-                    Config = config;
-
-                    Logger.Trace("Successfully loaded config.");
-                    return true;
+                    Logger.Debug("Server Setting value: {0}", config.ServerURL);
+                    Logger.Info("Successfully loaded config.");
+                    return config;
                 }
 
                 Logger.Error("Loading the config file returns a null value.");
-                return false;
+                return null;
             }
             catch(Exception ex)
             {
                 Logger.Error(ex, "Unable to load config. Does file {0} exists?", ConfigFilename);
-                return false;
+                return null;
             }
         }
 
@@ -179,7 +187,7 @@ namespace LeDi.Display2.Display
                 await sW.WriteAsync(json);
                 sW.Close();
 
-                Logger.Trace("Saved config file.");
+                Logger.Debug("Saved config file.");
                 return true;
             }
             catch(Exception ex)

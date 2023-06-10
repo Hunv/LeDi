@@ -65,6 +65,11 @@ namespace LeDi.Display2.Display
         public static Layout? LayoutConfig { get; set; }
 
         /// <summary>
+        /// The configuration for the device
+        /// </summary>
+        public static DeviceConfig? Config { get; set; }
+
+        /// <summary>
         /// All available Characters
         /// </summary>
         public static List<CharacterSet>? CharacterSets { get; set; }
@@ -96,7 +101,7 @@ namespace LeDi.Display2.Display
         private static double fPS;
         private static string characterSetName = "Default";
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        private static readonly string ConfigFilename = "config.conf";
+        private static readonly string ConfigFilename = "./config.json";
 
         public static void Calibrate()
         {
@@ -140,7 +145,7 @@ namespace LeDi.Display2.Display
             Logger.Info("full pixel change FPS: {0} FPS", FPS);
         }
 
-        public static void Initialize(Layout layout)
+        public static async void Initialize(Layout layout)
         {
             LoadLayout(layout);
             LoadCharacters();
@@ -160,42 +165,24 @@ namespace LeDi.Display2.Display
                 return;
             }
 
-            // Define variables from config file
-            int gpiopin = 18; //Default is GPIO 18 which is physical pin 12
-            int pwmchannel = 0; //Raspberry Pi has 2 channels. PWM0 and PWM1
+            Config = await LoadConfig();
 
-
-            // Read the config file
-            var sR = new StreamReader(ConfigFilename);
-            while (sR.Peek() >= 0)
+            if (Config == null)
             {
-                var line = sR.ReadLine();
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#") || !line.Contains(':'))
-                    continue;
-
-                var lineSplit = line.Split(new char[] { ':' }, 2);
-                switch (lineSplit[0].ToLower())
-                {
-                    case "gpiopin":
-                        gpiopin = Convert.ToInt16(lineSplit[1]);
-                        break;
-                    case "pwmchannel":
-                        pwmchannel = Convert.ToInt16(lineSplit[1]);
-                        break;;
-                }
-
+                Logger.Fatal("Failed to load config.");
+                return;
             }
-            sR.Close();
+
             Logger.Info("Config {0} loaded.", ConfigFilename);            
 
-            Logger.Info("Initializing Controller for {0} with {1} LEDs on PWM{4} on GPIO{5}, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency, pwmchannel, gpiopin);
+            Logger.Info("Initializing Controller for {0} with {1} LEDs on PWM{4} on GPIO{5}, DMA Channel {2} and a Frequency of {3}Hz", layout.Name, LedCount, LayoutConfig.DmaChannel, LayoutConfig.Frequency, Config.PwmChannel, Config.GpioPin);
 
-            //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10
-            ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why
+            //ControllerSettings = Settings.CreateDefaultSettings(); //800kHz and DMA Channel 10 is default
+            ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why. DMA Channel 5 works with more
 
             // Set the pin object
             var pin = Pin.Gpio12;
-            switch(gpiopin)
+            switch(Config.GpioPin)
             {
                 case 18:
                     pin = Pin.Gpio18;
@@ -212,9 +199,9 @@ namespace LeDi.Display2.Display
 
             }
 
-            // Set the PWM object
+            // Set the PWM object; Raspberry Pi has 2 channels. It can be 0 or 1.
             var pwmChannel = ControllerType.PWM0;
-            if (pwmchannel == 1)
+            if (Config.PwmChannel == 1)
                 pwmChannel = ControllerType.PWM1;
 
             Controller = ControllerSettings.AddController(LedCount, pin, StripType.WS2812_STRIP, pwmChannel, Brightness, false);
@@ -225,6 +212,8 @@ namespace LeDi.Display2.Display
             ChangeQueue = new Queue<Tuple<string, string, DateTime?>>();
             _TmrWorker.Elapsed += TmrWorker_Elapsed;
             _TmrWorker.Start();
+
+            Logger.Debug("Initialization done.");
         }
 
         public static void LoadLayout(Layout layoutSetting)
@@ -796,6 +785,55 @@ namespace LeDi.Display2.Display
 
             //Render the changes
             Render();
+        }
+
+
+        /// <summary>
+        /// Loads the config from the config.json file
+        /// </summary>
+        private static async Task<DeviceConfig?> LoadConfig()
+        {
+            try
+            {
+                Logger.Info("Loading config {0}. Current Directory is {1}", ConfigFilename, Environment.CurrentDirectory);
+                StreamReader sR = new StreamReader(ConfigFilename);
+                var json = await sR.ReadToEndAsync();
+                sR.Close();
+                Logger.Trace("Loaded json content is {0}", json);
+                var config = JsonConvert.DeserializeObject<DeviceConfig>(json, GetJsonSerializer());
+
+                if (config != null)
+                {
+                    Logger.Debug("Server Setting value: {0}", config.ServerURL);
+                    Logger.Info("Successfully loaded config.");
+                    return config;
+                }
+
+                Logger.Error("Loading the config file returns a null value.");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Unable to load config. Does file {0} exists?", ConfigFilename);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Helper method to get the Json Serializer settings
+        /// </summary>
+        /// <returns></returns>
+        private static JsonSerializerSettings GetJsonSerializer()
+        {
+            var js = new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                StringEscapeHandling = StringEscapeHandling.EscapeHtml
+            };
+
+            return js;
         }
     }
 }

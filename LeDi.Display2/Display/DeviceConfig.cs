@@ -11,7 +11,7 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// The Servername or IP where the LeDi server runs
         /// </summary>
-        public string ServerURL { get; set; } = "localhost";
+        public string ServerURL { get; set; } = "https://localhost";
 
         /// <summary>
         /// The Device Name after register
@@ -71,7 +71,7 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// The DMA Channel for the LEDs
         /// </summary>
-        public int DMAChannel { get; set; } = 50;
+        public int DMAChannel { get; set; } = 5;
 
         /// <summary>
         /// The name of the characterset to use

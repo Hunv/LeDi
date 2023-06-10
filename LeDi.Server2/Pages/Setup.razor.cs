@@ -19,11 +19,37 @@ namespace LeDi.Server2.Pages
         // The admin name
         string AdminName = "admin@ledi";
 
+        // Setuplog to show on the setup website
+        string SetupLog = "";
+
 
         protected override async Task OnInitializedAsync()
         {
+            var user = await _UserManager.FindByNameAsync(AdminName);
+            if (user != null)
+            {
+                // Is admin@ledi in administrator role?
+                var UserResult = await _UserManager.IsInRoleAsync(user, AdministrationRole);
+                if (UserResult)
+                {
+                    SetupLog += "Setup already done.";
+                    await InvokeAsync(() => { StateHasChanged(); });
+                    return;
+                }
+            }
+
+
+            SetupLog += "Setting up roles..." + Environment.NewLine;
+            await InvokeAsync(() => { StateHasChanged(); });
             await SetupRoles();
+            SetupLog += "Roles set up..." + Environment.NewLine;
+            await InvokeAsync(() => { StateHasChanged(); });
+
+            SetupLog += "Setting up admin..." + Environment.NewLine;
+            await InvokeAsync(() => { StateHasChanged(); });
             await SetupAdmin();
+            SetupLog += "Admin set up..." + Environment.NewLine;
+            await InvokeAsync(() => { StateHasChanged(); });
         }
 
         private async Task SetupRoles()
