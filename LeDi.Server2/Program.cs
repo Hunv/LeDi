@@ -13,6 +13,7 @@ using NLog.Web;
 using LeDi.Server2.Pages;
 using LeDi.Server2.Display;
 using BlazorBootstrap; // For the BlazorBootstrap Components
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
@@ -38,8 +39,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
-builder.Services.AddSingleton<MatchManagerService>();
-builder.Services.AddSingleton<MatchEngine>();
+//builder.Services.AddSingleton<MatchManagerService>();
+//builder.Services.AddSingleton<MatchEngine>();
 
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
@@ -89,5 +90,7 @@ app.UseAuthorization();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.MapHub<DisplayHub>("/Display");
+
+//DataHandler.hubContext = (IHubContext<DisplayHub>)app.Services.GetService(typeof(IHubContext<DisplayHub>));
 
 app.Run();

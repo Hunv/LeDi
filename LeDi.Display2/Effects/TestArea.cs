@@ -9,15 +9,28 @@ namespace LeDi.Display2.Effects
 {
     public class TestArea : IEffect
     {
+        /// <summary>
+        /// Logger instance
+        /// </summary>
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public override void Execute()
         {
             Console.WriteLine("Running Area Test");
 
             if (Display.Display.LayoutConfig == null)
+            {
+                Logger.Warn("No LayoutConfig set.");
                 return;
+            }
 
             if (Display.Display.LayoutConfig.AreaList == null)
+            {
+                Logger.Warn("No AreaList available.");
                 return;
+            }
+
+            Logger.Info("Showing areas of layout {0}", Display.Display.LayoutConfig.Name);
 
             var colors = new Color[] {Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Cyan, Color.Purple, Color.Orange, Color.Navy, Color.White, Color.Violet, Color.Tomato, Color.Turquoise, Color.Teal, Color.Tan };
             var colorcount = 0;
@@ -26,6 +39,7 @@ namespace LeDi.Display2.Effects
 
             foreach (var aArea in Display.Display.LayoutConfig.AreaList)
             {
+                Logger.Info("Rendering area {0}", aArea.Name);
                 var rnd = new Random();
                 var color = Color.FromArgb(255, colors[colorcount]);
 

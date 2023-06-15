@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LeDi.Shared2.Display;
+using LeDi.Display2.Effects;
 
 namespace LeDi.Display2.Display
 {
@@ -212,6 +213,37 @@ namespace LeDi.Display2.Display
             };
 
             return js;
+        }
+
+        /// <summary>
+        /// Execute a command at the display
+        /// </summary>
+        /// <param name="command"></param>
+        public static void ExecuteCommand(string command)
+        {
+            IEffect effect = new NoEffect();
+            switch (command)
+            {
+                case "showareas":
+                    Logger.Info("Running command \"showareas\"...");
+                    effect = new TestArea();
+                    break;
+            }
+
+            if (effect != null)
+            {
+                Logger.Debug("Running effect {0}...", command);
+                try
+                {
+                    effect.Execute();
+                }
+                catch (Exception ea)
+                {
+                    Logger.Error("Stopped effect {0} because of Error: {1}", command, ea.ToString());
+                }
+                Display.SetBrightness(Display.Brightness); //Setting Brightness back to configured value in case it was changed for calibration tests
+                Logger.Debug("Effect {0} done...", command);
+            }
         }
     }
 }

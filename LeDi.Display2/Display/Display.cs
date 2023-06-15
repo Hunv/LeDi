@@ -196,7 +196,6 @@ namespace LeDi.Display2.Display
                 case 19:
                     pin = Pin.Gpio19;
                     break;
-
             }
 
             // Set the PWM object; Raspberry Pi has 2 channels. It can be 0 or 1.

@@ -184,7 +184,6 @@ namespace LeDi.Server2.Pages
             TblTournament savedTournament = null;
             if (EditId.HasValue)
             {
-                await DataHandler.SaveChangesAsync();
                 DataHandler.OnTournamentAdded?.Invoke(EditId.Value);
                 savedTournament = await DataHandler.GetTournamentAsync(ToSaveTournament.Id);
             }

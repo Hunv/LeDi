@@ -68,6 +68,12 @@ namespace LeDi.Display2
                 Logger.Info("DeviceMode set to {0}", mode);
             });
 
+            connection.On<string>("ReceiveCommand", (command) =>
+            {                
+                Logger.Info("Received command {0}", command);
+                DisplayManager.ExecuteCommand(command);
+            });
+
             try
             {
                 await connection.StartAsync();
