@@ -14,7 +14,7 @@ namespace LeDi.Display2.Effects
         /// </summary>
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public override void Execute()
+        public override void Execute(CancellationToken EffectCancellationToken)
         {
             Console.WriteLine("Running Area Test");
 

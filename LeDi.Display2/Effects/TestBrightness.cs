@@ -8,7 +8,7 @@ namespace LeDi.Display2.Effects
 {
     public class TestBrightness : IEffect
     {
-        public override void Execute()
+        public override void Execute(CancellationToken EffectCancellationToken)
         {
             Console.WriteLine("Running Brightness Calibration");
             Console.WriteLine("Brightness: {0}", Display.Display.Brightness);

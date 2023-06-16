@@ -8,7 +8,7 @@ namespace LeDi.Display2.Effects
 {
     public class TestPattern : IEffect
     {
-        public override void Execute()
+        public override void Execute(CancellationToken EffectCancellationToken)
         {
             Console.WriteLine("Running TestPattern");
             var tileSize = Display.Display.X / 6;

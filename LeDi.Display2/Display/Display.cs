@@ -433,10 +433,32 @@ namespace LeDi.Display2.Display
             {
                 Logger.Trace("Getting best Charsize by height and textlength.");
                 // Get best charset that fits into the height and to total text length fits into the width of the area
-                matchingCharSets = allCharSets
-                    .Where(z => z.Height <= area.Height && text.Length * (z.Width +1) <= area.Width && z.Height <= maxHeight && (z.Width +1) <= maxWidth) //z.Width+1 because there is one column of free pixels between the characters.
+                // Fits (best) to height
+                var matchingCharSetsHeight = allCharSets
+                    .Where(z => z.Height <= area.Height && z.Height <= maxHeight) 
                     .OrderByDescending(z => z.Height)
                     .ThenByDescending(z => z.Width);
+
+                // Fits (best) to width
+                var matchingCharSetsWidth = allCharSets
+                    .Where(z => text.Length * (z.Width + 1) <= area.Width && (z.Width + 1) <= maxWidth) //z.Width+1 because there is one column of free pixels between the characters.
+                    .OrderByDescending(z => z.Height)
+                    .ThenByDescending(z => z.Width);
+
+                // Get the charset name that fits both
+                var matchingCharSetsBoth = matchingCharSetsHeight.Select(x => x.Width + "x" + x.Height).IntersectBy(matchingCharSetsWidth.Select(x => x.Width + "x" + x.Height), x => x);
+
+                // Check if there is any matching charset. If not, take the smallest, that fits the height.
+                if (matchingCharSetsBoth == null || matchingCharSetsBoth.Count() == 0)
+                {
+                    Logger.Trace("No charset fits length and height. Taking smallest height {0}", matchingCharSetsHeight.Last().Name);
+                    matchingCharSets = new List<CharacterSet>() { matchingCharSetsHeight.Last() };
+                }
+                else // there is a least one matching charset
+                {
+                    Logger.Trace("Automatically detected charsets found: {0}", string.Join(", ", matchingCharSetsBoth));
+                    matchingCharSets = matchingCharSets.Where(x => matchingCharSetsBoth.Contains(x.Width + "x" + x.Height));
+                }
             }
             else // Get the best matching char size but respect the configured limit of the area
             {

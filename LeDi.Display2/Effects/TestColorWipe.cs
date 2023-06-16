@@ -8,11 +8,17 @@ namespace LeDi.Display2.Effects
 {
     public class TestColorWipe : IEffect
     {
-        public override void Execute()
+        public override void Execute(CancellationToken EffectCancellationToken)
         {
             Console.WriteLine("Running ColorWipe");
             for (int i = 0; i < 60; i++)
             {
+                if (EffectCancellationToken.IsCancellationRequested)
+                {
+                    Console.WriteLine("ColorWipe stopped.");
+                    break;
+                }
+
                 var color = i % 3;
                 if (color == 0)
                     Display.Display.SetAll(Color.Red);

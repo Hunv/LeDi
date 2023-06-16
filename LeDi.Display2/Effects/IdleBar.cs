@@ -9,18 +9,20 @@ namespace LeDi.Display2.Effects
 {
     public class IdleBar : IEffect
     {
-        public override void Execute()
+        public override void Execute(CancellationToken EffectCancellationToken)
         {
             Console.WriteLine("Running Idle Bar");
             Display.Display.SetAll(Color.Black);
-            var cycles = 10;
 
-            while (cycles > 0)
+            while (EffectCancellationToken.IsCancellationRequested == false)
             {
                 for (var currentPosition = 0; currentPosition <= Display.Display.X + 2; currentPosition++)
                 {
+                    if (EffectCancellationToken.IsCancellationRequested)
+                        break;
+
                     for (int line = 0; line < Display.Display.Y; line++)
-                    {       
+                    {
                         if (currentPosition - 3 >= 0 && currentPosition - 3 < Display.Display.X - 1)
                             Display.Display.SetLed(Display.Display.GetLedNumber(currentPosition - 3, line), Color.FromArgb(0, 0, 0));
                             
@@ -47,8 +49,6 @@ namespace LeDi.Display2.Effects
                     if (currentPosition == Display.Display.X + 3)
                         currentPosition = 0;
                 }
-
-                cycles--;
             }
         }
     }

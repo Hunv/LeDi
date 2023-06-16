@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LeDi.Shared2.Display;
 using LeDi.Display2.Effects;
+using BlazorBootstrap;
+using System.Drawing;
 
 namespace LeDi.Display2.Display
 {
@@ -41,6 +43,26 @@ namespace LeDi.Display2.Display
         /// The Connector that handles the server connection
         /// </summary>
         private static Connector? Connector { get; set; } = null;
+
+        /// <summary>
+        /// The currently running effect
+        /// </summary>
+        private static IEffect EffectActive { get; set; } = new NoEffect();
+
+        /// <summary>
+        /// The Task running the current EffectActive
+        /// </summary>
+        private static Task? EffectTask { get; set; } = null;
+
+        /// <summary>
+        /// Cancelation Token source to cancel running effect
+        /// </summary>
+        private static CancellationTokenSource EffectCancellationTokenSource = new CancellationTokenSource();
+
+        /// <summary>
+        /// The cancellation token to cancel running effect
+        /// </summary>
+        private static CancellationToken EffectCancellationToken = EffectCancellationTokenSource.Token;
 
         /// <summary>
         /// Must be performed before the display works
@@ -219,14 +241,147 @@ namespace LeDi.Display2.Display
         /// Execute a command at the display
         /// </summary>
         /// <param name="command"></param>
-        public static void ExecuteCommand(string command)
+        public static async Task ExecuteCommand(string command)
         {
-            IEffect effect = new NoEffect();
+            IEffect? effect = null;
+            Logger.Info("Running command \"" + command + "\"...");
             switch (command)
             {
+                case "showblack":
+                    effect = new SetBlack();
+                    break;
+
                 case "showareas":
-                    Logger.Info("Running command \"showareas\"...");
                     effect = new TestArea();
+                    break;
+
+                case "showtestpattern":
+                    effect = new TestPattern();
+                    break;
+
+                case "showcolortest":
+                    effect = new TestColorWipe();
+                    break;
+
+                case "showfullcolortest":
+                    effect = new TestFullColor();
+                    break;
+
+                case "showpixelwipe":
+                    effect = new TestPixelWipe();
+                    break;
+
+                case "showclock":
+                    Display.ShowString(DateTime.Now.ToString("HH:mm"));
+                    Display.Render();
+                    effect = null;
+                    break;
+
+                case "idlebar":
+                    effect = new IdleBar();
+                    break;
+
+                case "calibratefps":
+                    Display.SetAll(Color.Black);
+                    Display.Calibrate();
+                    Display.ShowString(Display.FPS.ToString("F0"), null, null, false, 5, 3);
+                    Display.Render();
+                    effect = null;
+                    break;
+
+                case "calibratebrightness":
+                    effect = new TestBrightness();
+                    break;
+
+                case "reload":
+                    Config = await LoadConfig();
+                    await Connector.Connect();
+                    await Connector.RegisterDevice(Config.DeviceId, Config.DeviceName, Config.DeviceType, Config.DeviceModel);
+                    InitializeDisplay();                    
+                    Logger.Debug("Display settings reloaded...");
+                    break;
+
+                case "restartsoft":
+                    Logger.Info("Running command \"restartsoft\"...");
+                    Display.SetAll(Color.Black);
+                    Display.SetLed(1, Color.Red);
+                    Display.Render();
+
+                    try
+                    {
+                        Logger.Info("Executing restart of ledi.display daemon...");
+                        System.Diagnostics.Process procSoft = new System.Diagnostics.Process();
+                        procSoft.StartInfo.FileName = "/bin/bash";
+                        procSoft.StartInfo.Arguments = "-c \"/usr/bin/systemctl restart ledi.display\"";
+                        procSoft.StartInfo.UseShellExecute = false;
+                        procSoft.StartInfo.RedirectStandardOutput = true;
+                        procSoft.Start();
+                    }
+                    catch (Exception ea)
+                    {
+                        Logger.Error("Failed to run command. Error: " + ea.ToString());
+                    }
+
+                    break;
+                case "restarthard":
+                    Logger.Info("Running command \"restarthard\"...");
+                    Display.SetAll(Color.Black);
+                    Display.SetLed(1, Color.Red);
+                    Display.SetLed(2, Color.Red);
+                    Display.Render();
+
+                    try
+                    {
+                        Logger.Info("Executing restart of hardware device. See you soon...");
+
+                        Display.ShowString("See you...");
+                        Display.SetLed(1, Color.Red);
+                        Display.SetLed(2, Color.Red);
+                        Display.Render();
+
+                        System.Diagnostics.Process procHard = new System.Diagnostics.Process();
+                        procHard.StartInfo.FileName = "/bin/bash";
+                        procHard.StartInfo.Arguments = "-c \"/usr/sbin/shutdown -r now\"";
+                        procHard.StartInfo.UseShellExecute = false;
+                        procHard.StartInfo.RedirectStandardOutput = true;
+                        procHard.Start();
+                    }
+                    catch (Exception ea)
+                    {
+                        Logger.Error("Failed to run command. Error: " + ea.ToString());
+                    }
+
+                    break;
+                case "shutdown":
+                    Logger.Info("Running command \"shutdown\"...");
+                    Display.SetAll(Color.Black);
+                    Display.SetLed(1, Color.Red);
+                    Display.SetLed(2, Color.Red);
+                    Display.SetLed(3, Color.Red);
+                    Display.Render();
+
+                    try
+                    {
+                        Logger.Info("Executing shutdown of hardware device. Goodbye...");
+
+                        Display.SetLed(1, Color.Red);
+                        Display.SetLed(2, Color.Red);
+                        Display.SetLed(3, Color.Red);
+                        Display.ShowString("Bye.");
+                        Display.Render();
+
+                        System.Diagnostics.Process procDown = new System.Diagnostics.Process();
+                        procDown.StartInfo.FileName = "/bin/bash";
+                        procDown.StartInfo.Arguments = "-c \"/usr/sbin/shutdown -h now\"";
+                        procDown.StartInfo.UseShellExecute = false;
+                        procDown.StartInfo.RedirectStandardOutput = true;
+                        procDown.Start();
+                    }
+                    catch (Exception ea)
+                    {
+                        Logger.Error("Failed to run command. Error: " + ea.ToString());
+                    }
+
                     break;
             }
 
@@ -235,7 +390,23 @@ namespace LeDi.Display2.Display
                 Logger.Debug("Running effect {0}...", command);
                 try
                 {
-                    effect.Execute();
+                    // Cancel current effect and wait for finish
+                    EffectCancellationTokenSource.Cancel();
+                    if (EffectTask != null)
+                    {
+                        try
+                        {
+                            await EffectTask.WaitAsync(EffectCancellationToken);
+                        }
+                        catch(TaskCanceledException) { }                        
+                        //await Task.Factory.ContinueWhenAll(new Task[] { EffectTask }, completed => { });
+                    }
+
+                    // Create new cancellation token and run the new effect
+                    EffectCancellationTokenSource = new CancellationTokenSource();
+                    EffectCancellationToken = EffectCancellationTokenSource.Token;
+                    EffectActive = effect;
+                    EffectTask = Task.Factory.StartNew(() => { EffectActive.Execute(EffectCancellationToken); }, EffectCancellationToken); // Execute and "forget". Don't care about result.                    
                 }
                 catch (Exception ea)
                 {

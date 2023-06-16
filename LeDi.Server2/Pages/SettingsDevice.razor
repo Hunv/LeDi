@@ -156,10 +156,12 @@ else
                     <h3>@Localizer["SendCommandDevice"]</h3>
                     <EditForm Model="@selectedDeviceCommand" OnValidSubmit="@ExecuteDeviceCommand" Context="x">
                         <InputSelect @bind-Value="selectedDeviceCommand" class="form-control">
+                            <option value="showblack">@Localizer["ShowBlack"]</option>
                             <option value="showareas">@Localizer["ShowAreas"]</option>
                             <option value="showtestpattern">@Localizer["ShowTestpattern"]</option>
                             <option value="showcolortest">@Localizer["ShowColortest"]</option>
                             <option value="showfullcolortest">@Localizer["ShowFullcolortest"]</option>
+                            <option value="showpixelwipe">@Localizer["ShowPixelwipe"]</option>
                             <option value="showclock">@Localizer["ShowCurrentTime"]</option>
                             <option value="idlebar">@Localizer["ShowIdlebar"]</option>
                             <option value="calibratefps">@Localizer["CalibrationTest"]</option>

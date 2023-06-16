@@ -37,8 +37,12 @@ namespace LeDi.Display2.Effects
 
         private readonly System.Timers.Timer tmrCountdown = new(1000);
 
-        public override void Execute()
+        private CancellationToken EffectCancellationToken = new CancellationToken();
+
+        public override void Execute(CancellationToken effectCancellationToken)
         {
+            EffectCancellationToken = effectCancellationToken;
+
             Console.WriteLine("Executing Countdown");
             tmrCountdown.Elapsed += TmrCountdown_Elapsed;
             tmrCountdown.Start();
@@ -46,6 +50,12 @@ namespace LeDi.Display2.Effects
 
         private void TmrCountdown_Elapsed(object? sender, ElapsedEventArgs e)
         {
+            if (EffectCancellationToken.IsCancellationRequested)
+            {
+                Console.WriteLine("Countdown stopped.");
+                tmrCountdown.Stop();
+            }
+
             string time = Minutes.ToString() + ":" + Seconds.ToString("00");
 
             Display.Display.ShowString(time, "time");

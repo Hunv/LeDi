@@ -6,6 +6,6 @@ namespace LeDi.Display2.Effects
 {
     public abstract class IEffect
     {
-        public abstract void Execute();
+        public abstract void Execute(CancellationToken EffectCancellationToken);
     }
 }

@@ -8,33 +8,24 @@ namespace LeDi.Display2.Effects
 {
     public class TestFullColor : IEffect
     {
-        public override void Execute()
+        public override void Execute(CancellationToken EffectCancellationToken)
         {
             Console.WriteLine("Running TestFullColor");
-            
-            Display.Display.SetAll(Color.White); //FFFFFF
-            Display.Display.Render();
-            Thread.Sleep(10000);
-            Display.Display.SetAll(Color.Green); //00FF00
-            Display.Display.Render();
-            Thread.Sleep(10000);
-            Display.Display.SetAll(Color.Red); //FF0000
-            Display.Display.Render();
-            Thread.Sleep(10000);
-            Display.Display.SetAll(Color.Blue); //0000FF
-            Display.Display.Render();
-            Thread.Sleep(10000);
-            Display.Display.SetAll(Color.Cyan); //00FFFF
-            Display.Display.Render();
-            Thread.Sleep(10000);
-            Display.Display.SetAll(Color.Yellow); //FFFF00
-            Display.Display.Render();
-            Thread.Sleep(10000);
-            Display.Display.SetAll(Color.Magenta); //FF00FF
-            Display.Display.Render();
-            Thread.Sleep(10000);            
-            Display.Display.SetAll(Color.Black);            
-            Display.Display.Render();
+
+            Color[] testColors = new Color[] { Color.White, Color.Green, Color.Red, Color.Blue, Color.Cyan, Color.Yellow, Color.Magenta };
+
+            foreach(var aColor in testColors)
+            {
+                if (EffectCancellationToken.IsCancellationRequested)
+                {
+                    Console.WriteLine("TestFullColor stopped.");
+                    return;
+                }
+
+                Display.Display.SetAll(aColor);
+                Display.Display.Render();
+                Thread.Sleep(10000);
+            }
         }
     }
 }
