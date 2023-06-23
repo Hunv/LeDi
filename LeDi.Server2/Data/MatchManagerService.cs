@@ -28,7 +28,7 @@ namespace LeDi.Server2.Data
         /// <summary>
         /// Contains the matches that are currently loaded because any client accessed it or it is currently running
         /// </summary>
-        private List<TblMatch> LoadedMatches { get; set; } = new List<TblMatch>();
+        public List<TblMatch> LoadedMatches { get; private set; } = new List<TblMatch>();
 
 
         public event EventHandler? OnPeriodTimeOver;
@@ -93,18 +93,33 @@ namespace LeDi.Server2.Data
                         {
                             OnMatchTimeUpdated(aMatch.Id, e);
                         }
+
+                        // Update the new time left in the database
+                        await DataHandler.SetMatchTimeAsync(aMatch.Id, aMatch.CurrentTimeLeft);                     
+
                     }
                     else // if the time of a match is over and the match has no overtime
                     {
+                        var dbMatch = await DataHandler.GetMatchAsync(aMatch.Id);
+                        
                         //stop the timer by setting the new status. Set to PeriodEnded if there are more periods left. Set to Ended if all periods are over.
                         if (aMatch.CurrentPeriod < aMatch.RulePeriodCount)
                         {
                             aMatch.MatchStatus = (int)MatchStatusEnum.PeriodEnded;
+                            var matchEvent = new TblMatchEvent() { Event = MatchEventEnum.MatchCancel, Matchtime = aMatch.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Status set to PeriodEnded" };
+                            aMatch.MatchEvents.Add(matchEvent);
                         }
                         else
                         {
                             aMatch.MatchStatus = (int)MatchStatusEnum.Ended;
+                            var matchEvent = new TblMatchEvent() { Event = MatchEventEnum.MatchCancel, Matchtime = aMatch.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Status set to MatchEnded" };
+                            aMatch.MatchEvents.Add(matchEvent);
                         }
+
+                        //Save changes to database
+                        dbMatch.MatchStatus = aMatch.MatchStatus;
+                        dbMatch.MatchEvents = aMatch.MatchEvents;
+                        await DataHandler.SetMatchAsync(dbMatch);
 
                         if (OnPeriodTimeOver != null)
                         {
@@ -133,7 +148,14 @@ namespace LeDi.Server2.Data
             var match = LoadedMatches.Single(x => x.Id == matchId);
             match.MatchStatus = (int)newStatus;
 
-            match.MatchEvents.Add(new TblMatchEvent() { Event = MatchEventEnum.MatchCancel, Matchtime = match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Status set to " + newStatus.ToString()});
+            var matchEvent = new TblMatchEvent() { Event = MatchEventEnum.MatchCancel, Matchtime = match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Status set to " + newStatus.ToString() };
+            match.MatchEvents.Add(matchEvent);
+
+            // Save changes to db.
+            var dbMatch = await DataHandler.GetMatchAsync(matchId);
+            dbMatch.MatchStatus = match.MatchStatus;
+            dbMatch.MatchEvents.Add(matchEvent);
+            await DataHandler.SetMatchAsync(dbMatch);
 
             if (OnMatchUpdated != null)
             {
@@ -175,7 +197,7 @@ namespace LeDi.Server2.Data
         /// </summary>
         /// <param name="matchId"></param>
         /// <returns></returns>
-        private async Task<bool> LoadMatch(int matchId)
+        public async Task<bool> LoadMatch(int matchId)
         {
             // if the matchId is not loaded, load it
             if (!LoadedMatches.Any(x => x.Id == matchId))

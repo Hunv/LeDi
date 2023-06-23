@@ -157,6 +157,7 @@ else
                     <EditForm Model="@selectedDeviceCommand" OnValidSubmit="@ExecuteDeviceCommand" Context="x">
                         <InputSelect @bind-Value="selectedDeviceCommand" class="form-control">
                             <option value="black">@Localizer["ShowBlack"]</option>
+                            <option value="ledilogo">@Localizer["ShowLeDiLogo"]</option>
                             <option value="areas">@Localizer["ShowAreas"]</option>
                             <option value="testpattern">@Localizer["ShowTestpattern"]</option>
                             <option value="colortest">@Localizer["ShowColortest"]</option>

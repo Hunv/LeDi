@@ -11,7 +11,7 @@
 @inject UserManager<IdentityUser> _UserManager
 @inject RoleManager<IdentityRole> _RoleManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject MatchEngine MatchEng
+@*@inject MatchEngine MatchEng*@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<MatchControl> Localizer
 @inject LeDi.Server2.Data.MatchManagerService MatchManager
 
@@ -28,7 +28,7 @@ else
 {
     <AuthorizeView Roles="Att-CanMatchAdvancedControls,Att-CanMatchPenalty,Att-CanMatchStart,Att-CanMatchEnd,Att-IsAdmin">
         <Authorized>
-            if (SelectedMatchId == null && MatchList != null)
+            @if (SelectedMatchId == null && MatchList != null)
             {
                 @*Select the Match to referee about*@
                 <div class="container-fluid">

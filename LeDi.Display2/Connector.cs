@@ -48,7 +48,18 @@ namespace LeDi.Display2
             connection.Closed += async (error) =>
             {
                 await Task.Delay(new Random().Next(0, 5) * 1000);
+                Logger.Info("Connection closed. Reconnecting...");
                 await connection.StartAsync();
+            };
+
+            connection.Reconnecting += async (error) =>
+            {
+                Logger.Info("Reconnecting...");
+            };
+
+            connection.Reconnected += async (error) =>
+            {
+                Logger.Info("Reconnected.");
             };
 
             Logger.Info("Connector initialized");

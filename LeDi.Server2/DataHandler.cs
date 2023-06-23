@@ -26,11 +26,13 @@ namespace LeDi.Server2
         /// <returns>The match. Null if match Id not exists.</returns>
         public static async Task<TblMatch?> GetMatchAsync(int id)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblMatches?.SingleOrDefaultAsync(x => x.Id == id);
-            }            
-            
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblMatches == null)
+                return null;
+
+            return await dbContext.TblMatches.SingleOrDefaultAsync(x => x.Id == id);
+
         }
 
 
@@ -41,10 +43,12 @@ namespace LeDi.Server2
         /// <returns>The match. Null if match Id not exists.</returns>
         public static List<TblMatch> GetMatchList()
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return dbContext.TblMatches.ToList();
-            }
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblMatches == null)
+                return new List<TblMatch>();
+
+            return dbContext.TblMatches.ToList();
         }
 
         /// <summary>
@@ -60,33 +64,35 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<int> UpdateMatchScoreAsync(int matchId, int teamId, int scoreDiff)
         {
-            using (var dbContext = new LeDiDbContext())
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblMatches == null)
+                return int.MinValue;
+
+            var match = await dbContext.TblMatches.SingleOrDefaultAsync(x => x.Id == matchId);
+            if (match != null)
             {
-                var match = await dbContext.TblMatches?.SingleOrDefaultAsync(x => x.Id == matchId);
-                if (match != null)
+                if (teamId == 0)
                 {
-                    if (teamId == 0)
-                    {
-                        match.Team1Score += scoreDiff;
-                        await dbContext.SaveChangesAsync();
-                        OnMatchUpdated?.Invoke(matchId);
-                        OnMatchScoreChanged?.Invoke(matchId);
-                        return match.Team1Score;
-                    }
-                    else if (teamId == 1)
-                    {
-                        match.Team2Score += scoreDiff;
-                        await dbContext.SaveChangesAsync();
-                        OnMatchUpdated?.Invoke(matchId);
-                        OnMatchScoreChanged?.Invoke(matchId);
-                        return match.Team2Score;
-                    }
-                    return int.MinValue;
+                    match.Team1Score += scoreDiff;
+                    await dbContext.SaveChangesAsync();
+                    OnMatchUpdated?.Invoke(matchId);
+                    OnMatchScoreChanged?.Invoke(matchId);
+                    return match.Team1Score;
                 }
-                else
+                else if (teamId == 1)
                 {
-                    return int.MinValue;
+                    match.Team2Score += scoreDiff;
+                    await dbContext.SaveChangesAsync();
+                    OnMatchUpdated?.Invoke(matchId);
+                    OnMatchScoreChanged?.Invoke(matchId);
+                    return match.Team2Score;
                 }
+                return int.MinValue;
+            }
+            else
+            {
+                return int.MinValue;
             }
 
         }
@@ -99,14 +105,29 @@ namespace LeDi.Server2
         /// <summary>
         /// Add a match to the database and inform relevant clients
         /// </summary>
-        public static TblMatch? AddMatch(TblMatch match)
+        public static async Task<TblMatch?> AddMatch(TblMatch match)
         {
-            using (var dbContext = new LeDiDbContext())
+            try
             {
-                dbContext.TblMatches?.Add(match);
-                dbContext.SaveChangesAsync();
+                using var dbContext = new LeDiDbContext();
+
+                if (dbContext.TblMatches == null)
+                    return null;
+
+                // fixing the problem, that tournament property is from a different context. This is dirty.
+                // Maybe this will be a long term fix: https://stackoverflow.com/questions/52718652/ef-core-sqlite-sqlite-error-19-unique-constraint-failed
+                if (match.Tournament != null)
+                    match.Tournament = await dbContext.TblTournaments.SingleAsync(x => x.Id == match.Tournament.Id);
+
+                dbContext.TblMatches.Add(match);
+                await dbContext.SaveChangesAsync();
                 OnMatchAdded?.Invoke(match.Id);
                 return match;
+            }
+            catch(Exception ex)
+            {
+                Logger.Error(ex, "Failed to add a new match.");
+                return null;
             }
         }
 
@@ -120,44 +141,66 @@ namespace LeDi.Server2
         /// </summary>
         public async static Task<TblMatch?> SetMatchAsync(TblMatch match)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                if (await dbContext.TblMatches?.AnyAsync(x => x.Id == match.Id))
-                {
-                    var dbMatch = await dbContext.TblMatches.SingleAsync(x => x.Id == match.Id);
-                    dbMatch.CurrentPeriod = match.CurrentPeriod;
-                    dbMatch.CurrentTimeLeft = match.CurrentTimeLeft;
-                    dbMatch.Devices = match.Devices;
-                    dbMatch.GameName = match.GameName;
-                    dbMatch.MatchStatus = match.MatchStatus;
-                    dbMatch.RuleMatchExtensionOnDraw = match.RuleMatchExtensionOnDraw;
-                    dbMatch.RulePenaltyList = match.RulePenaltyList;
-                    dbMatch.RulePeriodCount = match.RulePeriodCount;
-                    dbMatch.RulePeriodLastPauseTimeOnEvent = match.RulePeriodLastPauseTimeOnEvent;
-                    dbMatch.RulePeriodLastPauseTimeOnEventSeconds = match.RulePeriodLastPauseTimeOnEventSeconds;
-                    dbMatch.RulePeriodLength = match.RulePeriodLength;
-                    dbMatch.RulePeriodOvertime = match.RulePeriodOvertime;
-                    dbMatch.ScheduledTime = match.ScheduledTime;
-                    dbMatch.Team1Name = match.Team1Name;
-                    dbMatch.Team1Score = match.Team1Score;
-                    dbMatch.Team2Name = match.Team2Name;
-                    dbMatch.Team2Score = match.Team2Score;
+            using var dbContext = new LeDiDbContext();
 
-                    dbMatch.MatchEvents = match.MatchEvents;
-                    dbMatch.MatchPenalties = match.MatchPenalties;
-                    dbMatch.MatchReferees = match.MatchReferees;
-                    dbMatch.Team1Players = match.Team1Players;
-                    dbMatch.Team2Players = match.Team2Players;
-
-                    await dbContext.SaveChangesAsync();
-                    OnMatchUpdated?.Invoke(dbMatch.Id);
-                    return dbMatch;
-                }
+            if (dbContext.TblMatches == null)
                 return null;
+
+            if (await dbContext.TblMatches.AnyAsync(x => x.Id == match.Id))
+            {
+                var dbMatch = await dbContext.TblMatches.SingleAsync(x => x.Id == match.Id);
+                dbMatch.CurrentPeriod = match.CurrentPeriod;
+                dbMatch.CurrentTimeLeft = match.CurrentTimeLeft;
+                dbMatch.Devices = match.Devices;
+                dbMatch.GameName = match.GameName;
+                dbMatch.MatchStatus = match.MatchStatus;
+                dbMatch.RuleMatchExtensionOnDraw = match.RuleMatchExtensionOnDraw;
+                dbMatch.RulePenaltyList = match.RulePenaltyList;
+                dbMatch.RulePeriodCount = match.RulePeriodCount;
+                dbMatch.RulePeriodLastPauseTimeOnEvent = match.RulePeriodLastPauseTimeOnEvent;
+                dbMatch.RulePeriodLastPauseTimeOnEventSeconds = match.RulePeriodLastPauseTimeOnEventSeconds;
+                dbMatch.RulePeriodLength = match.RulePeriodLength;
+                dbMatch.RulePeriodOvertime = match.RulePeriodOvertime;
+                dbMatch.ScheduledTime = match.ScheduledTime;
+                dbMatch.Team1Name = match.Team1Name;
+                dbMatch.Team1Score = match.Team1Score;
+                dbMatch.Team2Name = match.Team2Name;
+                dbMatch.Team2Score = match.Team2Score;
+
+                dbMatch.MatchEvents = match.MatchEvents;
+                dbMatch.MatchPenalties = match.MatchPenalties;
+                dbMatch.MatchReferees = match.MatchReferees;
+                dbMatch.Team1Players = match.Team1Players;
+                dbMatch.Team2Players = match.Team2Players;
+
+                await dbContext.SaveChangesAsync();
+                OnMatchUpdated?.Invoke(dbMatch.Id);
+                return dbMatch;
             }
+            return null;
         }
 
+        /// <summary>
+        /// Updates the time left for a match
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="timeLeft"></param>
+        /// <returns></returns>
+        public static async Task SetMatchTimeAsync(int matchId, int timeLeft)
+        {
+            using var dbContext = new LeDiDbContext();
 
+            if (dbContext.TblMatches == null)
+                return;
+
+            var match = await dbContext.TblMatches.SingleOrDefaultAsync(x => x.Id == matchId);
+
+            if (match == null)
+                return;
+
+            match.CurrentTimeLeft = timeLeft;
+            await dbContext.SaveChangesAsync();
+        }
 
 
         /// <summary>
@@ -167,10 +210,12 @@ namespace LeDi.Server2
         /// <returns>The match. Null if match Id not exists.</returns>
         public static List<TblMatchEvent> GetMatchEvents(int matchId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return dbContext.TblMatchEvents.Where(x => x.MatchId == matchId).ToList();
-            }
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblMatchEvents == null)
+                return new List<TblMatchEvent>();
+
+            return dbContext.TblMatchEvents.Where(x => x.MatchId == matchId).ToList();
         }
 
 
@@ -181,10 +226,12 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static TblGameRule? GetGameRule(string gamename)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return dbContext.TblGameRules?.SingleOrDefault(x => x.Sport == gamename);
-            }
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblGameRules == null)
+                return null;
+
+            return dbContext.TblGameRules.SingleOrDefault(x => x.Sport == gamename);
         }
 
 
@@ -195,20 +242,18 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<List<TblDevice>> GetDeviceListAsync(bool includeDisabled = false)
         {
+            using var dbContext = new LeDiDbContext();
 
-            using (var dbContext = new LeDiDbContext())
+            if (dbContext.TblDevice == null)
+                return new List<TblDevice>();
+
+            if (includeDisabled)
             {
-                if (dbContext.TblDevice == null)
-                    return new List<TblDevice>();
-
-                if (includeDisabled)
-                {
-                    return await dbContext.TblDevice?.ToListAsync();
-                }
-                else
-                {
-                    return await dbContext.TblDevice?.Where(x => x.Enabled == true).ToListAsync();
-                }
+                return await dbContext.TblDevice.ToListAsync();
+            }
+            else
+            {
+                return await dbContext.TblDevice.Where(x => x.Enabled == true).ToListAsync();
             }
         }
 
@@ -221,10 +266,12 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblDeviceSetting?> GetDeviceSettingAsync(string deviceId, string settingName)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblDeviceSettings?.SingleOrDefaultAsync(x => x.DeviceId == deviceId && x.SettingName == settingName);
-            }
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblDeviceSettings == null)
+                return null;
+
+            return await dbContext.TblDeviceSettings.SingleOrDefaultAsync(x => x.DeviceId == deviceId && x.SettingName == settingName);
         }
 
         /// <summary>
@@ -235,10 +282,12 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<List<TblDeviceSetting>> GetDeviceSettingListAsync(string deviceId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblDeviceSettings?.Where(x => x.DeviceId == deviceId).ToListAsync();
-            }
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblDeviceSettings == null)
+                return new List<TblDeviceSetting>();
+
+            return await dbContext.TblDeviceSettings.Where(x => x.DeviceId == deviceId).ToListAsync();
         }
 
 
@@ -257,22 +306,24 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblDeviceSetting?> SetDeviceSettingAsync(string deviceId, string settingName, string settingValue, bool createIfNotExist = true)
         {
-            using (var dbContext = new LeDiDbContext())
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblDeviceSettings == null)
+                return null;
+
+            var value = await dbContext.TblDeviceSettings.SingleOrDefaultAsync(x => x.DeviceId == deviceId && x.SettingName == settingName);
+            if (value == null && createIfNotExist)
             {
-                var value = await dbContext.TblDeviceSettings.SingleOrDefaultAsync(x => x.DeviceId == deviceId && x.SettingName == settingName);
-                if (value == null && createIfNotExist)
-                {
-                    value = new TblDeviceSetting(deviceId, settingName, settingValue);
-                    await dbContext.TblDeviceSettings.AddAsync(value);
-                }
-                else if (value != null)
-                {
-                    value.SettingValue = settingValue;
-                }
-                await dbContext.SaveChangesAsync();
-                OnDeviceSettingUpdated?.Invoke(deviceId);
-                return value;
+                value = new TblDeviceSetting(deviceId, settingName, settingValue);
+                await dbContext.TblDeviceSettings.AddAsync(value);
             }
+            else if (value != null)
+            {
+                value.SettingValue = settingValue;
+            }
+            await dbContext.SaveChangesAsync();
+            OnDeviceSettingUpdated?.Invoke(deviceId);
+            return value;
         }
 
         /// <summary>
@@ -283,19 +334,21 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<bool> RemoveDeviceSettingAsync(string deviceId, string settingName)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                var value = await dbContext.TblDeviceSettings.SingleOrDefaultAsync(x => x.DeviceId == deviceId && x.SettingName == settingName);
-                if (value == null)
-                {
-                    return false;
-                }
+            using var dbContext = new LeDiDbContext();
 
-                dbContext.TblDeviceSettings.Remove(value);
-                await dbContext.SaveChangesAsync();
-                OnDeviceSettingUpdated?.Invoke(deviceId);
-                return true;
+            if (dbContext.TblDeviceSettings == null)
+                return false;
+
+            var value = await dbContext.TblDeviceSettings.SingleOrDefaultAsync(x => x.DeviceId == deviceId && x.SettingName == settingName);
+            if (value == null)
+            {
+                return false;
             }
+
+            dbContext.TblDeviceSettings.Remove(value);
+            await dbContext.SaveChangesAsync();
+            OnDeviceSettingUpdated?.Invoke(deviceId);
+            return true;
         }
 
 
@@ -314,14 +367,16 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblDeviceCommand?> AddDeviceCommandAsync(string deviceId, string command, string parameter = "")
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                var value = new TblDeviceCommand(deviceId, command, parameter);
-                await dbContext.TblDeviceCommands.AddAsync(value);
-                await dbContext.SaveChangesAsync();
-                OnDeviceCommandAdded?.Invoke(deviceId);
-                return value;
-            }
+            using var dbContext = new LeDiDbContext();
+
+            if (dbContext.TblDeviceCommands == null)
+                return null;
+
+            var value = new TblDeviceCommand(deviceId, command, parameter);
+            await dbContext.TblDeviceCommands.AddAsync(value);
+            await dbContext.SaveChangesAsync();
+            OnDeviceCommandAdded?.Invoke(deviceId);
+            return value;
         }
 
 
@@ -332,13 +387,12 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<List<TblDeviceCommand>> GetDeviceCommandsAsync(string deviceId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                if (dbContext == null || dbContext.TblDeviceCommands == null)
-                    return new List<TblDeviceCommand>();
+            using var dbContext = new LeDiDbContext();
 
-                return await dbContext.TblDeviceCommands.Where(x => x.DeviceId == deviceId).ToListAsync();
-            }
+            if (dbContext == null || dbContext.TblDeviceCommands == null)
+                return new List<TblDeviceCommand>();
+
+            return await dbContext.TblDeviceCommands.Where(x => x.DeviceId == deviceId).ToListAsync();
         }
 
         /// <summary>
@@ -354,14 +408,13 @@ namespace LeDi.Server2
         public static async Task RemoveDeviceCommandAsync(TblDeviceCommand command)
         {
 
-            using (var dbContext = new LeDiDbContext())
-            {
-                if (dbContext == null || dbContext.TblDeviceCommands == null)
-                    return;
+            using var dbContext = new LeDiDbContext();
 
-                dbContext.TblDeviceCommands.Remove(command);
-                await dbContext.SaveChangesAsync();
-            }
+            if (dbContext == null || dbContext.TblDeviceCommands == null)
+                return;
+
+            dbContext.TblDeviceCommands.Remove(command);
+            await dbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -371,18 +424,20 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblDevice?> GetDeviceAsync(string deviceId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                var devices = dbContext.TblDevice.Where(x => x.DeviceId == deviceId);
+            using var dbContext = new LeDiDbContext();
 
-                if (devices == null || devices.Count() == 0)
-                    return null;
+            if (dbContext.TblDevice == null)
+                return null;
 
-                if (await devices.CountAsync() > 1)
-                    Logger.Warn("More than 1 device ({0}) found for device ID '{1}'. Returning only first device.", await devices.CountAsync(), deviceId);
+            var devices = dbContext.TblDevice.Where(x => x.DeviceId == deviceId);
 
-                return devices.First();
-            }
+            if (devices == null || devices.Count() == 0)
+                return null;
+
+            if (await devices.CountAsync() > 1)
+                Logger.Warn("More than 1 device ({0}) found for device ID '{1}'. Returning only first device.", await devices.CountAsync(), deviceId);
+
+            return devices.First();
         }
 
         /// <summary>
@@ -395,28 +450,30 @@ namespace LeDi.Server2
         /// </summary>
         public async static Task<TblDevice?> SetDeviceAsync(TblDevice device)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                if (await dbContext.TblDevice?.AnyAsync(x => x.DeviceId == device.DeviceId))
-                {
-                    var dev = await dbContext.TblDevice.SingleAsync(x => x.DeviceId == device.DeviceId);
+            using var dbContext = new LeDiDbContext();
 
-                    dev.DeviceName = device.DeviceName;
-                    dev.DeviceModel = device.DeviceModel;
-                    dev.DeviceType = device.DeviceType;
-                    dev.Enabled = device.Enabled;
-                    dev.Default = device.Default;
-                    await dbContext.SaveChangesAsync();
-                    OnDeviceUpdated?.Invoke(dev.DeviceId);
-                    return dev;
-                }
-                else
-                {
-                    await dbContext.TblDevice.AddAsync(device);
-                    await dbContext.SaveChangesAsync();
-                    OnDeviceUpdated?.Invoke(device.DeviceId);
-                    return device;
-                }
+            if (dbContext.TblDevice == null)
+                return null;
+
+            if (await dbContext.TblDevice.AnyAsync(x => x.DeviceId == device.DeviceId))
+            {
+                var dev = await dbContext.TblDevice.SingleAsync(x => x.DeviceId == device.DeviceId);
+
+                dev.DeviceName = device.DeviceName;
+                dev.DeviceModel = device.DeviceModel;
+                dev.DeviceType = device.DeviceType;
+                dev.Enabled = device.Enabled;
+                dev.Default = device.Default;
+                await dbContext.SaveChangesAsync();
+                OnDeviceUpdated?.Invoke(dev.DeviceId);
+                return dev;
+            }
+            else
+            {
+                await dbContext.TblDevice.AddAsync(device);
+                await dbContext.SaveChangesAsync();
+                OnDeviceUpdated?.Invoke(device.DeviceId);
+                return device;
             }
         }
 
@@ -425,23 +482,22 @@ namespace LeDi.Server2
         /// </summary>
         public async static Task<bool> RemoveDeviceAsync(string deviceId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                if (dbContext.TblDevice == null)
-                    return false;
+            using var dbContext = new LeDiDbContext();
 
-                if (await dbContext.TblDevice?.AnyAsync(x => x.DeviceId == deviceId))
-                {
-                    var dev = await dbContext.TblDevice.SingleAsync(x => x.DeviceId == deviceId);
-                    dbContext.Remove(dev);
-                    await dbContext.SaveChangesAsync();
-                    OnDeviceUpdated?.Invoke(dev.DeviceId);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            if (dbContext.TblDevice == null)
+                return false;
+
+            if (await dbContext.TblDevice.AnyAsync(x => x.DeviceId == deviceId))
+            {
+                var dev = await dbContext.TblDevice.SingleAsync(x => x.DeviceId == deviceId);
+                dbContext.Remove(dev);
+                await dbContext.SaveChangesAsync();
+                OnDeviceUpdated?.Invoke(dev.DeviceId);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -456,27 +512,26 @@ namespace LeDi.Server2
             {
                 Logger.Trace("RegisterDevice executed.");
 
-                using (var dbContext = new LeDiDbContext())
+                using var dbContext = new LeDiDbContext();
+
+                // To satisfy the compiler
+                if (dbContext == null || dbContext.TblDevice == null)
+                    return;
+
+                //Check if device already exists
+                if (dbContext.TblDevice.Any(x => x.DeviceId == deviceId))
                 {
-                    // To satisfy the compiler
-                    if (dbContext == null || dbContext.TblDevice == null)
-                        return;
-
-                    //Check if device already exists
-                    if (dbContext.TblDevice.Any(x => x.DeviceId == deviceId))
-                    {
-                        Logger.Info("Device {0} is already registered.", deviceId);
-                        return;
-                    }
-
-                    // Create new device entry
-                    var newDevice = new TblDevice(deviceId, deviceModel, deviceType, deviceName);
-                    newDevice.Enabled = true;
-
-                    // Add device to database
-                    await dbContext.TblDevice.AddAsync(newDevice);
-                    await dbContext.SaveChangesAsync();
+                    Logger.Info("Device {0} is already registered.", deviceId);
+                    return;
                 }
+
+                // Create new device entry
+                var newDevice = new TblDevice(deviceId, deviceModel, deviceType, deviceName);
+                newDevice.Enabled = true;
+
+                // Add device to database
+                await dbContext.TblDevice.AddAsync(newDevice);
+                await dbContext.SaveChangesAsync();
             }
             catch (Exception ea)
             {
@@ -491,10 +546,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<List<TblSetting>> GetSettingListAsync()
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblSettings.ToListAsync();
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblSettings.ToListAsync();
         }
 
         /// <summary>
@@ -503,10 +557,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblSetting?> GetSettingAsync(string settingName)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblSettings.SingleOrDefaultAsync(x => x.SettingName == settingName);
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblSettings.SingleOrDefaultAsync(x => x.SettingName == settingName);
         }
 
 
@@ -523,22 +576,21 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblSetting?> SetSettingAsync(string settingName, string settingValue, bool createIfNotExist = true)
         {
-            using (var dbContext = new LeDiDbContext())
+            using var dbContext = new LeDiDbContext();
+
+            var value = await dbContext.TblSettings.SingleOrDefaultAsync(x => x.SettingName == settingName);
+            if (value == null && createIfNotExist)
             {
-                var value = await dbContext.TblSettings.SingleOrDefaultAsync(x => x.SettingName == settingName);
-                if (value == null && createIfNotExist)
-                {
-                    value = new TblSetting(settingName, settingValue);
-                    await dbContext.TblSettings.AddAsync(value);
-                }
-                else if (value != null)
-                {
-                    value.SettingValue = settingValue;
-                }
-                await dbContext.SaveChangesAsync();
-                OnSettingUpdated?.Invoke();
-                return value;
+                value = new TblSetting(settingName, settingValue);
+                await dbContext.TblSettings.AddAsync(value);
             }
+            else if (value != null)
+            {
+                value.SettingValue = settingValue;
+            }
+            await dbContext.SaveChangesAsync();
+            OnSettingUpdated?.Invoke();
+            return value;
         }
 
 
@@ -548,10 +600,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<List<TblTournament>> GetTournamentListAsync()
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblTournaments.Include("Matches").ToListAsync();
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblTournaments.Include("Matches").ToListAsync();
         }
 
         /// <summary>
@@ -560,10 +611,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblTournament?> GetTournamentAsync(int tournamentId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblTournaments.Include("Matches").SingleOrDefaultAsync(x => x.Id == tournamentId);
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblTournaments.Include("Matches").SingleOrDefaultAsync(x => x.Id == tournamentId);
         }
 
         /// <summary>
@@ -578,13 +628,12 @@ namespace LeDi.Server2
         {
             try
             {
-                using (var dbContext = new LeDiDbContext())
-                {
-                    dbContext.TblTournaments?.Add(tournament);
-                    await dbContext.SaveChangesAsync();
-                    OnTournamentAdded?.Invoke(tournament.Id);
-                    return tournament;
-                }
+                using var dbContext = new LeDiDbContext();
+
+                dbContext.TblTournaments?.Add(tournament);
+                await dbContext.SaveChangesAsync();
+                OnTournamentAdded?.Invoke(tournament.Id);
+                return tournament;
             }
             catch (Exception ex)
             {
@@ -599,10 +648,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<List<TblUserRole>> GetUserRoleListAsync()
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblUserRoles.ToListAsync();
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblUserRoles.ToListAsync();
         }
 
         /// <summary>
@@ -614,45 +662,44 @@ namespace LeDi.Server2
         {
             var dbRole = await GetUserRoleAsync(role.Id);
 
-            using (var dbContext = new LeDiDbContext())
+            using var dbContext = new LeDiDbContext();
+
+            if (dbRole == null)
             {
-                if (dbRole == null)
-                {
-                    await dbContext.TblUserRoles.AddAsync(role);
-                }
-                else
-                {
-                    dbRole.CanDeviceCommands = role.CanDeviceCommands;
-                    dbRole.CanDeviceManage = role.CanDeviceManage;
-                    dbRole.CanMatchAdd = role.CanMatchAdd;
-                    dbRole.CanMatchAdvancedControls = role.CanMatchAdvancedControls;
-                    dbRole.CanMatchDelete = role.CanMatchDelete;
-                    dbRole.CanMatchEdit = role.CanMatchEdit;
-                    dbRole.CanMatchEnd = role.CanMatchEnd;
-                    dbRole.CanMatchPenalty = role.CanMatchPenalty;
-                    dbRole.CanMatchStart = role.CanMatchStart;
-                    dbRole.CanMatchStop = role.CanMatchStop;
-                    dbRole.CanPlayerAdd = role.CanPlayerAdd;
-                    dbRole.CanPlayerDelete = role.CanPlayerDelete;
-                    dbRole.CanPlayerEdit = role.CanPlayerEdit;
-                    dbRole.CanSettingManage = role.CanSettingManage;
-                    dbRole.CanTeamAdd = role.CanTeamAdd;
-                    dbRole.CanTeamDelete = role.CanTeamDelete;
-                    dbRole.CanTeamEdit = role.CanTeamEdit;
-                    dbRole.CanTemplateManage = role.CanTemplateManage;
-                    dbRole.CanTournamentEdit = role.CanTournamentEdit;
-                    dbRole.CanTournamentMatchAdd = role.CanTournamentMatchAdd;
-                    dbRole.CanTournamentAdd = role.CanTournamentAdd;
-                    dbRole.CanTournamentMatchDelete = role.CanTournamentMatchDelete;
-                    dbRole.CanTournamentMatchEdit = role.CanTournamentMatchEdit;
-                    dbRole.CanUserAdd = role.CanUserAdd;
-                    dbRole.CanUserDelete = role.CanUserDelete;
-                    dbRole.CanUserEdit = role.CanUserEdit;
-                    dbRole.CanUserPasswordEdit = role.CanUserPasswordEdit;
-                }
-                await dbContext.SaveChangesAsync();
-                return role;
+                await dbContext.TblUserRoles.AddAsync(role);
             }
+            else
+            {
+                dbRole.CanDeviceCommands = role.CanDeviceCommands;
+                dbRole.CanDeviceManage = role.CanDeviceManage;
+                dbRole.CanMatchAdd = role.CanMatchAdd;
+                dbRole.CanMatchAdvancedControls = role.CanMatchAdvancedControls;
+                dbRole.CanMatchDelete = role.CanMatchDelete;
+                dbRole.CanMatchEdit = role.CanMatchEdit;
+                dbRole.CanMatchEnd = role.CanMatchEnd;
+                dbRole.CanMatchPenalty = role.CanMatchPenalty;
+                dbRole.CanMatchStart = role.CanMatchStart;
+                dbRole.CanMatchStop = role.CanMatchStop;
+                dbRole.CanPlayerAdd = role.CanPlayerAdd;
+                dbRole.CanPlayerDelete = role.CanPlayerDelete;
+                dbRole.CanPlayerEdit = role.CanPlayerEdit;
+                dbRole.CanSettingManage = role.CanSettingManage;
+                dbRole.CanTeamAdd = role.CanTeamAdd;
+                dbRole.CanTeamDelete = role.CanTeamDelete;
+                dbRole.CanTeamEdit = role.CanTeamEdit;
+                dbRole.CanTemplateManage = role.CanTemplateManage;
+                dbRole.CanTournamentEdit = role.CanTournamentEdit;
+                dbRole.CanTournamentMatchAdd = role.CanTournamentMatchAdd;
+                dbRole.CanTournamentAdd = role.CanTournamentAdd;
+                dbRole.CanTournamentMatchDelete = role.CanTournamentMatchDelete;
+                dbRole.CanTournamentMatchEdit = role.CanTournamentMatchEdit;
+                dbRole.CanUserAdd = role.CanUserAdd;
+                dbRole.CanUserDelete = role.CanUserDelete;
+                dbRole.CanUserEdit = role.CanUserEdit;
+                dbRole.CanUserPasswordEdit = role.CanUserPasswordEdit;
+            }
+            await dbContext.SaveChangesAsync();
+            return role;
         }
 
         /// <summary>
@@ -661,10 +708,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblUserRole?> GetUserRoleAsync(int roleId)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.Id == roleId);
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.Id == roleId);
         }
 
 
@@ -674,10 +720,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task<TblUserRole?> GetUserRoleAsync(string roleName)
         {
-            using (var dbContext = new LeDiDbContext())
-            {
-                return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.RoleName == roleName);
-            }
+            using var dbContext = new LeDiDbContext();
+
+            return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.RoleName == roleName);
         }
     }
 }

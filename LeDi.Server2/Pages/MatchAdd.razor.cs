@@ -229,7 +229,7 @@ namespace LeDi.Server2.Pages
         private async Task<TblMatch?> SaveMatch()
         {
             // Save and get the saved match as return value
-            var newMatch = DataHandler.AddMatch(NewMatch);
+            var newMatch = await DataHandler.AddMatch(NewMatch);
 
             // Reset the NewMatch variable, that represents the current configuration of the match-to-add. Values are not required anymore after command before was executed.
             NewMatch = new TblMatch()

@@ -1,4 +1,5 @@
-﻿using LeDi.Shared2.DatabaseModel;
+﻿using LeDi.Server2.Data;
+using LeDi.Shared2.DatabaseModel;
 using LeDi.Shared2.Enum;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -9,8 +10,8 @@ namespace LeDi.Server2.Pages
     public partial class MatchControl
     {
         private readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        TblMatch Match = new TblMatch(); // currently selected match
-        List<TblMatchEvent>? MatchEventList = null; //List of all match events
+        //TblMatch Match = new TblMatch(); // currently selected match
+        //List<TblMatchEvent>? MatchEventList = null; //List of all match events
         List<TblMatch>? MatchList = null; // List of all not finished matches
         bool ButtonDisableStart = false; //Is the Start button disabled?
         bool ButtonDisableStartStop = false; // Is the Start/Stop-Button disabled?
@@ -35,7 +36,9 @@ namespace LeDi.Server2.Pages
         [Parameter]
         public int? SelectedMatchId { get; set; }
 
+        private TblMatch Match { get { return MatchManager.LoadedMatches.Single(x => x.Id == SelectedMatchId); } }
 
+        private List<TblMatchEvent> MatchEventList { get { return Match.MatchEvents.ToList(); } }
 
         private async void IncrementCountTeam1Clicked()
         {
@@ -402,10 +405,9 @@ namespace LeDi.Server2.Pages
                 // Get the latest infos if the updated matchId is the currently shown match
                 if ((int)sender == SelectedMatchId)
                 {
-                    var x = await DataHandler.GetMatchAsync(SelectedMatchId.Value);
+                    var x = MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId);
                     if (x != null)
                     {
-                        Match = x;
                         if (Match.CurrentPeriod != Match.RulePeriodCount)
                         {
                             Logger.Debug("Not-the-last period is over.");
@@ -421,8 +423,6 @@ namespace LeDi.Server2.Pages
                             ButtonPreparePeriodDisabled = true;
                             ButtonCloseMatchDisabled = false;
                         }
-
-                        await LoadMatchEvents();
                     }
                     await InvokeAsync(() => { StateHasChanged(); });
                 }
@@ -436,13 +436,6 @@ namespace LeDi.Server2.Pages
                 
                 if ((int)sender == SelectedMatchId)
                 {
-                    //var x = await DataHandler.GetMatchAsync(SelectedMatchId.Value);
-                    //if (x != null)
-                    //{
-                    //    Match = x;
-                        
-                    //}
-                    await LoadMatchEvents();
                     await InvokeAsync(() => { StateHasChanged(); });
                 }
             };
@@ -479,9 +472,9 @@ namespace LeDi.Server2.Pages
             }
 
             Logger.Debug("Loading match {0}", SelectedMatchId);
+            await MatchManager.LoadMatch(SelectedMatchId.Value);
 
-            Match = await DataHandler.GetMatchAsync(SelectedMatchId.Value);
-            if (Match == null || Match.Id == 0)
+            if (MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId) == null)
                 return;
 
             if (Match.MatchStatus >= (int)MatchStatusEnum.Running)
@@ -492,24 +485,6 @@ namespace LeDi.Server2.Pages
             {
                 ButtonDisableStart = false;
             }
-
-            // Update the Match Events
-            await LoadMatchEvents();
-
-            await InvokeAsync(() => { StateHasChanged(); });
-        }
-
-        private async Task LoadMatchEvents()
-        {
-            if (SelectedMatchId == null)
-            {
-                Logger.Debug("No match selected to load match events for.");
-                return;
-            }
-
-            Logger.Debug("Loading match events for {0}.", SelectedMatchId);
-
-            MatchEventList = DataHandler.GetMatchEvents(SelectedMatchId.Value);
 
             await InvokeAsync(() => { StateHasChanged(); });
         }

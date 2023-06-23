@@ -317,6 +317,9 @@ namespace LeDi.Display2.Display
                     effect = new IdleBar();
                     break;
 
+                case "ledilogo":
+                    effect = new LeDiLogo();
+                    break;
                 #endregion
 
                 #region calibration

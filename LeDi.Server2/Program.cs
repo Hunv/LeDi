@@ -39,7 +39,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
-//builder.Services.AddSingleton<MatchManagerService>();
+builder.Services.AddSingleton<MatchManagerService>();
 //builder.Services.AddSingleton<MatchEngine>();
 
 // NLog: Setup NLog for Dependency injection
