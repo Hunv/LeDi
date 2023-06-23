@@ -11,28 +11,8 @@ namespace LeDi.Server2.Display
             DataHandler.hubContext = context;
         }
 
-
-        //public async Task SendMessage(string user, string message)
-        //    => await Clients.All.SendAsync("ReceiveArea", new Area() { Width = 10, Height = 16});
-
-        //public async Task SendMessageToCaller(string user, string message)
-        //    => await Clients.Caller.SendAsync("ReceiveMessage", user, message);
-
-        //public async Task SendMessageToGroup(string user, string message)
-        //    => await Clients.Group("Displays").SendAsync("ReceiveMessage", user, message);
-
-        public override async Task OnConnectedAsync()
-        {
-            //Register a new group that is the device ID and contains the connection(s) of that device ID. Usually it should be just one, but sometimes it is a problem. That way we can send messages to deviceIds instead of Connection IDs
-            //var deviceId = "abc"; //Todo: Get the real device ID
-            //await Groups.AddToGroupAsync(Context.ConnectionId, deviceId);
-            
-            await base.OnConnectedAsync();
-        }
-
-
         /// <summary>
-        /// Executed when a client wants to register
+        /// Executed when a client wants to register by the client
         /// </summary>
         /// <param name="deviceId"></param>
         /// <param name="deviceName"></param>
@@ -51,30 +31,7 @@ namespace LeDi.Server2.Display
         /// <returns></returns>
         public async Task RequestUpdate(string deviceId)
         {            
-            //await Clients.Caller.SendAsync("ReceiveDataUpdate", DataHandler.GetDeviceSettingAsync(deviceId, "mode"));
-        }
-
-
-
-        /// <summary>
-        /// Sends the Mode for the Display to all Displays.
-        /// </summary>
-        /// <param name="mode"></param>
-        /// <returns></returns>
-        public async Task SendModeAll(string mode)
-        { 
-            // await Clients.All.SendAsync("ReceiveMode", mode);
-        }
-
-        /// <summary>
-        /// Sends the Mode for a specific Device
-        /// </summary>
-        /// <param name="mode"></param>
-        /// <param name="connectionId"></param>
-        /// <returns></returns>
-        public async Task SendModeDevice(string mode, string connectionId)
-        { 
-            // await Clients.Client(connectionId).SendAsync("ReceiveMode", mode);
+            await Clients.Caller.SendAsync("ReceiveDataUpdate", DataHandler.GetDeviceSettingAsync(deviceId, "mode"));
         }
 
         /// <summary>
@@ -88,12 +45,15 @@ namespace LeDi.Server2.Display
             await DataHandler.hubContext.Clients.Group(deviceId).SendAsync("ReceiveCommand", command);
         }
 
-
-
-
-        public override async Task OnDisconnectedAsync(Exception? exception)
+        /// <summary>
+        /// Sends a command to a specifc Device
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="connectionId"></param>
+        /// <returns></returns>
+        public async Task SendDeviceCommandWithParameter(string command, string deviceId, string jsonParameter)
         {
-            await base.OnDisconnectedAsync(exception);
+            await DataHandler.hubContext.Clients.Group(deviceId).SendAsync("ReceiveCommand", command, jsonParameter);
         }
     }
 }

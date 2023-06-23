@@ -1,4 +1,5 @@
 ﻿@page "/devicepages"
+@page "/devicepages/{SelectedDeviceId}"
 @using LeDi.Shared2.DatabaseModel;
 @using LeDi.Shared2.Enum
 @using Microsoft.AspNetCore.Authorization;
@@ -18,80 +19,76 @@ else
 {
     <AuthorizeView Roles="Att-CanDeviceManage,Att-IsAdmin">
         <Authorized>
-            <EditForm Model="@SelectedDevice" OnValidSubmit="@ShowPage" Context="x">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-
-                <p>@Localizer["SelectDevice"]</p>
-                <InputSelect class="form-control" @bind-Value="SelectedDevice">
-                    @foreach(var aDevice in DeviceList)
-                    {
-                        var dev = aDevice;
-                        <option value="@dev.DeviceId">@dev.DeviceName</option>
-                    }    
-                </InputSelect>
-                <br /><br />
-
-                <p>@Localizer["SelectPage"]</p>
-                <InputSelect class="form-control" @bind-Value="SelectedPage" @onselectionchange="SelectedPageChanged">
-                    <option value=""></option>
-                    <option value="match">@Localizer["Match"]</option>
-                    <option value="tournament">@Localizer["Tournament"]</option>
-                    <option value="countdown">@Localizer["Countdown"]</option>
-                    <option value="text">@Localizer["Text"]</option>
-                </InputSelect>
-    
-                <br /><br />
-
-                <div hidden="@(!(SelectedPage == ""))">
-                </div>
-
-                <div hidden="@(!(SelectedPage == "match"))">
-                    <p>@Localizer["SelectMatch"]</p>
-                    <p>@Localizer["SelectMatch2"]</p>
-                    @if(MatchList == null || MatchList.Count == 0)
-                    {
-                        <p><em>@Localizer["NoMatches"]</em></p>
-                    }
-                    else
-                    {
-                        <InputSelect class="form-control" @bind-Value="SelectedMatchId">
-                            @foreach(var aMatch in MatchList)
-                            {
-                                <option value="@aMatch.Id">@aMatch.Team1Name - @aMatch.Team2Name (@aMatch.Team1Score:@aMatch.Team2Score)</option>
-                            }
-                        </InputSelect>
+            <p>@Localizer["SelectDevice"]</p>
+            <div class="container-fluid">
+                <div class="row align-items-start" style="height:20vh; min-height:20vh;">
+                    @foreach(var aDevice in DeviceList) {
+                        <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <a class="btn @(SelectedDeviceId == aDevice.DeviceId ? "btn-primary" : "btn-secondary") fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="devicepages/@aDevice.DeviceId" role="button"><span class="oi oi-dashboard" aria-hidden="true" /> @aDevice.DeviceName<br /><br /><i>@aDevice.DeviceId</i></a>
+                            </div>
+                        </div>
                     }
                 </div>
+            </div>
 
-                <div hidden="@(!(SelectedPage == "tournament"))">
-                    <p>@Localizer["TournamentText"]</p>
-                </div>
 
-                <div hidden="@(!(SelectedPage == "countdown"))">
-                    <p>@Localizer["CountdownText"]</p>
+            @*
+            <InputSelect class="form-control" @bind-Value="SelectedDevice">
+                @foreach(var aDevice in DeviceList)
+                {
+                    var dev = aDevice;
+                    <option value="@dev.DeviceId">@dev.DeviceName</option>
+                }    
+            </InputSelect>*@
+            <br /><br />
 
-                    <p>@Localizer["CountdownText2"]</p>
-                    <InputText class="form-control" @bind-Value="CountdownText"/>
+            <p>@Localizer["SelectEffect"]</p>
+            <Tabs 
+                @ref="EffectTabs" 
+                NavStyle="NavStyle.Pills"
+                OnShown="@(args => OnTabShownAsync(args))"
+                >
+                <Tab Title="@Localizer["EffectText"]" IsActive="true">
+                    <Content>
+                        <p>@Localizer["EffectTextInfo"]</p>
+                        <InputTextArea class="form-control" @bind-Value="EffectTextContent" />
+                    </Content>
+                </Tab>
+                <Tab Title="@Localizer["EffectMatch"]">
+                    <Content>
+                        <p class="mt-3">Selet the match that should be shown on the display</p>
+                    </Content>
+                </Tab>
+                <Tab Title="@Localizer["EffectTournament"]">
+                    <Content>
+                        <p class="mt-3">Select the tournament that should be shown on the display</p>
+                    </Content>
+                </Tab>
+                <Tab Title="@Localizer["EffectCountdown"]">
+                    <Content>
+                        <p>@Localizer["EffectCountdownInfo"]</p>
 
-                    <p>@Localizer["CountdownSeconds"]</p>
-                    <input 
-                        type="number" 
-                        class="form-control"
-                        placeholder="@Localizer["Seconds"]"
-                        min="0" 
-                        max="99999" 
-                        @bind-value="CountdownSeconds"
-                        />
-                </div>
+                        <p>@Localizer["EffectCountdownText"]</p>
+                        <InputText class="form-control" @bind-Value="EffectCountdownText" />
 
-                <div hidden="@(!(SelectedPage == "text"))">
-                    <p>@Localizer["TextText"]</p>
-                    <InputTextArea class="form-control" @bind-Value="TextContent"/>
-                </div>
+                        <p>@Localizer["EffectCountdownSeconds"]</p>
+                        <input type="number"
+                               class="form-control"
+                               placeholder="@Localizer["Seconds"]"
+                               min="0"
+                               max="99999"
+                           @bind-value="EffectCountdownSeconds" />
+                        <p class="mt-3">Countdown options (i.e. seconds to a specific time or total seconds to count down.)</p>
+                    </Content>
+                </Tab>
+            </Tabs>
 
-                <button class="btn btn-primary" type="submit">Show Page</button>
-            </EditForm>
+            <br />
+
+            <Button Color="ButtonColor.Primary" @onclick="SetEffect"> @Localizer["SetEffect"] </Button>
+
+
         </Authorized>
         <NotAuthorized>
             <p>@Localizer["NoPermissions"]</p>
@@ -100,83 +97,4 @@ else
 }
 
 @code {
-    private List<TblDevice>? DeviceList = null;
-    private string SelectedDevice = "";
-    private List<TblMatch> MatchList = new List<TblMatch>();
-    private TblMatch SelectedMatch = new TblMatch();
-    private string CountdownText = "";
-    private int CountdownSeconds = 0;
-    private string TextContent = "";
-
-
-    private string _SelectedPage = "";
-    private string SelectedPage {
-        get
-        {
-            return _SelectedPage;
-        }
-        set
-        {
-            _SelectedPage = value;
-            #pragma warning disable CS4014
-            SelectedPageChanged();
-            #pragma warning restore CS4014
-        }
-    }
-
-    private int SelectedMatchId
-    {
-        get
-        {
-            return SelectedMatch.Id;
-        }
-        set
-        {
-            SelectedMatch = MatchList.Single(x => x.Id == value);
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        DeviceList = await DataHandler.GetDeviceListAsync();
-    }
-
-    private async Task SelectedPageChanged()
-    {
-        switch (SelectedPage)
-        {
-            case "match":
-                MatchList = DataHandler.GetMatchList().Where(x => x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed && x.MatchStatus != (int)MatchStatusEnum.Ended && x.MatchStatus != (int)MatchStatusEnum.Stopped).ToList();
-                break;
-        }
-
-        await InvokeAsync(() => { StateHasChanged(); });
-    }
-
-    private async Task ShowPage()
-    {
-        var set = DataHandler.GetDeviceSettingAsync(SelectedDevice, "mode");
-        switch (SelectedPage)
-        {
-            case "":
-                await DataHandler.SetDeviceSettingAsync(SelectedDevice, "mode", "none");
-                break;
-
-            case "match":
-                await DataHandler.SetDeviceSettingAsync(SelectedDevice, "mode", "match");
-                break;
-
-            case "tournament":
-                await DataHandler.SetDeviceSettingAsync(SelectedDevice, "mode", "tournament");
-                break;
-
-            case "countdown":
-                await DataHandler.SetDeviceSettingAsync(SelectedDevice, "showcountdown", CountdownSeconds.ToString());
-                break;
-
-            case "text":
-                await DataHandler.SetDeviceSettingAsync(SelectedDevice, "showtext", TextContent);
-                break;
-        }
-    }
 }

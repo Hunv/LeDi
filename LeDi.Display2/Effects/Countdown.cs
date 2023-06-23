@@ -5,25 +5,26 @@ using System.Timers;
 using System.Linq;
 using rpi_ws281x;
 using LeDi.Shared2.Display;
+using System.Threading;
 
 namespace LeDi.Display2.Effects
 {
     public class Countdown : IEffect
     {
         /// <summary>
-        /// The Minutes to countdown
-        /// </summary>
-        public int Minutes { get; set; }
-
-        /// <summary>
         /// The Seconds to count down
         /// </summary>
         public int Seconds { get; set; }
 
         /// <summary>
+        /// Text to show additionally to the countdown
+        /// </summary>
+        public string? Text { get; set; }
+
+        /// <summary>
         /// Show only seconds (i.e. 78 instead of 1:18)
         /// </summary>
-        public bool SecondsOnly { get; set; }
+        public bool ShowSecondsOnly { get; set; }
 
         /// <summary>
         /// The Area where the Countdown should be shown
@@ -39,11 +40,54 @@ namespace LeDi.Display2.Effects
 
         private CancellationToken EffectCancellationToken = new CancellationToken();
 
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         public override void Execute(CancellationToken effectCancellationToken)
         {
             EffectCancellationToken = effectCancellationToken;
 
-            Console.WriteLine("Executing Countdown");
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(Text))
+                {
+                    if (!Display.Display.LayoutConfig.AreaList.Any(x => x.Name == "countdownText"))
+                    {
+                        // Create the area for the text
+                        var areaText = new Area();
+                        areaText.Name = "countdownText";
+                        areaText.PositionX = 0;
+                        areaText.PositionY = Display.Display.Y / 2;
+                        areaText.Width = Display.Display.X;
+                        areaText.Height = Display.Display.Y / 2;
+                        areaText.Align = "center";
+                        Display.Display.LayoutConfig.AreaList.Add(areaText);
+
+                        Logger.Debug("Created temporary area countdownText with PosX={0}, PosY={1}, Width={2}, Height={3}", areaText.PositionX, areaText.PositionY, areaText.Width, areaText.Height);
+                    }
+
+                    if (!Display.Display.LayoutConfig.AreaList.Any(x => x.Name == "countdownTime"))
+                    {
+                        // Create the area for the time
+                        var areaTime = new Area();
+                        areaTime.Name = "countdownTime";
+                        areaTime.PositionX = 0;
+                        areaTime.PositionY = 0;
+                        areaTime.Width = Display.Display.X;
+                        areaTime.Height = Display.Display.Y / 2;
+                        areaTime.Align = "center";
+                        Display.Display.LayoutConfig.AreaList.Add(areaTime);
+
+                        Logger.Debug("Created temporary area countdownTime with PosX={0}, PosY={1}, Width={2}, Height={3}", areaTime.PositionX, areaTime.PositionY, areaTime.Width, areaTime.Height);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Cannot create temporary areas.");
+                return;
+            }
+
+            Logger.Info("Executing Countdown");
             tmrCountdown.Elapsed += TmrCountdown_Elapsed;
             tmrCountdown.Start();
         }
@@ -52,25 +96,45 @@ namespace LeDi.Display2.Effects
         {
             if (EffectCancellationToken.IsCancellationRequested)
             {
-                Console.WriteLine("Countdown stopped.");
+                Logger.Info("Countdown stopped.");
                 tmrCountdown.Stop();
             }
 
-            string time = Minutes.ToString() + ":" + Seconds.ToString("00");
+            string time = (Seconds / 60) + ":" + (Seconds % 60).ToString("00");
+            if (ShowSecondsOnly)
+            {
+                time = Seconds.ToString();
+            }
 
-            Display.Display.ShowString(time, "time");
+            //show it in area time if there is an area "time"
+            if (string.IsNullOrWhiteSpace(Text))
+            {
+                Display.Display.ShowString(time);
+            }
+            else
+            {
+                Display.Display.ShowString(time, "countdownTime");
+                Display.Display.ShowString(Text, "countdownText");
+            }            
+
             Display.Display.Render();
 
             Seconds -= 1;
             if (Seconds < 0)
             {
-                Minutes -= 1;
-                Seconds = 59;
-            }
-            if (Minutes < 0)
-            {
-                Console.WriteLine("Countdown finished");
+                Logger.Info("Countdown finished");
                 tmrCountdown.Stop();
+
+                //Cleanup the temporary areas for the countdown
+                if (Display.Display.LayoutConfig.AreaList.Any(x => x.Name == "countdownText"))
+                {
+                    Display.Display.LayoutConfig.AreaList.Remove(Display.Display.LayoutConfig.AreaList.Single(x => x.Name == "countdownText"));
+                }
+
+                if (Display.Display.LayoutConfig.AreaList.Any(x => x.Name == "countdownTime"))
+                {
+                    Display.Display.LayoutConfig.AreaList.Remove(Display.Display.LayoutConfig.AreaList.Single(x => x.Name == "countdownTime"));
+                }
             }
         }
     }

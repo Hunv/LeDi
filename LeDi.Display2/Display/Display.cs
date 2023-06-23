@@ -203,8 +203,24 @@ namespace LeDi.Display2.Display
             if (Config.PwmChannel == 1)
                 pwmChannel = ControllerType.PWM1;
 
+            
+
             Controller = ControllerSettings.AddController(LedCount, pin, StripType.WS2812_STRIP, pwmChannel, Brightness, false);
-            WS281X = new WS281x(ControllerSettings);
+
+            try
+            {
+                WS281X = new WS281x(ControllerSettings);
+            }
+            catch(Exception ex)
+            {
+#if DEBUG
+                Logger.Error(ex, "Cannot load Raspberry Pi WS2812B Library. Are you running this on Raspberry or did you forgot to compile the ws2811.so?. Trying to continue without connection to display. This might result in crashes or unexpected behaviours.");
+#endif
+#if RELEASE
+                throw new Exception("Cannot load Raspberry Pi WS2812B Library. Are you running this on Raspberry or did you forgot to compile the ws2811.so?.");
+#endif
+            }
+
 
             SetAll(Color.Black);
 

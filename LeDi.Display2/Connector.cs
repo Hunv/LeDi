@@ -74,6 +74,11 @@ namespace LeDi.Display2
                 DisplayManager.ExecuteCommand(command);
             });
 
+            connection.On<string, string>("SetEffect", (effectName, jsonParameter) =>
+            {
+                DisplayManager.ExecuteCommand(effectName, jsonParameter);
+            });
+
             try
             {
                 await connection.StartAsync();

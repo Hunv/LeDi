@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LeDi.Display2.Effects
 {
-    public class SetBlack : IEffect
+    public class TestBlack : IEffect
     {
         public override void Execute(CancellationToken EffectCancellationToken)
         {

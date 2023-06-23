@@ -9,6 +9,10 @@ using LeDi.Shared2.Display;
 using LeDi.Display2.Effects;
 using BlazorBootstrap;
 using System.Drawing;
+using LeDi.Shared2.EffectParameters;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using Microsoft.JSInterop;
 
 namespace LeDi.Display2.Display
 {
@@ -241,46 +245,81 @@ namespace LeDi.Display2.Display
         /// Execute a command at the display
         /// </summary>
         /// <param name="command"></param>
-        public static async Task ExecuteCommand(string command)
+        public static async Task ExecuteCommand(string command, string? parameter = null)
         {
             IEffect? effect = null;
-            Logger.Info("Running command \"" + command + "\"...");
+            Logger.Info("Setting effect \"" + command + "\"...");
             switch (command)
             {
-                case "showblack":
-                    effect = new SetBlack();
-                    break;
-
-                case "showareas":
-                    effect = new TestArea();
-                    break;
-
-                case "showtestpattern":
-                    effect = new TestPattern();
-                    break;
-
-                case "showcolortest":
-                    effect = new TestColorWipe();
-                    break;
-
-                case "showfullcolortest":
-                    effect = new TestFullColor();
-                    break;
-
-                case "showpixelwipe":
-                    effect = new TestPixelWipe();
-                    break;
-
-                case "showclock":
+                #region main commands
+                case "clock": //Todo: Make an effect of this and always show the current time.
+                    Console.WriteLine("Running Clock - needs to be done as effect");
                     Display.ShowString(DateTime.Now.ToString("HH:mm"));
                     Display.Render();
                     effect = null;
                     break;
 
+                case "text":
+                    break;
+
+                case "countdown":
+                    if (parameter == null)
+                    {
+                        Logger.Warn("Effect countdown requires a parameter but no parameter given.");
+                        return;
+                    }
+                    effect = new Countdown();
+
+                    // Get the parameter object from the Json Element of the parsed parameter
+                    var para = (CountdownParameters)JsonConvert.DeserializeObject(parameter,typeof(CountdownParameters));
+
+                    Logger.Debug("Countdown Parameters: Seconds ({0}), Text ({1})", para.Seconds, para.Text);                    
+                    ((Countdown)effect).Seconds = para.Seconds;
+                    ((Countdown)effect).Text = para.Text;
+                    break;
+
+                case "match":
+                    break;
+
+                case "tournament":
+                    break;
+
+                #endregion
+
+                #region testing commands
+                case "black":
+                    effect = new TestBlack();
+                    break;
+
+                case "areas":
+                    effect = new TestArea();
+                    break;
+
+                case "testpattern":
+                    effect = new TestPattern();
+                    break;
+
+                case "colortest":
+                    effect = new TestColorWipe();
+                    break;
+
+                case "fullcolortest":
+                    effect = new TestFullColor();
+                    break;
+
+                case "pixelwipe":
+                    effect = new TestPixelWipe();
+                    break;
+                #endregion
+
+                #region screensaver commands
                 case "idlebar":
                     effect = new IdleBar();
                     break;
 
+                #endregion
+
+                #region calibration
                 case "calibratefps":
                     Display.SetAll(Color.Black);
                     Display.Calibrate();
@@ -292,7 +331,9 @@ namespace LeDi.Display2.Display
                 case "calibratebrightness":
                     effect = new TestBrightness();
                     break;
+                #endregion
 
+                #region System commands
                 case "reload":
                     Config = await LoadConfig();
                     await Connector.Connect();
@@ -383,8 +424,11 @@ namespace LeDi.Display2.Display
                     }
 
                     break;
+                    #endregion
             }
 
+
+            // Check if it was an effect (can also be a systemcommand)
             if (effect != null)
             {
                 Logger.Debug("Running effect {0}...", command);
@@ -416,5 +460,7 @@ namespace LeDi.Display2.Display
                 Logger.Debug("Effect {0} done...", command);
             }
         }
+
+   
     }
 }
