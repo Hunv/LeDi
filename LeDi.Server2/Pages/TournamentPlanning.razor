@@ -27,50 +27,12 @@ else
                 @foreach (var tournament in TournamentList.Where(x => x.EndDate >= DateTime.Today).OrderBy(x => x.StartDate))
                 {
                     <Card>
-                        <CardBody>
-                            <a href="/tournamentmatchlist/@tournament.Id">@tournament.Name</a><br />
-                            <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
-                                <Authorized>
-                                    <Tooltip Title="@Localizer["AddMatch"]" Placement="Placement.Bottom">
-                                        <a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning">
-                                            PlusIcon                                            
-                                        </a>
-                                    </Tooltip>
-                                </Authorized>
-                            </AuthorizeView>
-                            @if (EventTournamentId != tournament.Id.ToString())
-                            {
-                                <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
-                                    <Authorized>
-                                        <Tooltip Title="@Localizer["StartTournament"]" Placement="Placement.Bottom" @onclick="@(() => StartTournament(tournament.Id))">
-                                            <a style="color:#0d6efd">
-                                                PlayIcon
-                                            </a>
-                                        </Tooltip>
-                                    </Authorized>
-                                </AuthorizeView>
-                            }
-                            else
-                            {
-                                <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
-                                    <Authorized>
-                                        <Tooltip Title="@Localizer["StopTournament"]" Placement="Placement.Bottom" @onclick="StopTournament">
-                                            <a style="color:#0d6efd">
-                                                StopIcon
-                                            </a>
-                                        </Tooltip>
-                                    </Authorized>
-                                </AuthorizeView>
-                            }
-                            <AuthorizeView Roles="Att-CanTournamentEdit,Att-IsAdmin" Context="y">
-                                <Authorized>
-                                    <Tooltip Title="@Localizer["Edit"]" Placement="Placement.Bottom">
-                                        <a href="/tournamentadd/@tournament.Id">
-                                            PencilIcon
-                                        </a>
-                                    </Tooltip>
-                                </Authorized>
-                            </AuthorizeView>
+                        <HeaderTemplate>
+                            <h5>@tournament.Name</h5>
+                        </HeaderTemplate>
+                        <BodyTemplate>
+
+                            <a href="/tournamentmatchlist/@tournament.Id" class="fs-4"><i class="fas fa-arrow-right" aria-hidden="true"></i> @Localizer["GoToMatchlist"]</a><br /><br />
 
                             <table class="table table-borderless table-sm">
                                 <tbody>
@@ -109,7 +71,51 @@ else
                                     </tr>
                                 </tbody>
                             </table>
-                        </CardBody>
+                        </BodyTemplate>
+                        <FooterTemplate>
+                            <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
+                                <Authorized>
+                                    <Tooltip Title="@Localizer["AddMatch"]" Placement="Placement.Bottom">
+                                        <a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning" class="fs-1">
+                                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                                        </a>&nbsp;&nbsp;
+                                    </Tooltip>
+                                </Authorized>
+                            </AuthorizeView>
+                            @if (EventTournamentId != tournament.Id.ToString())
+                            {
+                                <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <Tooltip Title="@Localizer["StartTournament"]" Placement="Placement.Bottom" @onclick="@(() => StartTournament(tournament.Id))">
+                                            <a style="color:#0d6efd" class="fs-1">
+                                                <i class="fa-solid fa-play" aria-hidden="true"></i>
+                                            </a>&nbsp;&nbsp;
+                                        </Tooltip>
+                                    </Authorized>
+                                </AuthorizeView>
+                            }
+                            else
+                            {
+                                <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <Tooltip Title="@Localizer["StopTournament"]" Placement="Placement.Bottom" @onclick="StopTournament">
+                                            <a style="color:#0d6efd" class="fs-1">
+                                                <i class="fa-solid fa-stop" aria-hidden="true"></i>
+                                            </a>&nbsp;&nbsp;
+                                        </Tooltip>
+                                    </Authorized>
+                                </AuthorizeView>
+                            }
+                            <AuthorizeView Roles="Att-CanTournamentEdit,Att-IsAdmin" Context="y">
+                                <Authorized>
+                                    <Tooltip Title="@Localizer["Edit"]" Placement="Placement.Bottom">
+                                        <a href="/tournamentadd/@tournament.Id" class="fs-1">
+                                            <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                                        </a>&nbsp;&nbsp;
+                                    </Tooltip>
+                                </Authorized>
+                            </AuthorizeView>
+                        </FooterTemplate>
                     </Card>
                     <br />
                 }
