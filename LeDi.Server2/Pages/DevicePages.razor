@@ -44,7 +44,7 @@ else
             <br /><br />
 
             <p>@Localizer["SelectEffect"]</p>
-            <Tabs 
+            @*<Tabs 
                 @ref="EffectTabs" 
                 NavStyle="NavStyle.Pills"
                 OnShown="@(args => OnTabShownAsync(args))"
@@ -82,11 +82,11 @@ else
                         <p class="mt-3">Countdown options (i.e. seconds to a specific time or total seconds to count down.)</p>
                     </Content>
                 </Tab>
-            </Tabs>
+            </Tabs>*@
 
             <br />
 
-            <Button Color="ButtonColor.Primary" @onclick="SetEffect"> @Localizer["SetEffect"] </Button>
+            <Button Color="Color.Primary" @onclick="SetEffect"> @Localizer["SetEffect"] </Button>
 
 
         </Authorized>

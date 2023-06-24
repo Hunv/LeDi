@@ -31,14 +31,22 @@ else
                             <a href="/tournamentmatchlist/@tournament.Id">@tournament.Name</a><br />
                             <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
                                 <Authorized>
-                                    <Tooltip Title="@Localizer["AddMatch"]" Placement="TooltipPlacement.Bottom"><a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning"><Icon Name="IconName.PlusSquare" Size="IconSize.x2" /></a></Tooltip>
+                                    <Tooltip Title="@Localizer["AddMatch"]" Placement="Placement.Bottom">
+                                        <a href="/matchadd?tournamentid=@tournament.Id&returnurl=/tournamentplanning">
+                                            PlusIcon                                            
+                                        </a>
+                                    </Tooltip>
                                 </Authorized>
                             </AuthorizeView>
                             @if (EventTournamentId != tournament.Id.ToString())
                             {
                                 <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
                                     <Authorized>
-                                        <Tooltip Title="@Localizer["StartTournament"]" Placement="TooltipPlacement.Bottom" @onclick="@(() => StartTournament(tournament.Id))"><a style="color:#0d6efd"><Icon Name="IconName.CaretRightSquare" Size="IconSize.x2" /></a></Tooltip>
+                                        <Tooltip Title="@Localizer["StartTournament"]" Placement="Placement.Bottom" @onclick="@(() => StartTournament(tournament.Id))">
+                                            <a style="color:#0d6efd">
+                                                PlayIcon
+                                            </a>
+                                        </Tooltip>
                                     </Authorized>
                                 </AuthorizeView>
                             }
@@ -46,13 +54,21 @@ else
                             {
                                 <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
                                     <Authorized>
-                                        <Tooltip Title="@Localizer["StopTournament"]" Placement="TooltipPlacement.Bottom" @onclick="StopTournament"><a style="color:#0d6efd"><Icon Name="IconName.StopBtn" Size="IconSize.x2" /></a></Tooltip>
+                                        <Tooltip Title="@Localizer["StopTournament"]" Placement="Placement.Bottom" @onclick="StopTournament">
+                                            <a style="color:#0d6efd">
+                                                StopIcon
+                                            </a>
+                                        </Tooltip>
                                     </Authorized>
                                 </AuthorizeView>
                             }
                             <AuthorizeView Roles="Att-CanTournamentEdit,Att-IsAdmin" Context="y">
                                 <Authorized>
-                                    <Tooltip Title="@Localizer["Edit"]" Placement="TooltipPlacement.Bottom"><a href="/tournamentadd/@tournament.Id"><Icon Name="IconName.PencilSquare" Size="IconSize.x2" /></a> </Tooltip>
+                                    <Tooltip Title="@Localizer["Edit"]" Placement="Placement.Bottom">
+                                        <a href="/tournamentadd/@tournament.Id">
+                                            PencilIcon
+                                        </a>
+                                    </Tooltip>
                                 </Authorized>
                             </AuthorizeView>
 

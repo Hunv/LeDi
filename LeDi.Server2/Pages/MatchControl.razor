@@ -474,15 +474,14 @@ else
 
             @if (DialogYesNoDangerShow)
             {
-                <ModalDialog
-                    Title="@Localizer["AreYouSure"]"
+                <ModalGeneralDialog Title="@Localizer["AreYouSure"]"
                     Text="@Localizer["PerfomThatAction"]"
                     OnClose="@OnYesNoClose"
                     ButtonOKText="Yes"
                     ButtonCancelText="No"
                     ButtonOKClass="btn-danger"
                     >
-                </ModalDialog>
+                </ModalGeneralDialog>
             }
 
             @if (DialogTimeShow)

@@ -1,5 +1,4 @@
-﻿using BlazorBootstrap;
-using LeDi.Shared2.DatabaseModel;
+﻿using LeDi.Shared2.DatabaseModel;
 using LeDi.Shared2.EffectParameters;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -15,7 +14,7 @@ namespace LeDi.Server2.Pages
         private List<TblDevice>? DeviceList = null;
 
         // The Tab control. Used to get the selected tab.
-        private Tabs EffectTabs;
+        //private Tabs EffectTabs;
 
         // The Tab currently active
         private string ActiveTabTitle;
@@ -49,8 +48,8 @@ namespace LeDi.Server2.Pages
             DeviceList = (await DataHandler.GetDeviceListAsync()).Where(x => x.Enabled).ToList();
             
         }
-        private void OnTabShownAsync(TabsEventArgs args)
-            => ActiveTabTitle = args.ActiveTabTitle;
+        //private void OnTabShownAsync(TabsEventArgs args)
+        //    => ActiveTabTitle = args.ActiveTabTitle;
 
         /// <summary>
         /// Sets the selected effect for the selected device.

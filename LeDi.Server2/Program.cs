@@ -12,32 +12,27 @@ using NLog;
 using NLog.Web;
 using LeDi.Server2.Pages;
 using LeDi.Server2.Display;
-using BlazorBootstrap; // For the BlazorBootstrap Components
 using Microsoft.AspNetCore.SignalR;
+using BootstrapBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
 // Add services to the container.
 // Identity services:
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseSqlServer(connectionString));
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//    options.UseSqlite("Filename=LeDi2.db"));
 builder.Services.AddDbContext<LeDiDbContext>(options =>
     options.UseSqlite("Filename=LeDi.db"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<LeDiDbContext>();
-builder.Services.AddBlazorBootstrap(); // For the BlazorBootstrap Components
 
 //To check: .AddDefaultUI()
 
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddBootstrapBlazor(); //Blazor.Zone
 builder.Services.AddLocalization(options => { options.ResourcesPath = "Resources"; });
 builder.Services.AddSingleton<MatchManagerService>();
 //builder.Services.AddSingleton<MatchEngine>();
@@ -90,7 +85,5 @@ app.UseAuthorization();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 app.MapHub<DisplayHub>("/Display");
-
-//DataHandler.hubContext = (IHubContext<DisplayHub>)app.Services.GetService(typeof(IHubContext<DisplayHub>));
 
 app.Run();

@@ -27,11 +27,11 @@ namespace LeDi.Server2
         public static async Task<TblMatch?> GetMatchAsync(int id)
         {
             using var dbContext = new LeDiDbContext();
-
+            
             if (dbContext.TblMatches == null)
                 return null;
 
-            return await dbContext.TblMatches.SingleOrDefaultAsync(x => x.Id == id);
+            return await dbContext.TblMatches.Include("MatchEvents").Include("MatchPenalties").Include("MatchReferees").SingleOrDefaultAsync(x => x.Id == id);
 
         }
 
@@ -48,7 +48,7 @@ namespace LeDi.Server2
             if (dbContext.TblMatches == null)
                 return new List<TblMatch>();
 
-            return dbContext.TblMatches.ToList();
+            return dbContext.TblMatches.Include("MatchEvents").Include("MatchPenalties").Include("MatchReferees").ToList();
         }
 
         /// <summary>
