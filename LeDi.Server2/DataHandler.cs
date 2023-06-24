@@ -619,7 +619,7 @@ namespace LeDi.Server2
         /// <summary>
         /// Add a new tournament to the database
         /// </summary>
-        public static Action<int>? OnTournamentAdded { get; set; }
+        public static Action<int>? OnTournamentChanged { get; set; }
 
         /// <summary>
         /// Add a tournament to the database and inform relevant clients
@@ -632,12 +632,55 @@ namespace LeDi.Server2
 
                 dbContext.TblTournaments?.Add(tournament);
                 await dbContext.SaveChangesAsync();
-                OnTournamentAdded?.Invoke(tournament.Id);
+                OnTournamentChanged?.Invoke(tournament.Id);
                 return tournament;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "Failed to add a new tournament.");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Set/Edit a tournament
+        /// </summary>
+        /// <param name="tournament"></param>
+        /// <returns></returns>
+        public static async Task<TblTournament?> SetTournamentAsync (TblTournament tournament)
+        {
+            try
+            {
+                using var dbContext = new LeDiDbContext();
+
+                var tour = await dbContext.TblTournaments.SingleOrDefaultAsync(x => x.Id == tournament.Id);
+                if (tour == null)
+                    return null;
+
+                tour.DefaultPeriodCount = tournament.DefaultPeriodCount;
+                tour.DefaultRuleMatchExtensionOnDraw = tournament.DefaultRuleMatchExtensionOnDraw;
+                tour.DefaultRulePenaltyList = tournament.DefaultRulePenaltyList;
+                tour.DefaultRulePeriodLastPauseTimeOnEvent = tournament.DefaultRulePeriodLastPauseTimeOnEvent;
+                tour.DefaultRulePeriodLastPauseTimeOnEventSeconds = tournament.DefaultRulePeriodLastPauseTimeOnEventSeconds;
+                tour.DefaultRulePeriodLength = tournament.DefaultRulePeriodLength;
+                tour.DefaultRulePeriodOvertime = tournament.DefaultRulePeriodOvertime;
+                tour.DefaultTeam1Name = tournament.DefaultTeam1Name;
+                tour.DefaultTeam2Name = tournament.DefaultTeam2Name;
+                tour.Devices = tournament.Devices;
+                tour.EndDate = tournament.EndDate;
+                tour.Matches = tournament.Matches;
+                tour.Name = tournament.Name;
+                tour.Sport = tournament.Sport;
+                tour.StartDate = tournament.StartDate;
+
+                await dbContext.SaveChangesAsync();
+                OnTournamentChanged?.Invoke(tour.Id);
+
+                return tour;
+            }
+            catch(Exception ea)
+            {
+                Logger.Error(ea, "Failed to edit tournament.");
             }
             return null;
         }

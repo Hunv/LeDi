@@ -121,7 +121,7 @@
     <value>Add match</value>
   </data>
   <data name="CreateTournament" xml:space="preserve">
-    <value>Create tournament</value>
+    <value>Create new tournament</value>
   </data>
   <data name="CurrentOrPlanedTournaments" xml:space="preserve">
     <value>Current or planned tournaments:</value>
@@ -131,6 +131,9 @@
   </data>
   <data name="FinishedTournaments" xml:space="preserve">
     <value>Finished tournaments:</value>
+  </data>
+  <data name="GoToMatchlist" xml:space="preserve">
+    <value>Manage matches</value>
   </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>You do not have the permission to view this page.</value>

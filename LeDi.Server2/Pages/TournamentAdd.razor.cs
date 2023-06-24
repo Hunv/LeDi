@@ -181,16 +181,22 @@ namespace LeDi.Server2.Pages
         /// <returns>The DTO object of the new Match</returns>
         private async Task<TblTournament?> SaveTournament()
         {
-            TblTournament savedTournament = null;
+            TblTournament? savedTournament = null;
             if (EditId.HasValue)
             {
-                DataHandler.OnTournamentAdded?.Invoke(EditId.Value);
-                savedTournament = await DataHandler.GetTournamentAsync(ToSaveTournament.Id);
+                var tour = await DataHandler.SetTournamentAsync(ToSaveTournament);
+                if (tour != null) {
+                    savedTournament = tour;
+                }
             }
             else
             {
-                // Save and get the saved match as return value
-                savedTournament = await DataHandler.AddTournamentAsync(ToSaveTournament);
+                var tour = await DataHandler.AddTournamentAsync(ToSaveTournament);
+                if (tour != null)
+                {
+                    // Save and get the saved match as return value
+                    savedTournament = tour;
+                }
             }
 
             // Reset the NewMatch variable, that represents the current configuration of the match-to-add. Values are not required anymore after command before was executed.

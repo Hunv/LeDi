@@ -12,12 +12,12 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link px-3" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-timer" aria-hidden="true"></span> @Localizer["Home"]
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="dashboard">
+            <NavLink class="nav-link px-3" href="dashboard">
                 <span class="oi oi-clipboard" aria-hidden="true"></span> @Localizer["Dashboard"]
             </NavLink>
         </div> 
@@ -26,13 +26,13 @@
         @*or https://icon-sets.iconify.design/oi/*@        
         
         @*<div class="nav-item px-3">
-            <NavLink class="nav-link" href="start">
+        <NavLink class="nav-link px-3" href="start">
                 <span class="oi oi-badge" aria-hidden="true"></span> @Localizer["Start"]
             </NavLink>
         </div> *@
 
         @*<div class="nav-item px-3">
-            <NavLink class="nav-link" href="matchcontrol">
+        <NavLink class="nav-link px-3" href="matchcontrol">
                 <span class="oi oi-target" aria-hidden="true"></span> @Localizer["RefereeMatch"]
             </NavLink>
         </div>*@
@@ -40,7 +40,7 @@
         <AuthorizeView Roles="Att-CanMatchAdd,Att-IsAdmin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="matchplanning">
+                    <NavLink class="nav-link px-3" href="matchplanning">
                         <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["MatchPlanning"]
                     </NavLink>
                 </div>
@@ -50,7 +50,7 @@
         <AuthorizeView Roles="Att-CanTournamentAdd,Att-CanTournamentEdit,Att-CanTournamentMatchAdd,Att-CanTournamentMatchEdit,Att-CanTournamentMatchDelete,Att-IsAdmin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="tournamentplanning">
+                    <NavLink class="nav-link px-3" href="tournamentplanning">
                         <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["Tournaments"]
                     </NavLink>
                 </div>
@@ -59,17 +59,17 @@
 
         @*
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="devicepages">
+        <NavLink class="nav-link px-3" href="devicepages">
         <span class="oi oi-text" aria-hidden="true"></span> @Localizer["Devices"]
             </NavLink>
         </div>*@
         @*  <div class="nav-item px-3">
-            <NavLink class="nav-link" href="matchsummary">
+        <NavLink class="nav-link px-3" href="matchsummary">
                 <span class="oi oi-list" aria-hidden="true"></span> Match Summary
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="matchplayers">
+        <NavLink class="nav-link px-3" href="matchplayers">
                 <span class="oi oi-people" aria-hidden="true"></span> Playerlist
             </NavLink>
         </div>      *@  
@@ -77,7 +77,7 @@
         <AuthorizeView Roles="Att-CanSettingsManage,Att-IsAdmin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="settings">
+                    <NavLink class="nav-link px-3" href="settings">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["Settings"]
                     </NavLink>
                 </div>
@@ -87,7 +87,7 @@
         <AuthorizeView Roles="Att-CanUserAdd,Att-CanUserEdit,Att-CanUserDelete,Att-CanUserPasswordEdit,Att-IsAdmin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="usermanage">
+                    <NavLink class="nav-link px-3" href="usermanage">
                         <span class="oi oi-people" aria-hidden="true"></span> @Localizer["UserManagement"]
                     </NavLink>
                 </div>
@@ -97,7 +97,7 @@
         <AuthorizeView Roles="Att-CanRoleAdd,Att-CanRoleEdit,Att-CanRoleDelete,Att-IsAdmin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="userrole">
+                    <NavLink class="nav-link px-3" href="userrole">
                         <span class="oi oi-key" aria-hidden="true"></span> @Localizer["UserRole"]
                     </NavLink>
                 </div>
@@ -105,7 +105,7 @@
         </AuthorizeView>
         
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="about">
+            <NavLink class="nav-link px-3" href="about">
                 <span class="oi oi-info" aria-hidden="true"></span> @Localizer["AboutLedi"]
             </NavLink>
         </div>

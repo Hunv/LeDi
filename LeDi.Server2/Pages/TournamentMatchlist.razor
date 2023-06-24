@@ -102,7 +102,7 @@ else
             
             <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
                 <Authorized>
-                    <a class="btn btn-primary" href="/matchadd?tournamentid=@Tournament.Id&returnurl=/tournamentmatchlist/@Tournament.Id" role="button">@Localizer["AddMatch"]</a>
+                    <a class="fs-5 btn btn-primary" href="/matchadd?tournamentid=@Tournament.Id&returnurl=/tournamentmatchlist/@Tournament.Id" role="button">@Localizer["AddMatch"]</a>
                 </Authorized>
             </AuthorizeView>
         </Authorized>

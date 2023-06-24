@@ -121,7 +121,7 @@
     <value>Spiel hinzufügen</value>
   </data>
   <data name="CreateTournament" xml:space="preserve">
-    <value>Turnier erstellen</value>
+    <value>Neues Turnier erstellen</value>
   </data>
   <data name="CurrentOrPlanedTournaments" xml:space="preserve">
     <value>Aktuelle oder geplante Turniere:</value>
@@ -131,6 +131,9 @@
   </data>
   <data name="FinishedTournaments" xml:space="preserve">
     <value>Beendete Turniere:</value>
+  </data>
+  <data name="GoToMatchlist" xml:space="preserve">
+    <value>Spiele verwalten</value>
   </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
