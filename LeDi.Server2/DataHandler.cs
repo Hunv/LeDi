@@ -78,6 +78,10 @@ namespace LeDi.Server2
                     await dbContext.SaveChangesAsync();
                     OnMatchUpdated?.Invoke(matchId);
                     OnMatchScoreChanged?.Invoke(matchId);
+
+                    // Send the new data to the connected displays
+                    await SendMatch(matchId, match);
+
                     return match.Team1Score;
                 }
                 else if (teamId == 1)
@@ -86,6 +90,10 @@ namespace LeDi.Server2
                     await dbContext.SaveChangesAsync();
                     OnMatchUpdated?.Invoke(matchId);
                     OnMatchScoreChanged?.Invoke(matchId);
+
+                    // Send the new data to the connected displays
+                    await SendMatch(matchId, match);
+
                     return match.Team2Score;
                 }
                 return int.MinValue;
@@ -175,6 +183,10 @@ namespace LeDi.Server2
 
                 await dbContext.SaveChangesAsync();
                 OnMatchUpdated?.Invoke(dbMatch.Id);
+
+                // Send the new data to the connected displays
+                await SendMatch(match.Id, match);
+
                 return dbMatch;
             }
             return null;
@@ -200,8 +212,10 @@ namespace LeDi.Server2
 
             match.CurrentTimeLeft = timeLeft;
             await dbContext.SaveChangesAsync();
-        }
 
+            // Send the new data to the connected displays
+            await SendMatch(matchId, match);
+        }
 
         /// <summary>
         /// Get all matches
@@ -766,6 +780,31 @@ namespace LeDi.Server2
             using var dbContext = new LeDiDbContext();
 
             return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.RoleName == roleName);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// Sends a match update to connected Clients, that are showing this match
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <returns></returns>
+        public static async Task SendMatch(int matchId, TblMatch? match = null)
+        {
+            var group = hubContext.Clients.Group("Match-" + matchId);
+            if (group != null)
+            {
+                await group.SendAsync("ReceiveMatch", (match ?? await GetMatchAsync(matchId)));
+            }
         }
     }
 }

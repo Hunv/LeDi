@@ -19,7 +19,9 @@ namespace LeDi.Server2.Pages
             if (!Id.HasValue)
                 return;
 
+#pragma warning disable CS8601 // Possible null reference assignment.
             Tournament = await DataHandler.GetTournamentAsync(Id.Value);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
     }

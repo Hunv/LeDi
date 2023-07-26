@@ -3,6 +3,7 @@ using LeDi.Shared2.DatabaseModel;
 using LeDi.Shared2.Enum;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LeDi.Server2.Pages
@@ -590,13 +591,7 @@ namespace LeDi.Server2.Pages
 
             Logger.Debug("Setting display {0} to show match id {1}", dev.DeviceId, SelectedMatchId);
 
-
-            var set = await DataHandler.GetDeviceSettingAsync(dev.DeviceId, "matchid");
-            if (set != null)
-            {
-                await DataHandler.SetDeviceSettingAsync(dev.DeviceId, "matchid", (SelectedMatchId ?? 0).ToString());
-            }
-            await DataHandler.AddDeviceCommandAsync(dev.DeviceId, "loadmatch", "");
+            await DataHandler.hubContext.Clients.Group(dev.DeviceId).SendAsync("SetEffect", "match", SelectedMatchId.ToString());
         }
     }
 }

@@ -35,6 +35,16 @@ namespace LeDi.Server2.Display
         }
 
         /// <summary>
+        /// The client asks for an update of the data. i.e. after the client was startet.
+        /// </summary>
+        /// <returns></returns>
+        public async Task RequestMatch(int matchId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Match-" + matchId);
+            await Clients.Caller.SendAsync("ReceiveMatch", await DataHandler.GetMatchAsync(matchId));
+        }
+
+        /// <summary>
         /// Sends a command to a specifc Device
         /// </summary>
         /// <param name="command"></param>

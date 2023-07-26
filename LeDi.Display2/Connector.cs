@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace LeDi.Display2
 {
-    internal class Connector
+    public class Connector
     {
         HubConnection connection;
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -85,6 +85,12 @@ namespace LeDi.Display2
                 DisplayManager.ExecuteCommand(command);
             });
 
+            connection.On<TblMatch>("ReceiveMatch", (matchObj) =>
+            {
+                Logger.Info("Received match");
+                DisplayManager.UpdateMatch(matchObj);
+            });
+
             connection.On<string, string>("SetEffect", (effectName, jsonParameter) =>
             {
                 DisplayManager.ExecuteCommand(effectName, jsonParameter);
@@ -121,7 +127,7 @@ namespace LeDi.Display2
         }
 
         /// <summary>
-        /// Get the current data to show from the server
+        /// Trigger to send the current data to show from the server
         /// </summary>
         /// <returns></returns>
         public async Task RequestUpdate(string deviceId)
@@ -133,6 +139,21 @@ namespace LeDi.Display2
             }
 
             await connection.InvokeAsync("RequestUpdate", deviceId);
+        }
+
+        /// <summary>
+        /// Trigger the send the match object of the corresponding match Id
+        /// </summary>
+        /// <returns></returns>
+        public async Task RequestMatch(int matchId)
+        {
+            if (connection.State != HubConnectionState.Connected)
+            {
+                Logger.Warn("Cannot request match. Connection to server not established.");
+                return;
+            }
+
+            await connection.InvokeAsync("RequestMatch", matchId);
         }
     }
 }

@@ -13,6 +13,7 @@ using LeDi.Shared2.EffectParameters;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.JSInterop;
+using LeDi.Shared2.DatabaseModel;
 
 namespace LeDi.Display2.Display
 {
@@ -46,7 +47,7 @@ namespace LeDi.Display2.Display
         /// <summary>
         /// The Connector that handles the server connection
         /// </summary>
-        private static Connector? Connector { get; set; } = null;
+        public static Connector? Connector { get; private set; } = null;
 
         /// <summary>
         /// The currently running effect
@@ -251,7 +252,25 @@ namespace LeDi.Display2.Display
             Logger.Info("Setting effect \"" + command + "\"...");
             switch (command)
             {
-                #region main commands
+                #region match showing commands
+                case "tournament":
+                    break;
+
+                case "match":
+                    var matchId = -1;
+                    if (int.TryParse(parameter, out matchId) == false)
+                    {
+                        Logger.Error("Cannot show Match ID {0} because it is not an integer.", parameter);
+                        return;
+                    }
+
+                    effect = new Match();
+                    ((Match)effect).MatchId = matchId;
+                    ((Match)effect).Connector = Connector;
+                    break;
+                #endregion
+
+                #region misc commands
                 case "clock": //Todo: Make an effect of this and always show the current time.
                     Console.WriteLine("Running Clock - needs to be done as effect");
                     Display.ShowString(DateTime.Now.ToString("HH:mm"));
@@ -277,13 +296,6 @@ namespace LeDi.Display2.Display
                     ((Countdown)effect).Seconds = para.Seconds;
                     ((Countdown)effect).Text = para.Text;
                     break;
-
-                case "match":
-                    break;
-
-                case "tournament":
-                    break;
-
                 #endregion
 
                 #region testing commands
@@ -464,6 +476,24 @@ namespace LeDi.Display2.Display
             }
         }
 
-   
+        /// <summary>
+        /// Updates the match in an ongoing match effect
+        /// </summary>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public static async Task UpdateMatch(TblMatch match)
+        {
+            // Check if the currently ongoing effect is a match
+            if (EffectActive.GetType() == typeof(Match))
+            {
+                var effect = (Match) EffectActive;
+                effect.MatchObj = match;
+                effect.Update();
+            }
+            else
+            {
+                Logger.Warn("Ignoring UpdateMatch as the currently active effect is not a match effect.");
+            }
+        }
     }
 }
