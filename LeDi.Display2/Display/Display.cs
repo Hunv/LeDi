@@ -403,6 +403,9 @@ namespace LeDi.Display2.Display
             WS281X.SetBrightness(brightness);
         }
 
+        /// <summary>
+        /// Render the newly set changes
+        /// </summary>
         public static void Render()
         {
             if (WS281X == null)
@@ -414,6 +417,16 @@ namespace LeDi.Display2.Display
             Logger.Trace(" Done ({0}ms)", DateTime.Now.Subtract(start).TotalMilliseconds);
         }
 
+        /// <summary>
+        /// Shows a string on the display
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="areaName"></param>
+        /// <param name="characterSet"></param>
+        /// <param name="finalRender"></param>
+        /// <param name="maxHeight"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="align"></param>
         public static void ShowString(string text, string? areaName = null, string? characterSet = null, bool finalRender = false, int maxHeight = int.MaxValue, int maxWidth = int.MaxValue, string align = "default")
         {
             if (LayoutConfig == null || CharacterSets == null)
@@ -423,7 +436,10 @@ namespace LeDi.Display2.Display
             }
 
             if (LayoutConfig.AreaList == null)
+            {
+                Logger.Error("No Arealist loaded.");
                 return;
+            }
 
             if (!LayoutConfig.AreaList.Select(x => x.Name).Contains(areaName) && areaName != null)
             {
@@ -500,7 +516,7 @@ namespace LeDi.Display2.Display
             {
                 for (int y = area.PositionY; y < area.PositionY + area.Height; y++)
                 {
-                    Display.SetLed(Display.GetLedNumber(x, y), Color.Black);
+                    SetLed(GetLedNumber(x, y), Color.Black);
                 }
             }
 

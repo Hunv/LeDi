@@ -375,13 +375,9 @@ namespace LeDi.Server2.Pages
             {
                 Logger.Debug("Match {0} selected.", SelectedMatchId);
                 await LoadMatch();
-
-                if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
-                {
-                    ButtonAllDisabled = true;
-                    return;
-                }
             }
+
+            await SetPageControls();
 
             // Get information about updated Match(es)
             MatchManager.OnMatchTimeUpdated += async (object? sender, EventArgs e) =>
@@ -406,26 +402,7 @@ namespace LeDi.Server2.Pages
                 // Get the latest infos if the updated matchId is the currently shown match
                 if ((int)sender == SelectedMatchId)
                 {
-                    var x = MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId);
-                    if (x != null)
-                    {
-                        if (Match.CurrentPeriod != Match.RulePeriodCount)
-                        {
-                            Logger.Debug("Not-the-last period is over.");
-                            ButtonDisableStartStop = false;
-                            ButtonPreparePeriodDisabled = false;
-                            ButtonCloseMatchDisabled = true;
-                            ButtonTextStartStop = Localizer["StartTime"];
-                        }
-                        else
-                        {
-                            Logger.Debug("Last period is over.");
-                            ButtonDisableStartStop = true;
-                            ButtonPreparePeriodDisabled = true;
-                            ButtonCloseMatchDisabled = false;
-                        }
-                    }
-                    await InvokeAsync(() => { StateHasChanged(); });
+                    await SetPageControls();
                 }
             };
 
@@ -441,6 +418,40 @@ namespace LeDi.Server2.Pages
                 }
             };
 
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+
+        /// <summary>
+        /// Sets the controls depending on match status
+        /// </summary>
+        /// <returns></returns>
+        private async Task SetPageControls()
+        {
+            if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+            {
+                ButtonAllDisabled = true;
+                return;
+            }
+
+            var x = MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId);
+            if (x != null)
+            {
+                if (Match.MatchStatus == (int)MatchStatusEnum.PeriodEnded)
+                {
+                    Logger.Debug("Not-the-last period is over.");
+                    ButtonDisableStartStop = false;
+                    ButtonPreparePeriodDisabled = false;
+                    ButtonCloseMatchDisabled = true;
+                    ButtonTextStartStop = Localizer["StartTime"];
+                }
+                else if (Match.MatchStatus == (int)MatchStatusEnum.Ended)
+                {
+                    Logger.Debug("Last period is over.");
+                    ButtonDisableStartStop = true;
+                    ButtonPreparePeriodDisabled = true;
+                    ButtonCloseMatchDisabled = false;
+                }
+            }
             await InvokeAsync(() => { StateHasChanged(); });
         }
 
@@ -498,10 +509,16 @@ namespace LeDi.Server2.Pages
             Logger.Trace("PreparePeriod clicked.");
 
             if (Match == null)
+            {
+                Logger.Error("Match is null. Cannot prepare next period.");
                 return;
+            }
 
             if (SelectedMatchId == null)
+            {
+                Logger.Error("Selected Match ID is null.");
                 return;
+            }
 
             // only if the current period is over
             if (Match.CurrentTimeLeft != 0)
@@ -517,7 +534,10 @@ namespace LeDi.Server2.Pages
                 ButtonPreparePeriodDisabled = true;
 
                 Match.CurrentPeriod++;
-                //await DataHandler.SaveChangesAsync();
+                Match.CurrentTimeLeft = Match.RulePeriodLength;
+                Match.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
+                await DataHandler.SetMatchAsync(Match);
+
                 await LoadMatch();
 
                 await InvokeAsync(() => { StateHasChanged(); });
@@ -542,6 +562,7 @@ namespace LeDi.Server2.Pages
                 return;
 
             Match.MatchStatus = (int)MatchStatusEnum.Closed;
+            await DataHandler.SetMatchAsync(Match);
             //await DataHandler.SaveChangesAsync();
 
             ButtonCloseMatchDisabled = true;

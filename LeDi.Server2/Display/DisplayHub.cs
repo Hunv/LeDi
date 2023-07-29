@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using LeDi.Shared2.Display;
 using Microsoft.CodeAnalysis.CSharp;
+using LeDi.Shared2.DatabaseModel;
 
 namespace LeDi.Server2.Display
 {
@@ -41,7 +42,12 @@ namespace LeDi.Server2.Display
         public async Task RequestMatch(int matchId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "Match-" + matchId);
-            await Clients.Caller.SendAsync("ReceiveMatch", await DataHandler.GetMatchAsync(matchId));
+
+            // Remove the MatchEvents. They are not required and cause dependency Cycles.
+            var match = await DataHandler.GetMatchAsync(matchId);
+            match.MatchEvents = new List<TblMatchEvent>();
+
+            await Clients.Caller.SendAsync("ReceiveMatch", match);
         }
 
         /// <summary>

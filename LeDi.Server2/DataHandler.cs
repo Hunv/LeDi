@@ -800,10 +800,25 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task SendMatch(int matchId, TblMatch? match = null)
         {
-            var group = hubContext.Clients.Group("Match-" + matchId);
-            if (group != null)
+            if (match == null)
             {
-                await group.SendAsync("ReceiveMatch", (match ?? await GetMatchAsync(matchId)));
+                match = await GetMatchAsync(matchId);
+            }
+
+            // Remove the Match Events. They are not relevant and cause Dependency Cycles.
+            match.MatchEvents = new List<TblMatchEvent>();
+
+            try
+            {
+                var group = hubContext.Clients.Group("Match-" + matchId);
+                if (group != null)
+                {
+                    await group.SendAsync("ReceiveMatch", match);
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.Debug(ex, "Cannot send match to group {0} as the group does not exists.", "Match-" + matchId);
             }
         }
     }
