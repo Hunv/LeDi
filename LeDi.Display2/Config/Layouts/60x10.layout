@@ -115,132 +115,262 @@
 		{
 			"name": "A",
 			"char": "A",
-			"file": "A.char"
+			"file": "a_up.char"
 		},
 		{
 			"name": "B",
 			"char": "B",
-			"file": "B.char"
+			"file": "b_up.char"
 		},
 		{
 			"name": "C",
 			"char": "C",
-			"file": "C.char"
+			"file": "c_up.char"
 		},
 		{
 			"name": "D",
 			"char": "D",
-			"file": "D.char"
+			"file": "d_up.char"
 		},
 		{
 			"name": "E",
 			"char": "E",
-			"file": "E.char"
+			"file": "e_up.char"
 		},
 		{
 			"name": "F",
 			"char": "F",
-			"file": "F.char"
+			"file": "f_up.char"
 		},
 		{
 			"name": "G",
 			"char": "G",
-			"file": "G.char"
+			"file": "g_up.char"
 		},
 		{
 			"name": "H",
 			"char": "H",
-			"file": "H.char"
+			"file": "h_up.char"
 		},
 		{
 			"name": "I",
 			"char": "I",
-			"file": "I.char"
+			"file": "i_up.char"
 		},
 		{
 			"name": "J",
 			"char": "J",
-			"file": "J.char"
+			"file": "j_up.char"
 		},
 		{
 			"name": "K",
 			"char": "K",
-			"file": "K.char"
+			"file": "k_up.char"
 		},
 		{
 			"name": "L",
 			"char": "L",
-			"file": "L.char"
+			"file": "l_up.char"
 		},
 		{
 			"name": "M",
 			"char": "M",
-			"file": "M.char"
+			"file": "m_up.char"
 		},
 		{
 			"name": "N",
 			"char": "N",
-			"file": "N.char"
+			"file": "n_up.char"
 		},
 		{
 			"name": "O",
 			"char": "O",
-			"file": "O.char"
+			"file": "o_up.char"
 		},
 		{
 			"name": "P",
 			"char": "P",
-			"file": "P.char"
+			"file": "p_up.char"
 		},
 		{
 			"name": "Q",
 			"char": "Q",
-			"file": "Q.char"
+			"file": "q_up.char"
 		},
 		{
 			"name": "R",
 			"char": "R",
-			"file": "R.char"
+			"file": "r_up.char"
 		},
 		{
 			"name": "S",
 			"char": "S",
-			"file": "S.char"
+			"file": "s_up.char"
 		},
 		{
 			"name": "T",
 			"char": "T",
-			"file": "T.char"
+			"file": "t_up.char"
 		},
 		{
 			"name": "U",
 			"char": "U",
-			"file": "U.char"
+			"file": "u_up.char"
 		},
 		{
 			"name": "V",
 			"char": "V",
-			"file": "V.char"
+			"file": "v_up.char"
 		},
 		{
 			"name": "W",
 			"char": "W",
-			"file": "W.char"
+			"file": "w_up.char"
 		},
 		{
 			"name": "X",
 			"char": "X",
-			"file": "X.char"
+			"file": "x_up.char"
 		},
 		{
 			"name": "Y",
 			"char": "Y",
-			"file": "Y.char"
+			"file": "y_up.char"
 		},
 		{
 			"name": "Z",
 			"char": "Z",
-			"file": "Z.char"
+			"file": "z_up.char"
+		},
+		{
+			"name": "a",
+			"char": "a",
+			"file": "a_low.char"
+		},
+		{
+			"name": "b",
+			"char": "b",
+			"file": "b_low.char"
+		},
+		{
+			"name": "c",
+			"char": "c",
+			"file": "c_low.char"
+		},
+		{
+			"name": "d",
+			"char": "d",
+			"file": "d_low.char"
+		},
+		{
+			"name": "e",
+			"char": "e",
+			"file": "e_low.char"
+		},
+		{
+			"name": "f",
+			"char": "f",
+			"file": "f_low.char"
+		},
+		{
+			"name": "g",
+			"char": "g",
+			"file": "g_low.char"
+		},
+		{
+			"name": "h",
+			"char": "h",
+			"file": "h_low.char"
+		},
+		{
+			"name": "i",
+			"char": "i",
+			"file": "i_low.char"
+		},
+		{
+			"name": "j",
+			"char": "j",
+			"file": "j_low.char"
+		},
+		{
+			"name": "k",
+			"char": "k",
+			"file": "k_low.char"
+		},
+		{
+			"name": "l",
+			"char": "l",
+			"file": "l_low.char"
+		},
+		{
+			"name": "m",
+			"char": "m",
+			"file": "m_low.char"
+		},
+		{
+			"name": "n",
+			"char": "n",
+			"file": "n_low.char"
+		},
+		{
+			"name": "o",
+			"char": "o",
+			"file": "o_low.char"
+		},
+		{
+			"name": "p",
+			"char": "p",
+			"file": "p_low.char"
+		},
+		{
+			"name": "q",
+			"char": "q",
+			"file": "q_low.char"
+		},
+		{
+			"name": "r",
+			"char": "r",
+			"file": "r_low.char"
+		},
+		{
+			"name": "s",
+			"char": "s",
+			"file": "s_low.char"
+		},
+		{
+			"name": "t",
+			"char": "t",
+			"file": "t_low.char"
+		},
+		{
+			"name": "u",
+			"char": "u",
+			"file": "u_low.char"
+		},
+		{
+			"name": "v",
+			"char": "v",
+			"file": "v_low.char"
+		},
+		{
+			"name": "w",
+			"char": "w",
+			"file": "w_low.char"
+		},
+		{
+			"name": "x",
+			"char": "x",
+			"file": "x_low.char"
+		},
+		{
+			"name": "y",
+			"char": "y",
+			"file": "y_low.char"
+		},
+		{
+			"name": "z",
+			"char": "z",
+			"file": "z_low.char"
 		}
 	]
 }
