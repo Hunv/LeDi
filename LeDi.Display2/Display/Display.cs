@@ -181,20 +181,20 @@ namespace LeDi.Display2.Display
             ControllerSettings = new Settings(LayoutConfig.Frequency, LayoutConfig.DmaChannel); //Using DMA Channel 10 limits the number of LEDs to 400 on a Raspberry Pi 3b. Don't know why. DMA Channel 5 works with more
 
             // Set the pin object
-            var pin = Pin.Gpio12;
+            var pin = Pin.Gpio18;
             switch(Config.GpioPin)
             {
                 case 18:
-                    pin = Pin.Gpio18;
+                    pin = Pin.Gpio18; //PWM0 port
                     break;
                 case 12:
-                    pin = Pin.Gpio12;
+                    pin = Pin.Gpio12; //PWM0 port (alternative)
                     break;
                 case 13:
-                    pin = Pin.Gpio13;
+                    pin = Pin.Gpio13; //PWM1 port
                     break;
                 case 19:
-                    pin = Pin.Gpio19;
+                    pin = Pin.Gpio19; //PWM1 port (alternative)
                     break;
             }
 
@@ -203,8 +203,8 @@ namespace LeDi.Display2.Display
             if (Config.PwmChannel == 1)
                 pwmChannel = ControllerType.PWM1;
 
-            
 
+            Logger.Debug("Setting settings for Controller: {0} LEDs, {1} pin, WS2812 Strip, {2} pwmchannel, {3} brightness, invert: {4}", LedCount, pin, pwmChannel, Brightness, false);
             Controller = ControllerSettings.AddController(LedCount, pin, StripType.WS2812_STRIP, pwmChannel, Brightness, false);
 
             try
@@ -221,15 +221,14 @@ namespace LeDi.Display2.Display
 #endif
             }
 
-
+            // Set the first LED to green
             SetAll(Color.Black);
+            SetLed(0, Color.Green);
+            Render();
 
             ChangeQueue = new Queue<Tuple<string, string, DateTime?>>();
             _TmrWorker.Elapsed += TmrWorker_Elapsed;
             _TmrWorker.Start();
-
-            Controller.SetLED(0, Color.Green);
-            Render();
 
             Logger.Debug("Initialization done.");
         }
