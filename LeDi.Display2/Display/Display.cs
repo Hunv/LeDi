@@ -838,7 +838,7 @@ namespace LeDi.Display2.Display
 
                 //Console.WriteLine("Writing Text \"{0}\" in area {1}", change.Item2, change.Item1.ToLower());
 
-                //Set the string at the backend Matrix, but don't imediatly render and set the display
+                //Set the string at the backend Matrix, but don't immediately render and set the display
                 ShowString(change.Item2, change.Item1.ToLower(), null, false);
             }
 
