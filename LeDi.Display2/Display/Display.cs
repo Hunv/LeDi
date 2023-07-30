@@ -217,7 +217,7 @@ namespace LeDi.Display2.Display
                 Logger.Error(ex, "Cannot load Raspberry Pi WS2812B Library. Are you running this on Raspberry or did you forgot to compile the ws2811.so?. Trying to continue without connection to display. This might result in crashes or unexpected behaviours.");
 #endif
 #if RELEASE
-                throw new Exception("Cannot load Raspberry Pi WS2812B Library. Are you running this on Raspberry or did you forgot to compile the ws2811.so?.");
+                throw new Exception("Cannot load Raspberry Pi WS2812B Library. Are you running this on Raspberry Pi (2 or newer, not Zero) or did you forgot to compile the ws2811.so?.");
 #endif
             }
 
@@ -227,6 +227,9 @@ namespace LeDi.Display2.Display
             ChangeQueue = new Queue<Tuple<string, string, DateTime?>>();
             _TmrWorker.Elapsed += TmrWorker_Elapsed;
             _TmrWorker.Start();
+
+            Controller.SetLED(0, Color.Green);
+            Render();
 
             Logger.Debug("Initialization done.");
         }
@@ -409,7 +412,10 @@ namespace LeDi.Display2.Display
         public static void Render()
         {
             if (WS281X == null)
+            {
+                Logger.Warn("Cannot render. Strip not initialized.");
                 return;
+            }
 
             var start = DateTime.Now;
             Logger.Trace("Rendering...");
@@ -822,7 +828,7 @@ namespace LeDi.Display2.Display
                 if (change == null)
                     return;
 
-                //In case the change is expired, don't handle it and cann the Worker again
+                //In case the change is expired, don't handle it and run the Worker again
                 if (change.Item3 != null && change.Item3 < DateTime.Now)
                 {
                     Logger.Debug("Text \"{0}\" expired.", change.Item2);
