@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NLog.Web.LayoutRenderers;
 using Microsoft.AspNetCore.SignalR;
 using LeDi.Server2.Display;
+using LeDi.Server2.Data;
 
 namespace LeDi.Server2
 {

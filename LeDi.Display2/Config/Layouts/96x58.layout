@@ -10,9 +10,9 @@
 	"arealist": [
 		{
 			"name": "team1name",
-			"positionX": 0,
+			"positionX": 2,
 			"positionY": 0,
-			"width": 46,
+			"width": 44,
 			"height": 10,
 			"align": "left"
 		},
@@ -20,7 +20,7 @@
 			"name": "team2name",
 			"positionX": 49,
 			"positionY": 0,
-			"width": 46,
+			"width": 44,
 			"height": 10,
 			"align": "right"
 		},
@@ -47,6 +47,22 @@
 			"width": 4,
 			"height": 10,
 			"align": "center"
+		},
+		{
+			"name": "team1colorindicator",
+			"positionX": 0,
+			"positionY": 0,
+			"width": 2,
+			"height": 10,
+			"align": "left"
+		},
+		{
+			"name": "team2colorindicator",
+			"positionX": 94,
+			"positionY": 0,
+			"width": 2,
+			"height": 10,
+			"align": "right"
 		},
 		{
 			"name": "team1penalties",

@@ -45,26 +45,30 @@ namespace LeDi.Server2.Pages
         {
             Logger.Trace("IncrementCountTeam1Clicked.");
             await DataHandler.UpdateMatchScoreAsync(Match.Id, 0, 1);
-            await LoadMatch();
+            MatchManager.LoadedMatches.Single(x => x.Id == SelectedMatchId.Value).Team1Score++;
+            await UpdateFields();
         }
         private async void DecreaseCountTeam1Clicked()
         {
             Logger.Trace("DecreaseCountTeam1Clicked.");
             await DataHandler.UpdateMatchScoreAsync(Match.Id, 0, -1);
-            await LoadMatch();
+            MatchManager.LoadedMatches.Single(x => x.Id == SelectedMatchId.Value).Team1Score--;
+            await UpdateFields();
         }
 
         private async void IncrementCountTeam2Clicked()
         {
             Logger.Trace("IncrementCountTeam2Clicked.");
             await DataHandler.UpdateMatchScoreAsync(Match.Id, 1, 1);
-            await LoadMatch();
+            MatchManager.LoadedMatches.Single(x => x.Id == SelectedMatchId.Value).Team2Score++;
+            await UpdateFields();
         }
         private async void DecreaseCountTeam2Clicked()
         {
             Logger.Trace("DecreaseCountTeam2Clicked.");
             await DataHandler.UpdateMatchScoreAsync(Match.Id, 1, -1);
-            await LoadMatch();
+            MatchManager.LoadedMatches.Single(x => x.Id == SelectedMatchId.Value).Team2Score--;
+            await UpdateFields();
         }
 
         private async void PenaltyTeam1Clicked()
@@ -189,7 +193,7 @@ namespace LeDi.Server2.Pages
             DialogPenaltyPenaltyShow = false;
 
             // Reload match details (and UI)
-            await LoadMatch();
+            await UpdateFields();
         }
 
         /// <summary>
@@ -271,7 +275,7 @@ namespace LeDi.Server2.Pages
             }
 
             DialogTimeShow = false;
-            await LoadMatch();
+            await UpdateFields();
         }
 
         /// <summary>
@@ -293,7 +297,7 @@ namespace LeDi.Server2.Pages
                 revokedPenaltyDb.RevokeNote = "Revoking \"" + revokedPenalty.Note + "\"";
 
                 //await DataHandler.SaveChangesAsync();
-                await LoadMatch();
+                await UpdateFields();
             }
             DialogPenaltyRevokeShow = false;
         }
@@ -352,7 +356,7 @@ namespace LeDi.Server2.Pages
         protected override async Task OnParametersSetAsync()
         {
             Logger.Trace("Reloading the page.");
-            await LoadMatch();
+            await UpdateFields();
 
             if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
             {
@@ -374,10 +378,8 @@ namespace LeDi.Server2.Pages
             else
             {
                 Logger.Debug("Match {0} selected.", SelectedMatchId);
-                await LoadMatch();
+                await UpdateFields();
             }
-
-            await SetPageControls();
 
             // Get information about updated Match(es)
             MatchManager.OnMatchTimeUpdated += async (object? sender, EventArgs e) =>
@@ -436,10 +438,10 @@ namespace LeDi.Server2.Pages
             var x = MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId);
             if (x != null)
             {
-                if (Match.MatchStatus == (int)MatchStatusEnum.PeriodEnded)
+                if (Match.MatchStatus == (int)MatchStatusEnum.PeriodEnded || Match.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
                 {
                     Logger.Debug("Not-the-last period is over.");
-                    ButtonDisableStartStop = false;
+                    ButtonDisableStartStop = true;
                     ButtonPreparePeriodDisabled = false;
                     ButtonCloseMatchDisabled = true;
                     ButtonTextStartStop = Localizer["StartTime"];
@@ -450,6 +452,15 @@ namespace LeDi.Server2.Pages
                     ButtonDisableStartStop = true;
                     ButtonPreparePeriodDisabled = true;
                     ButtonCloseMatchDisabled = false;
+                }
+                else if (Match.MatchStatus == (int)MatchStatusEnum.Running)
+                {
+                    Logger.Debug("Match is running");
+                    ButtonDisableStartStop = false;
+                    ButtonPreparePeriodDisabled = true;
+                    ButtonCloseMatchDisabled = true;
+                    ButtonTextStartStop = Localizer["StopTime"];
+
                 }
             }
             await InvokeAsync(() => { StateHasChanged(); });
@@ -475,7 +486,11 @@ namespace LeDi.Server2.Pages
             MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList() ?? new List<TblMatch>();
         }
 
-        private async Task LoadMatch()
+        /// <summary>
+        /// Update the fields of the page
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateFields()
         {
             if (SelectedMatchId == null)
             {
@@ -484,21 +499,16 @@ namespace LeDi.Server2.Pages
             }
 
             Logger.Debug("Loading match {0}", SelectedMatchId);
+            //await DataHandler.GetMatchAsync(SelectedMatchId.Value)
             await MatchManager.LoadMatch(SelectedMatchId.Value);
 
             if (MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId) == null)
+            {
+                Logger.Warn("Match {0} not loaded.", SelectedMatchId.Value);
                 return;
-
-            if (Match.MatchStatus >= (int)MatchStatusEnum.Running)
-            {
-                ButtonDisableStart = true;
-            }
-            else
-            {
-                ButtonDisableStart = false;
             }
 
-            await InvokeAsync(() => { StateHasChanged(); });
+            await SetPageControls();
         }
 
         /// <summary>
@@ -538,7 +548,7 @@ namespace LeDi.Server2.Pages
                 Match.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
                 await DataHandler.SetMatchAsync(Match);
 
-                await LoadMatch();
+                await UpdateFields();
 
                 await InvokeAsync(() => { StateHasChanged(); });
             }
