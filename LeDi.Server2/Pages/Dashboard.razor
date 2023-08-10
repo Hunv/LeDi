@@ -126,7 +126,7 @@
             </div>
 
             @*Row 4: Matchlog*@
-            <div class="row align-items-start" style="height:30vh; min-height:30vh;">
+            @*<div class="row align-items-start" style="height:30vh; min-height:30vh;">
                 <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
                     <div style="height:100%; min-height:100%;" class="p-1 fs-3">
                         <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
@@ -140,15 +140,9 @@
                         {
                             <div class="container-fluid">
                                 <div class="row">
-                                    @*<div class="col-1 text-nowrap">
-                                        <b>#</b>
-                                    </div>*@
                                     <div class="col-1 text-nowrap" style="min-width:100px;">
                                         <b>@Localizer["Time"]</b>
-                                    </div>@*
-                                    <div class="col-1 text-nowrap">
-                                        <b>Creator</b>
-                                    </div>*@
+                                    </div>
                                     <div class="col-auto">
                                         <b>@Localizer["Note"]</b>
                                     </div>
@@ -156,16 +150,10 @@
          
                                 @foreach(var aEvent in MatchEventList.Reverse<TblMatchEvent>())
                                 {
-                                    <div class="row justify-content-start">                    
-                                        @*<div class="col-1 text-nowrap">
-                                            @aEvent.Event
-                                        </div>*@
+                                    <div class="row justify-content-start">
                                         <div class="col-1 text-nowrap" style="min-width:100px;">
                                             @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
-                                        </div>@*
-                                        <div class="col-1 text-nowrap">
-                                            @(aEvent.Source ?? "System")
-                                        </div>*@
+                                        </div>
                                         <div class="col-auto">
                                             @aEvent.Text
                                         </div>
@@ -175,7 +163,7 @@
                         }
                     </div>
                 </div>
-            </div>
+            </div>*@
         </div>
 }
 else if (LiveMatchList != null)

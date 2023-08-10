@@ -801,6 +801,9 @@ namespace LeDi.Server2
         /// <returns></returns>
         public static async Task SendMatch(int matchId, TblMatch? match = null)
         {
+            if (hubContext == null)
+                return;
+
             if (match == null)
             {
                 match = await GetMatchAsync(matchId);
@@ -819,7 +822,7 @@ namespace LeDi.Server2
             }
             catch(Exception ex)
             {
-                Logger.Debug(ex, "Cannot send match to group {0} as the group does not exists.", "Match-" + matchId);
+                Logger.Trace(ex, "Cannot send match to group {0} as the group does not exists.", "Match-" + matchId);
             }
         }
     }

@@ -197,6 +197,9 @@
   <data name="ShowAreas" xml:space="preserve">
     <value>Bereiche anzeigen</value>
   </data>
+  <data name="ShowBlack" xml:space="preserve">
+    <value>Schwarz anzeigen</value>
+  </data>
   <data name="ShowColortest" xml:space="preserve">
     <value>Farbtest anzeigen (60s)</value>
   </data>
@@ -208,6 +211,12 @@
   </data>
   <data name="ShowIdlebar" xml:space="preserve">
     <value>Show Idlebar</value>
+  </data>
+  <data name="ShowLeDiLogo" xml:space="preserve">
+    <value>LeDi Logo anzeigen</value>
+  </data>
+  <data name="ShowPixelwipe" xml:space="preserve">
+    <value>Pixelwipe durchführen</value>
   </data>
   <data name="ShowTestpattern" xml:space="preserve">
     <value>Testmuster anzeigen</value>

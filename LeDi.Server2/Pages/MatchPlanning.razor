@@ -31,6 +31,7 @@ else
                         <th>@Localizer["ScheduledTime"]</th>
                         <th>@Localizer["Status"]</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,8 +46,55 @@ else
                             </td>
                             <td>@match.Team1Score:@match.Team2Score</td>
                             <td>@match.ScheduledTime</td>
-                            <td>@(Enum.GetName(typeof(LeDi.Shared2.Enum.MatchStatusEnum), match.MatchStatus))</td>
-                            <td><a href="/match/@match.Id">@Localizer["Edit"]</a></td>
+                            <td>
+                                @switch (match.MatchStatus)
+                                {
+                                    case 0:
+                                        @Localizer["Unknown"]
+                                        break;
+                                    case 10:
+                                        @Localizer["Planned"]
+                                        break;
+                                    case 20:
+                                        @Localizer["ReadyToStart"]
+                                        break;
+                                    case 30:
+                                        @Localizer["Running"]
+                                        break;
+                                    case 39:
+                                        @Localizer["PeriodEnded"]
+                                        break;
+                                    case 40:
+                                        @Localizer["Ended"]
+                                        break;
+                                    case 100:
+                                        @Localizer["Closed"]
+                                        break;
+                                    case 200:
+                                        @Localizer["Canceled"]
+                                        break;
+                                    case 210:
+                                        @Localizer["Stopped"]
+                                        break;
+                                    default:
+                                        @match.MatchStatus
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <AuthorizeView Roles="Att-CanMatchEdit,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <a href="/match/@match.Id" class="btn btn-secondary"><span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["Edit"]</a>
+                                    </Authorized>
+                                </AuthorizeView>
+                            </td>
+                            <td>
+                                <AuthorizeView Roles="Att-CanMatchStart,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <a href="/matchcontrol/@match.Id" class="btn btn-primary"><span class="oi oi-pencil" aria-hidden="true"></span> @Localizer["Referee"]</a>
+                                    </Authorized>
+                                </AuthorizeView>
+                            </td>
                         </tr>
                     }
                 </tbody>

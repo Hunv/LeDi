@@ -117,10 +117,73 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddMatch" xml:space="preserve">
+    <value>Add Match</value>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Match canceled</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Match closed</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Ended" xml:space="preserve">
+    <value>Match ended</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>You do not have the permission to view this page.</value>
   </data>
   <data name="NotLoggedIn" xml:space="preserve">
     <value>You're not loggged in.</value>
+  </data>
+  <data name="PeriodEnded" xml:space="preserve">
+    <value>Period ended</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Planned" xml:space="preserve">
+    <value>Planned</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="ReadyToStart" xml:space="preserve">
+    <value>Ready to start</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Referee" xml:space="preserve">
+    <value>Referee</value>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Running</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="ScheduledTime" xml:space="preserve">
+    <value>Scheduled Time</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Stopped" xml:space="preserve">
+    <value>Match stopped</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Team1Name" xml:space="preserve">
+    <value>Team 1</value>
+  </data>
+  <data name="Team2Name" xml:space="preserve">
+    <value>Team 2</value>
+  </data>
+  <data name="TournamentMatchlist" xml:space="preserve">
+    <value>Tournament Matchlist</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Match status description</comment>
   </data>
 </root>

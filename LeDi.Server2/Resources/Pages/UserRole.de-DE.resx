@@ -121,94 +121,94 @@
     <value>Rolle hinzufügen</value>
   </data>
   <data name="CanDeviceCommands" xml:space="preserve">
-    <value />
+    <value>Gerätebefehle ausführen</value>
   </data>
   <data name="CanDeviceManage" xml:space="preserve">
-    <value />
+    <value>Geräte verwalten</value>
   </data>
   <data name="CanMatchAdd" xml:space="preserve">
-    <value />
+    <value>Spiel hinzufügen</value>
   </data>
   <data name="CanMatchAvancedControls" xml:space="preserve">
-    <value />
+    <value>Spiel erweitere Funktionen</value>
   </data>
   <data name="CanMatchDelete" xml:space="preserve">
-    <value />
+    <value>Spiel löschen</value>
   </data>
   <data name="CanMatchEdit" xml:space="preserve">
-    <value />
+    <value>Spiel bearbeiten</value>
   </data>
   <data name="CanMatchEnd" xml:space="preserve">
-    <value />
+    <value>Spiel beenden</value>
   </data>
   <data name="CanMatchPenalty" xml:space="preserve">
-    <value />
+    <value>Spiel Strafen aussprechen</value>
   </data>
   <data name="CanMatchStart" xml:space="preserve">
-    <value />
+    <value>Spiel starten</value>
   </data>
   <data name="CanMatchStop" xml:space="preserve">
-    <value />
+    <value>Spiel stoppen</value>
   </data>
   <data name="CanPlayerAdd" xml:space="preserve">
-    <value />
+    <value>Spieler hinzufügen</value>
   </data>
   <data name="CanPlayerDelete" xml:space="preserve">
-    <value />
+    <value>Spieler löschen</value>
   </data>
   <data name="CanPlayerEdit" xml:space="preserve">
-    <value />
+    <value>Spieler bearbeiten</value>
   </data>
   <data name="CanRoleAdd" xml:space="preserve">
-    <value />
+    <value>Rolle hinzufügen</value>
   </data>
   <data name="CanRoleDelete" xml:space="preserve">
-    <value />
+    <value>Rolle löschen</value>
   </data>
   <data name="CanRoleEdit" xml:space="preserve">
-    <value />
+    <value>Rolle bearbeiten</value>
   </data>
   <data name="CanSettingManage" xml:space="preserve">
-    <value />
+    <value>Einstellungen bearbeiten</value>
   </data>
   <data name="CanTeamAdd" xml:space="preserve">
-    <value />
+    <value>Team hinzufügen</value>
   </data>
   <data name="CanTeamDelete" xml:space="preserve">
-    <value />
+    <value>Team löschen</value>
   </data>
   <data name="CanTeamEdit" xml:space="preserve">
-    <value />
+    <value>Team bearbeiten</value>
   </data>
   <data name="CanTemplateManage" xml:space="preserve">
-    <value />
+    <value>Vorlagen verwalten</value>
   </data>
   <data name="CanTournamentAdd" xml:space="preserve">
-    <value />
+    <value>Turnier hinzufügen</value>
   </data>
   <data name="CanTournamentEdit" xml:space="preserve">
-    <value />
+    <value>Turnier bearbeiten</value>
   </data>
   <data name="CanTournamentMatchAdd" xml:space="preserve">
-    <value />
+    <value>Turnierspiel hinzufügen</value>
   </data>
   <data name="CanTournamentMatchDelete" xml:space="preserve">
-    <value />
+    <value>Turnierspiel löschen</value>
   </data>
   <data name="CanTournamentMatchEdit" xml:space="preserve">
-    <value />
+    <value>Turnierspiel bearbeiten</value>
   </data>
   <data name="CanUserAdd" xml:space="preserve">
-    <value />
+    <value>Benutzer hinzufügen</value>
   </data>
   <data name="CanUserDelete" xml:space="preserve">
-    <value />
+    <value>Benutzer löschen</value>
   </data>
   <data name="CanUserEdit" xml:space="preserve">
-    <value />
+    <value>Benutzer bearbeiten</value>
   </data>
   <data name="CanUserPasswordEdit" xml:space="preserve">
-    <value />
+    <value>Benutzerpasswort zurücksetzen</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Löschen</value>

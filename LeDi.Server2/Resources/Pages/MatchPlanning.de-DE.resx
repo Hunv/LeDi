@@ -120,11 +120,23 @@
   <data name="AddNewMatch" xml:space="preserve">
     <value>Neues Spiel hinzufügen</value>
   </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Spiel abgebrochen</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Spiel geschlossen</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="CurrentlyPlannedMatches" xml:space="preserve">
     <value>Aktuell geplante Spiele:</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Bearbeiten</value>
+  </data>
+  <data name="Ended" xml:space="preserve">
+    <value>Spiel beendet</value>
+    <comment>Match status description</comment>
   </data>
   <data name="FinishedMatches" xml:space="preserve">
     <value>Abgeschlossene Spiele:</value>
@@ -141,6 +153,22 @@
   <data name="NotLoggedIn" xml:space="preserve">
     <value>Sie sind nicht angemeldet.</value>
   </data>
+  <data name="PeriodEnded" xml:space="preserve">
+    <value>Halbzeit beendet</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Planned" xml:space="preserve">
+    <value>Geplant</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="ReadyToStart" xml:space="preserve">
+    <value>Bereit</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Läuft</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="ScheduledTime" xml:space="preserve">
     <value>Geplante Zeit</value>
   </data>
@@ -150,10 +178,18 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
+  <data name="Stopped" xml:space="preserve">
+    <value>Spiel unterbrochen</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="Team1" xml:space="preserve">
     <value>Team1</value>
   </data>
   <data name="Team2" xml:space="preserve">
     <value>Team2</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
+    <comment>Match status description</comment>
   </data>
 </root>

@@ -156,6 +156,9 @@
   <data name="TournamentEndDate" xml:space="preserve">
     <value>End date</value>
   </data>
+  <data name="TournamentName" xml:space="preserve">
+    <value>Tournament name</value>
+  </data>
   <data name="TournamentPlanning" xml:space="preserve">
     <value>Tournament planning</value>
   </data>

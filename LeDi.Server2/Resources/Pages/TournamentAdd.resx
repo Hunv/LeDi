@@ -123,4 +123,22 @@
   <data name="NotLoggedIn" xml:space="preserve">
     <value>You're not loggged in.</value>
   </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="SelectSport" xml:space="preserve">
+    <value>Select sport</value>
+  </data>
+  <data name="TournamentAdd" xml:space="preserve">
+    <value>Add tournament</value>
+  </data>
+  <data name="TournamentEndDate" xml:space="preserve">
+    <value>Tournament End Date</value>
+  </data>
+  <data name="TournamentName" xml:space="preserve">
+    <value>Tournament Name</value>
+  </data>
+  <data name="TournamentStartDate" xml:space="preserve">
+    <value>Tournament Start Date</value>
+  </data>
 </root>

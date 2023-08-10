@@ -120,11 +120,23 @@
   <data name="AddNewMatch" xml:space="preserve">
     <value>Add new match</value>
   </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Match canceled</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Match closed</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="CurrentlyPlannedMatches" xml:space="preserve">
     <value>Currently planned matches:</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
+  </data>
+  <data name="Ended" xml:space="preserve">
+    <value>Match ended</value>
+    <comment>Match status description</comment>
   </data>
   <data name="FinishedMatches" xml:space="preserve">
     <value>Finished matches:</value>
@@ -141,6 +153,22 @@
   <data name="NotLoggedIn" xml:space="preserve">
     <value>You're not loggged in.</value>
   </data>
+  <data name="PeriodEnded" xml:space="preserve">
+    <value>Period ended</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Planned" xml:space="preserve">
+    <value>Planned</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="ReadyToStart" xml:space="preserve">
+    <value>Ready to start</value>
+    <comment>Match status description</comment>
+  </data>
+  <data name="Running" xml:space="preserve">
+    <value>Running</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="ScheduledTime" xml:space="preserve">
     <value>Scheduled Time</value>
   </data>
@@ -150,10 +178,18 @@
   <data name="Status" xml:space="preserve">
     <value>Status</value>
   </data>
+  <data name="Stopped" xml:space="preserve">
+    <value>Match stopped</value>
+    <comment>Match status description</comment>
+  </data>
   <data name="Team1" xml:space="preserve">
     <value>Team1</value>
   </data>
   <data name="Team2" xml:space="preserve">
     <value>Team2</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+    <comment>Match status description</comment>
   </data>
 </root>

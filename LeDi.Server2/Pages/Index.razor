@@ -1,7 +1,20 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>LeDi</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>@pageTitle</h1>
+@pageText
 
-Welcome to your new app.
+
+@code {
+    string pageTitle = "";
+    string pageText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var pageTitleObj = await DataHandler.GetSettingAsync("welcometitle");
+        var pageTextObj = await DataHandler.GetSettingAsync("welcometext");
+        pageTitle = pageTitleObj == null ? "Welcome" : pageTitleObj.SettingName;
+        pageText = pageTextObj == null ? "" : pageTextObj.SettingName;
+    }
+}
