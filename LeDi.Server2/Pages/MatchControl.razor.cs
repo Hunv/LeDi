@@ -161,6 +161,7 @@ namespace LeDi.Server2.Pages
                 newPenalty.Note = string.Format("Penalty \"{0}\" given to player number {1} of {2}", penalty, PenaltyPlayerNumber, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
                 newPenalty.TeamId = PenaltyTeamId;
                 newPenalty.Timestamp = DateTime.Now;
+                newPenalty.MatchId = SelectedMatchId.Value;
 
                 if (!customPenalty && penaltyObj != null) // the null check is not required but the null check compiler wants it.
                 {
@@ -179,8 +180,7 @@ namespace LeDi.Server2.Pages
                 }
 
                 // Register the penalty
-                Match.MatchPenalties.Add(newPenalty);
-                //await DataHandler.SaveChangesAsync();
+                MatchManager.AddMatchPenalty(newPenalty);
             }
             else
             {

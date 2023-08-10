@@ -141,7 +141,7 @@ namespace LeDi.Server2.Data
         {
             if (await LoadMatch(matchId) == false)
             {
-                Logger.Warn("Cannot Start match {0}.", matchId);
+                Logger.Warn("Cannot set match {0}.", matchId);
                 return;
             }
 
@@ -161,6 +161,45 @@ namespace LeDi.Server2.Data
             {
                 OnMatchUpdated(matchId, new EventArgs());
             }
+        }
+
+        /// <summary>
+        /// Adds a new penalty
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <param name="playerId"></param>
+        /// <param name="teamId"></param>
+        /// <param name="penaltyText"></param>
+        /// <param name="penaltySeconds"></param>
+        /// <param name="penaltyTimeStart"></param>
+        /// <returns></returns>
+        public async Task AddMatchPenalty(TblMatchPenalty penalty)
+        {
+
+            if (await LoadMatch(penalty.MatchId) == false)
+            {
+                Logger.Warn("Cannot change match {0}.", penalty.MatchId);
+                return;
+            }
+
+            var match = LoadedMatches.Single(x => x.Id == penalty.MatchId);
+
+            match.MatchPenalties.Add(penalty);
+
+            var matchEvent = new TblMatchEvent() { Event = (penalty.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2), Matchtime = match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Penalty for team " + penalty.TeamId + " player #" + penalty.PlayerNumber + " because of " + penalty.PenaltyName };
+            match.MatchEvents.Add(matchEvent);
+
+            // Save changes to db.
+            var dbMatch = await DataHandler.GetMatchAsync(penalty.MatchId);
+            dbMatch.MatchStatus = match.MatchStatus;
+            dbMatch.MatchEvents.Add(matchEvent);
+            await DataHandler.SetMatchAsync(dbMatch);
+
+            if (OnMatchUpdated != null)
+            {
+                OnMatchUpdated(penalty.MatchId, new EventArgs());
+            }
+
         }
 
         /// <summary>
