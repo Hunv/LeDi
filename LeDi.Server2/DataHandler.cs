@@ -783,8 +783,18 @@ namespace LeDi.Server2
             return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.RoleName == roleName);
         }
 
+        /// <summary>
+        /// Adds a template to database
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        public static async Task AddTemplate(TblTemplate template)
+        {
+            using var dbContext = new LeDiDbContext();
+            dbContext.TblTemplates.Add(template);
 
-
+            await dbContext.SaveChangesAsync();
+        }
 
 
 

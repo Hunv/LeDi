@@ -63,6 +63,12 @@
     /// </summary>
     private string SelectedPenalty { get; set; } = "";
 
+
+    /// <summary>
+    /// The Time for a custom penalty
+    /// </summary>
+    private int SelectedPenaltyTime { get; set; } = 0;
+
     private Task ModalCancel()
     {
         return OnClose.InvokeAsync(null);

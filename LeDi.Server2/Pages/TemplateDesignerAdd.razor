@@ -1,0 +1,71 @@
+﻿@page "/TemplateDesignerAdd"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateDesignerAdd> Localizer
+@inject NavigationManager NavigationManager
+
+<PageTitle>LeDi - @Localizer["TemplateDesignerAdd"]</PageTitle>
+
+<AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-IsAdmin">
+    <Authorized>
+
+        <EditForm Model="@Template" OnValidSubmit="@SaveTemplate" Context="x">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <a>Template Name</a>
+            <InputText id="txtTemplateName"
+                        class="form-control w-auto"
+                        type="text"
+                        @bind-Value="@Template.TemplateName" />
+            <br />
+            <a>Default Period length</a>
+            <InputNumber id="txtPeriodLength"
+                            class="form-control w-auto"
+                            type="text"
+                            @bind-Value="@Template.PeriodLength" />
+            <br />
+            <a>Default number of periods</a>
+            <InputNumber id="txtPeriodCount"
+                            class="form-control w-auto"
+                            type="text"
+                            @bind-Value="@Template.PeriodCount" />
+            <br />
+            <a>Default has Overtime</a>
+            <Checkbox id="chkOvertimeEnabled"
+                        class="form-check w-auto"
+                      @bind-Value="@Template.HasOvertime" />
+            <br />
+            <a>Default has Extension</a>
+            <Checkbox id="chkExtensionEnabled"
+                      class="form-check w-auto"
+                        @bind-Value="@Template.HasExtension" />
+            <br />
+            <a>Default stop on breaks near end</a>
+            <Checkbox id="chkBreakAtEndEnabled"
+                      class="form-check w-auto"
+                        @bind-Value="@Template.HasPauseNearEnd" />
+            <br />
+            <a>Default stop on breaks near end time</a>
+            <InputNumber id="txtBreakAtEndSeconds"
+                            class="form-control w-auto"
+                            type="text"
+                            @bind-Value="@Template.PauseNearEndSeconds" />
+            <br />
+            <a>Default Maximum Players per Team</a>
+            <InputNumber id="txtMaximumPlayers"
+                            class="form-control w-auto"
+                            type="text"
+                            @bind-Value="@Template.MaxNumberOfTeamPlayers" />
+            <br />
+            <a>Default Maximum Players per Team on field</a>
+            <InputNumber id="txtMaximumPlayersOnField"
+                            class="form-control w-auto"
+                            type="text"
+                            @bind-Value="@Template.MaxNumberOfTeamPlayersOnField" />
+            <br />
+
+            <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p>@Localizer["NoPermissions"]</p>
+    </NotAuthorized>
+</AuthorizeView>

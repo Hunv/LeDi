@@ -1,0 +1,86 @@
+﻿@page "/TemplateDesigner"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateDesigner> Localizer
+
+<PageTitle>LeDi - @Localizer["TemplateDesigner"]</PageTitle>
+
+<AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-CanTemplateDelete,Att-CanTemplateManage,Att-IsAdmin">
+    <Authorized>
+
+        <div class="container-fluid">
+
+            @if (TemplateList == null)
+            {
+                <p><em>@Localizer["Loading"]</em></p>
+            }
+            else
+            {
+                @foreach (var template in TemplateList)
+                {
+                    <Card>
+                        <HeaderTemplate>
+                            <h5>@template.TemplateName</h5>
+                        </HeaderTemplate>
+                        <BodyTemplate>
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            @Localizer["PeriodCount"]
+                                        </td>
+                                        <td>
+                                            @template.PeriodCount
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Localizer["PeriodLength"]
+                                        </td>
+                                        <td>
+                                            @template.PeriodLength
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Localizer["More"]
+                                        </td>
+                                        <td>
+                                            
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </BodyTemplate>
+                        <FooterTemplate>
+                            <div class="span">
+                                <AuthorizeView Roles="Att-CanTemplateEdit,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <Tooltip Title="@Localizer["Edit"]" Placement="Placement.Bottom" @onclick="@(() => EditTemplate(template.Id))">
+                                            <a class="fs-4 btn btn-primary m-2" style="width:96px">
+                                                <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+                                            </a>
+                                        </Tooltip>
+                                    </Authorized>
+                                </AuthorizeView>
+                                <AuthorizeView Roles="Att-CanTemplateDelete,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <Tooltip Title="@Localizer["Delete"]" Placement="Placement.Bottom" @onclick="@(() => DeleteTemplate(template.Id))">
+                                            <a class="fs-4 btn btn-primary m-2" style="width:96px">
+                                                <i class="fa-solid fa-cross" aria-hidden="true"></i>
+                                            </a>
+                                        </Tooltip>
+                                    </Authorized>
+                                </AuthorizeView>
+                            </div>
+                        </FooterTemplate>
+                    </Card>
+                    <br />
+                }
+            }
+        </div>
+
+
+    </Authorized>
+    <NotAuthorized>
+        <p>@Localizer["NoPermissions"]</p>
+    </NotAuthorized>
+</AuthorizeView>

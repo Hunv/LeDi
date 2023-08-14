@@ -30,6 +30,7 @@ namespace LeDi.Server2.DatabaseModel
         public DbSet<TblGameRulePenaltyDisplay> TblGameRulePenaltyDisplays { get; set; }
         public DbSet<TblTournament> TblTournaments { get; set; }
         public DbSet<TblUserRole> TblUserRoles { get; set; }
+        public DbSet<TblTemplate> TblTemplates { get; set; }
 
         public LeDiDbContext(DbContextOptions<LeDiDbContext> options)
             : base(options)
