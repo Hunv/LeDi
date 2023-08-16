@@ -117,11 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Custom" xml:space="preserve">
+    <value>Eigene</value>
+  </data>
   <data name="ExtendMatch" xml:space="preserve">
     <value>Spiel weiterführen bei Gleichstand nach abgelaufener Spielzeit</value>
-  </data>
-  <data name="Handball" xml:space="preserve">
-    <value>Handball</value>
   </data>
   <data name="LengthPeriod" xml:space="preserve">
     <value>Halbzeitlänge (Minuten : Sekunden)</value>
@@ -134,6 +134,9 @@
   </data>
   <data name="MatchOvertime" xml:space="preserve">
     <value>Spielverlängerung</value>
+  </data>
+  <data name="NewMatch" xml:space="preserve">
+    <value>Neues Spiel</value>
   </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
@@ -150,9 +153,6 @@
   <data name="OnDisplay" xml:space="preserve">
     <value>Auf dem Display anzeigen:</value>
   </data>
-  <data name="Other" xml:space="preserve">
-    <value>Andere</value>
-  </data>
   <data name="Save" xml:space="preserve">
     <value>Speichern</value>
   </data>
@@ -163,19 +163,13 @@
     <value>Geplanter Spielstart (Datum/Uhrzeit)</value>
     <comment>Scheduled Start Date and Time</comment>
   </data>
-  <data name="SelectSport" xml:space="preserve">
-    <value>Sportart wählen</value>
-  </data>
-  <data name="Soccer" xml:space="preserve">
-    <value>Fußball</value>
+  <data name="SelectTemplate" xml:space="preserve">
+    <value>Vorlage auswählen</value>
   </data>
   <data name="Team1" xml:space="preserve">
     <value>Name Team 1</value>
   </data>
   <data name="Team2" xml:space="preserve">
     <value>Name Team 2</value>
-  </data>
-  <data name="Underwaterhockey" xml:space="preserve">
-    <value>Unterwasserhockey</value>
   </data>
 </root>

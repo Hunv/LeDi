@@ -1,8 +1,9 @@
-﻿@page "/TemplateDesignerAdd"
-@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateDesignerAdd> Localizer
+﻿@page "/TemplateAdd"
+@page "/TemplateAdd/{SelectedTemplateId:int}"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateAdd> Localizer
 @inject NavigationManager NavigationManager
 
-<PageTitle>LeDi - @Localizer["TemplateDesignerAdd"]</PageTitle>
+<PageTitle>LeDi - @Localizer["TemplateAdd"]</PageTitle>
 
 <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-IsAdmin">
     <Authorized>
@@ -16,7 +17,7 @@
                         type="text"
                         @bind-Value="@Template.TemplateName" />
             <br />
-            <a>Default Period length</a>
+            <a>Default Period length (seconds)</a>
             <InputNumber id="txtPeriodLength"
                             class="form-control w-auto"
                             type="text"
@@ -43,7 +44,7 @@
                       class="form-check w-auto"
                         @bind-Value="@Template.HasPauseNearEnd" />
             <br />
-            <a>Default stop on breaks near end time</a>
+            <a>Default stop on breaks near end time (seconds)</a>
             <InputNumber id="txtBreakAtEndSeconds"
                             class="form-control w-auto"
                             type="text"
@@ -63,6 +64,7 @@
             <br />
 
             <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
+            <button class="btn btn-primary" type="button" @onclick="@DeleteTemplate">@Localizer["Delete"]</button>
         </EditForm>
     </Authorized>
     <NotAuthorized>

@@ -26,20 +26,16 @@ else
                 <div class="table">
                     <div class="row">
                         <div class="col-xxl-2">
-                            <a class="d-inline-block text-decoration-none text-break">@Localizer["SelectSport"]</a>
+                            <a class="d-inline-block text-decoration-none text-break">@Localizer["SelectTemplate"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputSelect id="cmbSport" class="w-auto col-8 form-select" @bind-Value="ToSaveTournament.Sport">
-                                <option value=""> </option>
-                                <option value="Underwaterhockey">@Localizer["Underwaterhockey"]</option>
-                                <option value="Handball">@Localizer["Handball"]</option>
-                                <option value="Soccer">@Localizer["Soccer"]</option>
-                    @*            <option value="Baseball">Baseball</option>
-                                <option value="Hockey">Hockey</option>
-                                <option value="Football">Football</option>
-                                <option value="Basketball">Basketball</option>
-                                <option value="Tennis">Tennis</option>*@
-                                <option value="Other">@Localizer["Other"]</option>
+                            <InputSelect id="cmbTemplate" class="w-auto col-8 form-select" @bind-Value="TemplateId">
+                                <option value="-1"> </option>
+                                @foreach (var aTemplate in TemplateList)
+                                {
+                                    <option value="@aTemplate.Id">@aTemplate.TemplateName</option>
+                                }
+                                <option value="-1">@Localizer["Custom"]</option>
                             </InputSelect>
                         </div>
                     </div>
@@ -97,7 +93,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtTeamName1"))">
+                    <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam1"]</a>
                         </div>
@@ -111,7 +107,7 @@ else
                         </div>
                     </div>
 
-                <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtTeamName2"))">
+                <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam2"]</a>
                         </div>
@@ -125,7 +121,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtPeriodCount"))">
+                    <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultNumberPeriods"]</a>
                         </div>
@@ -139,7 +135,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(this.HideRules ||!FieldList[ToSaveTournament.Sport].Contains("txtPeriodLength"))">
+                    <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultLengthPeriod"]</a>
                         </div>
@@ -170,7 +166,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(this.HideRules ||!FieldList[ToSaveTournament.Sport].Contains("chkPeriodOvertime"))">
+                    <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultMatchOvertime"]</a>
                         </div>
@@ -183,7 +179,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("chkPeriodPauseNearEnd"))">
+                    <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptions"]</a>
                         </div>
@@ -196,7 +192,7 @@ else
                         </div>
                     </div>
 
-                <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("txtPeriodPauseNearEndSec")|| ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent == false)">
+                <div class="row pt-1" hidden="@(ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent == false)">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptionsSeconds"]</a>
                         </div>
@@ -210,7 +206,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("chkMatchExtensionOnDraw"))">
+                    <div class="row pt-1">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultExtendMatch"]</a>
                         </div>
@@ -226,7 +222,7 @@ else
                     @*Show displaylist only if there are displays available*@
                     @if (DisplayList != null && DisplayList.Count > 0)
                     {
-                        <div class="row pt-1" hidden="@(this.HideRules || !FieldList[ToSaveTournament.Sport].Contains("displaylist"))">
+                        <div class="row pt-1">
                             <div class="col-xxl-2">
                                 <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultDisplay"]</a>
                             </div>

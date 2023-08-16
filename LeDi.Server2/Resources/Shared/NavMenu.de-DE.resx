@@ -141,6 +141,9 @@
   <data name="Start" xml:space="preserve">
     <value>Aktionen</value>
   </data>
+  <data name="TemplateEditor" xml:space="preserve">
+    <value>Template Editor</value>
+  </data>
   <data name="UserManagement" xml:space="preserve">
     <value>Benutzerverwaltung</value>
   </data>

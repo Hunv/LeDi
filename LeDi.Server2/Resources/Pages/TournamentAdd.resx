@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>You do not have the permission to view this page.</value>
   </data>
@@ -126,8 +129,8 @@
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="SelectSport" xml:space="preserve">
-    <value>Select sport</value>
+  <data name="SelectTemplate" xml:space="preserve">
+    <value>Select template</value>
   </data>
   <data name="TournamentAdd" xml:space="preserve">
     <value>Add tournament</value>

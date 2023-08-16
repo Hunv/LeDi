@@ -61,20 +61,20 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom.
+        /// </summary>
+        public static string Custom {
+            get {
+                return ResourceManager.GetString("Custom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extend match in case of draw after regular play time.
         /// </summary>
         public static string ExtendMatch {
             get {
                 return ResourceManager.GetString("ExtendMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handball.
-        /// </summary>
-        public static string Handball {
-            get {
-                return ResourceManager.GetString("Handball", resourceCulture);
             }
         }
         
@@ -169,15 +169,6 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Other.
-        /// </summary>
-        public static string Other {
-            get {
-                return ResourceManager.GetString("Other", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
@@ -205,20 +196,11 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select sport.
+        ///   Looks up a localized string similar to Select template.
         /// </summary>
-        public static string SelectSport {
+        public static string SelectTemplate {
             get {
-                return ResourceManager.GetString("SelectSport", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Soccer.
-        /// </summary>
-        public static string Soccer {
-            get {
-                return ResourceManager.GetString("Soccer", resourceCulture);
+                return ResourceManager.GetString("SelectTemplate", resourceCulture);
             }
         }
         
@@ -237,15 +219,6 @@ namespace LeDi.Server2.Resources.Pages {
         public static string Team2 {
             get {
                 return ResourceManager.GetString("Team2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Underwaterhockey.
-        /// </summary>
-        public static string Underwaterhockey {
-            get {
-                return ResourceManager.GetString("Underwaterhockey", resourceCulture);
             }
         }
     }

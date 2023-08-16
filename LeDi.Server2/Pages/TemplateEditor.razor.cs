@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace LeDi.Server2.Pages
 {
-    public partial class TemplateDesigner
+    public partial class TemplateEditor
     {
         public TblTemplate Template { get; set; } = new TblTemplate();
 
@@ -15,23 +15,22 @@ namespace LeDi.Server2.Pages
         //Clone an existing template
         //Build in templates (soccer, UWH, handball,...)
 
-        public void SaveTemplate()
-        {
-
-        }
 
         public void EditTemplate(int templateId)
         {
-
+            NavigationManager.NavigateTo("/TemplateAdd/" + templateId.ToString());
         }
-        public void DeleteTemplate(int templateId)
-        {
 
+        public async void DeleteTemplate(int templateId)
+        {
+            await DataHandler.DeleteTemplate(templateId);
+            TemplateList = await DataHandler.GetTemplateList();
+            await InvokeAsync(() => { StateHasChanged(); });
         }
 
         protected override async Task OnInitializedAsync()
         {
-
+            TemplateList = await DataHandler.GetTemplateList();
         }
     }
 }

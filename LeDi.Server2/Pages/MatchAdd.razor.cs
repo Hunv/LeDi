@@ -26,6 +26,11 @@ namespace LeDi.Server2.Pages
         /// </summary>
         private string ReturnUrl { get; set; }
 
+        /// <summary>
+        /// List of all available templates.
+        /// </summary>
+        private List<TblTemplate> TemplateList { get; set; }
+
 
         /// <summary>
         /// The parameters for a new match
@@ -42,19 +47,21 @@ namespace LeDi.Server2.Pages
             MatchStatus = (int)MatchStatusEnum.Planned
         };
 
+        private int _SelectedTemplate = -1;
+
         /// <summary>
-        /// The name of the selected sport
+        /// The id of the selected template
         /// </summary>
-        public string SelectedSport
+        public int SelectedTemplate
         {
             get
             {
-                return NewMatch.GameName ?? "";
+                return _SelectedTemplate;
             }
             set
             {                
 #pragma warning disable CS4014
-                SelectedSportChanged(value);
+                SelectedTemplateChanged(value);
 #pragma warning restore CS4014
             }
         }
@@ -104,73 +111,8 @@ namespace LeDi.Server2.Pages
             }
         }
 
-        //Dictionary that defines the fields that are shown when SelectedGamename has the value of that match type.
-        public Dictionary<string, List<string>> FieldList = new Dictionary<string, List<string>>
-    {
-        {
-            "", new List<string>
-            {
-
-            }
-        },
-        {
-            "Underwaterhockey", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtPeriodCount",
-                "txtPeriodLength",
-                "dtScheduledTime",
-                "chkPeriodPauseNearEnd",
-                "txtPeriodPauseNearEndSec",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-        {
-            "Handball", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtPeriodCount",
-                "txtPeriodLength",
-                "dtScheduledTime",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-        {
-            "Soccer", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtPeriodCount",
-                "txtPeriodLength",
-                "dtScheduledTime",
-                "chkPeriodOvertime",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-        {
-            "Other", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtPeriodCount",
-                "txtPeriodLength",
-                "dtScheduledTime",
-                "chkPeriodOvertime",
-                "chkPeriodPauseNearEnd",
-                "txtPeriodPauseNearEndSec",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-    };
-
-        // Executed when the selected sport changed
-        private async Task SelectedSportChanged(string newSport)
+        // Executed when the selected template changed
+        private async Task SelectedTemplateChanged(int newTemplateId)
         {
             if (TournamentId != null)
             {
@@ -178,34 +120,40 @@ namespace LeDi.Server2.Pages
                 return;
             }
 
-            Logger.Debug("Sport changed to \"{0}\"", SelectedSport);
-            NewMatch.GameName = newSport;
+            _SelectedTemplate = newTemplateId;
+            var template = (await DataHandler.GetTemplate(_SelectedTemplate));
 
-            if (SelectedSport == "")
+            if (template == null)
+            {
+                NewMatch = new TblMatch()
+                {
+                    GameName = Localizer["Custom"],
+                    Team1Name = "Team1",
+                    Team2Name = "Team2",
+                    MatchStatus = (int)MatchStatusEnum.Planned,
+                    ScheduledTime = DateTime.Now
+                };
                 return;
+            }
 
-            // Get the standard rules for that game
-            var matchRules = DataHandler.GetGameRule(SelectedSport);
-
-            if (matchRules == null)
-                return;
+            Logger.Debug("Sport changed to \"{0}\"", template.TemplateName);
 
             // Apply the standardrules to the new match
             NewMatch = new TblMatch()
             {
-                GameName = SelectedSport,
+                GameName = template.TemplateName,
                 Team1Name = "Team1",
                 Team2Name = "Team2",
                 MatchStatus = (int)MatchStatusEnum.Planned,
                 ScheduledTime = DateTime.Now
             };
-            NewMatch.RulePeriodCount = matchRules.RulePeriodCount;
-            NewMatch.RulePeriodLastPauseTimeOnEvent = matchRules.RulePeriodLastPauseTimeOnEvent;
-            NewMatch.RulePeriodLastPauseTimeOnEventSeconds = matchRules.RulePeriodLastPauseTimeOnEventSeconds;
-            NewMatch.RulePeriodLength = matchRules.RulePeriodLength;
-            NewMatch.RulePeriodOvertime = matchRules.RulePeriodOvertime;
-            NewMatch.RuleMatchExtensionOnDraw = matchRules.RuleMatchExtensionOnDraw;
-            NewMatch.RulePenaltyList = matchRules.RulePenaltyList;
+            NewMatch.RulePeriodCount = template.PeriodCount;
+            NewMatch.RulePeriodLastPauseTimeOnEvent = template.HasPauseNearEnd;
+            NewMatch.RulePeriodLastPauseTimeOnEventSeconds = template.PauseNearEndSeconds;
+            NewMatch.RulePeriodLength = template.PeriodLength;
+            NewMatch.RulePeriodOvertime = template.HasOvertime;
+            NewMatch.RuleMatchExtensionOnDraw = template.HasExtension;
+            NewMatch.RulePenaltyList = template.PenaltyList;
 
             // Set Default values based on rules
             NewMatch.RulePeriodCount = NewMatch.RulePeriodCount; //Note: RulePeriodCount cannot be null here because it is already set to 2 in case it is null above
@@ -217,7 +165,6 @@ namespace LeDi.Server2.Pages
                 if (aDisplay.Default)
                     NewMatch.Devices.Add(new TblDevice2Match() { Device = aDisplay });
             }
-
 
             await InvokeAsync(() => { StateHasChanged(); });
         }
@@ -247,6 +194,10 @@ namespace LeDi.Server2.Pages
             {
                 NavigationManager.NavigateTo(ReturnUrl);
             }
+            else
+            {
+                NavigationManager.NavigateTo("MatchPlanning");
+            }
 
             return newMatch;
         }
@@ -259,7 +210,9 @@ namespace LeDi.Server2.Pages
             var newMatch = await SaveMatch();
 
             if (newMatch == null)
+            {
                 NavigationManager.NavigateTo("/matchcontrol");
+            }
             else
             {
                 newMatch.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
@@ -306,6 +259,9 @@ namespace LeDi.Server2.Pages
                     }
                 }
             }
+
+            // Get the available templates
+            TemplateList = await DataHandler.GetTemplateList();
             
             // Get the enabled displays
             DisplayList = DisplayList.Where(x => x.Enabled).ToList();

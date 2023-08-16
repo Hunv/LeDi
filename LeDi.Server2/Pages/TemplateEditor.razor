@@ -1,7 +1,8 @@
-﻿@page "/TemplateDesigner"
-@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateDesigner> Localizer
+﻿@page "/TemplateEditor"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateEditor> Localizer
+@inject NavigationManager NavigationManager
 
-<PageTitle>LeDi - @Localizer["TemplateDesigner"]</PageTitle>
+<PageTitle>LeDi - @Localizer["TemplateEditor"]</PageTitle>
 
 <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-CanTemplateDelete,Att-CanTemplateManage,Att-IsAdmin">
     <Authorized>
@@ -14,6 +15,11 @@
             }
             else
             {
+                <a href="/templateadd" class="fs-5 btn btn-primary"><i class="fas fa-arrow-right" aria-hidden="true"></i> @Localizer["NewTemplate"]</a>
+
+                <br />
+                <br />
+
                 @foreach (var template in TemplateList)
                 {
                     <Card>
@@ -65,7 +71,7 @@
                                     <Authorized>
                                         <Tooltip Title="@Localizer["Delete"]" Placement="Placement.Bottom" @onclick="@(() => DeleteTemplate(template.Id))">
                                             <a class="fs-4 btn btn-primary m-2" style="width:96px">
-                                                <i class="fa-solid fa-cross" aria-hidden="true"></i>
+                                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
                                             </a>
                                         </Tooltip>
                                     </Authorized>

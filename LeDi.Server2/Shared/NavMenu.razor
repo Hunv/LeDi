@@ -103,6 +103,16 @@
                 </div>
             </Authorized>
         </AuthorizeView>
+
+        <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-CanTemplateDelete,Att-CanTemplateManage,Att-IsAdmin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link px-3" href="templateeditor">
+                        <span class="oi oi-key" aria-hidden="true"></span> @Localizer["TemplateEditor"]
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
         
         <div class="nav-item px-3">
             <NavLink class="nav-link px-3" href="about">

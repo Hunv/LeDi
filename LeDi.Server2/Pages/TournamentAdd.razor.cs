@@ -1,6 +1,7 @@
 ﻿using LeDi.Shared2.DatabaseModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Runtime.CompilerServices;
 
 namespace LeDi.Server2.Pages
 {
@@ -13,72 +14,22 @@ namespace LeDi.Server2.Pages
 
         private List<TblDevice> DisplayList { get; set; } = new List<TblDevice>();
 
-        /// <summary>
-        /// Dictionary that defines the fields that are shown when SelectedGamename has the value of that match type.
-        /// </summary>
-        private readonly Dictionary<string, List<string>> FieldList = new Dictionary<string, List<string>>
-        {
+        private int _TemplateId { get; set; } = -1;
+        private int TemplateId { 
+            get {
+                return _TemplateId;
+            }
+            set
             {
-                "", new List<string>
-                {
+                _TemplateId = value;
+                ToSaveTournament.Sport = TemplateList.Any(x => x.Id == value) ? TemplateList.SingleOrDefault(x => x.Id == value).TemplateName : Localizer["Custom"];
+            }
+        } 
 
-                }
-            },
-            {
-                "Underwaterhockey", new List<string>
-                {
-                    "displaylist",
-                    "txtTeamName1",
-                    "txtTeamName2",
-                    "txtPeriodCount",
-                    "txtPeriodLength",
-                    "dtScheduledTime",
-                    "chkPeriodPauseNearEnd",
-                    "txtPeriodPauseNearEndSec",
-                    "chkMatchExtensionOnDraw"
-                }
-            },
-            {
-                "Handball", new List<string>
-                {
-                    "displaylist",
-                    "txtTeamName1",
-                    "txtTeamName2",
-                    "txtPeriodCount",
-                    "txtPeriodLength",
-                    "dtScheduledTime",
-                    "chkMatchExtensionOnDraw"
-                }
-            },
-            {
-                "Soccer", new List<string>
-                {
-                    "displaylist",
-                    "txtTeamName1",
-                    "txtTeamName2",
-                    "txtPeriodCount",
-                    "txtPeriodLength",
-                    "dtScheduledTime",
-                    "chkPeriodOvertime",
-                    "chkMatchExtensionOnDraw"
-                }
-            },
-            {
-                "Other", new List<string>
-                {
-                    "displaylist",
-                    "txtTeamName1",
-                    "txtTeamName2",
-                    "txtPeriodCount",
-                    "txtPeriodLength",
-                    "dtScheduledTime",
-                    "chkPeriodOvertime",
-                    "chkPeriodPauseNearEnd",
-                    "txtPeriodPauseNearEndSec",
-                    "chkMatchExtensionOnDraw"
-                }
-            },
-        };
+        /// <summary>
+        /// List of all available templates.
+        /// </summary>
+        private List<TblTemplate> TemplateList { get; set; }
 
         /// <summary>
         /// Is the rules section shown?
@@ -94,6 +45,9 @@ namespace LeDi.Server2.Pages
         protected override async Task OnInitializedAsync()
         {
             DisplayList = await DataHandler.GetDeviceListAsync();
+
+            // Get the available templates
+            TemplateList = await DataHandler.GetTemplateList();
 
             if (EditId != null)
             {

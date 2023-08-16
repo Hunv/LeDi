@@ -70,5 +70,10 @@ namespace LeDi.Shared2.DatabaseModel
         /// </summary>
         public int MaxNumberOfTeamPlayersOnField { get; set; }
 
+        /// <summary>
+        /// List of possible standard-penalties
+        /// </summary>
+        public List<TblGameRulePenalty> PenaltyList { get; set; }
+
     }
 }

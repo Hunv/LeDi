@@ -10,6 +10,7 @@ using NLog.Web.LayoutRenderers;
 using Microsoft.AspNetCore.SignalR;
 using LeDi.Server2.Display;
 using LeDi.Server2.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LeDi.Server2
 {
@@ -234,20 +235,20 @@ namespace LeDi.Server2
         }
 
 
-        /// <summary>
-        /// Get the rules for the game name given in the parameter
-        /// </summary>
-        /// <param name="gamename"></param>
-        /// <returns></returns>
-        public static TblGameRule? GetGameRule(string gamename)
-        {
-            using var dbContext = new LeDiDbContext();
+        ///// <summary>
+        ///// Get the rules for the game name given in the parameter
+        ///// </summary>
+        ///// <param name="gamename"></param>
+        ///// <returns></returns>
+        //public static TblGameRule? GetGameRule(string gamename)
+        //{
+        //    using var dbContext = new LeDiDbContext();
 
-            if (dbContext.TblGameRules == null)
-                return null;
+        //    if (dbContext.TblGameRules == null)
+        //        return null;
 
-            return dbContext.TblGameRules.SingleOrDefault(x => x.Sport == gamename);
-        }
+        //    return dbContext.TblGameRules.SingleOrDefault(x => x.Sport == gamename);
+        //}
 
 
 
@@ -783,6 +784,29 @@ namespace LeDi.Server2
             return await dbContext.TblUserRoles.SingleOrDefaultAsync(x => x.RoleName == roleName);
         }
 
+
+        /// <summary>
+        /// Gets a template by ID
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        public static async Task<TblTemplate?> GetTemplate(int templateId)
+        {
+            using var dbContext = new LeDiDbContext();
+            return (await dbContext.TblTemplates.SingleOrDefaultAsync(x => x.Id == templateId));
+        }
+
+        /// <summary>
+        /// Returns all templates
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        public static async Task<List<TblTemplate>> GetTemplateList()
+        {
+            using var dbContext = new LeDiDbContext();
+            return (await dbContext.TblTemplates.ToListAsync());
+        }
+
         /// <summary>
         /// Adds a template to database
         /// </summary>
@@ -794,6 +818,40 @@ namespace LeDi.Server2
             dbContext.TblTemplates.Add(template);
 
             await dbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Remove  a template from database
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        public static async Task DeleteTemplate(TblTemplate template)
+        {
+            using var dbContext = new LeDiDbContext();
+            var toDelete = dbContext.TblTemplates.SingleOrDefault(x => x.Id ==  template.Id);
+            if (toDelete != null)
+            {
+                dbContext.TblTemplates.Remove(toDelete);
+
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Remove  a template from database
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        public static async Task DeleteTemplate(int templateId)
+        {
+            using var dbContext = new LeDiDbContext();
+            var toDelete = dbContext.TblTemplates.SingleOrDefault(x => x.Id == templateId);
+            if (toDelete != null)
+            {
+                dbContext.TblTemplates.Remove(toDelete);
+
+                await dbContext.SaveChangesAsync();
+            }
         }
 
 

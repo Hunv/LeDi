@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Pages\TemplateDesigner.razor">
+    <Content Update="Pages\TemplateEditor.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Shared\NavMenu.razor">
