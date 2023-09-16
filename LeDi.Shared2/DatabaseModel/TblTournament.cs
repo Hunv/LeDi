@@ -91,6 +91,6 @@ namespace LeDi.Shared2.DatabaseModel
         /// <summary>
         /// List of penalties for this game type
         /// </summary>
-        public List<TblGameRulePenalty> DefaultRulePenaltyList { get; set; } = new List<TblGameRulePenalty>();
+        public List<TblTemplatePenaltyItem> DefaultRulePenaltyList { get; set; } = new List<TblTemplatePenaltyItem>();
     }
 }

@@ -2,14 +2,14 @@
 
 namespace LeDi.Shared2.DatabaseModel
 {
-    public class TblGameRulePenaltyDisplay
+    public class TblTemplatePenaltyText
     {
         /// <summary>
         /// Creates a new instance of Display Text
         /// </summary>
         /// <param name="language"></param>
         /// <param name="text"></param>
-        public TblGameRulePenaltyDisplay(string language, string text)
+        public TblTemplatePenaltyText(string language, string text)
         {
             Language = language;
             Text = text;
@@ -19,6 +19,7 @@ namespace LeDi.Shared2.DatabaseModel
         /// Unique Id of the text
         /// </summary>
         [Key]
+        [Newtonsoft.Json.JsonIgnore]
         public int Id { get; set; }
 
         /// <summary>
@@ -32,5 +33,9 @@ namespace LeDi.Shared2.DatabaseModel
         /// </summary>
         public string Text { get; set; }
 
+        /// <summary>
+        /// The PenaltyItem this Text belongs to
+        /// </summary>
+        public TblTemplatePenaltyItem TemplatePenaltyItem { get; set; }
     }
 }

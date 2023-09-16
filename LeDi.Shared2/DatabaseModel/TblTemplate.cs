@@ -14,12 +14,13 @@ namespace LeDi.Shared2.DatabaseModel
         }
 
         [Key]
+        [Newtonsoft.Json.JsonIgnore]
         public int Id { get; set; }
 
         /// <summary>
         /// The Name of the Setting
         /// </summary>        
-        public string TemplateName{ get; set; }
+        public string TemplateName { get; set; }
 
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace LeDi.Shared2.DatabaseModel
         /// <summary>
         /// List of possible standard-penalties
         /// </summary>
-        public List<TblGameRulePenalty> PenaltyList { get; set; }
+        public List<TblTemplatePenaltyItem> PenaltyList { get; set; }
 
     }
 }

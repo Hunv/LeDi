@@ -25,9 +25,8 @@ namespace LeDi.Server2.DatabaseModel
         public DbSet<TblPlayer2Match>? TblPlayer2Matches { get; set; }
         public DbSet<TblDevice2Match>? TblDevice2Matches { get; set; }
         public DbSet<TblDevice2Match>? TblDevice2Tournaments { get; set; }
-        public DbSet<TblGameRule>? TblGameRules { get; set; }
-        public DbSet<TblGameRulePenalty> TblGameRulePenalties { get; set; }
-        public DbSet<TblGameRulePenaltyDisplay> TblGameRulePenaltyDisplays { get; set; }
+        public DbSet<TblTemplatePenaltyItem> TblTemplatePenaltyItems { get; set; }
+        public DbSet<TblTemplatePenaltyText> TblTemplatePenaltyTexts { get; set; }
         public DbSet<TblTournament> TblTournaments { get; set; }
         public DbSet<TblUserRole> TblUserRoles { get; set; }
         public DbSet<TblTemplate> TblTemplates { get; set; }

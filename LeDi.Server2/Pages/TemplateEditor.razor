@@ -1,6 +1,7 @@
 ﻿@page "/TemplateEditor"
 @inject Microsoft.Extensions.Localization.IStringLocalizer<TemplateEditor> Localizer
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
 <PageTitle>LeDi - @Localizer["TemplateEditor"]</PageTitle>
 
@@ -58,6 +59,15 @@
                         </BodyTemplate>
                         <FooterTemplate>
                             <div class="span">
+                                <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <Tooltip Title="@Localizer["ManagePenalties"]" Placement="Placement.Bottom" @onclick="@(() => EditTemplatePenalties(template.Id))">
+                                            <a class="fs-4 btn btn-primary m-2" style="width:96px">
+                                                <i class="fa-solid fa-gavel" aria-hidden="true"></i>
+                                            </a>
+                                        </Tooltip>
+                                    </Authorized>
+                                </AuthorizeView>
                                 <AuthorizeView Roles="Att-CanTemplateEdit,Att-IsAdmin" Context="y">
                                     <Authorized>
                                         <Tooltip Title="@Localizer["Edit"]" Placement="Placement.Bottom" @onclick="@(() => EditTemplate(template.Id))">
@@ -76,11 +86,29 @@
                                         </Tooltip>
                                     </Authorized>
                                 </AuthorizeView>
+                                <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-CanTemplateManage,Att-IsAdmin" Context="y">
+                                    <Authorized>
+                                        <Tooltip Title="@Localizer["Export"]" Placement="Placement.Bottom" @onclick="@(() => ExportTemplate(template.Id))">
+                                            <a class="fs-4 btn btn-primary m-2" style="width:96px">
+                                                <i class="fa-solid fa-download" aria-hidden="true"></i>
+                                            </a>
+                                        </Tooltip>
+                                    </Authorized>
+                                </AuthorizeView>
                             </div>
                         </FooterTemplate>
                     </Card>
                     <br />
                 }
+
+                <br />
+                <br />
+                
+                <h2>
+                    <i class="fa-solid fa-upload" aria-hidden="true"></i> @Localizer["ImportTemplate"]
+                </h2>
+                <InputFile OnChange="@ImportTemplate" multiple />
+
             }
         </div>
 

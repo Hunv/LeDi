@@ -1,0 +1,105 @@
+﻿@page "/TemplatePenaltyAdd/{SelectedTemplateId:int}"
+@page "/TemplatePenaltyAdd/{SelectedTemplateId:int}/{SelectedPenaltyId:int}"
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TemplatePenaltyAdd> Localizer
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+<PageTitle>LeDi - @Localizer["TemplateAdd"]</PageTitle>
+
+<AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-IsAdmin">
+    <Authorized>
+
+        <EditForm Model="@Template" OnValidSubmit="@SaveTemplatePenalty" Context="x">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <a>@Localizer["PenaltyName"]</a>
+            <InputText id="txtPenaltyName"
+                       class="form-control w-auto"
+                       type="text"
+                       @bind-Value="@Penalty.Name" />
+            <br />
+            <a>Penalty length (seconds)</a>
+            <InputNumber id="txtPenaltyLength"
+                         class="form-control w-auto"
+                         type="text"
+                         @bind-Value="@Penalty.PenaltySeconds" />
+            <br />
+            <a>Penalty is total dismissal?</a>
+            <Checkbox id="chkTotalDismisal"
+                      class="form-check w-auto"
+                      @bind-Value="@Penalty.TotalDismissal" />
+            <br />
+            <a>Localized penalty display text</a>
+            <table class="table table-striped table-hover table-responsive-sm">
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Text</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Penalty.Display != null)
+                    {
+                        @foreach (var aText in Penalty.Display)
+                        {
+                            <tr>
+                                <td>@aText.Language</td>
+                                <td>@aText.Text</td>
+                                <td>
+                                    <Tooltip Title="@Localizer["Delete"]" Placement="Placement.Bottom" @onclick="@(() => DeleteTemplatePenaltyText(aText.Language))">
+                                        <a class="fs-4 btn btn-primary m-2" style="width:96px">
+                                            <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                        </a>
+                                    </Tooltip>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    <tr>
+                        <td>
+                            @Localizer["NewText"]<br /><InputText id="txtPenaltyTextLanguage"
+                                                                  class="form-control w-auto"
+                                                                  type="text"
+                                                                  @bind-Value="@PenaltyText.Language" />
+                        </td>
+                        <td>
+                            &nbsp;<br /><InputText id="txtPenaltyTextText"
+                                                    class="form-control w-auto"
+                                                    type="text"
+                                                    @bind-Value="@PenaltyText.Text" />
+                        </td>
+                        <td>
+                            <Tooltip Title="@Localizer["Add"]" Placement="Placement.Bottom" @onclick="@(() => AddTemplatePenaltyText())">
+                                <a class="fs-4 btn btn-primary m-2" style="width:96px">
+                                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                                </a>
+                            </Tooltip>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @if (SelectedPenaltyId != null)
+            {
+                <AuthorizeView Roles="Att-CanTemplateEdit,Att-IsAdmin" Context="y">
+                    <Authorized>
+                        <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
+                    </Authorized>
+                </AuthorizeView>
+            }
+            else
+            {
+                <AuthorizeView Roles="Att-CanTemplateAdd,Att-IsAdmin" Context="y">
+                    <Authorized>
+                        <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
+                    </Authorized>
+                </AuthorizeView>                
+            }
+            <button class="btn btn-secondary" type="button" @onclick="@CancelTemplatePenalty">@Localizer["Cancel"]</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p>@Localizer["NoPermissions"]</p>
+    </NotAuthorized>
+</AuthorizeView>
