@@ -24,9 +24,19 @@ namespace LeDi.Shared2.DatabaseModel
         /// Name of the penalty
         /// </summary>
         public string Name { get; set; } = string.Empty;
-        
+
         /// <summary>
-        /// Duration of the penalty (if applies)
+        /// Official Rule number of this penalty
+        /// </summary>
+        public string RuleNumber { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Any kind of note for that rule. Not visible to any users, just for administrative user internal notes
+        /// </summary>
+        public string Note { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Duration of the penalty (if applies). Just the default value if this penalty is selected. Can be changed when used.
         /// </summary>
         public int PenaltySeconds { get; set; }
 

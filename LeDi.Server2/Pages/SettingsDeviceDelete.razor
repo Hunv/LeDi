@@ -25,8 +25,8 @@ else
             <p>@Localizer["ConfirmTheDeletionDevice"]@Id:</p>
             <EditForm Model="@ToDeleteDevice" OnValidSubmit="@ConfirmDelete" Context="x">
 
-                <button class="btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
-                <button class="btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
+                <button class="fs-4 btn btn-warning" type="submit">@Localizer["ConfirmDelete"]</button>
+                <button class="fs-4 btn btn-danger" type="button" @onclick="CancelDelete">@Localizer["CancelDelete"]</button>
             </EditForm>
         </Authorized>
         <NotAuthorized>

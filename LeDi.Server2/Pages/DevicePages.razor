@@ -25,7 +25,7 @@ else
                     @foreach(var aDevice in DeviceList) {
                         <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
                             <div style="height:100%; min-height:100%;" class="p-1">
-                                <a class="btn @(SelectedDeviceId == aDevice.DeviceId ? "btn-primary" : "btn-secondary") fs-3" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="devicepages/@aDevice.DeviceId" role="button"><span class="oi oi-dashboard" aria-hidden="true" /> @aDevice.DeviceName<br /><br /><i>@aDevice.DeviceId</i></a>
+                                <a class="btn @(SelectedDeviceId == aDevice.DeviceId ? "btn-primary" : "btn-secondary") fs-4" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" href="devicepages/@aDevice.DeviceId" role="button"><span class="oi oi-dashboard" aria-hidden="true" /> @aDevice.DeviceName<br /><br /><i>@aDevice.DeviceId</i></a>
                             </div>
                         </div>
                     }

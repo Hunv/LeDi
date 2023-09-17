@@ -18,23 +18,35 @@
                        type="text"
                        @bind-Value="@Penalty.Name" />
             <br />
-            <a>Penalty length (seconds)</a>
+            <a>@Localizer["PenaltyLengthSeconds"]</a>
             <InputNumber id="txtPenaltyLength"
                          class="form-control w-auto"
                          type="text"
                          @bind-Value="@Penalty.PenaltySeconds" />
             <br />
-            <a>Penalty is total dismissal?</a>
+            <a>@Localizer["PenaltyIsTotalDismissal"]</a>
             <Checkbox id="chkTotalDismisal"
                       class="form-check w-auto"
                       @bind-Value="@Penalty.TotalDismissal" />
             <br />
-            <a>Localized penalty display text</a>
+            <a>@Localizer["RuleNumber"]</a>
+            <InputText id="txtRuleNumber"
+                       class="form-control w-auto"
+                       type="text"
+                       @bind-Value="@Penalty.RuleNumber" />
+            <br />
+            <a>@Localizer["Note"]</a>
+            <InputText id="txtNote"
+                       class="form-control w-auto"
+                       type="text"
+                       @bind-Value="@Penalty.Note" />
+            <br />
+            <a>@Localizer["LocalizedPenaltyDisplayText"]</a>
             <table class="table table-striped table-hover table-responsive-sm">
                 <thead>
                     <tr>
-                        <th>Language</th>
-                        <th>Text</th>
+                        <th>@Localizer["Language"]</th>
+                        <th>@Localizer["Text"]</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -58,13 +70,13 @@
                     }
                     <tr>
                         <td>
-                            @Localizer["NewText"]<br /><InputText id="txtPenaltyTextLanguage"
+                            <h5>@Localizer["NewLanguage"]</h5><InputText id="txtPenaltyTextLanguage"
                                                                   class="form-control w-auto"
                                                                   type="text"
                                                                   @bind-Value="@PenaltyText.Language" />
                         </td>
                         <td>
-                            &nbsp;<br /><InputText id="txtPenaltyTextText"
+                            <h5>@Localizer["NewText"]</h5><InputText id="txtPenaltyTextText"
                                                     class="form-control w-auto"
                                                     type="text"
                                                     @bind-Value="@PenaltyText.Text" />
@@ -79,6 +91,8 @@
                     </tr>
                 </tbody>
             </table>
+
+            <br />
 
             @if (SelectedPenaltyId != null)
             {
@@ -96,6 +110,7 @@
                     </Authorized>
                 </AuthorizeView>                
             }
+            &nbsp;
             <button class="btn btn-secondary" type="button" @onclick="@CancelTemplatePenalty">@Localizer["Cancel"]</button>
         </EditForm>
     </Authorized>

@@ -22,9 +22,6 @@ namespace LeDi.Server2.Pages
         private long maxFileSize = 1024 * 15; // For import template
         private int maxAllowedFiles = 100;// For import template
 
-        //Todo
-        //Delete Penalties
-
         public void EditTemplate(int templateId)
         {
             NavigationManager.NavigateTo("/TemplateAdd/" + templateId.ToString());

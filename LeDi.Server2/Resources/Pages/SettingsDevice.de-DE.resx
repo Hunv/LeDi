@@ -120,6 +120,9 @@
   <data name="AddNewSetting" xml:space="preserve">
     <value>Eine neue Einstellung hinzufügen:</value>
   </data>
+  <data name="AddSetting" xml:space="preserve">
+    <value>Einstellung hinzufügen</value>
+  </data>
   <data name="BrightnessTest" xml:space="preserve">
     <value>Helligkeitstest</value>
   </data>
@@ -173,6 +176,9 @@
     <comment>Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</comment>
   </data>
   <data name="SaveProperties" xml:space="preserve">
+    <value>Einstellungen speichern</value>
+  </data>
+  <data name="SaveSettings" xml:space="preserve">
     <value>Einstellungen speichern</value>
   </data>
   <data name="SendCommand" xml:space="preserve">

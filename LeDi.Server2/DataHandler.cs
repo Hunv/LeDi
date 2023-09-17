@@ -1047,7 +1047,7 @@ namespace LeDi.Server2
             try
             {
                 using var dbContext = new LeDiDbContext();
-                return (await dbContext.TblTemplates.ToListAsync());
+                return (await dbContext.TblTemplates.Include("PenaltyList").ToListAsync());
             }
             catch (Exception ex)
             {
@@ -1123,6 +1123,8 @@ namespace LeDi.Server2
                 templatePenalty.PenaltySeconds = penalty.PenaltySeconds;
                 templatePenalty.Display = penalty.Display;
                 templatePenalty.Name = penalty.Name;
+                templatePenalty.RuleNumber = penalty.RuleNumber;
+                templatePenalty.Note = penalty.Note;
 
                 await dbContext.SaveChangesAsync();
             }
@@ -1133,7 +1135,7 @@ namespace LeDi.Server2
         }
 
         /// <summary>
-        /// Remove  a template from database
+        /// Remove a template from database
         /// </summary>
         /// <param name="template"></param>
         /// <returns></returns>
@@ -1154,6 +1156,7 @@ namespace LeDi.Server2
             {
                 Logger.Error(ex);
             }
+
         }
 
         /// <summary>
@@ -1180,7 +1183,34 @@ namespace LeDi.Server2
             }
         }
 
+        /// <summary>
+        /// Remove a templatepenalty for a template from database
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        public static async Task DeleteTemplatePenalty(TblTemplatePenaltyItem templatePenalty)
+        {
+            try
+            {
+                using var dbContext = new LeDiDbContext();
+                var toDeleteParent = dbContext.TblTemplates.Include("PenaltyList").SingleOrDefault(x => x.Id == templatePenalty.Template.Id);
+                if (toDeleteParent == null)
+                    return;
 
+                var toDelete = toDeleteParent.PenaltyList.FirstOrDefault(x => x.Id == templatePenalty.Id);
+
+                if (toDelete == null)
+                    return;
+
+                toDeleteParent.PenaltyList.Remove(toDelete);
+
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
 
 
 

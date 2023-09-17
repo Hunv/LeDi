@@ -27,6 +27,8 @@
                             <th>@Localizer["PenaltyDescription"]</th>
                             <th>@Localizer["PenaltyTime"]</th>
                             <th>@Localizer["TotalDismissal"]</th>
+                            <th>@Localizer["RuleNumber"]</th>
+                            <th>@Localizer["Notes"]</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -40,7 +42,7 @@
                                     <td>@aPenalty.Name</td>
                                     <td>@for(var i = 0; i < aPenalty.Display.Count; i++)
                                         {
-                                            <a>@aPenalty.Display[i].Language: @aPenalty.Display[i].Text (@aPenalty.Display[i].Id, @aPenalty.Display[i].TemplatePenaltyItem.Id)</a>
+                                            <a>@aPenalty.Display[i].Language: @aPenalty.Display[i].Text</a>
                                             @if (i != aPenalty.Display.Count-1)
                                             {
                                                 <br />
@@ -49,6 +51,8 @@
                                     </td>
                                     <td>@aPenalty.PenaltySeconds @Localizer["Seconds"]</td>
                                     <td>@(aPenalty.TotalDismissal ? Localizer["Yes"] : Localizer["No"])</td>
+                                    <td>@aPenalty.RuleNumber</td>
+                                    <td>@aPenalty.Note</td>
                                     <td>
                                         <AuthorizeView Roles="Att-CanTemplateEdit,Att-IsAdmin" Context="y">
                                             <Authorized>
@@ -59,7 +63,9 @@
                                     <td>
                                         <AuthorizeView Roles="Att-CanTemplateDelete,Att-IsAdmin" Context="y">
                                             <Authorized>
-                                                <a href="/templatepenaltyadd/@SelectedTemplate.Id" class="btn btn-danger"><span class="oi oi-trash" aria-hidden="true"></span> @Localizer["Delete (todo)"]</a>
+                                                <Tooltip Title="@Localizer["Delete"]" Placement="Placement.Bottom" @onclick="@(() => DeleteTemplatePenalty(@aPenalty))">
+                                                    <a class="btn btn-danger"><span class="oi oi-trash" aria-hidden="true"></span> @Localizer["Delete"]</a>
+                                                </Tooltip>
                                             </Authorized>
                                         </AuthorizeView>
                                     </td>

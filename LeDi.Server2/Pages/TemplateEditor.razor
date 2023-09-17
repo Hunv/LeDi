@@ -16,7 +16,7 @@
             }
             else
             {
-                <a href="/templateadd" class="fs-5 btn btn-primary"><i class="fas fa-arrow-right" aria-hidden="true"></i> @Localizer["NewTemplate"]</a>
+                <a href="/templateadd" class="fs-4 btn btn-primary"><i class="fas fa-arrow-right" aria-hidden="true"></i> @Localizer["NewTemplate"]</a>
 
                 <br />
                 <br />
@@ -48,10 +48,17 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            @Localizer["More"]
+                                            @Localizer["NumberOfPenalties"]
                                         </td>
                                         <td>
-                                            
+                                            @if (@template.PenaltyList == null)
+                                            {
+                                                <a>0</a>
+                                            }
+                                            else
+                                            {
+                                                <a>@template.PenaltyList.Count()</a>
+                                            }
                                         </td>
                                     </tr>
                                 </tbody>
@@ -104,9 +111,10 @@
                 <br />
                 <br />
                 
-                <h2>
+                <h3>
                     <i class="fa-solid fa-upload" aria-hidden="true"></i> @Localizer["ImportTemplate"]
-                </h2>
+                </h3>
+                <a>@Localizer["ImportText"]</a><br />
                 <InputFile OnChange="@ImportTemplate" multiple />
 
             }

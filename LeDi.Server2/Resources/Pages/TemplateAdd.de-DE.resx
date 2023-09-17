@@ -117,118 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddNewSetting" xml:space="preserve">
-    <value>Add a new setting:</value>
+  <data name="DefaultHasExtension" xml:space="preserve">
+    <value>Standardwert für Verlängerung</value>
   </data>
-  <data name="AddSetting" xml:space="preserve">
-    <value>Add Setting</value>
+  <data name="DefaultHasOvertime" xml:space="preserve">
+    <value>Standardwert für Nachspielzeit</value>
   </data>
-  <data name="BrightnessTest" xml:space="preserve">
-    <value>Brightness Test</value>
+  <data name="DefaultMaximumPlayersPerTeam" xml:space="preserve">
+    <value>Standardwert für maximale Spielerzahl pro Team</value>
   </data>
-  <data name="CalibrationTest" xml:space="preserve">
-    <value>Calibration Test (~10s)</value>
+  <data name="DefaultMaximumPlayersPerTeamOnField" xml:space="preserve">
+    <value>Standardwert für maximale Spielerzahl pro Team auf dem Spielfeld</value>
   </data>
-  <data name="DANGERZONE" xml:space="preserve">
-    <value>DANGER ZONE:</value>
+  <data name="DefaultNumberOfPeriods" xml:space="preserve">
+    <value>Standardwert für Anzahl an Spielabschnitte ("Halbzeiten")</value>
   </data>
-  <data name="Default" xml:space="preserve">
-    <value>Default</value>
+  <data name="DefaultPeriodLengthSeconds" xml:space="preserve">
+    <value>Standardwert für Länge eines Spielabschnitts (Sekunden)</value>
   </data>
-  <data name="DeviceModel" xml:space="preserve">
-    <value>Device Model</value>
+  <data name="DefaultStopOnBreaksNearEnd" xml:space="preserve">
+    <value>Standardwert für Stop bei Unterbrechung gegen Spielende</value>
   </data>
-  <data name="DeviceName" xml:space="preserve">
-    <value>Device Name</value>
+  <data name="DefaultStopOnBreaksNearEndTimeSeconds" xml:space="preserve">
+    <value>Standardwert für Zeit ab der ein Stop bei Unterbrechung gegen Spielende stattfindet</value>
   </data>
-  <data name="DeviceSettings" xml:space="preserve">
-    <value>Device Settings</value>
-  </data>
-  <data name="DeviceType" xml:space="preserve">
-    <value>Device Type</value>
-  </data>
-  <data name="Enabled" xml:space="preserve">
-    <value>Enabled</value>
-  </data>
-  <data name="LoadingDeviceSettings" xml:space="preserve">
-    <value>Loading Device Settings...</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Löschen</value>
   </data>
   <data name="NoPermissions" xml:space="preserve">
-    <value>You do not have the permission to view this page.</value>
+    <value>Keine Berechtigung</value>
   </data>
-  <data name="NotLoggedIn" xml:space="preserve">
-    <value>You're not loggged in.</value>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
   </data>
-  <data name="PropertiesSetForDevice" xml:space="preserve">
-    <value>The properties are set for device</value>
+  <data name="TemplateAdd" xml:space="preserve">
+    <value>Vorlage hinzfügen</value>
   </data>
-  <data name="Property" xml:space="preserve">
-    <value>Property</value>
-  </data>
-  <data name="ReloadDisplaySettings" xml:space="preserve">
-    <value>Reload Display Settings</value>
-  </data>
-  <data name="RestartDisplayService" xml:space="preserve">
-    <value>Restart Display Service</value>
-  </data>
-  <data name="RestartHardware" xml:space="preserve">
-    <value>Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</value>
-  </data>
-  <data name="SaveProperties" xml:space="preserve">
-    <value>Save Properties</value>
-  </data>
-  <data name="SaveSettings" xml:space="preserve">
-    <value>Save Settings</value>
-  </data>
-  <data name="SendCommand" xml:space="preserve">
-    <value>Send Command</value>
-  </data>
-  <data name="SendCommandDevice" xml:space="preserve">
-    <value>Send command to device:</value>
-  </data>
-  <data name="Setting" xml:space="preserve">
-    <value>Setting</value>
-  </data>
-  <data name="SettingName" xml:space="preserve">
-    <value>Setting Name</value>
-  </data>
-  <data name="SettingsConfiguredForDevice" xml:space="preserve">
-    <value>The following settings are configured for device </value>
-  </data>
-  <data name="SettingValue" xml:space="preserve">
-    <value>Setting Value</value>
-  </data>
-  <data name="ShowAreas" xml:space="preserve">
-    <value>Show Areas</value>
-  </data>
-  <data name="ShowBlack" xml:space="preserve">
-    <value>Show Black</value>
-  </data>
-  <data name="ShowColortest" xml:space="preserve">
-    <value>Show Colortest (60s)</value>
-  </data>
-  <data name="ShowCurrentTime" xml:space="preserve">
-    <value>Show current Time</value>
-  </data>
-  <data name="ShowFullcolortest" xml:space="preserve">
-    <value>Show Fullcolortest (60s)</value>
-  </data>
-  <data name="ShowIdlebar" xml:space="preserve">
-    <value>Show Idlebar</value>
-  </data>
-  <data name="ShowLeDiLogo" xml:space="preserve">
-    <value>Show LeDi Logo</value>
-  </data>
-  <data name="ShowPixelwipe" xml:space="preserve">
-    <value>Show Pixelwipe</value>
-  </data>
-  <data name="ShowTestpattern" xml:space="preserve">
-    <value>Show Testpattern</value>
-  </data>
-  <data name="ShutdownHardware" xml:space="preserve">
-    <value>Shutdown Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</value>
-  </data>
-  <data name="Value" xml:space="preserve">
-    <value>Value</value>
+  <data name="TemplateName" xml:space="preserve">
+    <value>Vorlagenname</value>
   </data>
 </root>

@@ -20,7 +20,7 @@ else
     <AuthorizeView Roles="Att-CanMatchAdd,Att-IsAdmin">
         <Authorized>
             <h1>@Localizer["CurrentlyPlannedMatches"]</h1>
-            <a href="/matchadd">@Localizer["AddNewMatch"]</a>
+            <a href="/matchadd" class="fs-4 btn btn-primary"><i class="fas fa-arrow-right" aria-hidden="true"></i> @Localizer["AddNewMatch"]</a>
 
             <table class="table">
                 <thead>

@@ -117,118 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddNewSetting" xml:space="preserve">
-    <value>Add a new setting:</value>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
   </data>
-  <data name="AddSetting" xml:space="preserve">
-    <value>Add Setting</value>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
   </data>
-  <data name="BrightnessTest" xml:space="preserve">
-    <value>Brightness Test</value>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
   </data>
-  <data name="CalibrationTest" xml:space="preserve">
-    <value>Calibration Test (~10s)</value>
+  <data name="NewPenalty" xml:space="preserve">
+    <value>New penalty</value>
   </data>
-  <data name="DANGERZONE" xml:space="preserve">
-    <value>DANGER ZONE:</value>
-  </data>
-  <data name="Default" xml:space="preserve">
-    <value>Default</value>
-  </data>
-  <data name="DeviceModel" xml:space="preserve">
-    <value>Device Model</value>
-  </data>
-  <data name="DeviceName" xml:space="preserve">
-    <value>Device Name</value>
-  </data>
-  <data name="DeviceSettings" xml:space="preserve">
-    <value>Device Settings</value>
-  </data>
-  <data name="DeviceType" xml:space="preserve">
-    <value>Device Type</value>
-  </data>
-  <data name="Enabled" xml:space="preserve">
-    <value>Enabled</value>
-  </data>
-  <data name="LoadingDeviceSettings" xml:space="preserve">
-    <value>Loading Device Settings...</value>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
   </data>
   <data name="NoPermissions" xml:space="preserve">
-    <value>You do not have the permission to view this page.</value>
+    <value>No permissions</value>
   </data>
-  <data name="NotLoggedIn" xml:space="preserve">
-    <value>You're not loggged in.</value>
+  <data name="Notes" xml:space="preserve">
+    <value>Internal Notes</value>
   </data>
-  <data name="PropertiesSetForDevice" xml:space="preserve">
-    <value>The properties are set for device</value>
+  <data name="PenaltyDescription" xml:space="preserve">
+    <value>Penalty description</value>
   </data>
-  <data name="Property" xml:space="preserve">
-    <value>Property</value>
+  <data name="PenaltyName" xml:space="preserve">
+    <value>Penalty name</value>
   </data>
-  <data name="ReloadDisplaySettings" xml:space="preserve">
-    <value>Reload Display Settings</value>
+  <data name="PenaltyTime" xml:space="preserve">
+    <value>Penalty length</value>
   </data>
-  <data name="RestartDisplayService" xml:space="preserve">
-    <value>Restart Display Service</value>
+  <data name="RuleNumber" xml:space="preserve">
+    <value>Official paragraph</value>
   </data>
-  <data name="RestartHardware" xml:space="preserve">
-    <value>Restart Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</value>
+  <data name="Seconds" xml:space="preserve">
+    <value>seconds</value>
   </data>
-  <data name="SaveProperties" xml:space="preserve">
-    <value>Save Properties</value>
+  <data name="TemplatePenalties" xml:space="preserve">
+    <value>Template penalties</value>
   </data>
-  <data name="SaveSettings" xml:space="preserve">
-    <value>Save Settings</value>
+  <data name="TotalDismissal" xml:space="preserve">
+    <value>Total dismissal?</value>
   </data>
-  <data name="SendCommand" xml:space="preserve">
-    <value>Send Command</value>
-  </data>
-  <data name="SendCommandDevice" xml:space="preserve">
-    <value>Send command to device:</value>
-  </data>
-  <data name="Setting" xml:space="preserve">
-    <value>Setting</value>
-  </data>
-  <data name="SettingName" xml:space="preserve">
-    <value>Setting Name</value>
-  </data>
-  <data name="SettingsConfiguredForDevice" xml:space="preserve">
-    <value>The following settings are configured for device </value>
-  </data>
-  <data name="SettingValue" xml:space="preserve">
-    <value>Setting Value</value>
-  </data>
-  <data name="ShowAreas" xml:space="preserve">
-    <value>Show Areas</value>
-  </data>
-  <data name="ShowBlack" xml:space="preserve">
-    <value>Show Black</value>
-  </data>
-  <data name="ShowColortest" xml:space="preserve">
-    <value>Show Colortest (60s)</value>
-  </data>
-  <data name="ShowCurrentTime" xml:space="preserve">
-    <value>Show current Time</value>
-  </data>
-  <data name="ShowFullcolortest" xml:space="preserve">
-    <value>Show Fullcolortest (60s)</value>
-  </data>
-  <data name="ShowIdlebar" xml:space="preserve">
-    <value>Show Idlebar</value>
-  </data>
-  <data name="ShowLeDiLogo" xml:space="preserve">
-    <value>Show LeDi Logo</value>
-  </data>
-  <data name="ShowPixelwipe" xml:space="preserve">
-    <value>Show Pixelwipe</value>
-  </data>
-  <data name="ShowTestpattern" xml:space="preserve">
-    <value>Show Testpattern</value>
-  </data>
-  <data name="ShutdownHardware" xml:space="preserve">
-    <value>Shutdown Hardware (MAY ALSO AFFECT SERVER AND WEBCLIENT IF RUNNING ON SAME DEVICE!)</value>
-  </data>
-  <data name="Value" xml:space="preserve">
-    <value>Value</value>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

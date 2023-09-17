@@ -20,5 +20,13 @@ namespace LeDi.Server2.Pages
                 SelectedTemplate = await DataHandler.GetTemplate(SelectedTemplateId.Value);
             }
         }
+
+        public async void DeleteTemplatePenalty(TblTemplatePenaltyItem templatePenalty)
+        {
+            await DataHandler.DeleteTemplatePenalty(templatePenalty);
+            SelectedTemplate = await DataHandler.GetTemplate(SelectedTemplateId.Value);
+
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
     }
 }

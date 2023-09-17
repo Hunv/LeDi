@@ -11,60 +11,60 @@
         <EditForm Model="@Template" OnValidSubmit="@SaveTemplate" Context="x">
             <DataAnnotationsValidator />
             <ValidationSummary />
-            <a>Template Name</a>
+            <a>@Localizer["TemplateName"]</a>
             <InputText id="txtTemplateName"
                         class="form-control w-auto"
                         type="text"
                         @bind-Value="@Template.TemplateName" />
             <br />
-            <a>Default Period length (seconds)</a>
+            <a>@Localizer["DefaultPeriodLengthSeconds"]</a>
             <InputNumber id="txtPeriodLength"
                             class="form-control w-auto"
                             type="text"
                             @bind-Value="@Template.PeriodLength" />
             <br />
-            <a>Default number of periods</a>
+            <a>@Localizer["DefaultNumberOfPeriods"]</a>
             <InputNumber id="txtPeriodCount"
                             class="form-control w-auto"
                             type="text"
                             @bind-Value="@Template.PeriodCount" />
             <br />
-            <a>Default has Overtime</a>
+            <a>@Localizer["DefaultHasOvertime"]</a>
             <Checkbox id="chkOvertimeEnabled"
                         class="form-check w-auto"
                       @bind-Value="@Template.HasOvertime" />
             <br />
-            <a>Default has Extension</a>
+            <a>@Localizer["DefaultHasExtension"]</a>
             <Checkbox id="chkExtensionEnabled"
                       class="form-check w-auto"
                         @bind-Value="@Template.HasExtension" />
             <br />
-            <a>Default stop on breaks near end</a>
+            <a>@Localizer["DefaultStopOnBreaksNearEnd"]</a>
             <Checkbox id="chkBreakAtEndEnabled"
                       class="form-check w-auto"
                         @bind-Value="@Template.HasPauseNearEnd" />
             <br />
-            <a>Default stop on breaks near end time (seconds)</a>
+            <a>@Localizer["DefaultStopOnBreaksNearEndTimeSeconds"]</a>
             <InputNumber id="txtBreakAtEndSeconds"
                             class="form-control w-auto"
                             type="text"
                             @bind-Value="@Template.PauseNearEndSeconds" />
             <br />
-            <a>Default Maximum Players per Team</a>
+            <a>@Localizer["DefaultMaximumPlayersPerTeam"]</a>
             <InputNumber id="txtMaximumPlayers"
                             class="form-control w-auto"
                             type="text"
                             @bind-Value="@Template.MaxNumberOfTeamPlayers" />
             <br />
-            <a>Default Maximum Players per Team on field</a>
+            <a>@Localizer["DefaultMaximumPlayersPerTeamOnField"]</a>
             <InputNumber id="txtMaximumPlayersOnField"
                             class="form-control w-auto"
                             type="text"
                             @bind-Value="@Template.MaxNumberOfTeamPlayersOnField" />
             <br />
 
-            <button class="btn btn-primary" type="submit">@Localizer["Save"]</button>
-            <button class="btn btn-primary" type="button" @onclick="@DeleteTemplate">@Localizer["Delete"]</button>
+            <button class="fs-4 btn btn-primary" type="submit">@Localizer["Save"]</button>
+            <button class="fs-4 btn btn-primary" type="button" @onclick="@DeleteTemplate">@Localizer["Delete"]</button>
         </EditForm>
     </Authorized>
     <NotAuthorized>

@@ -122,7 +122,7 @@ else
                                 }      
                             </tbody>
                         </table>
-                        <button class="btn btn-primary" type="submit">Save Settings</button>
+                        <button class="btn btn-primary" type="submit">@Localizer["SaveSettings"]</button>
                     </EditForm>
                 </Authorized>
             </AuthorizeView>
@@ -144,7 +144,7 @@ else
                         <InputText id="txtNewSettingValue" type="text" class="form-control" @bind-Value="@NewSetting.SettingValue" />
                         @*<ValidationMessage For="@(() => aSetting.Value)" />*@
                         <br />
-                        <button class="btn btn-primary" type="submit">Add Setting</button>
+                        <button class="fs-4 btn btn-primary" type="submit">@Localizer["AddSetting"]</button>
                     </EditForm>
                 </Authorized>
             </AuthorizeView>
@@ -174,7 +174,7 @@ else
                             <option value="restarthard">@Localizer["RestartHardware"]</option>
                             <option value="shutdown">@Localizer["ShutdownHardware"]</option>
                         </InputSelect>
-                        <button class="btn btn-primary" type="submit">@Localizer["SendCommand"]</button>
+                        <button class="fs-4 btn btn-primary" type="submit">@Localizer["SendCommand"]</button>
                     </EditForm>
                 </Authorized>
             </AuthorizeView>
