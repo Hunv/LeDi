@@ -22,20 +22,15 @@
             </NavLink>
         </div> 
         
-        @*For icons see https://useiconic.com/open*@
-        @*or https://icon-sets.iconify.design/oi/*@        
-        
-        @*<div class="nav-item px-3">
-        <NavLink class="nav-link px-3" href="start">
-                <span class="oi oi-badge" aria-hidden="true"></span> @Localizer["Start"]
-            </NavLink>
-        </div> *@
-
-        @*<div class="nav-item px-3">
-        <NavLink class="nav-link px-3" href="matchcontrol">
-                <span class="oi oi-target" aria-hidden="true"></span> @Localizer["RefereeMatch"]
-            </NavLink>
-        </div>*@
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                <NavLink class="nav-link px-3" href="start">
+                        <span class="oi oi-badge" aria-hidden="true"></span> @Localizer["Start"]
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
 
         <AuthorizeView Roles="Att-CanMatchAdd,Att-IsAdmin">
             <Authorized>
@@ -58,11 +53,7 @@
         </AuthorizeView>
 
         @*
-        <div class="nav-item px-3">
-        <NavLink class="nav-link px-3" href="devicepages">
-        <span class="oi oi-text" aria-hidden="true"></span> @Localizer["Devices"]
-            </NavLink>
-        </div>*@
+        *@
         @*  <div class="nav-item px-3">
         <NavLink class="nav-link px-3" href="matchsummary">
                 <span class="oi oi-list" aria-hidden="true"></span> Match Summary
@@ -84,36 +75,49 @@
             </Authorized>
         </AuthorizeView>
         
-        <AuthorizeView Roles="Att-CanUserAdd,Att-CanUserEdit,Att-CanUserDelete,Att-CanUserPasswordEdit,Att-IsAdmin">
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link px-3" href="usermanage">
-                        <span class="oi oi-people" aria-hidden="true"></span> @Localizer["UserManagement"]
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
         
-        <AuthorizeView Roles="Att-CanRoleAdd,Att-CanRoleEdit,Att-CanRoleDelete,Att-IsAdmin">
-            <Authorized>
+        <div class="nav-item px-3 p-0" style="margin-top:-20px; margin-bottom:-10px">
+            <AuthorizeView Roles="Att-CanUserAdd,Att-CanUserEdit,Att-CanUserDelete,Att-CanUserPasswordEdit,Att-IsAdmin">
+                <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link px-3" href="userrole">
-                        <span class="oi oi-key" aria-hidden="true"></span> @Localizer["UserRole"]
-                    </NavLink>
+                        <NavLink class="nav-link px-3" href="usermanage">
+                            <span class="oi oi-people" aria-hidden="true"></span> @Localizer["UserManagement"]
+                        </NavLink>
                 </div>
-            </Authorized>
-        </AuthorizeView>
+                </Authorized>
+            </AuthorizeView>
+        
+            <AuthorizeView Roles="Att-CanRoleAdd,Att-CanRoleEdit,Att-CanRoleDelete,Att-IsAdmin">
+                <Authorized>
+                <div class="nav-item px-3">
+                        <NavLink class="nav-link px-3" href="userrole">
+                            <span class="oi oi-key" aria-hidden="true"></span> @Localizer["UserRole"]
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
 
-        <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-CanTemplateDelete,Att-CanTemplateManage,Att-IsAdmin">
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link px-3" href="templateeditor">
-                        <span class="oi oi-key" aria-hidden="true"></span> @Localizer["TemplateEditor"]
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
-        
+            <AuthorizeView Roles="Att-CanTemplateAdd,Att-CanTemplateEdit,Att-CanTemplateDelete,Att-CanTemplateManage,Att-IsAdmin">
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link px-3" href="templateeditor">
+                            <span class="oi oi-key" aria-hidden="true"></span> @Localizer["TemplateEditor"]
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+            
+            <AuthorizeView Roles="Att-CanSettingsManage,Att-IsAdmin">
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link px-3" href="devicepages">
+                            <span class="oi oi-text" aria-hidden="true"></span> @Localizer["Devices"]
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link px-3" href="about">
                 <span class="oi oi-info" aria-hidden="true"></span> @Localizer["AboutLedi"]

@@ -32,6 +32,12 @@
                                     <a class="fs-3 text-decoration-none text-reset">@Localizer["CustomPenaltyText"]</a>
                                     <InputText id="txtPenalty" class="form-control" @bind-Value="@SelectedPenalty" />
                                     <br />
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["CustomPenaltyTime"]</a>
+                                    <InputText id="txtPenaltyTime" class="form-control" @bind-Value="@SelectedPenalty" />
+                                    <br />
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["CustomPenaltyTotalDismissal"]</a>
+                                    <InputText id="txtPenaltyTotalDismissal" class="form-control" @bind-Value="@SelectedPenalty" />
+                                    <br />
                                     <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>@Localizer["OK"]</button>
                                     <br /><br />
                                     <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">@Localizer["Cancel"]</button>

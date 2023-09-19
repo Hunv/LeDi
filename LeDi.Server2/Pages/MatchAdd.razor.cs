@@ -47,16 +47,16 @@ namespace LeDi.Server2.Pages
             MatchStatus = (int)MatchStatusEnum.Planned
         };
 
-        private int _SelectedTemplate = -1;
+        private int _SelectedTemplateId = -1;
 
         /// <summary>
         /// The id of the selected template
         /// </summary>
-        public int SelectedTemplate
+        public int SelectedTemplateId
         {
             get
             {
-                return _SelectedTemplate;
+                return _SelectedTemplateId;
             }
             set
             {                
@@ -120,8 +120,8 @@ namespace LeDi.Server2.Pages
                 return;
             }
 
-            _SelectedTemplate = newTemplateId;
-            var template = (await DataHandler.GetTemplate(_SelectedTemplate));
+            _SelectedTemplateId = newTemplateId;
+            var template = (await DataHandler.GetTemplate(_SelectedTemplateId));
 
             if (template == null)
             {
@@ -283,6 +283,12 @@ namespace LeDi.Server2.Pages
                     NewMatch.RulePeriodLength = tournament.DefaultRulePeriodLength;
                     NewMatch.RulePeriodOvertime = tournament.DefaultRulePeriodOvertime;
                     NewMatch.Tournament = tournament;
+
+                    var template = TemplateList.FirstOrDefault(x => x.TemplateName == tournament.Sport);
+                    if (template != null)
+                    {
+                        _SelectedTemplateId = template.Id;
+                    }
 
                     // Set the selected displays to the match
                     foreach (var aDisplay in tournament.Devices)

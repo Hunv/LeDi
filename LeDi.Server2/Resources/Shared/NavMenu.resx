@@ -144,6 +144,9 @@
   <data name="TemplateEditor" xml:space="preserve">
     <value>Template Editor</value>
   </data>
+  <data name="Tournaments" xml:space="preserve">
+    <value>Tournament List</value>
+  </data>
   <data name="UserManagement" xml:space="preserve">
     <value>User Management</value>
   </data>

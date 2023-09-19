@@ -26,7 +26,7 @@ else
                         <a class="d-inline-block text-decoration-none text-break text-dark">@Localizer["SelectTemplate"]</a>
                     </div>
                     <div class="col-xxl-auto mb-4">
-                        <select id="cmbGamename" class="form-select w-auto" disabled="@(TournamentId != null)" @bind="SelectedTemplate">
+                        <select id="cmbGamename" class="form-select w-auto" disabled="@(TournamentId != null)" @bind="SelectedTemplateId">
                             <option value="-1"> </option>
                             @foreach(var aTemplate in TemplateList)
                             {

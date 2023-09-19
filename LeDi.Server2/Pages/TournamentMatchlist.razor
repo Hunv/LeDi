@@ -19,6 +19,16 @@ else
 {
     <AuthorizeView Roles="Att-CanTournamentAdd,Att-CanTournamentEdit,Att-CanTournamentMatchAdd,Att-CanTournamentMatchDelete,Att-CanTournamentMatchDelete">
         <Authorized>
+            
+            <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
+                <Authorized>
+                    <a class="fs-5 btn btn-primary" href="/matchadd?tournamentid=@Tournament.Id&returnurl=/tournamentmatchlist/@Tournament.Id" role="button">@Localizer["AddMatch"]</a>
+                </Authorized>
+            </AuthorizeView>
+
+            <br />
+            <br />
+
             <table class="table table-striped table-hover table-responsive-sm">
                 <thead>
                     <tr>
@@ -100,11 +110,6 @@ else
             <br />
             <br />
             
-            <AuthorizeView Roles="Att-CanTournamentMatchAdd,Att-IsAdmin" Context="y">
-                <Authorized>
-                    <a class="fs-5 btn btn-primary" href="/matchadd?tournamentid=@Tournament.Id&returnurl=/tournamentmatchlist/@Tournament.Id" role="button">@Localizer["AddMatch"]</a>
-                </Authorized>
-            </AuthorizeView>
         </Authorized>
         <NotAuthorized>
             <p>@Localizer["NoPermissions"]</p>
