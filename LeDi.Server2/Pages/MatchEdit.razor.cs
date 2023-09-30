@@ -1,4 +1,5 @@
-﻿using LeDi.Shared2.DatabaseModel;
+﻿using LeDi.Server2.Data;
+using LeDi.Shared2.DatabaseModel;
 using LeDi.Shared2.Enum;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -20,76 +21,6 @@ namespace LeDi.Server2.Pages
         /// </summary>
         private string ReturnUrl { get; set; }
 
-        //Dictionary that defines the fields that are shown when SelectedGamename has the value of that match type.
-        public Dictionary<string, List<string>> FieldList = new Dictionary<string, List<string>>
-    {
-        {
-            "", new List<string>
-            {
-
-            }
-        },
-        {
-            "Underwaterhockey", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtScoreTeam1",
-                "txtScoreTeam2",
-                "txtPeriodCount",
-                "txtTimeLeft",
-                "dtScheduledTime",
-                "chkPeriodPauseNearEnd",
-                "txtPeriodPauseNearEndSec",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-        {
-            "Handball", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtScoreTeam1",
-                "txtScoreTeam2",
-                "txtPeriodCount",
-                "txtTimeLeft",
-                "dtScheduledTime",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-        {
-            "Soccer", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtScoreTeam1",
-                "txtScoreTeam2",
-                "txtPeriodCount",
-                "txtTimeLeft",
-                "dtScheduledTime",
-                "chkPeriodOvertime",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-        {
-            "Other", new List<string>
-            {
-                "displaylist",
-                "txtTeamName1",
-                "txtTeamName2",
-                "txtPeriodCount",
-                "txtTimeLeft",
-                "dtScheduledTime",
-                "chkPeriodOvertime",
-                "chkPeriodPauseNearEnd",
-                "txtPeriodPauseNearEndSec",
-                "chkMatchExtensionOnDraw"
-            }
-        },
-    };
 
         private MatchStatusEnum MatchStatus
         {
@@ -205,10 +136,15 @@ namespace LeDi.Server2.Pages
 
             // Save the changes on Match variable
             await DataHandler.SetMatchAsync(Match);
+            await MatchManager.LoadMatch(Match.Id);
 
             if (ReturnUrl != null)
             {
                 NavigationManager.NavigateTo(ReturnUrl);
+            }
+            else
+            {
+                NavigationManager.NavigateTo("matchplanning");
             }
         }
 

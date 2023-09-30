@@ -129,6 +129,12 @@
   <data name="CloseMatch" xml:space="preserve">
     <value>Spiel beenden</value>
   </data>
+  <data name="EnterNote" xml:space="preserve">
+    <value>Notiz eingeben</value>
+  </data>
+  <data name="EnterNoteText" xml:space="preserve">
+    <value>Eine kurze Notiz zum aktuellen Spiel:</value>
+  </data>
   <data name="HideControls" xml:space="preserve">
     <value>Erweiterte Eigenschaften verstecken</value>
   </data>
@@ -146,6 +152,9 @@
   </data>
   <data name="MatchEnded" xml:space="preserve">
     <value>Spiel beendet</value>
+  </data>
+  <data name="MatchNote" xml:space="preserve">
+    <value>Spielnotiz</value>
   </data>
   <data name="MatchTimeLeft" xml:space="preserve">
     <value>Setze Restspielzeit</value>

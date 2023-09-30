@@ -129,6 +129,12 @@
   <data name="CloseMatch" xml:space="preserve">
     <value>Close match</value>
   </data>
+  <data name="EnterNote" xml:space="preserve">
+    <value>Enter Note</value>
+  </data>
+  <data name="EnterNoteText" xml:space="preserve">
+    <value>Enter a short note about the match</value>
+  </data>
   <data name="HideControls" xml:space="preserve">
     <value> Hide advanced controls</value>
   </data>
@@ -146,6 +152,9 @@
   </data>
   <data name="MatchEnded" xml:space="preserve">
     <value>Match ended</value>
+  </data>
+  <data name="MatchNote" xml:space="preserve">
+    <value>Match Note</value>
   </data>
   <data name="MatchTimeLeft" xml:space="preserve">
     <value>Set match time left</value>

@@ -97,6 +97,24 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter Note.
+        /// </summary>
+        public static string EnterNote {
+            get {
+                return ResourceManager.GetString("EnterNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter a short note about the match.
+        /// </summary>
+        public static string EnterNoteText {
+            get {
+                return ResourceManager.GetString("EnterNoteText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  Hide advanced controls.
         /// </summary>
         public static string HideControls {
@@ -147,6 +165,15 @@ namespace LeDi.Server2.Resources.Pages {
         public static string MatchEnded {
             get {
                 return ResourceManager.GetString("MatchEnded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Match Note.
+        /// </summary>
+        public static string MatchNote {
+            get {
+                return ResourceManager.GetString("MatchNote", resourceCulture);
             }
         }
         

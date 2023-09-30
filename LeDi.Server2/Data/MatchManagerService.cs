@@ -146,8 +146,19 @@ namespace LeDi.Server2.Data
             }
 
             var match = LoadedMatches.Single(x => x.Id == matchId);
+
+            // Check if a match is being started. If yes, also count the period
+            if (match.MatchStatus == (int)MatchStatusEnum.Planned && newStatus == MatchStatusEnum.Running){
+                if (match.CurrentPeriod == 0)
+                {
+                    match.CurrentPeriod++;
+                }
+            }
+
+            // Set the new matchstatus
             match.MatchStatus = (int)newStatus;
 
+            // Create an event for logging
             var matchEvent = new TblMatchEvent() { Event = MatchEventEnum.MatchCancel, Matchtime = match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Status set to " + newStatus.ToString() };
             match.MatchEvents.Add(matchEvent);
 
@@ -232,7 +243,7 @@ namespace LeDi.Server2.Data
         }
 
         /// <summary>
-        /// Checks if a match is loaded to LoadedMatches and if not, it will be loaded.
+        /// Checks if a match is loaded to LoadedMatches and if not, it will be loaded, if yes, it will be updated/reloaded from database
         /// </summary>
         /// <param name="matchId"></param>
         /// <returns></returns>
@@ -248,6 +259,33 @@ namespace LeDi.Server2.Data
                     return false;
                 }
                 LoadedMatches.Add(match);
+            }
+            else
+            {
+                var match = LoadedMatches.Single(x => x.Id == matchId);
+                var dbMatch = await DataHandler.GetMatchAsync(matchId);
+                match.CurrentPeriod = dbMatch.CurrentPeriod;
+                match.CurrentTimeLeft = dbMatch.CurrentTimeLeft;
+                match.GameName = dbMatch.GameName;
+                match.MatchEvents = dbMatch.MatchEvents;
+                match.MatchPenalties = dbMatch.MatchPenalties;
+                match.MatchReferees = dbMatch.MatchReferees;
+                match.MatchStatus = dbMatch.MatchStatus;
+                match.RuleMatchExtensionOnDraw = dbMatch.RuleMatchExtensionOnDraw;
+                match.RulePenaltyList = dbMatch.RulePenaltyList;
+                match.RulePeriodCount = dbMatch.RulePeriodCount;
+                match.RulePeriodLastPauseTimeOnEvent = dbMatch.RulePeriodLastPauseTimeOnEvent;
+                match.RulePeriodLastPauseTimeOnEventSeconds= dbMatch.RulePeriodLastPauseTimeOnEventSeconds;
+                match.RulePeriodLength = dbMatch.RulePeriodLength;
+                match.RulePeriodOvertime = dbMatch.RulePeriodOvertime;
+                match.ScheduledTime = dbMatch.ScheduledTime;
+                match.Team1Name = dbMatch.Team1Name;
+                match.Team1Players= dbMatch.Team1Players;
+                match.Team1Score = dbMatch.Team1Score;
+                match.Team2Name = dbMatch.Team2Name;
+                match.Team2Players = dbMatch.Team2Players;
+                match.Team2Score = dbMatch.Team2Score;
+                match.Tournament = dbMatch.Tournament;
             }
             return true;
         }

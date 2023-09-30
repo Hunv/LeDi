@@ -212,7 +212,7 @@ namespace LeDi.Server2
                     dbMatch.Team2Players = match.Team2Players;
 
                     await dbContext.SaveChangesAsync();
-                    OnMatchUpdated?.Invoke(dbMatch.Id);
+                    OnMatchUpdated?.Invoke(dbMatch.Id);                    
 
                     // Send the new data to the connected displays
                     await SendMatch(match.Id, match);

@@ -210,7 +210,7 @@ else
                                         @onclick="@IncrementCountTeam1Clicked"
                                         >
                                         @Localizer["Score"]
-                                    </a>                        
+                                    </a>
                                     <a 
                                         style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
                                     </a>
@@ -232,10 +232,10 @@ else
                                         <Authorized>
                                             <a id="btnStartStop"
                                                 class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")"
-                                                style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"
+                                               style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;"
                                                 role="button"
                                                 @onclick="@MatchStartStopClicked"
-                                                disabled="@ButtonDisableStartStop"
+                                                disabled="@ButtonStartStopDisabled"
                                                 hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)">
                                                 @ButtonTextStartStop
                                             </a>
@@ -243,7 +243,7 @@ else
                                         <NotAuthorized>
                                             <a id="btnStartStop"
                                                 class="btn btn-primary fs-3 disabled"
-                                                style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"
+                                                style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;"
                                                 role="button"
                                                 hidden="@(!ButtonPreparePeriodDisabled || !ButtonCloseMatchDisabled)">
                                                 @ButtonTextStartStop
@@ -254,9 +254,9 @@ else
                                     @*Next Period-Button*@
                                     <a 
                                         id="btnPreparePeriod"
-                                        class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                                        style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
-                                        role="button" 
+                                        class="btn btn-secondary fs-3 @(ButtonAllDisabled ? "disabled": "")"
+                                       style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;"
+                                       role="button" 
                                         @onclick="@MatchPreparePeriodClicked"
                                         disabled="@ButtonPreparePeriodDisabled" 
                                         hidden="@ButtonPreparePeriodDisabled"
@@ -268,13 +268,29 @@ else
                                     <a 
                                         id="btnCloseMatch"
                                         class="btn btn-dark fs-3 @(ButtonAllDisabled ? "disabled": "")" 
-                                        style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" 
+                                        style="display:block; width:100%; min-height:76%; display:flex; align-items:center; justify-content:center;" 
                                         role="button" 
                                         @onclick="@MatchCloseClicked"
                                         disabled="@ButtonCloseMatchDisabled" 
                                         hidden="@ButtonCloseMatchDisabled"
                                         >
                                         @Localizer["CloseMatch"]
+                                    </a>
+
+                                    <a 
+                                        style="display:block; width:100%; min-height:4%; display:flex; align-items:center; justify-content:center;">
+                                    </a>
+
+                                    @*MatchNote-Button*@
+                                    <a 
+                                        id="btnCloseMatch"
+                                       class="btn btn-primary fs-3 @(ButtonAllDisabled ? "disabled": "")"
+                                       style="display:block; width:100%; min-height:20%; display:flex; align-items:center; justify-content:center;" 
+                                        role="button" 
+                                        @onclick="@MatchNoteClicked"
+                                        disabled="@ButtonMatchNoteDisabled"
+                                       hidden="@ButtonMatchNoteDisabled">
+                                        @Localizer["MatchNote"]
                                     </a>
                                 </div>
                             </div>
@@ -507,7 +523,6 @@ else
                 </ModalPenaltyRevokeDialog>
             }
 
-
             @if (DialogDeviceShow)
             {
                 <ModalDisplayDialog 
@@ -516,6 +531,15 @@ else
                     OnClose="@OnDisplayClose"
                             DeviceList="@DeviceList">
                 </ModalDisplayDialog>
+            }
+
+            @if (DialogMatchNoteShow)
+            {
+                <ModalInputDialog Title="@Localizer["EnterNote"]"
+                                    Text="@Localizer["EnterNoteText"]"
+                                    OnClose="@OnMatchNoteClose"
+                                    >
+                </ModalInputDialog>
             }
         </Authorized>
         <NotAuthorized>

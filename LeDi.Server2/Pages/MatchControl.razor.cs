@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace LeDi.Server2.Pages
 {
@@ -15,10 +17,11 @@ namespace LeDi.Server2.Pages
         //List<TblMatchEvent>? MatchEventList = null; //List of all match events
         List<TblMatch>? MatchList = null; // List of all not finished matches
         bool ButtonDisableStart = false; //Is the Start button disabled?
-        bool ButtonDisableStartStop = false; // Is the Start/Stop-Button disabled?
+        bool ButtonStartStopDisabled = false; // Is the Start/Stop-Button disabled?
         string ButtonTextStartStop = "Start"; // The text of the start/Stop button
         bool ButtonPreparePeriodDisabled = true; //Is the Prepare period button disabled?
         bool ButtonCloseMatchDisabled = true; //The close button is disabled and invisible?
+        bool ButtonMatchNoteDisabled = false; //The note button is disabled?
         bool ButtonAllDisabled = false; //All buttons are disabled (i.e. when match ended or canceled.)
         bool HideAdvancedControls = true; //Are the advanced control buttons visible?
         string DialogYesNoDangerAction = ""; //This defines what should be executed, after the danger dialog closes.
@@ -28,6 +31,7 @@ namespace LeDi.Server2.Pages
         bool DialogTimeShow = false; //Is the modal dialog for setting the time opened?
         bool DialogPenaltyRevokeShow = false; //Is the modal dialog for revoke penalty opened?
         bool DialogDeviceShow = false; //Is the modal dialog for device selection opened?
+        bool DialogMatchNoteShow = false; // is the modal dialog for a match note shown?
         int PenaltyTeamId = -1; //The ID (0 = Team 1, 1 = Team 2) of the team the currently selecting penalty is for.
         int PenaltyPlayerNumber = -1; //The Playernumber that get the penalty
         List<int> PenaltyPlayerNumbers = new List<int>(); // The playernumbers of a team. Null or empty in case the number should be entered in the modal dialog.
@@ -95,6 +99,14 @@ namespace LeDi.Server2.Pages
 
             DialogPenaltyRevokeShow = true;
             //await InvokeAsync(() => { StateHasChanged(); });
+        }
+
+        private async void MatchNoteClicked()
+        {
+            Logger.Trace("MatchNoteClicked");
+
+            DialogMatchNoteShow = true;
+            await InvokeAsync(() => { StateHasChanged(); });
         }
 
         private async void ExpandAdvancedControls()
@@ -211,10 +223,7 @@ namespace LeDi.Server2.Pages
 
                         Logger.Info("Canceling match...");
 
-                        Logger.Info("TODO TODO TODO: Stop the timer of the match");
-                        //await Api.ControlMatchtimeAsync(Match.Id, "stop");
-                        Match.MatchStatus = (int)MatchStatusEnum.Canceled;
-                        //await DataHandler.SaveChangesAsync();
+                        await MatchManager.SetMatchStatus(Match.Id, MatchStatusEnum.Canceled);
 
                         // Show/hide buttons
                         ButtonDisableStart = true;
@@ -230,14 +239,18 @@ namespace LeDi.Server2.Pages
                         Logger.Info("Running action RestartMatch after confirmation dialog was confirmed.");
                         Logger.Info("Restarting match...");
 
-                        Logger.Info("TODO TODO TODO: Stop the timer of the match");
-                        //await Api.ControlMatchtimeAsync(Match.Id, "stop");
+                        await MatchManager.SetMatchStatus(Match.Id, MatchStatusEnum.Planned);
 
+                        Match.MatchEvents.Add(new TblMatchEvent() { Event = MatchEventEnum.MatchRestarted, Matchtime = Match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Match restarted" });
                         Match.CurrentTimeLeft = Match.RulePeriodLength;
                         Match.CurrentPeriod = 1;
+                        Match.Team1Score = 0;
+                        Match.Team2Score = 0;
                         Match.MatchPenalties = new List<TblMatchPenalty>();
                         Match.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
-                        //await DataHandler.SaveChangesAsync();
+                        
+                        await DataHandler.SetMatchAsync(Match);
+                        await MatchManager.LoadMatch(Match.Id);
 
                         // Show/hide buttons
                         ButtonDisableStart = false;
@@ -269,12 +282,31 @@ namespace LeDi.Server2.Pages
 
                 var newTimeLeft = Match.CurrentTimeLeft + timeleftSecondsModifier;
                 newTimeLeft = (newTimeLeft < 0 ? 0 : newTimeLeft);
-
+                
+                Match.MatchEvents.Add(new TblMatchEvent() { Event = MatchEventEnum.Undefined, Matchtime = Match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Matchtime adjusted (" + timeleftSecondsModifier + " seconds)." });
                 Match.CurrentTimeLeft = newTimeLeft.Value;
-                //await DataHandler.SaveChangesAsync();
+
+                await DataHandler.SetMatchAsync(Match);
+                await MatchManager.LoadMatch(Match.Id);
             }
 
             DialogTimeShow = false;
+            await UpdateFields();
+        }
+
+        private async void OnMatchNoteClose(string? inputText)
+        {
+            Logger.Debug("OnMatchNoteClose dialog closed with text {0}", inputText);
+
+            // Ignore empty notes
+            if (string.IsNullOrWhiteSpace(inputText))
+                return;
+
+            Match.MatchEvents.Add(new TblMatchEvent() { Event = MatchEventEnum.Undefined, Matchtime = Match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Match note: " + inputText });
+            await DataHandler.SetMatchAsync(Match);
+            await MatchManager.LoadMatch(Match.Id);
+
+            DialogMatchNoteShow = false;
             await UpdateFields();
         }
 
@@ -307,7 +339,6 @@ namespace LeDi.Server2.Pages
         /// </summary>
         private async void MatchStartStopClicked()
         {
-
             Logger.Trace("StartStopMatchClicked");
 
             if (Match == null)
@@ -320,7 +351,7 @@ namespace LeDi.Server2.Pages
                 ButtonTextStartStop = Localizer["StartTime"]; //Text must be "Start" now, because the time is stopped
                 await InvokeAsync(() => { StateHasChanged(); });
             }
-            // if the match is active but the time is not running, start the time
+            // if the match is active but the time is not running, start the time. Also running at the start of the match.
             else if (Match.MatchStatus == (int)MatchStatusEnum.Planned || Match.MatchStatus == (int)MatchStatusEnum.ReadyToStart || Match.MatchStatus == (int)MatchStatusEnum.Stopped)
             {
                 await MatchManager.SetMatchStatus(Match.Id, MatchStatusEnum.Running);
@@ -432,31 +463,39 @@ namespace LeDi.Server2.Pages
             if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
             {
                 ButtonAllDisabled = true;
+                await InvokeAsync(() => { StateHasChanged(); });
                 return;
             }
 
             var x = MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId);
             if (x != null)
             {
-                if (Match.MatchStatus == (int)MatchStatusEnum.PeriodEnded || Match.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                if ((Match.MatchStatus == (int)MatchStatusEnum.PeriodEnded || Match.MatchStatus == (int)MatchStatusEnum.ReadyToStart) && Match.CurrentPeriod < Match.RulePeriodCount)
                 {
                     Logger.Debug("Not-the-last period is over.");
-                    ButtonDisableStartStop = true;
+                    ButtonStartStopDisabled = true;
                     ButtonPreparePeriodDisabled = false;
                     ButtonCloseMatchDisabled = true;
                     ButtonTextStartStop = Localizer["StartTime"];
                 }
+                else if (Match.MatchStatus == (int)MatchStatusEnum.PeriodEnded && Match.CurrentPeriod == Match.RulePeriodCount)
+                {
+                    Logger.Debug("Last period is over but match didn't ended.");
+                    ButtonStartStopDisabled = true;
+                    ButtonPreparePeriodDisabled = true;
+                    ButtonCloseMatchDisabled = false;
+                }
                 else if (Match.MatchStatus == (int)MatchStatusEnum.Ended)
                 {
                     Logger.Debug("Last period is over.");
-                    ButtonDisableStartStop = true;
+                    ButtonStartStopDisabled = true;
                     ButtonPreparePeriodDisabled = true;
                     ButtonCloseMatchDisabled = false;
                 }
                 else if (Match.MatchStatus == (int)MatchStatusEnum.Running)
                 {
                     Logger.Debug("Match is running");
-                    ButtonDisableStartStop = false;
+                    ButtonStartStopDisabled = false;
                     ButtonPreparePeriodDisabled = true;
                     ButtonCloseMatchDisabled = true;
                     ButtonTextStartStop = Localizer["StopTime"];
@@ -499,7 +538,6 @@ namespace LeDi.Server2.Pages
             }
 
             Logger.Debug("Loading match {0}", SelectedMatchId);
-            //await DataHandler.GetMatchAsync(SelectedMatchId.Value)
             await MatchManager.LoadMatch(SelectedMatchId.Value);
 
             if (MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == SelectedMatchId) == null)
@@ -542,11 +580,13 @@ namespace LeDi.Server2.Pages
             if (Match.CurrentPeriod < Match.RulePeriodCount)
             {
                 ButtonPreparePeriodDisabled = true;
+                ButtonStartStopDisabled = false;
 
                 Match.CurrentPeriod++;
                 Match.CurrentTimeLeft = Match.RulePeriodLength;
                 Match.MatchStatus = (int)MatchStatusEnum.ReadyToStart;
                 await DataHandler.SetMatchAsync(Match);
+                await MatchManager.LoadMatch(Match.Id);
 
                 await UpdateFields();
 

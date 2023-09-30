@@ -41,8 +41,9 @@ namespace LeDi.Server2.Pages
             Team1Name = "Team1",
             Team2Name = "Team2",
             RulePeriodCount = 2,
+            RulePeriodLength = 600,
             CurrentTimeLeft = 600,
-            CurrentPeriod = 1,
+            CurrentPeriod = 0,
             ScheduledTime = DateTime.Now,
             MatchStatus = (int)MatchStatusEnum.Planned
         };
@@ -185,7 +186,8 @@ namespace LeDi.Server2.Pages
                 Team1Name = "Team1",
                 Team2Name = "Team2",
                 CurrentTimeLeft = 10 * 60,
-                CurrentPeriod = 1,
+                RulePeriodLength = 10 * 60,
+                CurrentPeriod = 0,
                 RulePeriodCount = 2,
                 ScheduledTime = DateTime.Now
             };

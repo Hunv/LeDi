@@ -120,6 +120,9 @@
   <data name="CurrentPeriod" xml:space="preserve">
     <value>Aktueller Durchgang (0 = Not started)</value>
   </data>
+  <data name="Custom" xml:space="preserve">
+    <value>Benutzerdefiniert</value>
+  </data>
   <data name="ExtendMatch" xml:space="preserve">
     <value>Spiel verlängern, falls am Ende der regulären Spielzeit ein Unentschieden besteht</value>
   </data>
