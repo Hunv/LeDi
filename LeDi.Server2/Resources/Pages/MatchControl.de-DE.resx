@@ -189,6 +189,9 @@
   <data name="Period" xml:space="preserve">
     <value>Halbzeit:</value>
   </data>
+  <data name="Playerpenalty" xml:space="preserve">
+    <value>Strafe Spieler</value>
+  </data>
   <data name="PrepareNextPeriod" xml:space="preserve">
     <value>Für nächste Halbzeit vorbereiten</value>
   </data>
@@ -225,6 +228,12 @@
   <data name="SetMatchTimeLeft" xml:space="preserve">
     <value>Setze die Zeit für die aktuelle Restspielzeit. Pausiere das Spiel um die Zeit nicht weiterlaufen zu lassen bevor die Spielzeit neu gesetzt wird.</value>
   </data>
+  <data name="SetPenaltyTime" xml:space="preserve">
+    <value>Details zur Strafe</value>
+  </data>
+  <data name="SetPenaltyTimeText" xml:space="preserve">
+    <value>Verifiziere/Setze die Grund der Strafe, die Strafzeit und setze ggf. eine Notiz.</value>
+  </data>
   <data name="ShowControls" xml:space="preserve">
     <value> Zeige erweiterte Steuerung</value>
   </data>
@@ -239,6 +248,9 @@
   </data>
   <data name="StopTime" xml:space="preserve">
     <value>Stop</value>
+  </data>
+  <data name="Teampenalty" xml:space="preserve">
+    <value>Teamstrafe</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>

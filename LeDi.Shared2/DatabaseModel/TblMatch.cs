@@ -130,7 +130,8 @@ namespace LeDi.Shared2.DatabaseModel
         /// <summary>
         /// The penalties that can be given in this game type to players and/or teams
         /// </summary>
-        public List<TblTemplatePenaltyItem> RulePenaltyList { get; set; } = new List<TblTemplatePenaltyItem>();
+        //public List<TblTemplatePenaltyItem> RulePenaltyList { get; set; } = new List<TblTemplatePenaltyItem>();
+        
 
         /// <summary>
         /// The tournament this match belongs to. If not belongs to a tournament, set this to null.

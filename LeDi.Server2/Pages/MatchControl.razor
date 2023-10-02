@@ -135,12 +135,21 @@ else
                                                                 if (timeleft < 0)
                                                                     timeleft = 0;
 
-                                                                <div class="row">
+                                                                <div class="row @(timeleft == 0 ? "text-success" : "")">
                                                                     <div class="col-2">
                                                                         @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
                                                                     </div>
                                                                     <div class="col-10">
-                                                                        Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                                        @if(aPenalty.PlayerNumber == 0)
+                                                                        {
+                                                                            var text = Localizer["Teampenalty"] + " (" + aPenalty.PenaltyName + ")";
+                                                                            @text
+                                                                        }
+                                                                        else 
+                                                                        {
+                                                                            var text = Localizer["Playerpenalty"] + " #" + aPenalty.PlayerNumber + " (" + aPenalty.PenaltyName + ")";
+                                                                            @text
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                             }
@@ -179,12 +188,21 @@ else
                                                                 if (timeleft < 0)
                                                                     timeleft = 0;
 
-                                                                <div class="row">
+                                                                <div class="row @(timeleft == 0 ? "text-success" : "")">
                                                                     <div class="col-2">
                                                                         @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
                                                                     </div>
                                                                     <div class="col-10">
-                                                                        Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                                                        @if (aPenalty.PlayerNumber == 0)
+                                                                        {
+                                                                            var text = Localizer["Teampenalty"] + " (" + aPenalty.PenaltyName + ")";
+                                                                            @text
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var text = Localizer["Playerpenalty"] + " #" + aPenalty.PlayerNumber + " (" + aPenalty.PenaltyName + ")";
+                                                                            @text
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                             }
@@ -479,13 +497,24 @@ else
 
             @if (DialogPenaltyPenaltyShow)
             {
-                <ModalPenaltyDialog 
+                <ModalPenaltyPenaltyDialog 
                     Title="@Localizer["SelectPenalty"]"
                     Text="@Localizer["SelectPenaltyPlayer."]"
                     PenaltyList=@PenaltyList
                     OnClose="@OnPenaltyPenaltyClose"
                     >
-                </ModalPenaltyDialog>
+                </ModalPenaltyPenaltyDialog>
+            }
+
+            @if (DialogPenaltyConfirmShow)
+            {
+                <ModalPenaltyConfirmDialog 
+                    Title="@Localizer["SetPenaltyTime"]"
+                    Text="@Localizer["SetPenaltyTimeText"]"
+                    Penalty=@PenaltySelected                    
+                    OnClose="@OnPenaltyConfirmClose"
+                    >
+                </ModalPenaltyConfirmDialog>
             }
 
             @if (DialogYesNoDangerShow)

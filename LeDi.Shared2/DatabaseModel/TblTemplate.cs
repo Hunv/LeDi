@@ -76,5 +76,10 @@ namespace LeDi.Shared2.DatabaseModel
         /// </summary>
         public List<TblTemplatePenaltyItem> PenaltyList { get; set; }
 
+        /// <summary>
+        /// Tournaments where this template is used for new matches
+        /// </summary>
+        public List<TblTournament> Tournaments { get; set; }
+
     }
 }

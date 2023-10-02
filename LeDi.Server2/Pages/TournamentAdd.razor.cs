@@ -1,6 +1,8 @@
 ﻿using LeDi.Shared2.DatabaseModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using System.Runtime.CompilerServices;
 
 namespace LeDi.Server2.Pages
@@ -14,6 +16,17 @@ namespace LeDi.Server2.Pages
 
         private List<TblDevice> DisplayList { get; set; } = new List<TblDevice>();
 
+        /// <summary>
+        /// Returns if a template is selected, which is true, if the templateId is higher than 0
+        /// </summary>
+        private bool IsTemplateSelected
+        {
+            get
+            {
+                return TemplateId > 0;
+            }
+        }
+
         private int _TemplateId { get; set; } = -1;
         private int TemplateId { 
             get {
@@ -23,6 +36,7 @@ namespace LeDi.Server2.Pages
             {
                 _TemplateId = value;
                 ToSaveTournament.Sport = TemplateList.Any(x => x.Id == value) ? TemplateList.SingleOrDefault(x => x.Id == value).TemplateName : Localizer["Custom"];
+                TemplateChanged();
             }
         } 
 
@@ -128,6 +142,32 @@ namespace LeDi.Server2.Pages
             }
         }
 
+        /// <summary>
+        /// Executed when the template combobox changes. Loads all template settings to current To-be-saved tournament object
+        /// </summary>
+        private async void TemplateChanged()
+        {
+            var template = await DataHandler.GetTemplate(TemplateId);
+            ToSaveTournament.Template = template;
+            
+            // Per default show rules, if custom, template selected. Otherwise hide them by default
+            HideRules = template != null;
+
+            if (template != null)
+            {
+                ToSaveTournament.DefaultPeriodCount = template.PeriodCount;
+                ToSaveTournament.DefaultRuleMatchExtensionOnDraw = template.HasExtension;
+                ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent = template.HasPauseNearEnd;
+                ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEventSeconds = template.PauseNearEndSeconds;
+                ToSaveTournament.DefaultRulePeriodLength = template.PeriodLength;
+                ToSaveTournament.DefaultRulePeriodOvertime = template.HasOvertime;
+                ToSaveTournament.DefaultTeam1Name = "Team 1";
+                ToSaveTournament.DefaultTeam2Name = "Team 2";
+            }
+
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+
 
         /// <summary>
         /// Exectued if the "Save"-Button is clicked
@@ -158,9 +198,7 @@ namespace LeDi.Server2.Pages
             {
                 Sport = "",
                 DefaultTeam1Name = "Team1",
-                DefaultTeam2Name = "Team2",
-                DefaultRulePeriodLength = 10 * 60,
-                DefaultPeriodCount = 2
+                DefaultTeam2Name = "Team2"
             };
 
             NavigationManager.NavigateTo("/tournamentplanning");

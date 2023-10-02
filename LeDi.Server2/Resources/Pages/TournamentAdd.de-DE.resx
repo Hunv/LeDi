@@ -120,6 +120,30 @@
   <data name="Custom" xml:space="preserve">
     <value>Eigene</value>
   </data>
+  <data name="DefaultExtendMatch" xml:space="preserve">
+    <value>Standardwert, ob das Spiel in die Verlängerung gehen kann</value>
+  </data>
+  <data name="DefaultLengthPeriod" xml:space="preserve">
+    <value>Standardlänge der Spielzeiten</value>
+  </data>
+  <data name="DefaultMatchOvertime" xml:space="preserve">
+    <value>Standardwert, ob das Spiel eine Nachspielzeit hat</value>
+  </data>
+  <data name="DefaultNumberPeriods" xml:space="preserve">
+    <value>Standardanzahl an Spielzeiten</value>
+  </data>
+  <data name="DefaultPauseNearEndAtMatchInterruptions" xml:space="preserve">
+    <value>Standardwert, ob die Spielzeit gegen Ende bei Unterbrechungen gestoppt wird</value>
+  </data>
+  <data name="DefaultPauseNearEndAtMatchInterruptionsSeconds" xml:space="preserve">
+    <value>Standardsekunden, die zum Stoppen der Spielzeit noch gespielt werden müssen, wenn eine Unterbrechung eintritt</value>
+  </data>
+  <data name="DefaultTeam1" xml:space="preserve">
+    <value>Standardname Team 1</value>
+  </data>
+  <data name="DefaultTeam2" xml:space="preserve">
+    <value>Standardname Team 2</value>
+  </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
   </data>

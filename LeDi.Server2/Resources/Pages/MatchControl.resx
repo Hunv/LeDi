@@ -189,6 +189,9 @@
   <data name="Period" xml:space="preserve">
     <value>Period:</value>
   </data>
+  <data name="Playerpenalty" xml:space="preserve">
+    <value>Penalty Player</value>
+  </data>
   <data name="PrepareNextPeriod" xml:space="preserve">
     <value>Prepare next period</value>
   </data>
@@ -225,6 +228,12 @@
   <data name="SetMatchTimeLeft" xml:space="preserve">
     <value>Set the time to the time left for the current match. Pause the match to stop the time from keep running before setting the time.</value>
   </data>
+  <data name="SetPenaltyTime" xml:space="preserve">
+    <value>Penalty details</value>
+  </data>
+  <data name="SetPenaltyTimeText" xml:space="preserve">
+    <value>Set details for the penalty. Define/Verify the name, the time and optionally add a note.</value>
+  </data>
   <data name="ShowControls" xml:space="preserve">
     <value> Show advanced controls</value>
   </data>
@@ -239,6 +248,9 @@
   </data>
   <data name="StopTime" xml:space="preserve">
     <value>Stop</value>
+  </data>
+  <data name="Teampenalty" xml:space="preserve">
+    <value>Teampenalty</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Time</value>

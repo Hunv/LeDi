@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.SignalR;
 using LeDi.Server2.Display;
 using LeDi.Server2.Data;
 using System.Security.Cryptography.X509Certificates;
+using LeDi.Server2.Pages;
 
 namespace LeDi.Server2
 {
@@ -35,8 +36,15 @@ namespace LeDi.Server2
                 if (dbContext.TblMatches == null)
                     return null;
 
-                return await dbContext.TblMatches.Include("MatchEvents").Include("MatchPenalties").Include("MatchReferees").SingleOrDefaultAsync(x => x.Id == id);
-
+                return await dbContext.TblMatches
+                    .Include("MatchEvents")
+                    .Include("MatchPenalties")
+                    .Include("MatchReferees")
+                    .Include("Tournament")
+                    .Include("Tournament.Template")
+                    .Include("Tournament.Template.PenaltyList")
+                    .Include("Tournament.Template.PenaltyList.Display")
+                    .SingleOrDefaultAsync(x => x.Id == id);
             }
             catch (Exception ex)
             {
@@ -153,7 +161,10 @@ namespace LeDi.Server2
                 // fixing the problem, that tournament property is from a different context. This is dirty.
                 // Maybe this will be a long term fix: https://stackoverflow.com/questions/52718652/ef-core-sqlite-sqlite-error-19-unique-constraint-failed
                 if (match.Tournament != null)
-                    match.Tournament = await dbContext.TblTournaments.SingleAsync(x => x.Id == match.Tournament.Id);
+                {
+                    var dbTournament = await dbContext.TblTournaments.Include("Template").SingleAsync(x => x.Id == match.Tournament.Id);
+                    match.Tournament = dbTournament;
+                }
 
                 dbContext.TblMatches.Add(match);
                 await dbContext.SaveChangesAsync();
@@ -193,7 +204,6 @@ namespace LeDi.Server2
                     dbMatch.GameName = match.GameName;
                     dbMatch.MatchStatus = match.MatchStatus;
                     dbMatch.RuleMatchExtensionOnDraw = match.RuleMatchExtensionOnDraw;
-                    dbMatch.RulePenaltyList = match.RulePenaltyList;
                     dbMatch.RulePeriodCount = match.RulePeriodCount;
                     dbMatch.RulePeriodLastPauseTimeOnEvent = match.RulePeriodLastPauseTimeOnEvent;
                     dbMatch.RulePeriodLastPauseTimeOnEventSeconds = match.RulePeriodLastPauseTimeOnEventSeconds;
@@ -204,6 +214,8 @@ namespace LeDi.Server2
                     dbMatch.Team1Score = match.Team1Score;
                     dbMatch.Team2Name = match.Team2Name;
                     dbMatch.Team2Score = match.Team2Score;
+                    if (match.Tournament != null)
+                        dbMatch.Tournament = await dbContext.TblTournaments.SingleOrDefaultAsync(x => x.Id == match.Tournament.Id);
 
                     dbMatch.MatchEvents = match.MatchEvents;
                     dbMatch.MatchPenalties = match.MatchPenalties;
@@ -794,7 +806,7 @@ namespace LeDi.Server2
             {
                 using var dbContext = new LeDiDbContext();
 
-                return await dbContext.TblTournaments.Include("Matches").ToListAsync();
+                return await dbContext.TblTournaments.Include("Matches").Include("Template").ToListAsync();
             }
             catch (Exception ex)
             {
@@ -814,7 +826,11 @@ namespace LeDi.Server2
             {
                 using var dbContext = new LeDiDbContext();
 
-                return await dbContext.TblTournaments.Include("Matches").SingleOrDefaultAsync(x => x.Id == tournamentId);
+                return await dbContext.TblTournaments
+                    .Include("Matches")
+                    .Include("Template")
+                    .Include("Template.PenaltyList")
+                    .SingleOrDefaultAsync(x => x.Id == tournamentId);
             }
             catch (Exception ex)
             {
@@ -837,6 +853,11 @@ namespace LeDi.Server2
             try
             {
                 using var dbContext = new LeDiDbContext();
+
+                //Get the "live"-Database object of the template database entry instead of the previously cached template, which was downloaded in another session
+                if (tournament.Template != null)
+                    tournament.Template = await dbContext.TblTemplates
+                        .SingleOrDefaultAsync(x => x.Id == tournament.Template.Id);
 
                 dbContext.TblTournaments?.Add(tournament);
                 await dbContext.SaveChangesAsync();
@@ -865,13 +886,6 @@ namespace LeDi.Server2
                 if (tour == null)
                     return null;
 
-                tour.DefaultPeriodCount = tournament.DefaultPeriodCount;
-                tour.DefaultRuleMatchExtensionOnDraw = tournament.DefaultRuleMatchExtensionOnDraw;
-                tour.DefaultRulePenaltyList = tournament.DefaultRulePenaltyList;
-                tour.DefaultRulePeriodLastPauseTimeOnEvent = tournament.DefaultRulePeriodLastPauseTimeOnEvent;
-                tour.DefaultRulePeriodLastPauseTimeOnEventSeconds = tournament.DefaultRulePeriodLastPauseTimeOnEventSeconds;
-                tour.DefaultRulePeriodLength = tournament.DefaultRulePeriodLength;
-                tour.DefaultRulePeriodOvertime = tournament.DefaultRulePeriodOvertime;
                 tour.DefaultTeam1Name = tournament.DefaultTeam1Name;
                 tour.DefaultTeam2Name = tournament.DefaultTeam2Name;
                 tour.Devices = tournament.Devices;
@@ -880,6 +894,7 @@ namespace LeDi.Server2
                 tour.Name = tournament.Name;
                 tour.Sport = tournament.Sport;
                 tour.StartDate = tournament.StartDate;
+                tour.Template = tournament.Template == null ? null : await GetTemplate(tournament.Template.Id);
 
                 await dbContext.SaveChangesAsync();
                 OnTournamentChanged?.Invoke(tour.Id);

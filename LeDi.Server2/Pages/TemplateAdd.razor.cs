@@ -12,6 +12,7 @@ namespace LeDi.Server2.Pages
         [Parameter]
         public int? SelectedTemplateId { get; set; }
 
+
         //Todo:
         //Penalties
 

@@ -277,6 +277,15 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Penalty Player.
+        /// </summary>
+        public static string Playerpenalty {
+            get {
+                return ResourceManager.GetString("Playerpenalty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prepare next period.
         /// </summary>
         public static string PrepareNextPeriod {
@@ -385,6 +394,24 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Penalty details.
+        /// </summary>
+        public static string SetPenaltyTime {
+            get {
+                return ResourceManager.GetString("SetPenaltyTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set details for the penalty. Define/Verify the name, the time and optionally add a note..
+        /// </summary>
+        public static string SetPenaltyTimeText {
+            get {
+                return ResourceManager.GetString("SetPenaltyTimeText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  Show advanced controls.
         /// </summary>
         public static string ShowControls {
@@ -426,6 +453,15 @@ namespace LeDi.Server2.Resources.Pages {
         public static string StopTime {
             get {
                 return ResourceManager.GetString("StopTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Teampenalty.
+        /// </summary>
+        public static string Teampenalty {
+            get {
+                return ResourceManager.GetString("Teampenalty", resourceCulture);
             }
         }
         

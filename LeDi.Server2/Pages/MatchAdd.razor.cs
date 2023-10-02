@@ -154,7 +154,6 @@ namespace LeDi.Server2.Pages
             NewMatch.RulePeriodLength = template.PeriodLength;
             NewMatch.RulePeriodOvertime = template.HasOvertime;
             NewMatch.RuleMatchExtensionOnDraw = template.HasExtension;
-            NewMatch.RulePenaltyList = template.PenaltyList;
 
             // Set Default values based on rules
             NewMatch.RulePeriodCount = NewMatch.RulePeriodCount; //Note: RulePeriodCount cannot be null here because it is already set to 2 in case it is null above
@@ -271,20 +270,32 @@ namespace LeDi.Server2.Pages
             // Set default parameters if a tournament is given
             if (TournamentId != null)
             {
-                var tournament = await DataHandler.GetTournamentAsync(TournamentId.Value);
+                var tournament = await DataHandler.GetTournamentAsync(TournamentId.Value);                
                 if (tournament != null)
                 {
                     NewMatch.GameName = tournament.Sport;
                     NewMatch.Team1Name = tournament.DefaultTeam1Name;
                     NewMatch.Team2Name = tournament.DefaultTeam2Name;
-                    NewMatch.RuleMatchExtensionOnDraw = tournament.DefaultRuleMatchExtensionOnDraw;
-                    NewMatch.RulePenaltyList = tournament.DefaultRulePenaltyList;
-                    NewMatch.RulePeriodCount = tournament.DefaultPeriodCount;
-                    NewMatch.RulePeriodLastPauseTimeOnEvent = tournament.DefaultRulePeriodLastPauseTimeOnEvent;
-                    NewMatch.RulePeriodLastPauseTimeOnEventSeconds = tournament.DefaultRulePeriodLastPauseTimeOnEventSeconds;
-                    NewMatch.RulePeriodLength = tournament.DefaultRulePeriodLength;
-                    NewMatch.RulePeriodOvertime = tournament.DefaultRulePeriodOvertime;
                     NewMatch.Tournament = tournament;
+
+                    if (tournament.Template != null) {
+                        NewMatch.RuleMatchExtensionOnDraw = tournament.Template.HasExtension;
+                        NewMatch.RulePeriodCount = tournament.Template.PeriodCount;
+                        NewMatch.RulePeriodLastPauseTimeOnEvent = tournament.Template.HasPauseNearEnd;
+                        NewMatch.RulePeriodLastPauseTimeOnEventSeconds = tournament.Template.PauseNearEndSeconds;
+                        NewMatch.RulePeriodLength = tournament.Template.PeriodLength;
+                        NewMatch.RulePeriodOvertime = tournament.Template.HasOvertime;
+                    }
+                    else
+                    {
+                        NewMatch.RuleMatchExtensionOnDraw = tournament.DefaultRuleMatchExtensionOnDraw;
+                        NewMatch.RulePeriodCount = tournament.DefaultPeriodCount;
+                        NewMatch.RulePeriodLastPauseTimeOnEvent = tournament.DefaultRulePeriodLastPauseTimeOnEvent;
+                        NewMatch.RulePeriodLastPauseTimeOnEventSeconds = tournament.DefaultRulePeriodLastPauseTimeOnEventSeconds;
+                        NewMatch.RulePeriodLength = tournament.DefaultRulePeriodLength;
+                        NewMatch.RulePeriodOvertime = tournament.DefaultRulePeriodOvertime;
+                    }
+                    
 
                     var template = TemplateList.FirstOrDefault(x => x.TemplateName == tournament.Sport);
                     if (template != null)

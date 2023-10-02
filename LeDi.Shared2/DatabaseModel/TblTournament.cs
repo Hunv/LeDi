@@ -47,16 +47,22 @@ namespace LeDi.Shared2.DatabaseModel
 
 
 
-        // ################################
-        // ################################
-        // Properties, that are also in the TblGameRule table
-        // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        
-
         /// <summary>
-        /// The name of the Game
+        /// The name of the Sport this tournament is for
         /// </summary>
         public string Sport { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The template this tournament is using for new matches. null = no template
+        /// </summary>
+        public TblTemplate? Template { get; set; }
+
+
+        ///
+        ///
+        /// Below is only used if no template is set.
+        ///
+        ///
 
         /// <summary>
         /// how many periods this game type has?
@@ -91,6 +97,6 @@ namespace LeDi.Shared2.DatabaseModel
         /// <summary>
         /// List of penalties for this game type
         /// </summary>
-        public List<TblTemplatePenaltyItem> DefaultRulePenaltyList { get; set; } = new List<TblTemplatePenaltyItem>();
+        //public List<TblTemplatePenaltyItem> DefaultRulePenaltyList { get; set; } = new List<TblTemplatePenaltyItem>();
     }
 }

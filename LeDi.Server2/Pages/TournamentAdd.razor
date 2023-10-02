@@ -80,7 +80,7 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1" hidden="@(ToSaveTournament.Sport == null || ToSaveTournament.Sport == string.Empty)">
+                    <div class="row pt-1">
                         <div class="col-1">
                             <a id="btnRulesExpand"
                                 class="btn btn-outline-dark"
@@ -93,49 +93,50 @@ else
                         </div>
                     </div>
 
-                    <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam1"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputText 
-                                        id="txtTeamName1"
-                                        class="form-control w-auto"
-                                        type="text"
-                                @bind-Value="@ToSaveTournament.DefaultTeam1Name" 
-                                />
+                            <input 
+                                id="txtTeamName1"
+                                class="form-control w-auto"
+                                type="text"
+                               @bind-value="@ToSaveTournament.DefaultTeam1Name"
+                                   disabled="@IsTemplateSelected" />
                         </div>
                     </div>
 
-                <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultTeam2"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputText 
+                            <input 
                                 id="txtTeamName2"
-                                        class="form-control w-auto"
-                                        type="text"
-                                @bind-Value="@ToSaveTournament.DefaultTeam2Name" 
-                                />
+                                class="form-control w-auto"
+                                type="text"
+                               @bind-value="@ToSaveTournament.DefaultTeam2Name"
+                                   disabled="@IsTemplateSelected" />
                         </div>
                     </div>
 
-                    <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultNumberPeriods"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputNumber 
+                            <input 
                                 id="txtPeriodCount"
-                                            class="form-control w-auto"
+                                class="form-control w-auto"
+                                type="number"
                                 min="1"
-                                @bind-Value="@ToSaveTournament.DefaultPeriodCount" 
-                                />
+                               @bind-value="ToSaveTournament.DefaultPeriodCount"
+                                   disabled="@IsTemplateSelected" />
                         </div>
                     </div>
 
-                    <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultLengthPeriod"]</a>
                         </div>
@@ -149,8 +150,8 @@ else
                                     placeholder="Minutes"
                                     min="0"
                                     max="99999"
-                                    @bind-value="PeriodLengthMinutesProxy" 
-                                    />
+                                   @bind-value="PeriodLengthMinutesProxy"
+                                       disabled="@IsTemplateSelected" />
                                 <span class="input-group-addon mt-1" style="top:0px;">&nbsp;:&nbsp;</span>
                                 <input 
                                     id="txtPeriodLengthSec"
@@ -160,61 +161,67 @@ else
                                     placeholder="Seconds"
                                     min="0"
                                     max="59"
-                                    @bind-value="PeriodLengthSecondsProxy" 
-                                    />
+                                   @bind-value="PeriodLengthSecondsProxy"
+                                       disabled="@IsTemplateSelected" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultMatchOvertime"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputCheckbox 
+                            <input 
                                 id="chkPeriodOvertime"
                                 class="w-auto"
-                                @bind-Value="ToSaveTournament.DefaultRulePeriodOvertime" 
-                                />
+                                type="checkbox"
+                               @bind-value="ToSaveTournament.DefaultRulePeriodOvertime"
+                                   disabled="@IsTemplateSelected" />
                         </div>
                     </div>
 
-                    <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptions"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputCheckbox 
+                            <input
                                 id="chkPeriodPauseNearEnd"
                                 class="w-auto"
-                                @bind-Value="ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent" 
-                                />
+                                type="checkbox"
+                               @bind-value="ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent"
+                                   disabled="@IsTemplateSelected" />
                         </div>
                     </div>
 
-                <div class="row pt-1" hidden="@(ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent == false)">
+                    <div class="row pt-1" hidden="@(ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEvent == false || HideRules)">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultPauseNearEndAtMatchInterruptionsSeconds"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputNumber 
+                            <input 
                                 id="txtPeriodPauseNearEndSec"
                                 class="form-control w-auto"
                                 min="1"
-                                @bind-Value="@ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEventSeconds" 
+                                type="number"
+                                @bind-value="@ToSaveTournament.DefaultRulePeriodLastPauseTimeOnEventSeconds"
+                                disabled="@IsTemplateSelected" 
                                 />
                         </div>
                     </div>
 
-                    <div class="row pt-1">
+                    <div class="row pt-1" hidden="@HideRules">
                         <div class="col-xxl-2">
                             <a class="d-inline-block text-decoration-none text-break">@Localizer["DefaultExtendMatch"]</a>
                         </div>
                         <div class="col-xxl-auto">
-                            <InputCheckbox 
+                            <input
                                 id="chkMatchExtensionOnDraw"
                                 class="w-auto"
-                                @bind-Value="ToSaveTournament.DefaultRuleMatchExtensionOnDraw" 
+                                type="checkbox"
+                                @bind-value="ToSaveTournament.DefaultRuleMatchExtensionOnDraw" 
+                                disabled="@IsTemplateSelected"
                                 />
                         </div>
                     </div>

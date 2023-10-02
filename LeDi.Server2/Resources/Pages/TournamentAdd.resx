@@ -120,6 +120,30 @@
   <data name="Custom" xml:space="preserve">
     <value>Custom</value>
   </data>
+  <data name="DefaultExtendMatch" xml:space="preserve">
+    <value>Default match can be extended</value>
+  </data>
+  <data name="DefaultLengthPeriod" xml:space="preserve">
+    <value>Default period length</value>
+  </data>
+  <data name="DefaultMatchOvertime" xml:space="preserve">
+    <value>Default match overtime</value>
+  </data>
+  <data name="DefaultNumberPeriods" xml:space="preserve">
+    <value>Default number of periods</value>
+  </data>
+  <data name="DefaultPauseNearEndAtMatchInterruptions" xml:space="preserve">
+    <value>Default time stop if interruption happens near end</value>
+  </data>
+  <data name="DefaultPauseNearEndAtMatchInterruptionsSeconds" xml:space="preserve">
+    <value>Default time will be stopped the following number of seconds until end</value>
+  </data>
+  <data name="DefaultTeam1" xml:space="preserve">
+    <value>Default name team 1</value>
+  </data>
+  <data name="DefaultTeam2" xml:space="preserve">
+    <value>Default name team 2</value>
+  </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>You do not have the permission to view this page.</value>
   </data>

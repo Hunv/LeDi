@@ -135,6 +135,9 @@
   <data name="GoToMatchlist" xml:space="preserve">
     <value>Spiele verwalten</value>
   </data>
+  <data name="None" xml:space="preserve">
+    <value>Keines</value>
+  </data>
   <data name="NoPermissions" xml:space="preserve">
     <value>Nicht ausreichend Bereichtigungen vorhanden um diese Seite anzuzeigen.</value>
   </data>
@@ -144,14 +147,17 @@
   <data name="NumberOfMatches" xml:space="preserve">
     <value>Anzahl an Spielen</value>
   </data>
-  <data name="NumberOfTeams" xml:space="preserve">
-    <value>Anzahl an Teams</value>
-  </data>
   <data name="StartTournament" xml:space="preserve">
     <value>Turnier starten</value>
   </data>
   <data name="StopTournament" xml:space="preserve">
     <value>Turnier stoppen</value>
+  </data>
+  <data name="Teams" xml:space="preserve">
+    <value>Teams</value>
+  </data>
+  <data name="Template" xml:space="preserve">
+    <value>Vorlage</value>
   </data>
   <data name="TournamentEndDate" xml:space="preserve">
     <value>Enddatum</value>

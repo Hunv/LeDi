@@ -159,12 +159,19 @@ namespace LeDi.Server2.Data
             match.MatchStatus = (int)newStatus;
 
             // Create an event for logging
-            var matchEvent = new TblMatchEvent() { Event = MatchEventEnum.MatchCancel, Matchtime = match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Status set to " + newStatus.ToString() };
+            var matchEvent = new TblMatchEvent() { 
+                Event = MatchEventEnum.MatchCancel, 
+                Matchtime = match.GetMatchTime(), 
+                Timestamp = DateTime.UtcNow, 
+                Source = "MatchManager", 
+                Text = "Status set to " + newStatus.ToString() 
+            };
             match.MatchEvents.Add(matchEvent);
 
             // Save changes to db.
             var dbMatch = await DataHandler.GetMatchAsync(matchId);
             dbMatch.MatchStatus = match.MatchStatus;
+            dbMatch.CurrentPeriod = match.CurrentPeriod;
             dbMatch.MatchEvents.Add(matchEvent);
             await DataHandler.SetMatchAsync(dbMatch);
 
@@ -197,13 +204,20 @@ namespace LeDi.Server2.Data
 
             match.MatchPenalties.Add(penalty);
 
-            var matchEvent = new TblMatchEvent() { Event = (penalty.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2), Matchtime = match.GetMatchTime(), Timestamp = DateTime.UtcNow, Source = "MatchManager", Text = "Penalty for team " + penalty.TeamId + " player #" + penalty.PlayerNumber + " because of " + penalty.PenaltyName };
+            var matchEvent = new TblMatchEvent() { 
+                Event = (penalty.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2), 
+                Matchtime = match.GetMatchTime(), 
+                Timestamp = DateTime.UtcNow, 
+                Source = "MatchManager", 
+                Text = "Penalty for team " + penalty.TeamId + " player #" + penalty.PlayerNumber + " because of " + penalty.PenaltyName 
+            };
             match.MatchEvents.Add(matchEvent);
 
             // Save changes to db.
             var dbMatch = await DataHandler.GetMatchAsync(penalty.MatchId);
             dbMatch.MatchStatus = match.MatchStatus;
             dbMatch.MatchEvents.Add(matchEvent);
+            dbMatch.MatchPenalties.Add(penalty);
             await DataHandler.SetMatchAsync(dbMatch);
 
             if (OnMatchUpdated != null)
@@ -243,6 +257,25 @@ namespace LeDi.Server2.Data
         }
 
         /// <summary>
+        /// Gets a match and handles errors in case it is not possible.
+        /// </summary>
+        /// <param name="matchId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public TblMatch GetMatch(int matchId)
+        {
+            try
+            {
+                return LoadedMatches.Single(x => x.Id == matchId);
+            }
+            catch(Exception ex)
+            {
+                Logger.Error(ex, "Unable to get match with ID {0}.", matchId);
+            }
+            throw new Exception("Unable to get match");
+        }
+
+        /// <summary>
         /// Checks if a match is loaded to LoadedMatches and if not, it will be loaded, if yes, it will be updated/reloaded from database
         /// </summary>
         /// <param name="matchId"></param>
@@ -271,8 +304,7 @@ namespace LeDi.Server2.Data
                 match.MatchPenalties = dbMatch.MatchPenalties;
                 match.MatchReferees = dbMatch.MatchReferees;
                 match.MatchStatus = dbMatch.MatchStatus;
-                match.RuleMatchExtensionOnDraw = dbMatch.RuleMatchExtensionOnDraw;
-                match.RulePenaltyList = dbMatch.RulePenaltyList;
+                match.RuleMatchExtensionOnDraw = dbMatch.RuleMatchExtensionOnDraw;                
                 match.RulePeriodCount = dbMatch.RulePeriodCount;
                 match.RulePeriodLastPauseTimeOnEvent = dbMatch.RulePeriodLastPauseTimeOnEvent;
                 match.RulePeriodLastPauseTimeOnEventSeconds= dbMatch.RulePeriodLastPauseTimeOnEventSeconds;

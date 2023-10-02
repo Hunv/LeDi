@@ -53,7 +53,6 @@ namespace LeDi.Shared2.DatabaseModel
         /// <summary>
         /// The template this penalty template item belongs to
         /// </summary>
-        public TblTemplate Template { get; set; }
-
+        public TblTemplate? Template { get; set; }
     }
 }

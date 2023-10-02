@@ -26,8 +26,9 @@ namespace LeDi.Server2.Pages
         bool HideAdvancedControls = true; //Are the advanced control buttons visible?
         string DialogYesNoDangerAction = ""; //This defines what should be executed, after the danger dialog closes.
         bool DialogYesNoDangerShow = false; //Is the modal dialog for a yes/no question shown?
-        bool DialogPenaltyPlayerShow = false; // Is the modal dialog for playernumber for penalties of team 1 opened?
-        bool DialogPenaltyPenaltyShow = false; //Is the modal dialog for the penalty for penalties of team 1 opened?
+        bool DialogPenaltyPlayerShow = false; // Is the modal dialog for playernumber for penalties opened?
+        bool DialogPenaltyPenaltyShow = false; //Is the modal dialog for the penalty for penalties opened?
+        bool DialogPenaltyConfirmShow = false; //Is the model dialog for the penalty finalization shown?
         bool DialogTimeShow = false; //Is the modal dialog for setting the time opened?
         bool DialogPenaltyRevokeShow = false; //Is the modal dialog for revoke penalty opened?
         bool DialogDeviceShow = false; //Is the modal dialog for device selection opened?
@@ -35,13 +36,15 @@ namespace LeDi.Server2.Pages
         int PenaltyTeamId = -1; //The ID (0 = Team 1, 1 = Team 2) of the team the currently selecting penalty is for.
         int PenaltyPlayerNumber = -1; //The Playernumber that get the penalty
         List<int> PenaltyPlayerNumbers = new List<int>(); // The playernumbers of a team. Null or empty in case the number should be entered in the modal dialog.
-        List<string> PenaltyList = new List<string>(); // The list of penalties the referee can choose for the previously selected player (or team)
+        List<TblTemplatePenaltyItem> PenaltyList = new List<TblTemplatePenaltyItem>(); // The list of penalties the referee can choose for the previously selected player (or team)
+        int PenaltyStartTime = 0; //When the "Penalty" button was clicked. Thats the moment the penalty starts, not when the "finish"-button was clicked.
+        TblTemplatePenaltyItem? PenaltySelected = null; //The penalty selected by the penalty selection dialog.
         List<TblDevice> DeviceList = new List<TblDevice>(); //The list of devices. Only filled when the Set-Display button was clicked.
 
         [Parameter]
         public int? SelectedMatchId { get; set; }
 
-        private TblMatch Match { get { return MatchManager.LoadedMatches.Single(x => x.Id == SelectedMatchId); } }
+        private TblMatch Match { get { return MatchManager.GetMatch(SelectedMatchId.Value); } }
 
         private List<TblMatchEvent> MatchEventList { get { return Match.MatchEvents.ToList(); } }
 
@@ -79,6 +82,7 @@ namespace LeDi.Server2.Pages
         {
             Logger.Trace("PenaltyTeam1Clicked");
             PenaltyTeamId = 0;
+            PenaltyStartTime = Match.RulePeriodLength - Match.CurrentTimeLeft;
             //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
             DialogPenaltyPlayerShow = true;
             await InvokeAsync(() => { StateHasChanged(); });
@@ -88,6 +92,7 @@ namespace LeDi.Server2.Pages
         {
             Logger.Trace("PenaltyTeam2Clicked");
             PenaltyTeamId = 1;
+            PenaltyStartTime = Match.RulePeriodLength - Match.CurrentTimeLeft;
             //PenaltyPlayerNumbers = ... //todo when playernumbers are implemented
             DialogPenaltyPlayerShow = true;
             await InvokeAsync(() => { StateHasChanged(); });
@@ -125,16 +130,21 @@ namespace LeDi.Server2.Pages
                 Logger.Trace("Modal dialog select player closed. Selected PlayerId/Number: {0}", playerId);
                 PenaltyPlayerNumber = playerId;
 
-                // 0 = the penalty is for the team. All others are for the given player number.
-                PenaltyList = Match.RulePenaltyList
-                                .SelectMany(x => x.Display)
-                                .Where(x => x.Language == "EN")
-                                .Select(x => x.Text)
-                                .ToList();
+                if (Match.Tournament != null)
+                {
+                    PenaltyList = Match.Tournament.Template.PenaltyList.ToList();
 
+                    //Ask for the penalty
+                    DialogPenaltyPenaltyShow = true;
+                }
+                else
+                {
+                    PenaltyList = new List<TblTemplatePenaltyItem>();
 
-                //Ask for the penalty
-                DialogPenaltyPenaltyShow = true;
+                    //Go directly to the final dialog as there is no penalty to select
+                    DialogPenaltyConfirmShow = true;
+                }
+
             }
             else
             {
@@ -145,67 +155,95 @@ namespace LeDi.Server2.Pages
             await InvokeAsync(() => { StateHasChanged(); });
         }
 
-        /// <summary>
-        /// Executed when the dialog to select the penalty closes.
-        /// </summary>
-        /// <param name="penalty"></param>
-        private async void OnPenaltyPenaltyClose(string penalty)
+
+        private async void OnPenaltyConfirmClose(List<string> penaltyDetails)
         {
-            if (penalty != null && penalty != "")
+            DialogPenaltyConfirmShow = false;
+
+            if (penaltyDetails != null)
             {
-                Logger.Trace("Modal dialog select penalty closed. Selected penalty: {0}", penalty);
+                Logger.Trace("Modal dialog penalty details closed.");
+                var penaltyName = penaltyDetails[0];
+                var penaltyTime = Convert.ToInt32(penaltyDetails[1]);
+                var penaltyNotes = penaltyDetails[2];
 
-                var languageCode = "EN"; // This will be the users language code when localization is being implemented
-                var customPenalty = false;
-
-                // Get the penalty from the rule list
-                var penaltyObj = Match.RulePenaltyList.SingleOrDefault(x => x.Display.Any(y => y.Language == languageCode && y.Text == penalty));
-                if (penaltyObj == null)
-                {
-                    Logger.Info("The selected penalty is cannot be identified by the text \"" + penalty + "\". Expecting it is a custom penalty. Time penalties need to be added seperately.");
-                    customPenalty = true;
-                }
 
                 // Create the new penalty object
                 var newPenalty = new TblMatchPenalty();
                 newPenalty.PlayerNumber = PenaltyPlayerNumber;
-                newPenalty.PenaltyTimeStart = Match.RulePeriodLength - Match.CurrentTimeLeft;
-                newPenalty.Note = string.Format("Penalty \"{0}\" given to player number {1} of {2}", penalty, PenaltyPlayerNumber, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
+                newPenalty.PenaltyTimeStart = PenaltyStartTime;
+                newPenalty.Note = string.Format("Penalty \"{0}\" given to player number {1} of {2}", penaltyName, PenaltyPlayerNumber, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
                 newPenalty.TeamId = PenaltyTeamId;
                 newPenalty.Timestamp = DateTime.Now;
                 newPenalty.MatchId = SelectedMatchId.Value;
+                newPenalty.PenaltyTime = penaltyTime;
 
-                if (!customPenalty && penaltyObj != null) // the null check is not required but the null check compiler wants it.
+                // If a penalty was selected (no custom penalty)
+                if (PenaltySelected != null)
                 {
-                    newPenalty.PenaltyTime = penaltyObj.PenaltySeconds;
-                    newPenalty.PenaltyName = penaltyObj.Display.Single(x => x.Language == "EN").Text; // The internal name is always the English name
+                    var language = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName.ToUpper();
+                    if (!PenaltySelected.Display.Any(x => x.Language == language))
+                        language = "EN";
+
+                    var text = PenaltySelected.Display.Single(x => x.Language == language).Text; // The internal name is always the English name
+
+                    if (text == penaltyName)
+                        newPenalty.PenaltyName = text;
+                    else
+                        newPenalty.PenaltyName = penaltyName;
                 }
                 else
                 {
-                    newPenalty.PenaltyName = penalty;
+                    newPenalty.PenaltyName = penaltyName;
                 }
 
                 // it is a team penalty
                 if (PenaltyPlayerNumber == 0)
                 {
-                    newPenalty.Note = string.Format("Penalty \"{0}\" given to team {1}", penalty, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
+                    newPenalty.Note = string.Format("Penalty \"{0}\" given to team {1}", newPenalty.PenaltyName, (PenaltyTeamId == 0 ? Match.Team1Name : Match.Team2Name));
                 }
 
                 // Register the penalty
-                MatchManager.AddMatchPenalty(newPenalty);
+                await MatchManager.AddMatchPenalty(newPenalty);
+            }
+
+            // Reset all values and hide dialog
+            PenaltyPlayerNumber = -1;
+            PenaltyTeamId = -1;
+            PenaltyStartTime = -1;
+            PenaltySelected = null;
+
+            // Reload match details (and UI)
+            await UpdateFields();
+        }
+
+        /// <summary>
+        /// Executed when the dialog to select the penalty closes.
+        /// </summary>
+        /// <param name="penalty"></param>
+        private async void OnPenaltyPenaltyClose(int? penaltyId)
+        {
+            DialogPenaltyPenaltyShow = false;
+
+            if (penaltyId != null && penaltyId != 0)
+            {
+                var penaltyObj = Match.Tournament.Template.PenaltyList.Single(x => x.Id == penaltyId.Value);
+
+                Logger.Trace("Modal dialog select penalty closed. Selected penalty: {0}", penaltyObj.Name);
+
+                PenaltySelected = penaltyObj;
+
+                // Show the final confirm dialog
+                DialogPenaltyConfirmShow = true;
             }
             else
             {
                 Logger.Trace("Modal dialog select penalty canceled.");
             }
 
-            // Reset all values and hide dialog
-            PenaltyPlayerNumber = -1;
-            PenaltyTeamId = -1;
-            DialogPenaltyPenaltyShow = false;
 
-            // Reload match details (and UI)
-            await UpdateFields();
+            await InvokeAsync(() => { StateHasChanged(); });
+
         }
 
         /// <summary>
@@ -450,6 +488,9 @@ namespace LeDi.Server2.Pages
                     await InvokeAsync(() => { StateHasChanged(); });
                 }
             };
+
+            // Load the selected match to the cached matches
+            await MatchManager.LoadMatch(SelectedMatchId.Value);
 
             await InvokeAsync(() => { StateHasChanged(); });
         }

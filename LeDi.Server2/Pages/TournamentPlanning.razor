@@ -50,21 +50,36 @@ else
                                         <td>
                                             @tournament.EndDate
                                         </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        @Localizer["NumberOfMatches"]
-                                    </td>
-                                    <td>
-                                        @tournament.Matches.Count()
-                                    </td>
-                                </tr>
+                                    </tr>
                                     <tr>
                                         <td>
-                                            @Localizer["NumberOfTeams"]
+                                            @Localizer["Template"]
                                         </td>
                                         <td>
-                                            todo <br />
+                                            @if (@tournament.Template == null)
+                                            {
+                                                @Localizer["None"]
+                                            }
+                                            else
+                                            {
+                                                @tournament.Template.TemplateName
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Localizer["NumberOfMatches"]
+                                        </td>
+                                        <td>
+                                            @tournament.Matches.Count()
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Localizer["Teams"]
+                                        </td>
+                                        <td>
+                                            Number: todo <br />
                                             Participating Teams: todo
                                         </td>
                                     </tr>

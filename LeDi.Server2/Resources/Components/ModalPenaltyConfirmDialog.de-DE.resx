@@ -117,58 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddMatch" xml:space="preserve">
-    <value>Add match</value>
+  <data name="Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
   </data>
-  <data name="CreateTournament" xml:space="preserve">
-    <value>Create new tournament</value>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
   </data>
-  <data name="CurrentOrPlanedTournaments" xml:space="preserve">
-    <value>Current or planned tournaments:</value>
+  <data name="PenaltyName" xml:space="preserve">
+    <value>Name der Strafe</value>
   </data>
-  <data name="Edit" xml:space="preserve">
-    <value>Edit tournament</value>
+  <data name="PenaltyNote" xml:space="preserve">
+    <value>Notiz zur Strafe (optional)</value>
   </data>
-  <data name="FinishedTournaments" xml:space="preserve">
-    <value>Finished tournaments:</value>
-  </data>
-  <data name="GoToMatchlist" xml:space="preserve">
-    <value>Manage matches</value>
-  </data>
-  <data name="None" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="NoPermissions" xml:space="preserve">
-    <value>You do not have the permission to view this page.</value>
-  </data>
-  <data name="NotLoggedIn" xml:space="preserve">
-    <value>You're not loggged in.</value>
-  </data>
-  <data name="NumberOfMatches" xml:space="preserve">
-    <value>Number of matches</value>
-  </data>
-  <data name="StartTournament" xml:space="preserve">
-    <value>Start tournament</value>
-  </data>
-  <data name="StopTournament" xml:space="preserve">
-    <value>Stop tournament</value>
-  </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
-  </data>
-  <data name="Template" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="TournamentEndDate" xml:space="preserve">
-    <value>End date</value>
-  </data>
-  <data name="TournamentName" xml:space="preserve">
-    <value>Tournament name</value>
-  </data>
-  <data name="TournamentPlanning" xml:space="preserve">
-    <value>Tournament planning</value>
-  </data>
-  <data name="TournamentStartDate" xml:space="preserve">
-    <value>Start date</value>
+  <data name="PenaltyTime" xml:space="preserve">
+    <value>Strafzeit (Sekunden)</value>
   </data>
 </root>

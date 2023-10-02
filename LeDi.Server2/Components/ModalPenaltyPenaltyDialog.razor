@@ -1,0 +1,80 @@
+﻿@using LeDi.Shared2.DatabaseModel;
+@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ModalPenaltyPenaltyDialog> Localizer
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Text</p>
+                
+                <div class="container">
+                    @if (PenaltyList != null && PenaltyList.Count > 0) 
+                    {
+                        foreach (var aPenalty in PenaltyList)
+                        {
+                            var language = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName.ToUpper();
+                            
+                            //Set language to English if the users language is not available.
+                            if (!aPenalty.Display.Any(x => x.Language == language))
+                                language = "EN";
+
+                            string penalty = aPenalty.Display.Single(x => x.Language.ToUpper() == language).Text;
+                            int penaltyId = aPenalty.Id;
+                            <div class="row">
+                                <div class="col-12">
+                                    <div style="height:100%; min-height:100%;" class="p-1">
+                                        <a class="btn btn-primary fs-1" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;" @onclick="@(() => SetPenalty(penaltyId))" role="button">@penalty</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public List<TblTemplatePenaltyItem>? PenaltyList { get; set; }
+
+    [Parameter]
+    public EventCallback<int?> OnClose { get; set; }
+
+    /// <summary>
+    /// The selected penalty
+    /// </summary>
+    private int SelectedPenaltyId { get; set; } = -1;
+
+    /// <summary>
+    /// The recommended Time for a custom penalty
+    /// </summary>
+    private int SelectedPenaltyTime { get; set; } = 0;
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(null);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(SelectedPenaltyId);
+    }
+
+    private async Task SetPenalty(int penaltyId)
+    {
+        SelectedPenaltyId = penaltyId;
+        await ModalOk();
+    }
+}

@@ -1,0 +1,95 @@
+﻿@using LeDi.Shared2.DatabaseModel;
+@*https://www.claudiobernasconi.ch/2021/03/26/blazor-modal-dialog-component/*@
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ModalPenaltyConfirmDialog> Localizer
+
+<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">@Title</h4>
+            </div>
+            <div class="modal-body">
+                <p>@Text</p>
+                
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div style="height:100%; min-height:100%;" class="p-1">
+                                <EditForm Model="PenaltyName">
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["PenaltyName"]</a>
+                                    <InputText id="txtPenalty" class="form-control" @bind-Value="@PenaltyName" />
+                                    <br />
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["PenaltyTime"]</a>
+                                    <InputNumber id="txtPenaltyTime" class="form-control" @bind-Value="@SelectedPenaltyTime" />
+                                    <br />
+                                    <a class="fs-3 text-decoration-none text-reset">@Localizer["PenaltyNote"]</a>
+                                    <InputTextArea id="txtPenaltyTotalDismissal" class="form-control" @bind-Value="@PenaltyNote" />
+                                    <br />
+                                    <button type="submit" class="btn btn-primary fs-1" style="height:100%; width:100%;" @onclick=@ModalOk>@Localizer["OK"]</button>
+                                    <br /><br />
+                                    <button type="button" class="btn btn-outline-primary fs-1" style="height:100%; width:100%;" @onclick="@ModalCancel">@Localizer["Cancel"]</button>
+                                </EditForm>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+
+    [Parameter]
+    public EventCallback<List<string>> OnClose { get; set; }
+
+    [Parameter]
+    public TblTemplatePenaltyItem? Penalty { get; set; }
+
+
+    /// <summary>
+    /// A custom reason/text/name for the penalty
+    /// </summary>
+    public string PenaltyName { get; set; } = "";
+
+    /// <summary>
+    /// The Time for a custom penalty
+    /// </summary>
+    public int SelectedPenaltyTime { get; set; } = 0;
+
+    /// <summary>
+    /// A custom note
+    /// </summary>
+    private string PenaltyNote { get; set; } = "";
+
+
+    protected override Task OnInitializedAsync()
+    {
+        if (Penalty != null)
+        {
+            var language = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName.ToUpper();
+            if (!Penalty.Display.Any(x => x.Language == language))
+                language = "EN";
+
+            PenaltyName = Penalty.Display.First(x => x.Language == language).Text;
+            SelectedPenaltyTime = Penalty.PenaltySeconds;
+        }
+
+        return base.OnInitializedAsync();
+    }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(null);
+    }
+
+    private Task ModalOk()
+    {
+        return OnClose.InvokeAsync(new List<string>(){PenaltyName, SelectedPenaltyTime.ToString(), PenaltyNote});
+    }
+}
