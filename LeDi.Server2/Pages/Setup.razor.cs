@@ -32,25 +32,33 @@ namespace LeDi.Server2.Pages
                 var UserResult = await _UserManager.IsInRoleAsync(user, AdministrationRole);
                 if (UserResult)
                 {
-                    SetupLog += "Setup already done.";
-                    await InvokeAsync(() => { StateHasChanged(); });
+                    SetupLog += "Setup done. Please logoff and logon again.";
+                    //await InvokeAsync(() => { StateHasChanged(); });
                     return;
                 }
+                else
+                {
+                    SetupLog += "Setting up roles...<br />";
+                    //await InvokeAsync(() => { StateHasChanged(); });
+                    await SetupRoles();
+                    SetupLog += "Roles set up...<br />";
+                    //await InvokeAsync(() => { StateHasChanged(); });
+
+                    SetupLog += "Setting up admin...<br />";
+                    //await InvokeAsync(() => { StateHasChanged(); });
+                    await SetupAdmin();
+                    SetupLog += "Admin set up...<br />";
+                    //await InvokeAsync(() => { StateHasChanged(); });
+
+                    SetupLog += "Setup done. Please logoff and logon again.";
+
+                }
             }
-
-
-            SetupLog += "Setting up roles..." + Environment.NewLine;
-            await InvokeAsync(() => { StateHasChanged(); });
-            await SetupRoles();
-            SetupLog += "Roles set up..." + Environment.NewLine;
-            await InvokeAsync(() => { StateHasChanged(); });
-
-            SetupLog += "Setting up admin..." + Environment.NewLine;
-            await InvokeAsync(() => { StateHasChanged(); });
-            await SetupAdmin();
-            SetupLog += "Admin set up..." + Environment.NewLine;
-            await InvokeAsync(() => { StateHasChanged(); });
-        }
+            else
+            {
+                SetupLog += "Please create adminuser before calling the setup.";
+            }
+}
 
         private async Task SetupRoles()
         {
