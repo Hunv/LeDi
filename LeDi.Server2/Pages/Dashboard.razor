@@ -185,10 +185,11 @@ else if (LiveMatchList != null)
         <thead>
             <tr>
                 <th></th>
-                <th>@Localizer["Team1"]</th>
+                <th class="text-end">@Localizer["Team1"]</th>
                 <th></th>
                 <th>@Localizer["Team2"]</th>
                 <th>@Localizer["TimeLeft"]</th>
+                <th>@Localizer["Period"]</th>
             </tr>
         </thead>
         <tbody>
@@ -205,12 +206,13 @@ else if (LiveMatchList != null)
                             Show
                         </a>
                     </td>
-                    <td class="align-content-end">@aMatch.Team1Name align this end</td>
-                    <td class="align-content-center">@aMatch.Team1Score : @aMatch.Team2Score center this</td>
+                    <td class="text-end">@aMatch.Team1Name</td>
+                    <td class="text-center">@aMatch.Team1Score : @aMatch.Team2Score</td>
                     <td>@aMatch.Team2Name</td>
                     <td>
                         @(aMatch.CurrentTimeLeft / 60):@((aMatch.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))
                     </td>
+                    <td>@aMatch.CurrentPeriod</td>
                 </tr>
             }
         </tbody>

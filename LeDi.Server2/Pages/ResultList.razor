@@ -11,14 +11,14 @@
 
 @if (MatchList != null)
 {
-    <table>
+    <table class ="table">
         <thead>
             <tr>
                 <th></th>
-                <th>@Localizer["Team1"]</th>
+                <th class="text-end">@Localizer["Team1"]</th>
+                <th class="text-center"></th>
                 <th>@Localizer["Team2"]</th>
-                <th>@Localizer["Team1Score"]</th>
-                <th>@Localizer["Team2Score"]</th>
+                <th>@Localizer["ScheduledTime"]</th>
             </tr>
         </thead>
         <tbody>
@@ -27,10 +27,10 @@
                     <td>
                         @*Placeholder for "Name" of a match like "Semi-Final", "Final", "No. 12" or whatever*@
                     </td>
-                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team1Name</td>
-                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team2Name</td>
-                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team1Score</td>
-                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team2Score</td>
+                    <td class="text-end @(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team1Name</td>
+                    <td class="text-center"><div class="d-inline @(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team1Score</div> : <div class="d-inline @(aMatch.Team1Score < aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team2Score</div></td>
+                    <td class="@(aMatch.Team1Score < aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team2Name</td>
+                    <td>@aMatch.ScheduledTime</td>
                 </tr>
             }
         </tbody>

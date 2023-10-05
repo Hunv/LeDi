@@ -135,6 +135,9 @@
   <data name="RefereeMatch" xml:space="preserve">
     <value>Spielmanagement</value>
   </data>
+  <data name="Results" xml:space="preserve">
+    <value>Ergebnisse</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Einstellungen</value>
   </data>

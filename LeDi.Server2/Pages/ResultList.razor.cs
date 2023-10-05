@@ -12,7 +12,7 @@ namespace LeDi.Server2.Pages
             var matches = DataHandler.GetMatchList();
             if (matches != null) 
             {
-                MatchList = matches.Where(x => x.ScheduledTime >= DateTime.UtcNow.AddDays(-5)).ToList();
+                MatchList = matches.Where(x => x.ScheduledTime >= DateTime.UtcNow.AddDays(-5)).OrderByDescending(x => x.ScheduledTime).ToList();
             }
         }
     }
