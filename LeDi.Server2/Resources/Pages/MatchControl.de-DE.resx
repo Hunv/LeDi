@@ -187,7 +187,7 @@
     <value>Wollen Sie diese Aktion wirklich durchführen?</value>
   </data>
   <data name="Period" xml:space="preserve">
-    <value>Halbzeit:</value>
+    <value>Spielzeit</value>
   </data>
   <data name="Playerpenalty" xml:space="preserve">
     <value>Strafe Spieler</value>

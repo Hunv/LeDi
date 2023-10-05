@@ -136,19 +136,19 @@
     <value>Currently ongoing matches:</value>
   </data>
   <data name="Period" xml:space="preserve">
-    <value>Period:</value>
+    <value>Period</value>
   </data>
   <data name="Team1" xml:space="preserve">
-    <value>Team1</value>
+    <value>Team 1</value>
   </data>
   <data name="Team1Score" xml:space="preserve">
-    <value>Team1 Score</value>
+    <value>Team 1 Score</value>
   </data>
   <data name="Team2" xml:space="preserve">
-    <value>Team2</value>
+    <value>Team 2</value>
   </data>
   <data name="Team2Score" xml:space="preserve">
-    <value>Team2 Score</value>
+    <value>Team 2 Score</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Time</value>

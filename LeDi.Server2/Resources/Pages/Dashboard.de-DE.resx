@@ -136,24 +136,24 @@
     <value>Aktuell laufende Spiele:</value>
   </data>
   <data name="Period" xml:space="preserve">
-    <value>Durchgang:</value>
+    <value>Spielzeit</value>
   </data>
   <data name="Team1" xml:space="preserve">
-    <value>Team1</value>
+    <value>Team 1</value>
   </data>
   <data name="Team1Score" xml:space="preserve">
-    <value>Team1 Punkte</value>
+    <value>Team 1 Punkte</value>
   </data>
   <data name="Team2" xml:space="preserve">
-    <value>Team2</value>
+    <value>Team 2</value>
   </data>
   <data name="Team2Score" xml:space="preserve">
-    <value>Team2 Punkte</value>
+    <value>Team 2 Punkte</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Zeit</value>
   </data>
   <data name="TimeLeft" xml:space="preserve">
-    <value>Restzeit:</value>
+    <value>Restzeit</value>
   </data>
 </root>

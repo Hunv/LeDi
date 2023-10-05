@@ -1,0 +1,42 @@
+﻿@page "/resultlist"
+@using LeDi.Server2.Data;
+@using LeDi.Shared2.DatabaseModel;
+@using LeDi.Shared2.Enum
+@using LeDi.Server2.Components
+@inject NavigationManager NavigationManager
+@inject Microsoft.Extensions.Localization.IStringLocalizer<ResultList> Localizer
+@inject LeDi.Server2.Data.MatchManagerService MatchManager
+
+<PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
+
+@if (MatchList != null)
+{
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>@Localizer["Team1"]</th>
+                <th>@Localizer["Team2"]</th>
+                <th>@Localizer["Team1Score"]</th>
+                <th>@Localizer["Team2Score"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var aMatch in MatchList) {
+                <tr>
+                    <td>
+                        @*Placeholder for "Name" of a match like "Semi-Final", "Final", "No. 12" or whatever*@
+                    </td>
+                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team1Name</td>
+                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team2Name</td>
+                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team1Score</td>
+                    <td class="@(aMatch.Team1Score > aMatch.Team2Score ? "fw-bold" : "")">@aMatch.Team2Score</td>
+                </tr>
+            }
+        </tbody>
+    </table>    
+}
+else 
+{
+    <a>@Localizer["NoPreviousMatches"]</a>
+}

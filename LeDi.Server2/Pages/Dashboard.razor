@@ -1,5 +1,6 @@
 ﻿@page "/dashboard"
 @page "/dashboard/{Id:int}"
+@using LeDi.Server2.Data;
 @using LeDi.Shared2.DatabaseModel;
 @using LeDi.Shared2.Enum
 @using LeDi.Server2.Components
@@ -10,6 +11,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject Microsoft.Extensions.Localization.IStringLocalizer<Dashboard> Localizer
+@inject LeDi.Server2.Data.MatchManagerService MatchManager
 
 <PageTitle>LeDi - Dashboard</PageTitle>
 
@@ -72,7 +74,7 @@
                                         {
                                             if (timeleft < 0)
                                                 timeleft = 0;
-
+@*
                                             <div class="row">
                                                 <div class="col-2">
                                                     @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
@@ -80,7 +82,16 @@
                                                 <div class="col-10">
                                                     Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
                                                 </div>
-                                            </div>
+                                            </div>*@
+
+                                        <div class="row">
+                                            @{
+                                                var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                var playerString = "Player #" + @aPenalty.PlayerNumber + " (" + @aPenalty.PenaltyName + ")";
+                                                var playerPenaltyString = timeString + "\t" + playerString;
+                                            }
+                                            @playerPenaltyString
+                                        </div>
                                         }
                                     }
                                 }
@@ -175,10 +186,9 @@ else if (LiveMatchList != null)
             <tr>
                 <th></th>
                 <th>@Localizer["Team1"]</th>
+                <th></th>
                 <th>@Localizer["Team2"]</th>
                 <th>@Localizer["TimeLeft"]</th>
-                <th>@Localizer["Team1Score"]</th>
-                <th>@Localizer["Team2Score"]</th>
             </tr>
         </thead>
         <tbody>
@@ -195,13 +205,12 @@ else if (LiveMatchList != null)
                             Show
                         </a>
                     </td>
-                    <td>@aMatch.Team1Name</td>
+                    <td class="align-content-end">@aMatch.Team1Name align this end</td>
+                    <td class="align-content-center">@aMatch.Team1Score : @aMatch.Team2Score center this</td>
                     <td>@aMatch.Team2Name</td>
                     <td>
                         @(aMatch.CurrentTimeLeft / 60):@((aMatch.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))
                     </td>
-                    <td>@aMatch.Team1Score</td>
-                    <td>@aMatch.Team2Score</td>
                 </tr>
             }
         </tbody>
@@ -269,7 +278,8 @@ else {
         if (Id != null)
         {
             Logger.Trace("On loading the page, ID {0} was set.", Id);
-            Match = await DataHandler.GetMatchAsync(Id.Value);
+            Match = MatchManager.LoadedMatches.SingleOrDefault(x => x.Id == Id);
+            //Match = await DataHandler.GetMatchAsync(Id.Value);
             if (Match == null)
                 return;
 

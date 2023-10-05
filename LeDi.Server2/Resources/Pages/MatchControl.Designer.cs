@@ -268,7 +268,7 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Period:.
+        ///   Looks up a localized string similar to Period.
         /// </summary>
         public static string Period {
             get {

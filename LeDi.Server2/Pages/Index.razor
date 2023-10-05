@@ -14,7 +14,7 @@
     {
         var pageTitleObj = await DataHandler.GetSettingAsync("welcometitle");
         var pageTextObj = await DataHandler.GetSettingAsync("welcometext");
-        pageTitle = pageTitleObj == null ? "Welcome" : pageTitleObj.SettingName;
-        pageText = pageTextObj == null ? "" : pageTextObj.SettingName;
+        pageTitle = pageTitleObj == null ? "Welcome" : pageTitleObj.SettingValue;
+        pageText = pageTextObj == null ? "" : pageTextObj.SettingValue;
     }
 }

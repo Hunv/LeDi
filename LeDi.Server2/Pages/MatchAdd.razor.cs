@@ -182,8 +182,8 @@ namespace LeDi.Server2.Pages
             NewMatch = new TblMatch()
             {
                 GameName = "",
-                Team1Name = "Team1",
-                Team2Name = "Team2",
+                Team1Name = "Team 1",
+                Team2Name = "Team 2",
                 CurrentTimeLeft = 10 * 60,
                 RulePeriodLength = 10 * 60,
                 CurrentPeriod = 0,
