@@ -44,7 +44,7 @@ namespace LeDi.Server2.Pages
         [Parameter]
         public int? SelectedMatchId { get; set; }
 
-        private TblMatch Match { get { return MatchManager.GetMatch(SelectedMatchId.Value); } }
+        private TblMatch? Match { get { return MatchManager.GetMatch(SelectedMatchId); } }
 
         private List<TblMatchEvent> MatchEventList { get { return Match.MatchEvents.ToList(); } }
 
@@ -427,11 +427,17 @@ namespace LeDi.Server2.Pages
             Logger.Trace("Reloading the page.");
             await UpdateFields();
 
-            if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+            if (Match != null)
             {
-                ButtonAllDisabled = true;
+                if (Match.MatchStatus == (int)MatchStatusEnum.Canceled || Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+                {
+                    ButtonAllDisabled = true;
+                }
+                else
+                {
+                    ButtonAllDisabled = false;
+                }
             }
-
             await base.OnParametersSetAsync();
         }
 
@@ -490,7 +496,10 @@ namespace LeDi.Server2.Pages
             };
 
             // Load the selected match to the cached matches
-            await MatchManager.LoadMatch(SelectedMatchId.Value);
+            if (SelectedMatchId != null && SelectedMatchId.HasValue)
+            {
+                await MatchManager.LoadMatch(SelectedMatchId.Value);
+            }
 
             await InvokeAsync(() => { StateHasChanged(); });
         }
@@ -563,7 +572,7 @@ namespace LeDi.Server2.Pages
                 MatchList = new List<TblMatch>();
                 return;
             }
-            MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Canceled && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList() ?? new List<TblMatch>();
+            MatchList = matchList.Where(x => x.MatchStatus != (int)MatchStatusEnum.Undefined && x.MatchStatus != (int)MatchStatusEnum.Ended && x.MatchStatus != (int)MatchStatusEnum.Closed).ToList() ?? new List<TblMatch>();
         }
 
         /// <summary>

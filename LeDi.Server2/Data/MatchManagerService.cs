@@ -4,6 +4,7 @@ using LeDi.Shared2.DatabaseModel;
 using System.Linq;
 using LeDi.Shared2.Enum;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace LeDi.Server2.Data
 {
@@ -262,17 +263,21 @@ namespace LeDi.Server2.Data
         /// <param name="matchId"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public TblMatch GetMatch(int matchId)
+        public TblMatch? GetMatch(int? matchId)
         {
             try
             {
+                if (matchId == null)
+                    return null;
+
                 return LoadedMatches.Single(x => x.Id == matchId);
             }
             catch(Exception ex)
             {
                 Logger.Error(ex, "Unable to get match with ID {0}.", matchId);
             }
-            throw new Exception("Unable to get match");
+
+            return null;
         }
 
         /// <summary>

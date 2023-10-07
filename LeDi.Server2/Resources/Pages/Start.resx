@@ -123,6 +123,9 @@
   <data name="ManagePlayers" xml:space="preserve">
     <value>Manage Players</value>
   </data>
+  <data name="ManageTournaments" xml:space="preserve">
+    <value>Manage Tournaments</value>
+  </data>
   <data name="MatchList" xml:space="preserve">
     <value>Match List</value>
   </data>
@@ -137,6 +140,9 @@
   </data>
   <data name="RefereeMatch" xml:space="preserve">
     <value>Referee Match</value>
+  </data>
+  <data name="Results" xml:space="preserve">
+    <value>Results</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>

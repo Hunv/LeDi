@@ -36,15 +36,15 @@ else
                     {
                         <div class="row">
                             <div class="col-12">
-                                @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running)
+                                @if (aMatch.MatchStatus == (int)MatchStatusEnum.Running || aMatch.MatchStatus == (int)MatchStatusEnum.PeriodEnded)
                                 {
                                     <a class="btn btn-success fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                                 }
-                                else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended)
+                                else if (aMatch.MatchStatus == (int)MatchStatusEnum.Ended || aMatch.MatchStatus == (int)MatchStatusEnum.Canceled || aMatch.MatchStatus == (int)MatchStatusEnum.Stopped)
                                 {
                                     <a class="btn btn-secondary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                                 }
-                                else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart)
+                                else if (aMatch.MatchStatus == (int)MatchStatusEnum.ReadyToStart || aMatch.MatchStatus == (int)MatchStatusEnum.Planned)
                                 {
                                     <a class="btn btn-primary fs-3" style="display:block; width:100%;" href="/matchcontrol/@aMatch.Id">@aMatch.ScheduledTime - @aMatch.Team1Name @Localizer["vs"] @aMatch.Team2Name</a>
                                 }

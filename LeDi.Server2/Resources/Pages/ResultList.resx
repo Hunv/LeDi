@@ -117,37 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
+  <data name="NoPreviousMatches" xml:space="preserve">
+    <value>No previous matches. Come back after the first match finished.</value>
   </data>
-  <data name="ManagePlayers" xml:space="preserve">
-    <value>Spieler verwalten</value>
+  <data name="PageTitle" xml:space="preserve">
+    <value>Latest results</value>
   </data>
-  <data name="ManageTournaments" xml:space="preserve">
-    <value>Turniere verwalten</value>
+  <data name="ResultTable" xml:space="preserve">
+    <value>Results</value>
   </data>
-  <data name="MatchList" xml:space="preserve">
-    <value>Spiele verwalten</value>
+  <data name="ScheduledTime" xml:space="preserve">
+    <value>Scheduled Time</value>
   </data>
-  <data name="MatchSummary" xml:space="preserve">
-    <value>Spiel zusammenfassung</value>
+  <data name="Team1" xml:space="preserve">
+    <value>Team 1</value>
   </data>
-  <data name="NewMatch" xml:space="preserve">
-    <value>Neues Spiel</value>
-  </data>
-  <data name="PrepareMatch" xml:space="preserve">
-    <value>Spiel vorbereiten</value>
-  </data>
-  <data name="RefereeMatch" xml:space="preserve">
-    <value>Spielmanagement</value>
-  </data>
-  <data name="Results" xml:space="preserve">
-    <value>Ergebnisse</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Einstellungen</value>
-  </data>
-  <data name="Tablet Start Page" xml:space="preserve">
-    <value>Tablet Startseite</value>
+  <data name="Team2" xml:space="preserve">
+    <value>Team 2</value>
   </data>
 </root>

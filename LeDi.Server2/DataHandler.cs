@@ -69,7 +69,12 @@ namespace LeDi.Server2
                 if (dbContext.TblMatches == null)
                     return new List<TblMatch>();
 
-                return dbContext.TblMatches.Include("MatchEvents").Include("MatchPenalties").Include("MatchReferees").ToList();
+                return dbContext.TblMatches
+                    .Include("MatchEvents")
+                    .Include("MatchPenalties")
+                    .Include("MatchReferees")
+                    .Include("Tournament")
+                    .ToList();
             }
             catch (Exception ex)
             {

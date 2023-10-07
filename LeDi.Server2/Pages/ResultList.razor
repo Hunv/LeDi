@@ -9,7 +9,9 @@
 
 <PageTitle>LeDi - @Localizer["PageTitle"]</PageTitle>
 
-@if (MatchList != null)
+<h1>@Localizer["ResultTable"]</h1>
+
+@if (MatchList != null && MatchList.Count > 0)
 {
     <table class ="table">
         <thead>
