@@ -14,7 +14,13 @@ namespace LeDi.Server2.Pages
         string AdministrationRole = "Role-Administrators";
 
         // The role that defines the role for Guests
-        string GuestRole = "Guests";
+        string GuestRole = "Role-Guests";
+
+        // The role that is used for referees
+        string RefereeRole = "Role-Referees";
+
+        // The role that is used for tournament operators
+        string OperatorRole = "Role-Operators";
 
         // The admin name
         string AdminName = "admin@ledi";
@@ -71,41 +77,112 @@ namespace LeDi.Server2.Pages
             {
                 // Create AdministrationRole Role
                 await _RoleManager.CreateAsync(new IdentityRole(AdministrationRole));
-                await DataHandler.SetUserRoleAsync(new TblUserRole()
+
+                if ((await DataHandler.GetUserRoleAsync(AdministrationRole)) == null)
                 {
-                    CanDeviceCommands = true,
-                    CanDeviceManage = true,
-                    CanMatchAdd = true,
-                    CanMatchAdvancedControls = true,
-                    CanMatchDelete = true,
-                    CanMatchEdit = true,
-                    CanMatchEnd = true,
-                    CanMatchPenalty = true,
-                    CanMatchStart = true,
-                    CanMatchStop = true,
-                    CanPlayerAdd = true,
-                    CanPlayerDelete = true,
-                    CanPlayerEdit = true,
-                    CanRoleAdd = true,
-                    CanRoleDelete = true,
-                    CanRoleEdit = true,
-                    CanSettingManage = true,
-                    CanTeamAdd = true,
-                    CanTeamDelete = true,
-                    CanTeamEdit = true,
-                    CanTemplateManage = true,
-                    CanTournamentAdd = true,
-                    CanTournamentEdit = true,
-                    CanTournamentMatchAdd = true,
-                    CanTournamentMatchDelete = true,
-                    CanTournamentMatchEdit = true,
-                    CanUserAdd = true,
-                    CanUserDelete = true,
-                    CanUserEdit = true,
-                    CanUserPasswordEdit = true,
-                    IsAdmin = true,
-                    RoleName = AdministrationRole
-                });
+                    await DataHandler.SetUserRoleAsync(new TblUserRole()
+                    {
+                        CanDeviceCommands = true,
+                        CanDeviceManage = true,
+                        CanMatchAdd = true,
+                        CanMatchAdvancedControls = true,
+                        CanMatchDelete = true,
+                        CanMatchEdit = true,
+                        CanMatchEnd = true,
+                        CanMatchPenalty = true,
+                        CanMatchStart = true,
+                        CanMatchStop = true,
+                        CanPlayerAdd = true,
+                        CanPlayerDelete = true,
+                        CanPlayerEdit = true,
+                        CanRoleAdd = true,
+                        CanRoleDelete = true,
+                        CanRoleEdit = true,
+                        CanSettingManage = true,
+                        CanTeamAdd = true,
+                        CanTeamDelete = true,
+                        CanTeamEdit = true,
+                        CanTemplateManage = true,
+                        CanTournamentAdd = true,
+                        CanTournamentEdit = true,
+                        CanTournamentMatchAdd = true,
+                        CanTournamentMatchDelete = true,
+                        CanTournamentMatchEdit = true,
+                        CanUserAdd = true,
+                        CanUserDelete = true,
+                        CanUserEdit = true,
+                        CanUserPasswordEdit = true,
+                        IsAdmin = true,
+                        RoleName = AdministrationRole
+                    });
+                }
+            }
+
+
+            // Ensure the Build in Referee role is created
+            RoleResult = await _RoleManager.FindByNameAsync(RefereeRole);
+            if (RoleResult == null)
+            {
+                // Create AdministrationRole Role
+                await _RoleManager.CreateAsync(new IdentityRole(RefereeRole));
+
+                if ((await DataHandler.GetUserRoleAsync(RefereeRole)) == null)
+                {
+                    await DataHandler.SetUserRoleAsync(new TblUserRole()
+                    {
+                        CanMatchAdvancedControls = true,
+                        CanMatchEnd = true,
+                        CanMatchPenalty = true,
+                        CanMatchStart = true,
+                        CanMatchStop = true,
+                        RoleName = RefereeRole
+                    });
+                }
+            }
+
+
+            // Ensure the Build in Operator role is created
+            RoleResult = await _RoleManager.FindByNameAsync(OperatorRole);
+            if (RoleResult == null)
+            {
+                // Create AdministrationRole Role
+                await _RoleManager.CreateAsync(new IdentityRole(OperatorRole));
+
+                if ((await DataHandler.GetUserRoleAsync(OperatorRole)) == null)
+                {
+                    await DataHandler.SetUserRoleAsync(new TblUserRole()
+                    {
+                        CanDeviceCommands = true,
+                        CanMatchAdd = true,
+                        CanMatchAdvancedControls = true,
+                        CanMatchDelete = true,
+                        CanMatchEdit = true,
+                        CanMatchEnd = true,
+                        CanMatchPenalty = true,
+                        CanMatchStart = true,
+                        CanMatchStop = true,
+                        CanPlayerAdd = true,
+                        CanPlayerDelete = true,
+                        CanPlayerEdit = true,
+                        CanRoleAdd = true,
+                        CanRoleDelete = true,
+                        CanRoleEdit = true,
+                        CanTeamAdd = true,
+                        CanTeamDelete = true,
+                        CanTeamEdit = true,
+                        CanTemplateManage = true,
+                        CanTournamentAdd = true,
+                        CanTournamentEdit = true,
+                        CanTournamentMatchAdd = true,
+                        CanTournamentMatchDelete = true,
+                        CanTournamentMatchEdit = true,
+                        CanUserAdd = true,
+                        CanUserDelete = true,
+                        CanUserEdit = true,
+                        IsAdmin = true,
+                        RoleName = OperatorRole
+                    });
+                }
             }
 
             // Ensure the Build in Guest role is created
@@ -114,7 +191,11 @@ namespace LeDi.Server2.Pages
             {
                 // Create GuestRole Role
                 await _RoleManager.CreateAsync(new IdentityRole(GuestRole));
-                await DataHandler.SetUserRoleAsync(new TblUserRole() { RoleName = "Role-Guests" });
+
+                if ((await DataHandler.GetUserRoleAsync(GuestRole)) == null)
+                {
+                    await DataHandler.SetUserRoleAsync(new TblUserRole() { RoleName = GuestRole });
+                }
             }
 
             // Ensure all roles are created

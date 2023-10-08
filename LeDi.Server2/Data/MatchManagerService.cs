@@ -205,12 +205,13 @@ namespace LeDi.Server2.Data
 
             match.MatchPenalties.Add(penalty);
 
-            var matchEvent = new TblMatchEvent() { 
-                Event = (penalty.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2), 
-                Matchtime = match.GetMatchTime(), 
-                Timestamp = DateTime.UtcNow, 
-                Source = "MatchManager", 
-                Text = "Penalty for team " + penalty.TeamId + " player #" + penalty.PlayerNumber + " because of " + penalty.PenaltyName 
+            var matchEvent = new TblMatchEvent() {
+                Event = (penalty.TeamId == 0 ? MatchEventEnum.PenaltyTeam1 : MatchEventEnum.PenaltyTeam2),
+                Matchtime = match.GetMatchTime(),
+                Timestamp = DateTime.UtcNow,
+                Source = "MatchManager",
+                Text = penalty.Note
+                //Text = "Penalty for team " + penalty.TeamId + " player #" + penalty.PlayerNumber + " because of " + penalty.PenaltyName 
             };
             match.MatchEvents.Add(matchEvent);
 

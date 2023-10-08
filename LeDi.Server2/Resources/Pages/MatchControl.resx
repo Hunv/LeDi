@@ -189,6 +189,9 @@
   <data name="Period" xml:space="preserve">
     <value>Period</value>
   </data>
+  <data name="Player" xml:space="preserve">
+    <value>Player</value>
+  </data>
   <data name="Playerpenalty" xml:space="preserve">
     <value>Penalty Player</value>
   </data>
@@ -248,6 +251,9 @@
   </data>
   <data name="StopTime" xml:space="preserve">
     <value>Stop</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Team</value>
   </data>
   <data name="Teampenalty" xml:space="preserve">
     <value>Teampenalty</value>

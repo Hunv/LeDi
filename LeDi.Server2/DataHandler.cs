@@ -1032,6 +1032,25 @@ namespace LeDi.Server2
             return null;
         }
 
+        /// <summary>
+        /// Removes a role from database
+        /// </summary>
+        /// <returns></returns>
+        public static async Task RemoveUserRoleAsync(int roleId)
+        {
+            try
+            {
+                using var dbContext = new LeDiDbContext();
+
+                dbContext.TblUserRoles.Remove(dbContext.TblUserRoles.Single(x => x.Id == roleId));
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
 
         /// <summary>
         /// Gets a template by ID

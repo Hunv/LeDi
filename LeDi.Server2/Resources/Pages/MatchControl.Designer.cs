@@ -277,6 +277,15 @@ namespace LeDi.Server2.Resources.Pages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Player.
+        /// </summary>
+        public static string Player {
+            get {
+                return ResourceManager.GetString("Player", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Penalty Player.
         /// </summary>
         public static string Playerpenalty {
@@ -453,6 +462,15 @@ namespace LeDi.Server2.Resources.Pages {
         public static string StopTime {
             get {
                 return ResourceManager.GetString("StopTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team.
+        /// </summary>
+        public static string Team {
+            get {
+                return ResourceManager.GetString("Team", resourceCulture);
             }
         }
         

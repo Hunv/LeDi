@@ -21,10 +21,15 @@ else
         <Authorized>
             <br />
             <h4>@Localizer["CurrentOrPlanedTournaments"]</h4>
-            <br />
 
             <div class="container-fluid">
-                @foreach (var tournament in TournamentList.Where(x => x.EndDate >= DateTime.Today).OrderBy(x => x.StartDate))
+                @if (TournamentList == null || TournamentList.Count == 0)
+                {
+                    <h6>-@Localizer["None"]-</h6> 
+                }
+                else
+                {
+                    @foreach (var tournament in TournamentList.Where(x => x.EndDate >= DateTime.Today).OrderBy(x => x.StartDate))
                 {
                     <Card>
                         <HeaderTemplate>
@@ -135,15 +140,17 @@ else
                     </Card>
                     <br />
                 }
+                }
             </div>
 
             <AuthorizeView Roles="Att-CanTournamentAdd,Att-IsAdmin" Context="y">
                 <Authorized>
+                    <br />
                     <a class="fs-5 btn btn-primary" href="tournamentadd" role="button"><i class="fa-solid fa-circle-plus" aria-hidden="true"/> @Localizer["CreateTournament"]</a>
                 </Authorized>
             </AuthorizeView>
 
-            <br /> <br />
+            <br /> <br /> <br />
 
             <h4>@Localizer["FinishedTournaments"]</h4>
             <table class="table">

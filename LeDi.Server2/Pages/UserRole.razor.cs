@@ -1,6 +1,7 @@
 ﻿using LeDi.Shared2.DatabaseModel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System.Runtime.CompilerServices;
 
 namespace LeDi.Server2.Pages
@@ -31,17 +32,27 @@ namespace LeDi.Server2.Pages
             await InvokeAsync(() => { StateHasChanged(); });
         }
 
-        private void DeleteRole(int userId)
+        private async void DeleteRole(int roleId)
         {
-
+            await DataHandler.RemoveUserRoleAsync(roleId);
+            RoleList = await DataHandler.GetUserRoleListAsync();
+            await InvokeAsync(() => { StateHasChanged(); });
         }
 
         private async void SaveRole()
         {
-            Role.RoleName = "Role-" + Role.RoleName;
+            if (!Role.RoleName.StartsWith("Role-"))
+            {
+                Role.RoleName = "Role-" + Role.RoleName;
+            }
             await DataHandler.SetUserRoleAsync(Role);
+
+            if (!(await _RoleManager.RoleExistsAsync(Role.RoleName)))
+                await _RoleManager.CreateAsync(new IdentityRole(Role.RoleName));
+
             Role = new TblUserRole();
             RoleList = await DataHandler.GetUserRoleListAsync();
+
             await InvokeAsync(() => { StateHasChanged(); });
         }
     }

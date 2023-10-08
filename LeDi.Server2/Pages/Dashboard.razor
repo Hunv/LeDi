@@ -17,165 +17,187 @@
 
 @if (Match != null)
 {
-        <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
-            @*Row 1: Time, Scores*@
-            <div class="row align-items-start" style="height:20vh; min-height:20vh;">
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <div>
-                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
-                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <div>
-                            @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
-                            {
-                            <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["Canceled"]</a>
-                            }
-                            else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
-                            {
-                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;"><br />@Localizer["MatchEnded"]</a>
-                            }
-                            else 
-                            {
-                                <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.CurrentTimeLeft / 60):@((Match.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))</a>
-                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
-                                <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.CurrentPeriod of @Match.RulePeriodCount</a>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <div>
-                            <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
-                            <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
-                        </div>
+    <div class="container-fluid h-100" style="height:90vh; min-height:90vh; flex-grow:1;">
+        @*Row 1: Time, Scores*@
+        <div class="row align-items-start" style="height:20vh; min-height:20vh;">
+            <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1">
+                    <div>
+                        <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Name</a> 
+                        <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team1Score</a>
                     </div>
                 </div>
             </div>
+            <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1">
+                    <div>
+                        @if(Match.MatchStatus == (int)MatchStatusEnum.Canceled)
+                        {
+                        <a class="text-decoration-none fw-bolder text-danger" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Canceled"]</a>
+                        }
+                        else if(Match.MatchStatus == (int)MatchStatusEnum.Ended || Match.MatchStatus == (int)MatchStatusEnum.Closed)
+                        {
+                        <a class="text-decoration-none fw-bolder text-reset" style="font-size:6vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["MatchEnded"]</a>
+                        }
+                        else 
+                        {
+                            <a class="text-decoration-none fw-bolder text-reset" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@(Match.CurrentTimeLeft / 60):@((Match.CurrentTimeLeft % 60).ToString().PadLeft(2,'0'))</a>
+                        <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Localizer["Period"]</a>
+                            <a class="fs-3 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.CurrentPeriod of @Match.RulePeriodCount</a>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1">
+                    <div>
+                        <a class="fs-2 text-decoration-none text-reset" style="display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Name</a>                            
+                        <a class="text-decoration-none text-reset fw-bold" style="font-size:8vh; display:block; width:100%; min-height:100%; display:flex; align-items:center; justify-content:center;">@Match.Team2Score</a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            @*Row 2: Penalties*@
-            <div class="row align-items-start" style="height:15vh; min-height:10vh;">
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
-                            <div class="container">                                
-                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 0))
+        @*Row 2: Penalties*@
+        <div class="row align-items-start" style="height:15vh; min-height:10vh;">
+            <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1">
+                    <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                        <div class="container">
+                            <h3>Penalties</h3>
+                            @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 0))
+                            {
+                                if (aPenalty.PenaltyTime > 0)
                                 {
-                                    if (aPenalty.PenaltyTime > 0)
-                                    {
-                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
+                                    var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime); @*- (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;*@
 
-                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
-                                        {
-                                            if (timeleft < 0)
-                                                timeleft = 0;
+                                    if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                    {
+                                        if (timeleft < 0)
+                                            timeleft = 0;
 @*
-                                            <div class="row">
-                                                <div class="col-2">
-                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
-                                                </div>
-                                                <div class="col-10">
-                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
-                                                </div>
-                                            </div>*@
+                                        <div class="row">
+                                            <div class="col-2">
+                                                @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
+                                            </div>
+                                            <div class="col-10">
+                                                Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
+                                            </div>
+                                        </div>*@
 
                                         <div class="row">
                                             @{
-                                                var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
-                                                var playerString = "Player #" + @aPenalty.PlayerNumber + " (" + @aPenalty.PenaltyName + ")";
-                                                var playerPenaltyString = timeString + "\t" + playerString;
+                                                var playerPenaltyString = "";
+                                                @if (aPenalty.PlayerNumber == 0)
+                                                {
+                                                    var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                    var playerString = Localizer["Team"]; /*+ " #" + @aPenalty.PlayerNumber + " (" + @aPenalty.PenaltyName + ")";*/
+                                                    playerPenaltyString = timeString + "\t" + playerString;
+                                                }
+                                                else
+                                                {
+                                                    var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                    var playerString = Localizer["Player"] + " #" + @aPenalty.PlayerNumber; /*+ " (" + @aPenalty.PenaltyName + ")";*/
+                                                    playerPenaltyString = timeString + "\t" + playerString;
+                                                }
+                                                @playerPenaltyString
                                             }
-                                            @playerPenaltyString
                                         </div>
-                                        }
                                     }
                                 }
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        
-                    </div>
-                </div>
-                <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1">
-                        <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
-                            <div class="container">                                
-                                @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 1))
-                                {
-                                    if (aPenalty.PenaltyTime > 0)
-                                    {
-                                        var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
-
-                                        if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
-                                        {
-                                            if (timeleft < 0)
-                                                timeleft = 0;
-
-                                            <div class="row">
-                                                <div class="col-2">
-                                                    @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
-                                                </div>
-                                                <div class="col-10">
-                                                    Player #@aPenalty.PlayerNumber (@aPenalty.PenaltyName)
-                                                </div>
-                                            </div>
-                                        }
-                                    }
-                                }
-                            </div>
-                        </a>
-                    </div>
+                            }
+                        </div>
+                    </a>
                 </div>
             </div>
+            <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1">
+                        
+                </div>
+            </div>
+            <div class="col-4 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1">
+                    <a class="text-decoration-none text-reset fs-4 text-nowrap text-truncate">
+                        <div class="container">
+                            <h3>Penalties</h3>
+                            @foreach(var aPenalty in Match.MatchPenalties.Where(x => x.TeamId == 1))
+                            {
+                                if (aPenalty.PenaltyTime > 0)
+                                {
+                                    var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime); @*- (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;*@
 
-            @*Row 4: Matchlog*@
-            @*<div class="row align-items-start" style="height:30vh; min-height:30vh;">
-                <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
-                    <div style="height:100%; min-height:100%;" class="p-1 fs-3">
-                        <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
-                        @if (MatchEventList == null || MatchEventList.Count == 0) 
-                        {
-                            <a>@Localizer["CurrentlyNoMatch"]</a>
+                                    if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
+                                    {
+                                        if (timeleft < 0)
+                                            timeleft = 0;
 
-                        <br />
-                        }
-                        else
-                        {
-                            <div class="container-fluid">
-                                <div class="row">
+                                        <div class="row">
+                                            @{
+                                                var playerPenaltyString = "";
+                                                @if (aPenalty.PlayerNumber == 0)
+                                                {
+                                                    var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                    var playerString = Localizer["Team"]; /*+ " #" + @aPenalty.PlayerNumber + " (" + @aPenalty.PenaltyName + ")";*/
+                                                    playerPenaltyString = timeString + "\t" + playerString;
+                                                }
+                                                else
+                                                {
+                                                    var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                    var playerString = Localizer["Player"] + " #" + @aPenalty.PlayerNumber; /*+ " (" + @aPenalty.PenaltyName + ")";*/
+                                                    playerPenaltyString = timeString + "\t" + playerString;
+                                                }
+                                                @playerPenaltyString
+                                            }
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @*Row 4: Matchlog*@
+        @*<div class="row align-items-start" style="height:30vh; min-height:30vh;">
+            <div class="col-12 p-0 m-0" style="height:100%; min-height:100%;">
+                <div style="height:100%; min-height:100%;" class="p-1 fs-3">
+                    <a class="fs-2 text-decoration-none text-reset">Match log:</a><br />
+                    @if (MatchEventList == null || MatchEventList.Count == 0) 
+                    {
+                        <a>@Localizer["CurrentlyNoMatch"]</a>
+
+                    <br />
+                    }
+                    else
+                    {
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-1 text-nowrap" style="min-width:100px;">
+                                    <b>@Localizer["Time"]</b>
+                                </div>
+                                <div class="col-auto">
+                                    <b>@Localizer["Note"]</b>
+                                </div>
+                            </div>
+         
+                            @foreach(var aEvent in MatchEventList.Reverse<TblMatchEvent>())
+                            {
+                                <div class="row justify-content-start">
                                     <div class="col-1 text-nowrap" style="min-width:100px;">
-                                        <b>@Localizer["Time"]</b>
+                                        @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
                                     </div>
                                     <div class="col-auto">
-                                        <b>@Localizer["Note"]</b>
+                                        @aEvent.Text
                                     </div>
                                 </div>
-         
-                                @foreach(var aEvent in MatchEventList.Reverse<TblMatchEvent>())
-                                {
-                                    <div class="row justify-content-start">
-                                        <div class="col-1 text-nowrap" style="min-width:100px;">
-                                            @(aEvent.Matchtime/60):@((aEvent.Matchtime%60).ToString().PadLeft(2,'0'))
-                                        </div>
-                                        <div class="col-auto">
-                                            @aEvent.Text
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
+                            }
+                        </div>
+                    }
                 </div>
-            </div>*@
-        </div>
+            </div>
+        </div>*@
+    </div>
 }
 else if (LiveMatchList != null)
 {
@@ -298,7 +320,7 @@ else {
             if (matches == null)
                 return;
 
-            if (matches.Count > 1)
+            if (matches.Count > 0)
             {
                 var runningMatches = matches.Where(x => x.MatchStatus == (int)LeDi.Shared2.Enum.MatchStatusEnum.Running);
 

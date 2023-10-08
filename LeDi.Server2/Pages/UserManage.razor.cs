@@ -47,7 +47,9 @@ namespace LeDi.Server2.Pages
             // Get all roles to show for add/edit dialog
             if (roleList.Count > 0)
             {
-                Options = roleList.Select(x => x.RoleName).ToList();
+                //Remove the Role-Prefix to display it in the Combobox
+                var roles = roleList.Select(x => x.RoleName);
+                Options = roles.Select(x => x.Replace("Role-", "")).ToList();
             }
 
             // Get the current logged in user
@@ -201,8 +203,8 @@ namespace LeDi.Server2.Pages
                     {
                         // Handle Roles
                         // put user to given role
-                        await _UserManager.AddToRoleAsync(NewUser, CurrentUserRole);
-                        await SetRoleAttributes(NewUser, CurrentUserRole.Replace("Role-", ""));
+                        await _UserManager.AddToRoleAsync(NewUser, "Role-" + CurrentUserRole);
+                        await SetRoleAttributes(NewUser, "Role-" + CurrentUserRole);
 
                         //if (CurrentUserRole == AdministrationRole)
                         //{
@@ -470,16 +472,25 @@ namespace LeDi.Server2.Pages
             if (user != null)
             {
                 // Is user in administrator role?
-                var IsAdminUser = await _UserManager.IsInRoleAsync(user, AdministrationRole);
+                //var IsAdminUser = await _UserManager.IsInRoleAsync(user, AdministrationRole);
 
-                if (IsAdminUser)
+                foreach(var aRole in await DataHandler.GetUserRoleListAsync())
                 {
-                    CurrentUserRole = AdministrationRole;
+                    if (await _UserManager.IsInRoleAsync(user, aRole.RoleName))
+                    {
+                        CurrentUserRole = aRole.RoleName;
+                        break;
+                    }
                 }
-                else
-                {
-                    CurrentUserRole = "Guests";
-                }
+
+                //if (IsAdminUser)
+                //{
+                //    CurrentUserRole = AdministrationRole;
+                //}
+                //else
+                //{
+                //    CurrentUserRole = "Guests";
+                //}
             }
 
             // Open the Popup

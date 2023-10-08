@@ -128,14 +128,14 @@ else
                                                     {
                                                         if (aPenalty.PenaltyTime > 0)
                                                         {
-                                                            var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
+                                                            var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime); @*- (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;*@
 
                                                             if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                                             {
                                                                 if (timeleft < 0)
                                                                     timeleft = 0;
 
-                                                                <div class="row @(timeleft == 0 ? "text-success" : "")">
+                                                                @*<div class="row @(timeleft == 0 ? "text-success" : "")">
                                                                     <div class="col-2">
                                                                         @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
                                                                     </div>
@@ -151,6 +151,25 @@ else
                                                                             @text
                                                                         }
                                                                     </div>
+                                                                </div>*@
+
+                                                                <div class="row @(timeleft == 0 ? "text-success" : "")">
+                                                                    @{
+                                                                        var playerPenaltyString = "";
+                                                                        @if (aPenalty.PlayerNumber == 0)
+                                                                        {
+                                                                            var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                                            var playerString = Localizer["Team"]; /*+ " #" + @aPenalty.PlayerNumber + " (" + @aPenalty.PenaltyName + ")";*/
+                                                                            playerPenaltyString = timeString + "\t" + playerString;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                                            var playerString = Localizer["Player"] + " #" + @aPenalty.PlayerNumber; /*+ " (" + @aPenalty.PenaltyName + ")";*/
+                                                                            playerPenaltyString = timeString + "\t" + playerString;                                                                            
+                                                                        }
+                                                                        @playerPenaltyString
+                                                                    }
                                                                 </div>
                                                             }
                                                         }
@@ -181,29 +200,31 @@ else
                                                     {
                                                         if (aPenalty.PenaltyTime > 0)
                                                         {
-                                                            var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime) - (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;
+                                                            var timeleft = Match.CurrentTimeLeft - (Match.RulePeriodLength - aPenalty.PenaltyTimeStart - aPenalty.PenaltyTime); @*- (Match.RulePeriodLength * (Match.CurrentPeriod -1)) ;*@
 
                                                             if (timeleft >= -10) // To show the 0:00 some seconds after the penalty is over.
                                                             {
                                                                 if (timeleft < 0)
                                                                     timeleft = 0;
 
+
                                                                 <div class="row @(timeleft == 0 ? "text-success" : "")">
-                                                                    <div class="col-2">
-                                                                        @((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2,'0'))
-                                                                    </div>
-                                                                    <div class="col-10">
+                                                                    @{
+                                                                        var playerPenaltyString = "";
                                                                         @if (aPenalty.PlayerNumber == 0)
                                                                         {
-                                                                            var text = Localizer["Teampenalty"] + " (" + aPenalty.PenaltyName + ")";
-                                                                            @text
+                                                                            var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                                            var playerString = Localizer["Team"]; /*+ " #" + @aPenalty.PlayerNumber + " (" + @aPenalty.PenaltyName + ")";*/
+                                                                            playerPenaltyString = timeString + "\t" + playerString;
                                                                         }
                                                                         else
                                                                         {
-                                                                            var text = Localizer["Playerpenalty"] + " #" + aPenalty.PlayerNumber + " (" + aPenalty.PenaltyName + ")";
-                                                                            @text
+                                                                            var timeString = ((timeleft / 60).ToString() + ":" + (timeleft % 60).ToString().PadLeft(2, '0'));
+                                                                            var playerString = Localizer["Player"] + " #" + @aPenalty.PlayerNumber; /*+ " (" + @aPenalty.PenaltyName + ")";*/
+                                                                            playerPenaltyString = timeString + "\t" + playerString;
                                                                         }
-                                                                    </div>
+                                                                        @playerPenaltyString
+                                                                    }
                                                                 </div>
                                                             }
                                                         }

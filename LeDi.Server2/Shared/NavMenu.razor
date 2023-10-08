@@ -16,6 +16,7 @@
                 <span class="oi oi-timer" aria-hidden="true"></span> @Localizer["Home"]
             </NavLink>
         </div>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link px-3" href="dashboard">
                 <span class="oi oi-clipboard" aria-hidden="true"></span> @Localizer["Dashboard"]
@@ -24,19 +25,9 @@
 
         <div class="nav-item px-3">
             <NavLink class="nav-link px-3" href="resultlist">
-                <span class="oi oi-xxx" aria-hidden="true"></span> @Localizer["Results"]
+                <span class="oi oi-script" aria-hidden="true"></span> @Localizer["Results"]
             </NavLink>
         </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                <NavLink class="nav-link px-3" href="start">
-                        <span class="oi oi-badge" aria-hidden="true"></span> @Localizer["Start"]
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
 
         <AuthorizeView Roles="Att-CanMatchAdd,Att-IsAdmin">
             <Authorized>
@@ -52,7 +43,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link px-3" href="tournamentplanning">
-                        <span class="oi oi-calendar" aria-hidden="true"></span> @Localizer["Tournaments"]
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["Tournaments"]
                     </NavLink>
                 </div>
             </Authorized>
@@ -75,7 +66,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link px-3" href="settings">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> @Localizer["Settings"]
+                        <span class="oi oi-wrench" aria-hidden="true"></span> @Localizer["Settings"]
                     </NavLink>
                 </div>
             </Authorized>
@@ -107,7 +98,7 @@
                 <Authorized>
                     <div class="nav-item px-3">
                         <NavLink class="nav-link px-3" href="templateeditor">
-                            <span class="oi oi-key" aria-hidden="true"></span> @Localizer["TemplateEditor"]
+                            <span class="oi oi-spreadsheet" aria-hidden="true"></span> @Localizer["TemplateEditor"]
                         </NavLink>
                     </div>
                 </Authorized>
@@ -123,12 +114,12 @@
                 </Authorized>
             </AuthorizeView>
         </div>
-
-        <div class="nav-item px-3">
+@*
+        <div class="nav-item px-3" >
             <NavLink class="nav-link px-3" href="about">
                 <span class="oi oi-info" aria-hidden="true"></span> @Localizer["AboutLedi"]
             </NavLink>
-        </div>
+        </div>*@
     </nav>
 </div>
 

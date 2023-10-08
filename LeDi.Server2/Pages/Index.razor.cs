@@ -8,9 +8,12 @@ using Newtonsoft.Json;
 
 namespace LeDi.Server2.Pages
 {
-    public partial class Start
+    public partial class Index
     {
         private string LinkNewMatch = "matchadd";
+
+        string PageTitle = "";
+        string PageText = "";
 
         protected override async Task OnInitializedAsync()
         {
@@ -20,6 +23,11 @@ namespace LeDi.Server2.Pages
                 // In case a tournament is running, matchadd will add a new match to the tournament.
                 LinkNewMatch = "/matchadd?tournamentid=" + evId.SettingValue + "&returnurl=/start";
             }
+
+            var pageTitleObj = await DataHandler.GetSettingAsync("welcometitle");
+            var pageTextObj = await DataHandler.GetSettingAsync("welcometext");
+            PageTitle = pageTitleObj == null ? "Welcome" : pageTitleObj.SettingValue;
+            PageText = pageTextObj == null ? "" : pageTextObj.SettingValue;
         }
     }
 }
