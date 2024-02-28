@@ -46,6 +46,8 @@ namespace LeDi.Server2.Display
             // Remove the MatchEvents. They are not required and cause dependency Cycles.
             var match = await DataHandler.GetMatchAsync(matchId);
             match.MatchEvents = new List<TblMatchEvent>();
+            match.Tournament.Matches = new List<TblMatch>(); //Reset Match to avoid dependency circles.
+            match.Tournament.Template = new TblTemplate(); // Reset Template to avoid dependency circles.
 
             await Clients.Caller.SendAsync("ReceiveMatch", match);
         }
